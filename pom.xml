@@ -1,0 +1,861 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	
+	<modelVersion>4.0.0</modelVersion>
+	
+	<groupId>fta.fi</groupId>
+    <artifactId>basemaps-admin</artifactId>
+	<version>1.0.0</version>	
+	
+    <packaging>war</packaging>
+
+    <name>BASEMAPS admin application module</name>
+	<description>BASEMAPS admin application module as WEB application</description>
+	
+	<!--
+        List of profiles available in order to have different build and deployment configurations for separate
+        environments.
+	-->
+    <profiles>
+
+        <profile>
+            <id>andrius</id>
+            <properties>
+            	<symlink.enabled>true</symlink.enabled>
+                <project.file>project-andrius.properties</project.file>
+                <hibernate.connection.url>jdbc:postgresql://localhost/basemaps</hibernate.connection.url>
+				<hibernate.connection.username>basemapsuser</hibernate.connection.username>
+				<hibernate.connection.password>B4semap5</hibernate.connection.password>
+            </properties>
+        </profile>
+		
+		<profile>
+            <id>local</id>
+            <properties>
+            	<symlink.enabled>true</symlink.enabled>
+                <project.file>project-local.properties</project.file>
+                <hibernate.connection.url>jdbc:postgresql://localhost/basemaps</hibernate.connection.url>
+				<hibernate.connection.username>basemapsuser</hibernate.connection.username>
+				<hibernate.connection.password>B4semap5</hibernate.connection.password>
+            </properties>
+        </profile>
+		
+        <!-- Production profile -->
+        <profile>
+            <id>product</id>
+            <properties>
+                <symlink.enabled>true</symlink.enabled>
+                <project.file>project-product.properties</project.file>
+                <hibernate.connection.url>jdbc:postgresql://localhost/basemaps</hibernate.connection.url>
+				<hibernate.connection.username>vzmaileruser</hibernate.connection.username>
+				<hibernate.connection.password>B4semap5</hibernate.connection.password>
+            </properties>
+        </profile>
+
+    </profiles>
+	
+    <!-- JBoss related repositories that are not indexable by our custom maven repository. -->
+    <repositories>
+
+        <!--repository>
+            <id>springsource-repo</id>
+            <name>SpringSource Repository</name>
+            <url>http://repo.springsource.org/release/</url>
+        </repository-->
+		<!-- repository>
+		  <id>cv-repo</id>
+		  <name>CV.lt repository</name>
+		  <url>http://172.10.10.15:8181/artifactory/cv-internal</url>
+		</repository -->
+
+        <repository>
+            <id>jboss.repository.releases.public</id>
+            <name>JBoss Repo Public</name>
+            <url>http://repository.jboss.org/nexus/content/groups/public-jboss</url>
+        </repository>
+		
+        <!-- Ibiblio No 1 repository -->
+        <repository>
+            <id>ibiblio</id>
+            <name>iBiblio Repository</name>
+            <url>http://www.ibiblio.org/maven2/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <!-- Ibiblio No 2 repository -->
+        <repository>
+            <id>ibiblio2</id>
+            <name>iBiblio Repository 2</name>
+            <url>http://repo2.maven.org/maven2/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+		
+    </repositories>
+
+    <pluginRepositories>
+
+        <!-- Codehaus plugins -->
+        <pluginRepository>
+            <id>codehaus</id>
+            <name>Codehaus Repository</name>
+            <url>https://nexus.codehaus.org/content/repositories/releases/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+
+        <!-- Maven plugins -->
+        <pluginRepository>
+            <id>Maven-repo1</id>
+            <name>Maven ibiblio repo1</name>
+            <url>http://repo1.maven.org/maven2/</url>
+        </pluginRepository>
+		
+    </pluginRepositories>
+
+
+    <scm>
+        <connection>scm:git:git@github.com:helcomsecretariat/BASEMAPS-admin.git</connection>
+        <developerConnection>scm:git:git@github.com:helcomsecretariat/BASEMAPS-admin.git</developerConnection>
+    </scm>
+	
+	<build>
+	
+		<!-- Override standard maven layout: change source dir and resources dir --> 
+		<sourceDirectory>${project.basedir}/src</sourceDirectory>
+		
+        <resources>
+            <resource>
+                <filtering>true</filtering>
+                <directory>${project.basedir}/resources</directory>
+                <excludes>
+                	<exclude>project.properties</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>${project.basedir}/resources_binary</directory>
+            </resource>
+        </resources>
+		
+		<!-- Enable plugins -->
+        <plugins>
+
+			<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.7.0</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+
+            <!-- Add dependencies to manifest -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.0.2</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+			
+			<plugin>
+				<artifactId>maven-war-plugin</artifactId>
+       			<version>3.2.0</version>
+                <configuration>
+					<warSourceDirectory>${project.basedir}/WebContent</warSourceDirectory>
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+					<webResources>
+                        <resource>
+                            <directory>${project.basedir}/etc</directory>
+                            <filtering>true</filtering>
+                            <targetPath>WEB-INF/classes</targetPath>
+                            <includes>
+                                <include>**/hibernate.cfg.xml</include>
+                            </includes>
+                        </resource>
+                    </webResources>
+                </configuration>
+			</plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-scm-plugin</artifactId>
+                <version>1.9.5</version>
+                <configuration>
+                    <username>git</username>
+                    <password></password>
+                </configuration>
+            </plugin>
+
+			<plugin>
+		        <groupId>org.codehaus.mojo</groupId>
+		        <artifactId>properties-maven-plugin</artifactId>
+		        <version>1.0.0</version>
+		        <executions>
+					<execution>
+						<id>read</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>read-project-properties</goal>
+						</goals>
+						<configuration>
+						  <files>
+							<file>etc/${project.file}</file>
+						  </files>
+						</configuration>
+					</execution>
+					<execution>
+						<id>clean</id>
+						<phase>pre-clean</phase>
+						<goals>
+							<goal>read-project-properties</goal>
+						</goals>
+						<configuration>
+						  <files>
+							<file>etc/${project.file}</file>
+						  </files>
+						</configuration>
+					</execution>
+		        </executions>
+		      </plugin>
+
+            <!-- plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                	<!- Symlink deletion ->
+                    <execution>
+                        <id>clean</id>
+                        <phase>clean</phase>
+                        <configuration>
+                            <tasks>
+                                <taskdef name="if" classname="ise.antelope.tasks.IfTask"/>
+
+                                <property name="ant.basedir" value="${project.basedir}"/>
+                                <property name="ant.build.directory" value="${project.build.directory}"/>
+                                <property name="ant.build.outputDirectory" value="${project.build.warcontent}"/>
+
+                                <if name="symlink.enabled" value="true">
+                                    <ant antfile="${project.basedir}/build-maven.xml">
+                                        <target name="clean"/>
+                                    </ant>
+                                </if>
+
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <!- Symlink creation ->
+                    <execution>
+                        <id>package</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <tasks>
+                                <taskdef name="if" classname="ise.antelope.tasks.IfTask"/>
+
+                                <property name="ant.basedir" value="${project.basedir}"/>
+                                <property name="ant.build.directory" value="${project.build.directory}"/>
+                                <property name="ant.build.outputDirectory" value="${project.build.warcontent}"/>
+
+                                <if name="symlink.enabled" value="true">
+                                    <ant antfile="${project.basedir}/build-maven.xml">
+                                        <target name="deploy"/>
+                                    </ant>
+                                </if>
+
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <!- Copy project settings file ->
+                    <execution>
+   						<id>write</id>
+						<phase>generate-resources</phase>
+				        <configuration>
+				            <tasks>
+				                <echo>Copy project settings file</echo>
+				                <copy file="etc/${project.file}" tofile="${project.build.outputDirectory}/project.properties"/>
+			                </tasks>
+			            </configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <exportAntProperties>true</exportAntProperties>
+                </configuration>
+                <dependencies>
+                    <!- http://antelope.tigris.org/nonav/docs/manual/bk03.html ->
+                    <dependency>
+                        <groupId>org.tigris.antelope</groupId>
+                        <artifactId>antelopetasks</artifactId>
+                        <version>3.2.10</version>
+                    </dependency>
+                </dependencies>
+            </plugin -->
+
+            <plugin>
+                <groupId>org.codehaus.cargo</groupId>
+                <artifactId>cargo-maven2-plugin</artifactId>
+                <version>1.6.5</version>
+                <configuration>
+                    <container>
+                        <containerId>tomcat9x</containerId>
+                        <type>installed</type>
+                        <home>${path.app.deploy}</home>
+                    </container>
+                    <configuration>
+                        <type>existing</type>
+                        <home>${path.app.deploy}</home>
+                    </configuration>
+                    <deployer>
+                        <type>installed</type>
+                        <deployables>
+                            <deployable>
+                                <groupId>${project.groupId}</groupId>
+                                <artifactId>${project.artifactId}</artifactId>
+                                <type>war</type>
+                                <properties>
+                                    <context>/ROOT</context>
+                                </properties>
+                            </deployable>
+                         </deployables>
+                    </deployer>
+                </configuration>
+            </plugin>
+			
+			<plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <version>5.0.2</version>
+				<executions>
+					<execution>
+						<id>package</id>
+						<phase>package</phase>
+						<goals>
+							<goal>migrate</goal>
+						</goals>
+					</execution>
+				</executions>
+                <configuration>
+                    <url>${hibernate.connection.url}</url>
+                    <user>${hibernate.connection.username}</user>
+                    <password>${hibernate.connection.password}</password>
+                    <locations>
+				        <location>filesystem:${project.basedir}/sql</location>
+				    </locations>
+				    <initOnMigrate>true</initOnMigrate>
+					<validateOnMigrate>false</validateOnMigrate>
+				    <outOfOrder>true</outOfOrder>
+                </configuration>
+                <dependencies>
+                    <dependency>
+						<groupId>org.postgresql</groupId>
+						<artifactId>postgresql</artifactId>
+						<version>${postgresql.version}</version>
+					</dependency>
+                </dependencies>
+            </plugin>
+			
+        </plugins>
+
+        <pluginManagement>
+        	<plugins>
+        		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+        		<!-- plugin>
+        			<groupId>org.eclipse.m2e</groupId>
+        			<artifactId>lifecycle-mapping</artifactId>
+        			<version>1.0.0</version>
+        			<configuration>
+        				<lifecycleMappingMetadata>
+        					<pluginExecutions>
+        						<pluginExecution>
+        							<pluginExecutionFilter>
+        								<groupId>
+        									org.apache.maven.plugins
+        								</groupId>
+        								<artifactId>
+        									maven-antrun-plugin
+        								</artifactId>
+        								<versionRange>
+        									[1.7,)
+        								</versionRange>
+        								<goals>
+        									<goal>run</goal>
+        								</goals>
+        							</pluginExecutionFilter>
+        							<action>
+        								<ignore></ignore>
+        							</action>
+        						</pluginExecution>
+        						<pluginExecution>
+        							<pluginExecutionFilter>
+        								<groupId>
+        									org.codehaus.mojo
+        								</groupId>
+        								<artifactId>
+        									properties-maven-plugin
+        								</artifactId>
+        								<versionRange>
+        									[1.0-alpha-2,)
+        								</versionRange>
+        								<goals>
+        									<goal>
+        										read-project-properties
+        									</goal>
+        								</goals>
+        							</pluginExecutionFilter>
+        							<action>
+        								<ignore></ignore>
+        							</action>
+        						</pluginExecution>
+        					</pluginExecutions>
+        				</lifecycleMappingMetadata>
+        			</configuration>
+        		</plugin -->
+        	</plugins>
+        </pluginManagement>
+	</build>
+	
+    <dependencies>
+		
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpcore</artifactId>
+			<version>4.3</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.slf4j</groupId>
+		    <artifactId>slf4j-simple</artifactId>
+		    <version>1.7.25</version>
+		    <scope>provided</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.slf4j</groupId>
+		    <artifactId>slf4j-log4j12</artifactId>
+		    <version>1.7.25</version>
+		    <scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>${log4j.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.activation</groupId>
+					<artifactId>activation</artifactId>
+				</exclusion>
+			</exclusions>
+			<version>${mail.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.velocity</groupId>
+			<artifactId>velocity</artifactId>
+			<version>${velocity.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>${servlet-api.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>javax.servlet.jsp-api</artifactId>
+			<version>2.3.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+		    <groupId>javax.servlet</groupId>
+		    <artifactId>jstl</artifactId>
+		    <version>1.2</version>
+		    <scope>provided</scope>
+		</dependency>
+
+		<!-- Application included -->
+		
+		<!-- Commons -->
+		<dependency>
+			<groupId>commons-beanutils</groupId>
+			<artifactId>commons-beanutils</artifactId>
+			<version>${commons-beanutils.version}</version>
+			<scope>provided</scope>
+		</dependency>			
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>${commons-codec.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-pool</groupId>
+					<artifactId>commons-pool</artifactId>
+				</exclusion>
+			</exclusions>
+			<version>${commons-dbcp.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+			<version>${commons-fileupload.version}</version>
+			<scope>compile</scope>
+		</dependency>		
+		<dependency>
+			<groupId>commons-httpclient</groupId>
+			<artifactId>commons-httpclient</artifactId>
+			<version>${commons-httpclient.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>${commons-io.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-pool</groupId>
+			<artifactId>commons-pool</artifactId>
+			<version>${commons-pool.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>${commons-logging.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>dom4j</groupId>
+			<artifactId>dom4j</artifactId>
+			<version>${dom4j.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		
+		<!-- Xmlbeans -->
+		<dependency>
+			<groupId>org.apache.xmlbeans</groupId>
+			<artifactId>xmlbeans</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>net.sf.saxon</groupId>
+					<artifactId>saxon</artifactId>
+				</exclusion>
+			</exclusions>	
+			<version>${xmlbeans.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.xmlbeans</groupId>
+			<artifactId>xmlbeans-xmlpublic</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>net.sf.saxon</groupId>
+					<artifactId>saxon</artifactId>
+				</exclusion>
+			</exclusions>				
+			<version>${xmlbeans.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.xmlbeans</groupId>
+			<artifactId>xmlbeans-qname</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>net.sf.saxon</groupId>
+					<artifactId>saxon</artifactId>
+				</exclusion>
+			</exclusions>				
+			<version>${xmlbeans.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.xmlbeans</groupId>
+			<artifactId>xmlbeans-xpath</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>net.sf.saxon</groupId>
+					<artifactId>saxon</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.xmlbeans</groupId>
+					<artifactId>xmlbeans</artifactId>
+				</exclusion>
+			</exclusions>		
+			<version>${xmlbeans.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		
+		<!-- Jackson -->
+		<dependency>
+		    <groupId>com.fasterxml.jackson.core</groupId>
+		    <artifactId>jackson-core</artifactId>
+		    <version>${jackson.version}</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.fasterxml.jackson.core</groupId>
+		    <artifactId>jackson-databind</artifactId>
+		    <version>${jackson.version}</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>com.fasterxml.jackson.core</groupId>
+		    <artifactId>jackson-annotations</artifactId>
+		    <version>${jackson.version}</version>
+		</dependency>
+				
+		<!-- Spring -->
+		<dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+            <version>${spring.version}</version>
+            <scope>compile</scope>
+        </dependency>
+		<dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>${spring.version}</version>
+            <scope>compile</scope>
+        </dependency>
+		<dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>aopalliance</groupId>
+                    <artifactId>aopalliance</artifactId>
+                </exclusion>
+            </exclusions>
+            <version>${spring.version}</version>
+            <scope>compile</scope>
+        </dependency>
+		<dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>${spring.version}</version>
+            <scope>compile</scope>
+        </dependency>
+		<dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-expression</artifactId>
+            <version>${spring.version}</version>
+            <scope>compile</scope>
+        </dependency>
+		<dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>aopalliance</groupId>
+                    <artifactId>aopalliance</artifactId>
+                </exclusion>
+            </exclusions>
+            <version>${spring.version}</version>
+            <scope>compile</scope>
+        </dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<exclusions>
+                <exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>org.springframework.web</artifactId>
+                </exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>org.springframework.context</artifactId>
+                </exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>org.springframework.beans</artifactId>
+                </exclusion>
+				<exclusion>
+					<groupId>org.apache.commons</groupId>
+					<artifactId>com.springsource.org.apache.commons.logging</artifactId>
+                </exclusion>
+            </exclusions>
+            <version>${spring.version}</version>
+            <scope>compile</scope>
+		</dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <version>${spring.version}</version>
+			<scope>compile</scope>
+        </dependency>
+		<dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-oxm</artifactId>
+            <version>${spring.version}</version>
+            <scope>compile</scope>
+        </dependency>
+		<dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>${spring.version}</version>
+            <scope>compile</scope>
+        </dependency>
+		
+		<!-- Tiles -->
+		<dependency>
+			<groupId>org.apache.tiles</groupId>
+			<artifactId>tiles-api</artifactId>
+			<version>${tiles.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tiles</groupId>
+			<artifactId>tiles-compat</artifactId>
+			<version>${tiles.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tiles</groupId>
+			<artifactId>tiles-core</artifactId>
+			<version>${tiles.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tiles</groupId>
+			<artifactId>tiles-jsp</artifactId>
+			<version>${tiles.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tiles</groupId>
+			<artifactId>tiles-servlet</artifactId>
+			<version>${tiles.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		
+		
+		
+		<dependency>
+			<groupId>c3p0</groupId>
+			<artifactId>c3p0</artifactId>
+			<version>0.9.1.2</version>
+			<scope>compile</scope>
+		</dependency>
+		
+		<!-- Hibernate -->
+		<dependency>
+			<groupId>org.hibernate.javax.persistence</groupId>
+			<artifactId>hibernate-jpa-2.1-api</artifactId>
+			<version>${hibernate.jpa.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.el</groupId>
+					<artifactId>el-api</artifactId>
+				</exclusion>
+			</exclusions>
+			<version>${hibernate.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-c3p0</artifactId>
+			<version>${hibernate.version}</version>
+		</dependency>
+		
+		<!-- Manual added -->
+		
+    </dependencies>
+    
+	<properties>
+		<!-- Project settings -->			
+        <project.build.warcontent>${project.build.directory}/${project.artifactId}-${project.version}</project.build.warcontent>
+ 		<project.file>project.properties</project.file>
+ 
+        <!-- Environment versions -->
+        <java.version>1.8</java.version>
+		
+		<!-- Libraries versions -->
+		<log4j.version>1.2.17</log4j.version>
+		<mail.version>1.4</mail.version>
+		<velocity.version>1.7</velocity.version>
+		<commons-beanutils.version>1.8.3</commons-beanutils.version>
+		<commons-codec.version>1.10</commons-codec.version>
+		<commons-io.version>1.4</commons-io.version>
+		<commons-fileupload.version>1.3.1</commons-fileupload.version>
+		<commons-dbcp.version>1.3</commons-dbcp.version>
+		<commons-httpclient.version>3.1</commons-httpclient.version>
+		<commons-pool.version>1.5.4</commons-pool.version>
+		<commons-logging.version>1.1.3</commons-logging.version>
+		<servlet-api.version>4.0.0</servlet-api.version>
+
+		<!-- Application lib versions -->
+		<javassist.version>3.21.0-GA</javassist.version>
+		<dom4j.version>1.6.1</dom4j.version>
+		<xmlbeans.version>2.6.0</xmlbeans.version>
+		<jackson.version>2.9.2</jackson.version>
+		<spring.version>4.3.12.RELEASE</spring.version>
+		<tiles.version>3.0.8</tiles.version>
+		
+		<postgresql.version>9.4.1212</postgresql.version>
+		<hibernate.jpa.version>1.0.0.Final</hibernate.jpa.version>
+		<hibernate.version>5.2.12.Final</hibernate.version>
+		
+    </properties>
+    
+</project>

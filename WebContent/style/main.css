@@ -1,0 +1,33 @@
+@CHARSET "UTF-8";
+
+.hidden, .hidden-switch {
+	display: none; }
+
+.nowrap {
+	white-space: nowrap; }
+
+.arrow-up {
+	width: 6px;
+	background: url("../images/arrow-green-up.png") center top no-repeat;
+	display: inline-block;
+	top: 1px;
+    position: relative; }
+	.arrow-up.l {
+		height: 13px; }
+	.arrow-up.m {
+		height: 8px; }
+	.arrow-up.s {
+		height: 3px; }
+
+.arrow-down {
+	width: 6px;
+	background: url("../images/arrow-red-down.png") center bottom no-repeat;
+	display: inline-block;
+	top: 1px;
+    position: relative; }
+    .arrow-down.l {
+		height: 13px; }
+	.arrow-down.m {
+		height: 8px; }
+	.arrow-down.s {
+		height: 3px; }

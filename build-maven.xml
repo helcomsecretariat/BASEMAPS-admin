@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="basemaps">
+	
+	<target name="cleanData">
+		<echo message="execute cleanData"/>
+		<delete includeemptydirs="true">
+            <fileset dir="${path.web.static}/basemaps"/>
+        </delete>
+        <mkdir dir="${path.web.static}/basemaps"/>
+		
+    </target>
+	
+    <target name="cleanScripts">
+    	<echo message="execute cleanScripts"/>
+    	
+    	<delete includeemptydirs="true">
+            <fileset dir="${path.scripts}">
+                <exclude name="logs"/>
+                <exclude name="logs/**/*"/>
+                <exclude name="classes/*jssecacerts"/>
+            </fileset>
+        </delete>
+    </target>
+	
+    <target name="deployData">
+    	<echo message="execute deployData"/>
+    	
+        <copy todir="${path.web.static}/basemaps" includeemptydirs="false">
+            <fileset dir="WebContent">
+                <exclude name="WEB-INF/**/*.*"/>
+                <exclude name="**/*.jsp"/>
+                <exclude name="**/*.inc"/>
+            </fileset>
+        </copy>
+    </target>
+	
+	<target name="deployScripts">
+        <echo message="execute deployScripts"/>
+
+		<copy todir="${path.scripts}">
+            <fileset dir="scripts" includes="**/*.sh"/>
+        </copy>
+        <chmod perm="755">
+            <fileset dir="${path.scripts}" includes="**/*.sh"/>
+        </chmod>
+        <copy todir="${path.scripts}/classes">
+        	<fileset dir="${ant.build.directory}/classes"/>
+        </copy>
+		<copy todir="${path.scripts}/classes" file="${ant.build.outputDirectory}/WEB-INF/classes/hibernate.cfg.xml" />
+        <copy todir="${path.scripts}/lib">
+        	<fileset dir="${ant.build.outputDirectory}/WEB-INF/lib"/>
+        </copy>
+        <mkdir dir="${path.scripts}/logs"/>
+		
+    </target>
+	
+	<target name="clean" depends="cleanData, cleanScripts">
+        <echo message="execute clean"/>
+    </target>
+
+    <target name="deploy" depends="deployData, deployScripts">
+        <echo message="execute deploy"/>
+    </target>
+	
+</project>

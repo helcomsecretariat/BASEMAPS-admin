@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"
+       "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+
+<tiles-definitions>
+
+    <!-- Default basic tile -->
+    <definition name="BasicTile" template="/tiles/basicLayout.jsp">
+        <put-attribute name="meta.description" value="" type="string" />
+        <put-attribute name="title" value="BASEMAPS" type="string" />
+        <put-attribute name="links" value="" type="string" />
+        <put-attribute name="scripts" value="" type="string" />
+        <put-attribute name="content" type="string" value="Informacija ruošiama." />
+        <put-attribute name="bottom" value="" type="string" />
+    </definition>
+    
+</tiles-definitions>
