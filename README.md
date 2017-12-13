@@ -1,6 +1,8 @@
 # BASEMAPS-admin
 BASEMAPS - is a web GIS application for searching, viewing and downloading Baltic Sea GIS data. GIS data are stored in the distributed servers and served as WMS services for view on the web map and as WFS services for download.
 
+BASEMAPS administration panel allows to manage BASEMAPS application. Create new layer and categories, add WMS and WFS services, test services, etc.
+
 Copyright (C) 2017 Helcom
 
 This program is free software: you can redistribute it and/or modify
