@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tomcatProjectProperties>
+    <rootDir>/target/basemaps-admin-1.0.0</rootDir>
+    <workDir>/work</workDir>
+    <exportSource>false</exportSource>
+    <reloadable>true</reloadable>
+    <redirectLogger>false</redirectLogger>
+    <updateXml>true</updateXml>
+    <warLocation></warLocation>
+    <extraInfo></extraInfo>
+    <mavenClasspath>false</mavenClasspath>
+    <webPath>/ROOT</webPath>
+</tomcatProjectProperties>
