@@ -11,20 +11,9 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 	<tiles:insertAttribute name="meta.description" ignore="true" />
 	
-	<link href="https://laikrastis.vz.lt/mprasa_main.css" type="text/css" media="all" rel="stylesheet" />
-	<link href="https://laikrastis.vz.lt/mprasa_archive.css" type="text/css" media="all" rel="stylesheet" />
-	<link href="https://laikrastis.vz.lt/styles_pdf.css" type="text/css" media="all" rel="stylesheet" />
-	<!--link href="https://www.vz.lt/App_Themes/Internal/style.css" type="text/css" media="all" rel="stylesheet" /-->
-	<link href="/vzmailer/style/main.css" rel="stylesheet" type="text/css" charset="UTF-8" />
+	<link href="/style/main.css" rel="stylesheet" type="text/css" charset="UTF-8" />
 	
 	<tiles:insertAttribute name="links" ignore="true" />
-	
-	<script type="text/javascript" src="https://laikrastis.vz.lt/js/site.js" language="javascript"></script>
-	
-	<script type="text/javascript" src="/js/jquery/jquery.js"></script>
-	<script type="text/javascript" src="/js/jquery/jquery.scrollTo.js"></script>
-	<script type="text/javascript" src="/js/jquery/jquery.ui.effects.js"></script>
-	<script type="text/javascript" src="/js/jquery/jquery.ui.draggable.js"></script>
 	
 	<tiles:insertAttribute name="scripts" ignore="true" />
 	
@@ -32,8 +21,8 @@
 <body>
 	
 	<div id="header">
-		<a href="/vzmailer/view/mails.do" title="Verslo žinios" id="logo">
-			<img src="https://laikrastis.vz.lt/gfx/logo.png" alt="Verslo žinios" /></a>
+		<a href="/" title="Helcom" id="logo">
+			<img src="http://www.helcom.fi/Style%20Library/HelcomWeb/site_logo.jpg" alt="Helcom" /></a>
 	</div>
 	
 	<div id="main_block">
