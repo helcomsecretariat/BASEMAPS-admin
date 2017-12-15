@@ -29,7 +29,7 @@ public class MailerQueue
 	
 	public MailerQueue(int capacity)
 	{
-		this.messagesLock = new Boolean(true);
+		this.messagesLock = Boolean.valueOf(true);
 		this.messages = new TreeMap<Short, LinkedList<MailMessage>>();
 		this.queued = 0;
 		this.capacity = capacity;

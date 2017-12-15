@@ -40,7 +40,7 @@ public abstract class FileManager
 	
 	public FileManager(File path, String charset)
 	{
-		this.pathLock = new Boolean(true);
+		this.pathLock = Boolean.valueOf(true);
 		this.path = path;
 		this.charset = Charset.forName(charset);
 		this.contentName = FileManager.CONTENT_FILE_NAME;

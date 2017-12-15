@@ -319,8 +319,8 @@ public class SimpleDAO<T>
 	@Override
 	protected void finalize() throws Throwable
 	{
-		super.finalize();
 		this.close();
+		super.finalize();
 	}
 	
 }
