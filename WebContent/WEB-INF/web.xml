@@ -24,6 +24,10 @@
     <servlet-name>basemaps</servlet-name>
     <url-pattern>*.do</url-pattern>
   </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>basemaps</servlet-name>
+    <url-pattern>/data/*</url-pattern>
+  </servlet-mapping>
   <listener>
     <listener-class>fi.fta.core.BasemapsServletContextListener</listener-class>
   </listener>

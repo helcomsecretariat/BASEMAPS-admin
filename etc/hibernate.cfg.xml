@@ -25,7 +25,9 @@
   <property name="hibernate.c3p0.min_size">1</property>
   <property name="hibernate.c3p0.max_size">3</property>
   <property name="hibernate.c3p0.timeout">1800</property>
-  <!-- mapping class="com.vz.beans.Group"/ -->
+  <mapping class="fi.fta.beans.Category"/>
+  <mapping class="fi.fta.beans.User"/>
+  <mapping class="fi.fta.beans.WMS"/>
   
  </session-factory>
 </hibernate-configuration>

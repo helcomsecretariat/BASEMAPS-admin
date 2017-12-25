@@ -582,6 +582,14 @@
 			<scope>compile</scope>
 		</dependency>
 		
+		<!-- https://mvnrepository.com/artifact/javax.validation/validation-api -->
+		<dependency>
+		    <groupId>javax.validation</groupId>
+		    <artifactId>validation-api</artifactId>
+		    <version>${validation-api.version}</version>
+		    <scope>compile</scope>
+		</dependency>
+		
 		<!-- JAXB -->
 		<dependency>
             <groupId>javax.xml.bind</groupId>
@@ -878,6 +886,7 @@
 		<!-- Application lib versions -->
 		<javassist.version>3.21.0-GA</javassist.version>
 		<dom4j.version>1.6.1</dom4j.version>
+		<validation-api.version>2.0.1.Final</validation-api.version>
 		<jaxb-api.version>2.3.0</jaxb-api.version>
 		<xmlbeans.version>2.6.0</xmlbeans.version>
 		<jackson.version>2.9.2</jackson.version>

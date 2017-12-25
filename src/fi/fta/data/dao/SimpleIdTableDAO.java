@@ -21,7 +21,7 @@ public class SimpleIdTableDAO<T extends Identifiable<Long>> extends SimpleTableD
 	
 	public int delete(final Long id) throws HibernateException
 	{
-		StringBuffer sb = new StringBuffer("delete from " + this.getEntityName());
+		StringBuffer sb = new StringBuffer("delete from ").append(this.getEntityName());
 		sb.append(" where id = :id");
 		return new DAOUpdateQueryUtil(this.getCurrentSession(), sb.toString()).
 			setParameter("id", id, LongType.INSTANCE).executeQuery();

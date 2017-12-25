@@ -20,7 +20,7 @@
 	</bean>
 	
 	<context:component-scan base-package="fi.fta.controllers" />
-	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
+	<!-- bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" / -->
 	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" />
 	
 	<bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles3.TilesConfigurer">
