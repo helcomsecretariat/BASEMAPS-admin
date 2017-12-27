@@ -1,5 +1,6 @@
 package fi.fta.data.managers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.HibernateException;
@@ -46,12 +47,23 @@ public class CategoryManager
 		return dao.getRoot();
 	}
 	
-	public boolean add(Category category) throws HibernateException
+	public List<Category> getChildren(Long id) throws HibernateException
 	{
-		return dao.add(category).getId() != null;
+		List<Category> ret = new ArrayList<>();
+		Category root = this.get(id);
+		if (root != null)
+		{
+			ret.addAll(root.getChildren());
+		}
+		return ret;
 	}
 	
-	public boolean add(CategoryUI ui) throws HibernateException
+	public Long add(Category category) throws HibernateException
+	{
+		return dao.add(category).getId();
+	}
+	
+	public Long add(CategoryUI ui) throws HibernateException
 	{
 		Category c = new Category(ui);
 		if (ui.getParent() != null)

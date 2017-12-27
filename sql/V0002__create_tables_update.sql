@@ -8,7 +8,7 @@ CREATE TABLE public.users
   password character varying(50),
   role character varying(10),
   created timestamp with time zone NOT NULL DEFAULT now(),
-  login_count integer,
+  login_count integer NOT NULL DEFAULT 0,
   last_login timestamp with time zone,
   CONSTRAINT users_pkey PRIMARY KEY (id)
 )
