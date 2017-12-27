@@ -1,7 +1,9 @@
 package fi.fta.beans.ui;
 
-import javax.validation.constraints.NotBlank;
+
 import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotBlank;
 
 import fi.fta.beans.Named;
 import fi.fta.beans.UserRole;

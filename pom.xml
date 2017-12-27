@@ -857,6 +857,14 @@
 			<scope>compile</scope>
 		</dependency>
 		
+		<!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-validator -->
+		<dependency>
+		    <groupId>org.hibernate</groupId>
+		    <artifactId>hibernate-validator</artifactId>
+		    <version>${hibernate-validator.version}</version>
+			<scope>compile</scope>
+		</dependency>
+
 		<!-- Manual added -->
 		
     </dependencies>
@@ -896,6 +904,7 @@
 		<postgresql.version>9.4.1212</postgresql.version>
 		<hibernate.jpa.version>1.0.0.Final</hibernate.jpa.version>
 		<hibernate.version>5.2.12.Final</hibernate.version>
+		<hibernate-validator.version>5.4.1.Final</hibernate-validator.version>
 		
     </properties>
     

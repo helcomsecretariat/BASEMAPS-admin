@@ -1,6 +1,6 @@
 package fi.fta.beans.ui;
 
-import javax.validation.constraints.NotBlank;
+import org.hibernate.validator.constraints.NotBlank;
 
 public class LoginUI extends EmailUI
 {
