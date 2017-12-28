@@ -2,6 +2,7 @@ package fi.fta.beans;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -23,9 +24,11 @@ public class CategoryBean extends IdBean
 	protected Integer position;
 	
 	@Temporal(TemporalType.TIMESTAMP)
+	@Column(insertable=false)
 	protected Date created;
 	
 	@Temporal(TemporalType.TIMESTAMP)
+	@Column(insertable=false)
 	protected Date updated;
 	
 	

@@ -20,7 +20,7 @@ public class IdBean implements Identifiable<Long>, Serializable
 	private static final long serialVersionUID = -6025731030275364618L;
 	
 	@Id
-	@SequenceGenerator(name="ID_GENERATOR", sequenceName="id_seq", allocationSize=1)
+	@SequenceGenerator(name="ID_GENERATOR", sequenceName="idgen", allocationSize=1)
 	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="ID_GENERATOR")
 	protected Long id;
 	

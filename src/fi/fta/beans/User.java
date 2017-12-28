@@ -30,9 +30,10 @@ public class User extends EmailBean implements Named
 	protected UserRole role;
 	
 	@Temporal(TemporalType.TIMESTAMP)
+	@Column(insertable=false)
 	protected Date created;
 	
-	@Column(name = "login_count")
+	@Column(name = "login_count", insertable=false)
 	protected Integer loginCount;
 	
 	@Temporal(TemporalType.TIMESTAMP)
