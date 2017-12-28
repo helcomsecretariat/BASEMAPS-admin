@@ -10,6 +10,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import fi.fta.beans.ui.CategoryUI;
 
 @Entity
@@ -22,11 +24,12 @@ public class Category extends CategoryBean
 	 */
 	private static final long serialVersionUID = -2920194411447223477L;
 	
+	@JsonIgnore
 	@ManyToOne(targetEntity=Category.class, cascade={CascadeType.PERSIST, CascadeType.MERGE}, fetch=FetchType.EAGER)
 	@JoinColumn(name = "parent")
 	protected Category parent;
 	
-	@OneToMany(mappedBy = "parent")
+	@OneToMany(mappedBy = "parent", cascade={CascadeType.PERSIST, CascadeType.MERGE}, fetch=FetchType.EAGER)
 	protected Set<Category> children;
 	
 	
