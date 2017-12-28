@@ -1,0 +1,829 @@
+
+html, body {
+	position:absolute;
+	font-family: sans-serif;
+	padding: 0;
+	margin: 0;
+	height: 100%;
+	width: 100%;
+	font-family: "Istok Web", "Calibri", sans-serif;
+	color: #444;
+}
+
+#mainWindow {
+	position: relative;
+	width: 100%;
+	/*height: 100%;*/
+	padding: 0;
+}
+
+#map {
+	position: relative;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 100%;
+	background-color: #B9CAD1;
+}
+
+#header {
+	position: relative;
+	border-bottom: solid 4px #800000;
+	padding: 0 10px;
+	background-color: #B73C2B;
+	overflow: hidden;
+	text-align: left;
+	height: 60px;
+}
+
+#logocontainer {
+	background-image: url("../img/BASAMAPSLogo240x60_WhiteCharactersAndIcon.png");
+	background-repeat: no-repeat;
+	background-position: center;
+	width: 240px;
+	height: 60px;
+	float: left;
+	text-decoration: none;
+	cursor: pointer;
+	display: block;
+}
+
+#titlecontainer {
+	color: white;
+	font-size: 24pt;
+	float: left;
+	margin-top: 10px;
+	margin-left: 107px;
+	text-decoration: none;
+	cursor: pointer;
+	display: block;
+}
+
+#widgetscontainer {
+	float: right;
+	margin-top: 19px;
+	margin-right: 50px;
+}
+
+.widgetButton {
+	width: 25px;
+	height: 25px;
+	background-repeat: no-repeat;
+	background-position: center;
+	cursor: pointer;
+	margin-left: 10px;
+	float: right;
+}
+
+#linkscontainer {
+	line-height: 60px;
+	float: right;
+}
+
+.headerLink {
+	color: #F39C12;
+	font-size: 10pt;
+	cursor: pointer;
+	float: right;
+	margin-left: 10px;
+	text-decoration: none;
+}
+
+.headerLink:hover {
+ 	color: white;
+}
+
+#aboutLink {
+
+}
+
+#adminLink {
+	
+}
+
+#centerContainer {
+	position: relative;
+	margin: 0;
+	padding: 0;
+	/*display: none;*/
+}
+
+#centerWindow {
+	margin: 0;
+	padding: 0;
+}
+
+#footer {
+	border-top: solid 4px #800000;
+	background-color: #B73C2B;
+	color: peru;
+	font-size: 10pt;
+	text-align: center;
+	height: 20px;
+	padding: 0;
+}
+
+.claro .dijitTooltipContainer {
+    /*background: #b8b5b5;*/
+    color: #B73C2B;
+    font-size: 11px;
+    padding: 5px;
+ }
+
+.esriPopup.popupStyle .esriPopupWrapper {
+  border: none;
+  border-radius: 0;
+  webkit-border-radius: 0;
+  font-family: "Istok Web", "Calibri", sans-serif;
+  color: #444;
+  /*opacity: 0.8;*/
+}
+
+.esriPopup.popupStyle .outerPointer {
+  /*border: none;
+  opacity: 0.5;*/
+}
+
+.esriPopup .contentPane {
+  color: #444;
+  /*opacity: 0.8;*/
+}
+
+.esriPopup .titlePane {
+  background-color: #800000;
+  border-radius: 0;
+  webkit-border-radius: 0;
+}
+
+.esriPopup .actionsPane {
+  border-radius: 0;
+  webkit-border-radius: 0;
+}
+
+.esriPopup .contentPane .esriViewPopup .header {
+  text-align: center;
+  color: #444;
+}
+
+.esriViewPopup .hzLine {
+  border-top: 1px solid #800000;
+}
+
+.esriPopup .titleButton.maximize {
+  display: none;
+}
+
+.esriPopupWrapper .title {
+    cursor: move;
+}
+.esriPopup .pointer.hidden, .esriPopup .outerPointer.hidden {
+    display: none;
+}
+
+#widgetPanel {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  /*width: 350px;*/
+  background-color: #FFF;
+  opacity: 0.8;
+  border: 2px solid #800000;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* widget panel resize*/
+.dojoxResizeHandle {
+	float: right;
+	position: absolute;
+	right: 2px;
+	bottom: 2px;
+	width: 13px;
+	height: 13px;
+	z-index: 20;
+	background-image: url('../img/tabResize.png');
+	line-height: 0px;
+}
+.dijitRtl .dojoxResizeHandle {
+        float: right;
+        left: 0px;
+        right: auto;
+	background-image: url('icons/resizeRtl.png');
+}
+.dojoxResizeNW {
+	cursor: nw-resize;
+}
+.dijitRtl .dojoxResizeNW {
+        cursor: ne-resize;
+}
+.dojoxResizeNE {
+	cursor: ne-resize;
+}
+.dijitRtl .dojoxResizeNE {
+        cursor: nw-resize;
+}
+.dojoxResizeW {
+	cursor: w-resize;
+}
+.dojoxResizeN {
+	cursor: n-resize;
+}
+.dojoxResizeHandleClone {
+	position:absolute; top:0; left:0;
+	border:1px dashed #666;
+	z-index:999;
+}
+/* end widget panel resize */
+
+
+.dojoxFloatingPane {
+	background-color:#fff;
+  opacity: 0.8;
+	position:relative;
+	border: 1px solid #dedede;
+	overflow: hidden;
+	-webkit-box-shadow: 0px 5px 10px #adadad;
+}
+.dojoxFloatingPaneFg {
+	-webkit-box-shadow: 0px 8px 20px #525252;
+}
+.dojoxFloatingPaneTitle {
+	background-color: #B73C2B;
+	background: #B73C2B repeat-x bottom left;
+	border-bottom: 2px solid #800000;
+	padding:4px 4px 2px 4px;
+	cursor: pointer;
+	white-space: nowrap;
+  color: white;
+}
+
+.dojoxFloatingCloseIcon {
+	background:url('../img/tabClose.png') no-repeat center center;
+	width:16px;
+	height:16px;
+  margin-top: 4px;
+  margin-right: 4px;
+	overflow:hidden;
+	float:right;
+}
+
+.dojoxFloatingPaneContent {
+	overflow: auto;
+	background-color: #fff;
+  opacity: 0.8;
+	height: 100%;
+	width:	100%;
+}
+.dojoxFloatingPaneCanvas {
+	background-color:#fff;
+}
+
+#screenCover {
+	position: absolute;
+	top:0;
+	left:0;
+	z-index: 99;
+	width: 100%;
+	height: 100%;
+	background-color: #ccc;
+	opacity: 0.5;
+	display: none;
+}
+
+.loginWidget{
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin-top: -160px;
+	margin-left: -200px;
+	width: 400px;
+	height: 320px;
+	/*background-color: #B73C2B;*/
+	color: #800000;
+	border: 3px solid #800000;
+	z-index: 100;
+}
+
+#startupBox{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -160px;
+  margin-left: -200px;
+  width: 400px;
+  height: 320px;
+  /*background-color: #B73C2B;*/
+  color: #800000;
+  border: 3px solid #800000;
+  z-index: 100;
+  display: none;
+}
+
+.startupWindow {
+  width: 100%;
+  height: 100%;
+
+}
+
+#startupHeader {
+  text-align: center;
+  font-size: 22px;
+  background-color: #B73C2B;
+  color: white;
+}
+
+#startupBody {
+  text-align: justify;
+  font-size: 12px;
+  padding: 5px;
+  margin-top: 5px;
+}
+
+#startupButtonsContainer {
+  margin-top: 10px;
+  width: 100%;
+  text-align: center;
+}
+
+#startupCheckboxContainer {
+  font-size: 12px;
+}
+
+#startupButton {
+  cursor: pointer;
+  margin-top: 10px;
+  font-size: 14px;
+  width: 100px;
+  display:inline-block;
+  background-color: #B73C2B;
+  border: 1px solid #800000;
+  color: white;
+}
+
+#startupButton:hover {
+  font-weight: bold;
+  background-color: #800000;
+}
+
+#startupLogo {
+  position:absolute;
+  bottom: 0;
+  left: 0;
+  background-image: url("../img/HELCOM_logo_white_h60.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: #B73C2B;
+  width: 100%;
+  height: 60px;
+  margin-top: 10px;
+}
+
+.esriBasemapGalleryLabelContainer {
+  display: none;
+}
+
+.ol-zoom {
+    top: 3px;
+    left: 355px;
+}
+
+/* Layer List widget */
+
+#layerlistContainer {
+  position: absolute;
+  top:0px;
+  left: 0px;
+  width: 350px;
+  height: 100%;
+  border-right: 2px solid #800000;
+  /*background-color: #FFF;
+  opacity: 0.8;
+  border-right: 2px solid #800000;*/
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+#layerlistSectionsContainer {
+  position: absolute;
+  top:0px;
+  left: 0px;
+  width: 350px;
+  height: 100%;
+  background-color: #FFF;
+  /*opacity: 0.8;*/
+  border-right: 2px solid #800000;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.collapseExpandLayerList {
+  position: absolute;
+  top: 70px;
+  right: 0px;
+  background-repeat: no-repeat;
+  background-position: center;
+  /*background-color: #FFF;
+  border-right: 2px solid #800000;
+  border-top: 2px solid #800000;
+  border-bottom: 2px solid #800000;
+  border-radius: 2px;*/
+  width: 25px;
+  height: 25px;
+  display: inline-block;
+  cursor: pointer;
+  z-index: 10;
+}
+
+/*.collapseExpandLayerList {
+    position: absolute;
+    top: 65px;
+    right: 25px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: #FFF;
+    border-right: 2px solid #800000;
+    border-top: 2px solid #800000;
+    border-bottom: 2px solid #800000;
+    border-radius: 2px;
+    width: 25px;
+    height: 25px;
+    display: inline-block;
+    cursor: pointer;
+    z-index: 10;
+}*/
+
+#collapseLayerList {
+  background-image: url("../img/arrowGreyLeft.png");
+}
+
+#expandLayerList {
+  display: none;
+  background-image: url("../img/arrowGreyRight.png");
+}
+
+#layerSearchSection {
+  top: 20px;
+  left: 10px;
+  position: absolute;
+  width: 320px;
+  border: 1px solid #800000;
+	border-radius: 4px;
+}
+
+.layerSearchInput {
+	width: 270px;
+	font-size: 16px;
+  background-color: #FFF !important;
+	padding: 5px;
+	border-width: 0;
+  margin:3px;
+}
+
+.layerSearchInput:hover {
+  background-color: #FFF;
+}
+
+/*#layerSearchButton {
+  background-image: url("../img/search25.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 25px;
+  height: 25px;
+  float: right;
+  margin-top: 8px;
+  cursor:pointer;
+}*/
+
+#layerListSection {
+  top: 80px;
+  left: 10px;
+  position: absolute;
+  height: 85%;
+  width: 320px;
+  font-size: 12px;
+  padding: 5px 0px;
+}
+.layerListTree {
+  position: relative;
+  max-height: 90%;
+  overflow: auto;
+}
+
+.layerListButton {
+  cursor: pointer;
+  margin-top: 10px;
+  margin-right: 20px;
+  display: inline-block;
+  float: right;
+  text-decoration: underline;
+  color: #800000;
+  font-size: 14px;
+}
+
+.layerListButton:hover {
+  font-weight: bold;
+}
+#hideAllButton {
+  margin-right: 30px;
+}
+
+#collapseAllButton {
+
+}
+
+.claro .dijitTreeRowSelected {
+  background-color: #EBEDEF;
+  border-color: #B73C2B;
+}
+
+.claro .dijitTreeRowHover {
+  background-color: #EBEDEF;
+  border-color: #B73C2B;
+}
+
+.dijitTreeContent {
+    white-space: normal;
+}
+
+.dijitTreeRow {
+    white-space: normal;
+}
+
+.dijitTreeLabel {
+    margin: 0;
+    vertical-align: middle;
+    display: inline-block;
+    /*width: 200px;*/
+}
+
+.selectedTreeNode {
+  background-color: #F00;
+}
+
+.metadataButtonActive {
+  background-image: url("../img/documentIcon16.png");
+  background-repeat: no-repeat;
+  background-position: left;
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.metadataButtonInactive {
+  background-image: url("../img/documentIconInactive16.png");
+  background-repeat: no-repeat;
+  background-position: left;
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+}
+
+.topGroupButton {
+  background-image: url("../img/downarrow.png");
+  background-repeat: no-repeat;
+  background-position: left;
+  width: 11px;
+  height: 11px;
+  display: inline-block;
+  float: right;
+  margin-right: 5px;
+  margin-top: 3px;
+  cursor: pointer;
+}
+
+.layerTopGroupMenu {
+  width: 160px;
+  height: 100px;
+  border: 1px solid #800000;
+  background-color: #fff;
+  position: absolute;
+  padding: 5px;
+  display: none;
+  z-index: 11;
+  font-size: 12px;
+}
+
+.layerTopGroupMenuContainer {
+  width: 80%;
+  margin:auto;
+}
+
+.layerTopGroupMenuMoveUp {
+  width: 80%;
+  margin:auto;
+  background-image: url("../img/layerUp16.png");
+  background-repeat: no-repeat;
+  background-position: right;
+  cursor: pointer;
+}
+
+.layerTopGroupMenuMoveDown {
+  width: 80%;
+  margin:auto;
+  background-image: url("../img/layerDown16.png");
+  background-repeat: no-repeat;
+  background-position: right;
+  cursor: pointer;
+}
+
+.layerTopGroupMenuLabels {
+  /*font-size: 12px;*/
+}
+
+.claro .dijitRuleLabelsContainer {
+  color: #444;
+}
+.claro .dijitTooltipContainer {
+    /*background: #b8b5b5;*/
+    color: #B73C2B;
+    font-size: 11px;
+    padding: 5px;
+ }
+
+.legendContainerDiv {
+  display: none;
+}
+
+.legendRow {
+  margin: 0;
+  margin-bottom: 5px;
+  padding: 0;
+  vertical-align: middle;
+  min-height: 20px;
+  background-repeat: no-repeat;
+  background-position: left;
+  font-size: 11px;
+}
+
+.legendImage {
+  background-repeat: no-repeat;
+  background-position: left;
+  margin-left: 20px;
+  display: inline-block;
+}
+
+.legendLabel {
+  margin-left: 4px;
+  display: inline-block;
+  vertical-align: middle;
+  line-height: normal;
+  font-size: 11px;
+}
+
+.dijitComboBoxMenu .dijitMenuItem {
+ font-size: 12px;
+}
+
+/* Coords widget */
+
+#coordsContainer {
+  position: absolute;
+  bottom:10px;
+  right: 200px;
+}
+
+.coordsWidget {
+  color: #656565;
+  font-size: 10px;
+}
+
+/* Scale widget */
+
+#scaleContainer {
+  position: absolute;
+  bottom: 10px;
+  right: 90px;
+}
+
+.scaleWidget {
+  color: #656565;
+  font-size: 12px;
+}
+
+/* Legend widget */
+
+#legendID {
+  margin: 10px;
+  font-size: 12px;
+}
+
+.legendSection {
+  margin-bottom: 10px;
+}
+
+/* WMS widget */
+
+#wmsInputSection {
+  margin: 10px;
+  font-size: 12px;
+}
+
+#wmsSelect {
+  font-size: 12px;
+  /*background-color: #FFF !important;*/
+	padding: 5px;
+  border: 1px solid #800000;
+	margin-top: 3px;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+#wmsSearchInput {
+	width: 96%;
+	font-size: 12px;
+	padding: 5px;
+  border: 1px solid #800000;
+	border-radius: 4px;
+  margin-top: 3px;
+  float:right;
+}
+
+#wmsSearchButton {
+  float: right;
+  color:green;
+  font-size: 14px;
+  background-color: transparent;
+  line-height: 27px;
+  min-width: 80px;
+  vertical-align: middle;
+  border: 1px dashed #800000;
+  border-radius: 5px;
+  margin-left: 10px;
+  margin-top: 10px;
+  cursor:pointer;
+}
+
+#wmsSearchButton:hover {
+  border: 1px solid #800000;
+  font-weight: bold;
+}
+
+#wmsRequestMessage {
+  color: red;
+}
+
+.wmsToolButton {
+  float: right;
+  color: #800000;
+  cursor: pointer;
+  font-size: 14px;
+  text-decoration: underline;
+}
+
+.wmsToolButton:hover {
+  font-weight: bold;
+}
+#wmsClearLayerList {
+  margin-right: 10px;
+  display: none;
+}
+
+#wmsLayerListSection {
+  display: none;
+  margin: 10px;
+  font-size: 12px;
+}
+.wmsItem {
+  clear: both;
+  margin-bottom: 10px
+}
+
+.wmsLayerContainer {
+  border-bottom: 1px dotted #cccccc;
+  width: 98%;
+  padding-top: 5px;
+}
+
+.wmsLayerTitle {
+  width: 70%;
+  word-wrap: break-word;
+  display: inline-block;
+}
+
+.wmsLayerCheckbox {
+  float: right;
+}
+
+.wmsLayerLegend {
+  clear:both;
+}
+
+.wmsLayerAddButton {
+  cursor: pointer;
+  float: right;
+  background-color: #d9dde0;
+  line-height: 16px;
+  border: 0px dashed #d9dde0;
+  border-radius: 3px;
+  vertical-align: middle;
+  font-size: 10px;
+  color:green;
+}
+
+.wmsLayerAddButton:hover {
+  font-weight: bold;
+}

@@ -1,0 +1,4031 @@
+	{
+	  "proxyUrl": "proxy/proxy.ashx",
+	  "map": {
+		"center": {"x": 2290596.795329124, "y": 8263216.845732588},
+		"zoom": 5,
+		"lods": [
+		  {"level" : 0, "resolution" : 2645.8386250105837, "scale" : 10000000},
+		  {"level" : 1, "resolution" : 1322.9193125052918, "scale" : 5000000},
+		  {"level" : 2, "resolution" : 529.1677250021168, "scale" : 2000000},
+		  {"level" : 3, "resolution" : 264.5838625010584, "scale" : 1000000},
+		  {"level" : 4, "resolution" : 132.2919312505292, "scale" : 500000},
+		  {"level" : 5, "resolution" : 66.1459656252646, "scale" : 250000},
+		  {"level" : 6, "resolution" : 26.458386250105836, "scale" : 100000},
+		  {"level" : 7, "resolution" : 13.229193125052918, "scale" : 50000}
+		],
+		"basemap": "http://62.236.121.188/arcgis104/rest/services/MADS/Basemap_TOPO/MapServer",
+
+		"layers": [
+			{
+			"label": "Administrative borders",
+				"id": "layer_1",
+					"isGroup": true,
+			"layers": [
+			  {
+				"label": "National",
+				"id": "layer_2",
+							"isGroup": true,
+				"layers": [
+				  {
+					"label": "Denmark",
+					"id": "layer_3",
+									"isGroup": false,
+					"wms": {
+										"servicename": "hy_inspire",
+										"version": "1.1.1",
+										"login": "helcom",
+										"password": "KarttaPalvelu4!",
+					  "url": "https://services.kortforsyningen.dk/service",
+					  "layerName": "HY.PhysicalWaters.LandWaterBoundary"
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": "http://www.geodata-info.dk/Portal/ShowMetadata.aspx?id=04d98579-f75a-4235-a5e5-46a55a0184da"
+				  },
+				  {
+					"label": "Estonia",
+					"id": "layer_4",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "http://inspire.maaamet.ee/arcgis/rest/services/public/au/MapServer/exts/InspireView/service",
+					  "layerName": "AU.AdministrativeUnit"
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Finland",
+					"id": "layer_5",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "https://inspire-wms.maanmittauslaitos.fi/inspire-wms/AU/ows",
+					  "layerName": "AU.AdministrativeUnit"
+					},
+					"wfs": {
+					  "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/au",
+					  "layerName": "au:AdministrativeUnit"
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Germany",
+					"id": "layer_6",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+										"url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Latvia",
+					"id": "layer_7",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Lithuania",
+					"id": "layer_8",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Poland",
+					"id": "layer_9",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "http://mapy.geoportal.gov.pl/wss/service/INSPIRE_AU/guest",
+					  "layerName": "AU.AdministrativeUnit"
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Russia",
+					"id": "layer_10",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Sweden",
+					"id": "layer_11",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "HELCOM",
+					"id": "layer_12",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  }
+				]
+			  },
+			  {
+				"label": "Regional",
+				"id": "layer_13",
+							"isGroup": true,
+				"layers": [
+				  {
+					"label": "Denmark",
+					"id": "layer_14",
+									"isGroup": false,
+					"wms": {
+										"servicename": "dagi",
+										"version": "1.1.1",
+										"login": "helcom",
+										"password": "KarttaPalvelu4!",
+					  "url": "https://services.kortforsyningen.dk/service",
+					  "layerName": "region"
+					},
+					"wfs": {
+					  "url": "https://services.kortforsyningen.dk/service",
+					  "layerName": "dagi_gml2"
+					},
+					"metadata": "http://www.geodata-info.dk/Portal/ShowMetadata.aspx?id=f8fa213b-20a7-4912-8a40-7867b98d4df0"
+				  },
+				  {
+					"label": "Estonia",
+					"id": "layer_15",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "http://inspire.maaamet.ee/arcgis/rest/services/public/au/MapServer/exts/InspireView/service",
+					  "layerName": "AU.AdministrativeBoundary"
+					},
+					"wfs": {
+					  "url": "http://inspire.maaamet.ee/arcgis/rest/services/public/au/MapServer/exts/InspireFeatureDownload/service",
+					  "layerName": "AdministrativeUnit"
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Finland",
+					"id": "layer_16",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "https://inspire-wms.maanmittauslaitos.fi/inspire-wms/AU/ows",
+					  "layerName": "AU.AdministrativeBoundary"
+					},
+					"wfs": {
+					  "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/au",
+					  "layerName": "au:AdministrativeUnit"
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Germany",
+					"id": "layer_17",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Latvia",
+					"id": "layer_18",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Lithuania",
+					"id": "layer_19",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Poland",
+					"id": "layer_20",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "http://mapy.geoportal.gov.pl/wss/service/INSPIRE_AU/guest",
+					  "layerName": "AU.AdministrativeUnit"
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Russia",
+					"id": "layer_21",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Sweden",
+					"id": "layer_22",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "HELCOM",
+					"id": "layer_23",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  }
+				]
+			  },
+			  {
+				"label": "Territorial Water",
+				"id": "layer_24",
+							"isGroup": true,
+				"layers": [
+				  {
+					"label": "Denmark",
+					"id": "layer_25",
+									"isGroup": false,
+					"wms": {
+										"servicename": "danske_stednavne",
+										"version": "1.1.1",
+										"login": "helcom",
+										"password": "KarttaPalvelu4!",
+					  "url": "https://services.kortforsyningen.dk/service",
+					  "layerName": "farvand"
+					},
+					"wfs": {
+					  "url": "https://services.kortforsyningen.dk/service",
+					  "layerName": "STEDNAVNE_BEARBEJDET_GML3SFP"
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Estonia",
+					"id": "layer_26",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "http://inspire.maaamet.ee/arcgis/rest/services/public/au/MapServer/exts/InspireView/service",
+					  "layerName": "AU.TerritorialSea"
+					},
+					"wfs": {
+					  "url": "http://inspire.maaamet.ee/arcgis/rest/services/public/au/MapServer/exts/InspireFeatureDownload/service",
+					  "layerName": "MaritimeBoundary"
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Finland",
+					"id": "layer_27",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "https://inspire-wms.maanmittauslaitos.fi/inspire-wms/AU/ows",
+					  "layerName": "AU.TerritorialSea"
+					},
+					"wfs": {
+					  "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/au",
+					  "layerName": "The Administrative Units Theme : Maritime Boundary"
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Germany",
+					"id": "layer_28",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "https://www.geoseaportal.de/wss/service/Seevermessung_DeutscheSeegrenzen/guest",
+					  "layerName": "MaritimeBoundaryTerritorialSea"
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Latvia",
+					"id": "layer_29",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Lithuania",
+					"id": "layer_30",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Poland",
+					"id": "layer_31",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Russia",
+					"id": "layer_32",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Sweden",
+					"id": "layer_33",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "HELCOM",
+					"id": "layer_34",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  }
+				]
+			  },
+			  {
+				"label": "EEZ",
+				"id": "layer_35",
+							"isGroup": true,
+				"layers": [
+				  {
+					"label": "Denmark",
+					"id": "layer_36",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "http://data.geus.dk/geusmap/ows/25832.jsp",
+					  "layerName": "dkterritorialgraense"
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Estonia",
+					"id": "layer_37",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "http://inspire.maaamet.ee/arcgis/rest/services/public/au/MapServer/exts/InspireView/service",
+					  "layerName": "AU.ExclusiveEconomicZone"
+					},
+					"wfs": {
+					  "url": "http://inspire.maaamet.ee/arcgis/rest/services/public/au/MapServer/exts/InspireFeatureDownload/service",
+					  "layerName": "MaritimeBoundary"
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Finland",
+					"id": "layer_38",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": " https://inspire-wms.maanmittauslaitos.fi/inspire-wms/AU/ows",
+					  "layerName": "AU.ExclusiveEconomicZone"
+					},
+					"wfs": {
+					  "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/au",
+					  "layerName": "The Administrative Units Theme : Maritime Zone"
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Germany",
+					"id": "layer_39",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "https://www.geoseaportal.de/wss/service/Seevermessung_DeutscheSeegrenzen/guest",
+					  "layerName": "MaritimeBoundaryAWZ"
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Latvia",
+					"id": "layer_40",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Lithuania",
+					"id": "layer_41",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Poland",
+					"id": "layer_42",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Russia",
+					"id": "layer_43",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Sweden",
+					"id": "layer_44",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "HELCOM",
+					"id": "layer_45",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  }
+				]
+			  }
+			]
+		  },
+			{
+			"label": "Installations and infrastructures",
+			"id": "layer_46",
+					"isGroup": true,
+			"layers": [
+			  {
+				"label": "Offshore wind farms",
+				"id": "layer_47",
+							"isGroup": true,
+				"layers": [
+				  {
+					"label": "Denmark",
+					"id": "layer_48",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Estonia",
+					"id": "layer_49",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Finland",
+					"id": "layer_50",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Germany",
+					"id": "layer_51",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "https://www.geoseaportal.de/wss/service/CONTIS_Facilities/guest",
+					  "layerName": "Offshore_Windfarms"
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Latvia",
+					"id": "layer_52",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Lithuania",
+					"id": "layer_53",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Poland",
+					"id": "layer_54",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Russia",
+					"id": "layer_55",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Sweden",
+					"id": "layer_56",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "HELCOM",
+					"id": "layer_57",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  }
+				]
+			  }
+			]
+		  },
+		  {
+			"label": "Maritime transport routes and traffic flows",
+			"id": "layer_58",
+					"isGroup": true,
+			"layers": [
+			  {
+				"label": "IMO routes",
+				"id": "layer_59",
+							"isGroup": true,
+				"layers": [
+				  {
+					"label": "Denmark",
+					"id": "layer_60",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Estonia",
+					"id": "layer_61",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Finland",
+					"id": "layer_62",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "https://extranet.liikennevirasto.fi/inspirepalvelu/TransportNetworks/wms",
+					  "layerName": "TN.WaterTransportNetwork.TrafficSeparationSchemeSeparator"
+					},
+					"wfs": {
+					  "url": "https://extranet.liikennevirasto.fi/inspirepalvelu/TransportNetworks/wfs?request=getcapabilities",
+					  "layerName": "TransportNetworks:TN.WaterTransportNetwork.TrafficSeparationSchemeSeparator"
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Germany",
+					"id": "layer_63",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "https://www.geoseaportal.de/wss/service/CONTIS_Administration/guest",
+					  "layerName": "6"
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Latvia",
+					"id": "layer_64",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Lithuania",
+					"id": "layer_65",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Poland",
+					"id": "layer_66",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Russia",
+					"id": "layer_67",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Sweden",
+					"id": "layer_68",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "HELCOM",
+					"id": "layer_69",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  }
+				]
+			  },
+			  	{
+				"label": "Dredging",
+				"id": "layer_70",
+							"isGroup": true,
+				"layers": [
+				  {
+					"label": "Denmark",
+					"id": "layer_71",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "http://data.geus.dk/geusmap/ows/25832.jsp",
+					  "layerName": "marta_resource"
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Estonia",
+					"id": "layer_72",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Finland",
+					"id": "layer_73",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "https://extranet.liikennevirasto.fi/inspirepalvelu/avoin/wms",
+					  "layerName": "ruoppausalueet"
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Germany",
+					"id": "layer_74",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Latvia",
+					"id": "layer_75",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Lithuania",
+					"id": "layer_76",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Poland",
+					"id": "layer_77",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Russia",
+					"id": "layer_78",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Sweden",
+					"id": "layer_79",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "HELCOM",
+					"id": "layer_80",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  }
+				]
+			  },
+			  {
+				"label": "Ports",
+				"id": "layer_81",
+							"isGroup": true,
+				"layers": [
+				  {
+					"label": "Denmark",
+					"id": "layer_82",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Estonia",
+					"id": "layer_83",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Finland",
+					"id": "layer_84",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "https://extranet.liikennevirasto.fi/inspirepalvelu/TransportNetworks/wms",
+					  "layerName": "TN.WaterTransportNetwork.PortNode"
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Germany",
+					"id": "layer_85",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Latvia",
+					"id": "layer_86",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Lithuania",
+					"id": "layer_87",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Poland",
+					"id": "layer_88",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Russia",
+					"id": "layer_89",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Sweden",
+					"id": "layer_90",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "HELCOM",
+					"id": "layer_91",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  }
+				]
+			  },
+			  {
+				"label": "Fairways",
+				"id": "layer_92",
+							"isGroup": true,
+				"layers": [
+				  {
+					"label": "Denmark",
+					"id": "layer_93",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Estonia",
+					"id": "layer_94",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "http://inspire.maaamet.ee/arcgis/rest/services/public/tn_com/MapServer/exts/InspireView/service",
+					  "layerName": "TN.CommonTransportElements.TransportLink"
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Finland",
+					"id": "layer_95",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "https://extranet.liikennevirasto.fi/inspirepalvelu/TransportNetworks/wms",
+					  "layerName": "TN.WaterTransportNetwork.FairwayArea"
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Germany",
+					"id": "layer_96",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Latvia",
+					"id": "layer_97",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Lithuania",
+					"id": "layer_98",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Poland",
+					"id": "layer_99",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Russia",
+					"id": "layer_100",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Sweden",
+					"id": "layer_101",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "HELCOM",
+					"id": "layer_102",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  }
+				]
+			  },
+			  {
+				"label": "Shipping density maps",
+				"id": "layer_103",
+							"isGroup": true,
+				"layers": [
+				  {
+					"label": "Denmark",
+					"id": "layer_104",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Estonia",
+					"id": "layer_105",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Finland",
+					"id": "layer_106",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Germany",
+					"id": "layer_107",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Latvia",
+					"id": "layer_108",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Lithuania",
+					"id": "layer_109",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Poland",
+					"id": "layer_110",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Russia",
+					"id": "layer_111",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Sweden",
+					"id": "layer_112",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "HELCOM",
+					"id": "layer_113",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  }
+				]
+			  }
+			]
+		  },
+		  {
+			"label": "Nature",
+			"id": "layer_114",
+					"isGroup": true,
+			"layers": [
+			  {
+				"label": "Natura2000",
+				"id": "layer_115",
+							"isGroup": true,
+				"layers": [
+				  {
+					"label": "Denmark",
+					"id": "layer_116",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "http://arealinformation.miljoeportal.dk/gis/services/public/MapServer/WMSServer",
+					  "layerName": "HABITAT_OMR"
+					},
+					"wfs": {
+					  "url": "http://arealinformation.miljoeportal.dk/gis/services/public/MapServer/WFSServer",
+					  "layerName": "HABITAT_OMR"
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Estonia",
+					"id": "layer_117",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Finland",
+					"id": "layer_118",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.3.0",
+										"login": "",
+										"password": "",
+					  "url": "http://paikkatieto.ymparisto.fi/arcgis/services/INSPIRE/SYKE_SuojellutAlueet/MapServer/WmsServer",
+					  "layerName": "PS.ProtectedSitesSpecialAreaOfConservation"
+					},
+					"wfs": {
+					  "url": "http://geoserver.ymparisto.fi:80/geoserver/wfs",
+					  "layerName": "ProtectedSites.Natura2000.SpecialAreaOfConservation"
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Germany",
+					"id": "layer_119",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Latvia",
+					"id": "layer_120",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Lithuania",
+					"id": "layer_121",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Poland",
+					"id": "layer_122",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "http://sdi.gdos.gov.pl/wms",
+					  "layerName": "GDOS:SpecjalneObszaryOchrony"
+					},
+					"wfs": {
+					  "url": "http://sdi.gdos.gov.pl/wfs",
+					  "layerName": "GDOS:ObszarySpecjalnejOchrony"
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Russia",
+					"id": "layer_123",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Sweden",
+					"id": "layer_124",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "http://gis-services.metria.se/arcgis/rest/services/nv/InspireNV_N2K/MapServer/exts/InspireView/service",
+					  "layerName": "PS.N2K.Habitatdirektivet"
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "HELCOM",
+					"id": "layer_125",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  }
+				]
+			  },
+			  {
+				"label": "Marine National Parks",
+				"id": "layer_126",
+							"isGroup": true,
+				"layers": [
+				  {
+					"label": "Denmark",
+					"id": "layer_127",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Estonia",
+					"id": "layer_128",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Finland",
+					"id": "layer_129",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Germany",
+					"id": "layer_130",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Latvia",
+					"id": "layer_131",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Lithuania",
+					"id": "layer_132",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Poland",
+					"id": "layer_133",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "http://sdi.gdos.gov.pl/wms",
+					  "layerName": "GDOS:ParkiNarodowe"
+					},
+					"wfs": {
+					  "url": "http://sdi.gdos.gov.pl/wfs",
+					  "layerName": "GDOS:ObszarySpecjalnejOchrony"
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Russia",
+					"id": "layer_134",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Sweden",
+					"id": "layer_135",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "HELCOM",
+					"id": "layer_136",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  }
+				]
+			  }
+			]
+		  },
+		  {
+			"label": "Military training areas",
+			"id": "layer_137",
+					"isGroup": true,
+			"layers": [
+			  {
+				"label": "Military training areas",
+				"id": "layer_138",
+							"isGroup": true,
+				"layers": [
+				  {
+					"label": "Denmark",
+					"id": "layer_139",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Estonia",
+					"id": "layer_140",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Finland",
+					"id": "layer_141",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Germany",
+					"id": "layer_142",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "https://www.geoseaportal.de/wss/service/CONTIS_Administration/guest",
+					  "layerName": "2"
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Latvia",
+					"id": "layer_143",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Lithuania",
+					"id": "layer_144",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Poland",
+					"id": "layer_145",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Russia",
+					"id": "layer_146",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Sweden",
+					"id": "layer_147",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "HELCOM",
+					"id": "layer_148",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  }
+				]
+			  }
+			]
+		  },
+		  {
+			"label": "Raw material extraction",
+			"id": "layer_149",
+					"isGroup": true,
+			"layers": [
+			  {
+				"label": "Sand and gravel extraction areas",
+				"id": "layer_150",
+							"isGroup": true,
+				"layers": [
+				  {
+					"label": "Denmark",
+					"id": "layer_151",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "http://data.geus.dk/geusmap/ows/25832.jsp",
+					  "layerName": "marta_resource"
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Estonia",
+					"id": "layer_152",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "http://inspire.maaamet.ee/arcgis/rest/services/public/mr/MapServer/exts/InspireView/service",
+					  "layerName": "mrMineralOccurrenceS"
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Finland",
+					"id": "layer_153",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Germany",
+					"id": "layer_154",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "https://www.geoseaportal.de/wss/service/CONTIS_Administration/guest",
+					  "layerName": "3"
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Latvia",
+					"id": "layer_155",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Lithuania",
+					"id": "layer_156",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Poland",
+					"id": "layer_157",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Russia",
+					"id": "layer_158",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Sweden",
+					"id": "layer_159",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "HELCOM",
+					"id": "layer_160",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  }
+				]
+			  },
+						{
+				"label": "Oil and gas extraction areas",
+				"id": "layer_161",
+							"isGroup": true,
+				"layers": [
+				  {
+					"label": "Denmark",
+					"id": "layer_162",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "http://data.geus.dk/geusmap/ows/25832.jsp",
+					  "layerName": "samba_fields"
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Estonia",
+					"id": "layer_163",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "http://inspire.maaamet.ee/arcgis/rest/services/public/mr/MapServer/exts/InspireView/service",
+					  "layerName": "mrMineralOccurrenceS"
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Finland",
+					"id": "layer_164",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Germany",
+					"id": "layer_165",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Latvia",
+					"id": "layer_166",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Lithuania",
+					"id": "layer_167",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Poland",
+					"id": "layer_168",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Russia",
+					"id": "layer_169",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Sweden",
+					"id": "layer_170",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "HELCOM",
+					"id": "layer_171",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  }
+				]
+			  }
+			]
+		  },
+			{
+			"label": "Scientific research",
+			"id": "layer_172",
+					"isGroup": true,
+			"layers": [
+			  {
+				"label": "Measuring stations / networks",
+				"id": "layer_173",
+							"isGroup": true,
+				"layers": [
+				  {
+					"label": "Denmark",
+					"id": "layer_174",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Estonia",
+					"id": "layer_175",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Finland",
+					"id": "layer_176",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Germany",
+					"id": "layer_177",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "https://www.geoseaportal.de/wss/service/MARNET_Marnet/guest",
+					  "layerName": "29"
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Latvia",
+					"id": "layer_178",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Lithuania",
+					"id": "layer_179",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Poland",
+					"id": "layer_180",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Russia",
+					"id": "layer_181",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Sweden",
+					"id": "layer_182",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "HELCOM",
+					"id": "layer_183",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  }
+				]
+			  }
+			]
+		  },
+		  {
+			"label": "Cables and pipelines",
+			"id": "layer_184",
+					"isGroup": true,
+			"layers": [
+			  {
+				"label": "Telecommunication/data cables",
+				"id": "layer_185",
+							"isGroup": true,
+				"layers": [
+				  {
+					"label": "Denmark",
+					"id": "layer_186",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Estonia",
+					"id": "layer_187",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Finland",
+					"id": "layer_188",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "https://extranet.liikennevirasto.fi/inspirepalvelu/avoin/wms",
+					  "layerName": "johdot_ja_linjat_v"
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Germany",
+					"id": "layer_189",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "https://www.geoseaportal.de/wss/service/CONTIS_Facilities/guest",
+					  "layerName": "Data_Cables"
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Latvia",
+					"id": "layer_190",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Lithuania",
+					"id": "layer_191",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Poland",
+					"id": "layer_192",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Russia",
+					"id": "layer_193",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Sweden",
+					"id": "layer_194",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "HELCOM",
+					"id": "layer_195",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  }
+				]
+			  },
+			  {
+				"label": "High voltage cables",
+				"id": "layer_196",
+							"isGroup": true,
+				"layers": [
+				  {
+					"label": "Denmark",
+					"id": "layer_142",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "https://arcgis.energinet.dk/arcgis/services/Inspire/el_inspire/MapServer/WMSServer",
+					  "layerName": "hovedkort_line_tab"
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Estonia",
+					"id": "layer_197",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "http://inspire.maaamet.ee/arcgis/rest/services/public/us/MapServer/exts/InspireView/service",
+					  "layerName": "usElectricityCableL"
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Finland",
+					"id": "layer_198",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "https://extranet.liikennevirasto.fi/inspirepalvelu/avoin/wms",
+					  "layerName": "johdot_ja_linjat_v"
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Germany",
+					"id": "layer_199",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "https://www.geoseaportal.de/wss/service/CONTIS_Facilities/guest",
+					  "layerName": "High_Voltage_Cables"
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Latvia",
+					"id": "layer_200",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Lithuania",
+					"id": "layer_201",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Poland",
+					"id": "layer_202",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Russia",
+					"id": "layer_203",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Sweden",
+					"id": "layer_204",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "HELCOM",
+					"id": "layer_205",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  }
+				]
+			  },
+			  {
+				"label": "Pipelines",
+				"id": "layer_206",
+							"isGroup": true,
+				"layers": [
+				  {
+					"label": "Denmark",
+					"id": "layer_207",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "http://data.geus.dk/geusmap/ows/25832.jsp",
+					  "layerName": "pipelines_simplified"
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Estonia",
+					"id": "layer_208",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Finland",
+					"id": "layer_209",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "https://extranet.liikennevirasto.fi/inspirepalvelu/avoin/wms",
+					  "layerName": "johdot_ja_linjat_v"
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Germany",
+					"id": "layer_210",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "https://www.geoseaportal.de/wss/service/CONTIS_Facilities/guest",
+					  "layerName": "Pipelines"
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Latvia",
+					"id": "layer_211",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Lithuania",
+					"id": "layer_212",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Poland",
+					"id": "layer_213",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Russia",
+					"id": "layer_214",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Sweden",
+					"id": "layer_215",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "HELCOM",
+					"id": "layer_216",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  }
+				]
+			  }
+			]
+		  },
+		  {
+			"label": "Tourism and recreation",
+			"id": "layer_217",
+					"isGroup": true,
+			"layers": [
+			  {
+				"label": "Tourism and recreation areas",
+				"id": "layer_218",
+							"isGroup": true,
+				"layers": [
+				  {
+					"label": "Denmark",
+					"id": "layer_219",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Estonia",
+					"id": "layer_220",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Finland",
+					"id": "layer_221",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Germany",
+					"id": "layer_222",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Latvia",
+					"id": "layer_223",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Lithuania",
+					"id": "layer_224",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Poland",
+					"id": "layer_225",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Russia",
+					"id": "layer_226",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Sweden",
+					"id": "layer_227",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "HELCOM",
+					"id": "layer_228",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  }
+				]
+			  }
+			]
+		  },
+		  {
+			"label": "Cultural heritage",
+			"id": "layer_229",
+					"isGroup": true,
+			"layers": [
+			  {
+				"label": "Underwater cultural heritage",
+				"id": "layer_230",
+							"isGroup": true,
+				"layers": [
+				  {
+					"label": "Denmark",
+					"id": "layer_231",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Estonia",
+					"id": "layer_232",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "http://inspire.maaamet.ee/arcgis/rest/services/public/ps/MapServer/exts/InspireView/service",
+					  "layerName": "PS.ProtectedSitesArcheaological"
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Finland",
+					"id": "layer_233",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "http://kartta.nba.fi/ArcGIS/services/WMS/MVWMSJULK/mapserver/WMSServer",
+					  "layerName": "1"
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Germany",
+					"id": "layer_234",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Latvia",
+					"id": "layer_235",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Lithuania",
+					"id": "layer_236",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Poland",
+					"id": "layer_237",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Russia",
+					"id": "layer_238",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "Sweden",
+					"id": "layer_239",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  },
+				  {
+					"label": "HELCOM",
+					"id": "layer_240",
+									"isGroup": false,
+					"wms": {
+										"servicename": "",
+										"version": "1.1.1",
+										"login": "",
+										"password": "",
+					  "url": "",
+					  "layerName": ""
+					},
+					"wfs": {
+					  "url": "",
+					  "layerName": ""
+					},
+					"metadata": ""
+				  }
+				]
+			  }
+			]
+		  }
+		]
+	  },
+
+	  "widgets": [
+		  {
+			"name": "Add WMS",
+			"url": "widgets/wmsWidget",
+			"icon": "widgets/images/wms_icon25.png"
+		  },
+		  {
+			"name": "Legend",
+			"url": "widgets/legendWidget",
+			"icon": "widgets/images/legend_icon25.png"
+		  }
+	  ]
+	}

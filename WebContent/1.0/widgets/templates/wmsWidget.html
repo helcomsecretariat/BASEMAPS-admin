@@ -1,0 +1,14 @@
+<div>
+  <div id="wmsInputSection" data-dojo-attach-point="wmsInputSection">
+    <div>Select WMS service from the list or type URL</div>
+    <select id="wmsSelect" data-dojo-attach-point="wmsSelect">
+      <option value="" disabled selected>Select WMS service</option>
+    </select>
+    <input id="wmsSearchInput" data-dojo-attach-point="wmsSearchInput">
+    <div class="wmsToolButton" data-dojo-attach-point="wmsSearchButton" data-dojo-attach-event="ondijitclick:checkWmsInput">Connect</div>
+    <!--data-dojo-attach-event="ondijitclick:checkTextBox"-->
+		<div id="wmsRequestMessage" data-dojo-attach-point="wmsRequestMessage"></div>
+  </div>
+  <div class="wmsToolButton" id="wmsClearLayerList" data-dojo-attach-point="wmsClearLayerList" data-dojo-attach-event="ondijitclick:clearWmsLayerList">Clear</div>
+  <div id="wmsLayerListSection" data-dojo-attach-point="wmsLayerListSection"></div>
+</div>

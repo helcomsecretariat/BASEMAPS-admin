@@ -1,0 +1,12 @@
+{
+  "services": [
+    {
+      "name": "BSH WMS CONTIS Facilities",
+      "url": "https://www.geoseaportal.de/wss/service/CONTIS_Facilities/guest"
+    },
+    {
+      "name": "ICES Web Map Service",
+      "url": "http://map.ices.dk/geoserver/wms"
+    }
+  ]
+}
