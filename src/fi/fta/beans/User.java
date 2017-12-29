@@ -11,6 +11,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import fi.fta.beans.ui.UserUI;
+import fi.fta.utils.PasswordUtils;
 
 @Entity
 @Table(name="users")
@@ -54,7 +55,7 @@ public class User extends EmailBean implements Named
 	
 	public User(UserUI ui)
 	{
-		this(ui.getEmail().trim().toLowerCase(), ui.getPassword());
+		this(ui.getEmail().trim().toLowerCase(), PasswordUtils.encode(ui.getPassword()));
 		this.setName(ui.getName());
 		this.setRole(ui.getRole());
 	}
