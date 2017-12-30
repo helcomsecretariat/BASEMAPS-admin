@@ -3,6 +3,8 @@ package fi.fta.beans.ui;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
+import fi.fta.beans.EmailBean;
+
 public class EmailUI extends IdUI
 {
 	
@@ -18,6 +20,12 @@ public class EmailUI extends IdUI
 	
 	public EmailUI()
 	{}
+	
+	public EmailUI(EmailBean bean)
+	{
+		super(bean);
+		this.setEmail(bean.getEmail());
+	}
 	
 	public String getEmail() {
 		return email;

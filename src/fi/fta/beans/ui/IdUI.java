@@ -1,7 +1,8 @@
 package fi.fta.beans.ui;
 
-import fi.fta.beans.Identifiable;
 import java.io.Serializable;
+
+import fi.fta.beans.Identifiable;
 
 public class IdUI implements Serializable, Identifiable<Long>
 {
@@ -16,6 +17,11 @@ public class IdUI implements Serializable, Identifiable<Long>
 	
 	public IdUI()
 	{}
+	
+	public IdUI(Identifiable<Long> bean)
+	{
+		this.setId(bean.getId());
+	}
 	
 	public Long getId() {
 		return id;
