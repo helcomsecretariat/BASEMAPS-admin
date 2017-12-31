@@ -5,6 +5,7 @@ import java.util.List;
 import org.hibernate.HibernateException;
 
 import fi.fta.beans.User;
+import fi.fta.beans.UserRole;
 import fi.fta.beans.ui.UserUI;
 import fi.fta.data.dao.UserDAO;
 
@@ -50,6 +51,11 @@ public class UserManager
 	{
 		List<User> list = dao.getByField("email", email.trim().toLowerCase());
 		return list.isEmpty() ? null : list.get(0);
+	}
+	
+	public List<User> getByRole(UserRole role) throws HibernateException
+	{
+		return dao.getByField("role", role);
 	}
 	
 	public Long add(User user) throws HibernateException

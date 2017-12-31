@@ -23,12 +23,13 @@ import fi.fta.validation.ClassStructureAssessor;
 import fi.fta.validation.ValidationMessage;
 
 @Controller
+@RequestMapping("/categories")
 public class CategoriesController
 {
 	
 	private static Logger logger = Logger.getLogger(CategoriesController.class);
 	
-	@RequestMapping(value = "/categories/root.do", method = RequestMethod.GET)
+	@RequestMapping(value = "/root", method = RequestMethod.GET)
 	@ResponseBody
 	public SimpleResult<List<Category>> getRoot(HttpServletRequest request, HttpServletResponse response)
 	{
@@ -43,7 +44,7 @@ public class CategoriesController
 		}
 	}
 	
-	@RequestMapping(value = "/categories/children/{id}.do", method = RequestMethod.GET)
+	@RequestMapping(value = "/children/{id}", method = RequestMethod.GET)
 	@ResponseBody
 	public SimpleResult<List<Category>> getChildren(
 		@PathVariable("id") Long id, HttpServletRequest request, HttpServletResponse response)
@@ -59,7 +60,7 @@ public class CategoriesController
 		}
 	}
 	
-	@RequestMapping(value = "/categories/add.do", method = RequestMethod.POST)
+	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	@ResponseBody
 	public SimpleResult<Long> add(
 		@RequestBody CategoryUI ui, HttpServletRequest request, HttpServletResponse response)
@@ -81,7 +82,7 @@ public class CategoriesController
 		}
 	}
 	
-	@RequestMapping(value = "/categories/delete/{id}.do", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
 	@ResponseBody
 	public SimpleMessage delete(
 		@PathVariable("id") Long id, HttpServletRequest request, HttpServletResponse response)

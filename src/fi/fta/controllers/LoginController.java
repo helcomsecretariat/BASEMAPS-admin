@@ -27,7 +27,7 @@ public class LoginController
 	
 	private static Logger logger = Logger.getLogger(LoginController.class);
 	
-	@RequestMapping(value = "/login.do", method = RequestMethod.POST)
+	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	@ResponseBody
 	public SimpleResult<UserUI> login(
 		@RequestBody LoginUI ui, HttpServletRequest request, HttpServletResponse response)
@@ -55,7 +55,7 @@ public class LoginController
 		}
 	}
 	
-	@RequestMapping(value = "/logout.do", method = RequestMethod.POST)
+	@RequestMapping(value = "/logout", method = RequestMethod.POST)
 	@ResponseBody
 	public SimpleMessage logout(HttpServletRequest request, HttpServletResponse response)
 	{
