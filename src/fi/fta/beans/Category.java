@@ -8,6 +8,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -30,6 +31,7 @@ public class Category extends CategoryBean
 	protected Category parent;
 	
 	@OneToMany(mappedBy = "parent", cascade={CascadeType.PERSIST, CascadeType.MERGE}, fetch=FetchType.EAGER)
+	@OrderBy("position")
 	protected Set<Category> children;
 	
 	

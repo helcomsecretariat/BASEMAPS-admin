@@ -78,6 +78,11 @@ public class CategoryManager
 		return dao.update(category);
 	}
 	
+	public boolean position(Long id, Integer position) throws HibernateException
+	{
+		return dao.position(id, position);
+	}
+	
 	public boolean delete(Long id) throws HibernateException
 	{
 		return dao.delete(id) > 0;

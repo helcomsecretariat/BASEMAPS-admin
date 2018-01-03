@@ -82,6 +82,26 @@ public class CategoriesController
 		}
 	}
 	
+	@RequestMapping(value = "/position/{id}/{position}", method = RequestMethod.POST)
+	@ResponseBody
+	public SimpleMessage position(
+		@PathVariable("id") Long id, @PathVariable("position") Integer position, HttpServletRequest request, HttpServletResponse response)
+	{
+		try
+		{
+			if (id != null)
+			{
+				CategoryManager.getInstance().position(id, position);
+			}
+			return SimpleMessage.newSuccess();
+		}
+		catch (Exception ex)
+		{
+			logger.error("CategoriesController.position", ex);
+			return SimpleMessage.newFailure(ResponseMessage.Code.ERROR_GENERAL, ex.getMessage());
+		}
+	}
+	
 	@RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
 	@ResponseBody
 	public SimpleMessage delete(
