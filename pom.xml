@@ -66,7 +66,7 @@
 		  <name>CV.lt repository</name>
 		  <url>http://172.10.10.15:8181/artifactory/cv-internal</url>
 		</repository -->
-
+		
         <repository>
             <id>jboss.repository.releases.public</id>
             <name>JBoss Repo Public</name>
@@ -82,6 +82,7 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
+        
         <!-- Ibiblio No 2 repository -->
         <repository>
             <id>ibiblio2</id>
@@ -90,6 +91,12 @@
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
+        </repository>
+		
+		<repository>
+			<id>osg-geo</id>
+            <name>OSGeo Repository</name>
+            <url>http://download.osgeo.org/webdav/geotools/</url>
         </repository>
 		
     </repositories>
@@ -866,7 +873,14 @@
 		</dependency>
 
 		<!-- Manual added -->
-		
+		<!-- https://mvnrepository.com/artifact/org.geotools/gt-wms -->
+		<dependency>
+		    <groupId>org.geotools</groupId>
+		    <artifactId>gt-wms</artifactId>
+		    <version>${gt-wms.version}</version>
+		    <scope>compile</scope>
+		</dependency>
+				
     </dependencies>
     
 	<properties>
@@ -905,6 +919,8 @@
 		<hibernate.jpa.version>1.0.0.Final</hibernate.jpa.version>
 		<hibernate.version>5.2.12.Final</hibernate.version>
 		<hibernate-validator.version>5.4.1.Final</hibernate-validator.version>
+		
+		<gt-wms.version>18.1</gt-wms.version>
 		
     </properties>
     

@@ -8,7 +8,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import fi.fta.beans.ui.CategoryUI;
+import fi.fta.beans.ui.WMSUI;
 
 @Entity
 @Table(name="wmses")
@@ -42,9 +42,15 @@ public class WMS extends CategoryBean implements Named
 	public WMS()
 	{}
 	
-	public WMS(CategoryUI ui)
+	public WMS(WMSUI ui)
 	{
 		super(ui);
+		this.setName(ui.getName());
+		this.setUrl(ui.getUrl());
+		this.setMetaDataUrl(ui.getMetaDataUrl());
+		this.setView(ui.getView());
+		this.setDownload(ui.getDownload());
+		this.setCatalogueMetaId(ui.getCatalogueMetaId());
 	}
 	
 	public String getName() {

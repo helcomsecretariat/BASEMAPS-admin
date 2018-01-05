@@ -13,7 +13,13 @@ public class HibernateUtil
 	
 	public static void create() throws HibernateException
 	{
-		sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
+		synchronized (HibernateUtil.class)
+		{
+			if (sessionFactory == null)
+			{
+				sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
+			}
+		}
 	}
 	
 	public static void close() throws HibernateException
@@ -26,6 +32,10 @@ public class HibernateUtil
 	
 	public static SessionFactory getSessionFactory()
 	{
+		if (sessionFactory == null)
+		{
+			HibernateUtil.create();
+		}
 		return sessionFactory;
 	}
 	

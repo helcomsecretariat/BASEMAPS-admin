@@ -9,10 +9,8 @@ import fi.fta.beans.Category;
 import fi.fta.beans.ui.CategoryUI;
 import fi.fta.data.dao.CategoryDAO;
 
-public class CategoryManager
+public class CategoryManager extends CategoryBeanManager<Category, CategoryUI, CategoryDAO>
 {
-	
-	protected CategoryDAO dao;
 	
 	protected static CategoryManager instance;
 	
@@ -33,13 +31,7 @@ public class CategoryManager
 	
 	protected CategoryManager()
 	{
-		dao = new CategoryDAO();
-	}
-	
-	
-	public Category get(Long id) throws HibernateException
-	{
-		return dao.get(id);
+		super(new CategoryDAO());
 	}
 	
 	public List<Category> getRoot() throws HibernateException
@@ -58,11 +50,6 @@ public class CategoryManager
 		return ret;
 	}
 	
-	public Long add(Category category) throws HibernateException
-	{
-		return dao.add(category).getId();
-	}
-	
 	public Long add(CategoryUI ui) throws HibernateException
 	{
 		Category c = new Category(ui);
@@ -71,21 +58,6 @@ public class CategoryManager
 			c.setParent(dao.get(ui.getParent()));
 		}
 		return this.add(c);
-	}
-	
-	public Category update(Category category) throws HibernateException
-	{
-		return dao.update(category);
-	}
-	
-	public boolean position(Long id, Integer position) throws HibernateException
-	{
-		return dao.position(id, position);
-	}
-	
-	public boolean delete(Long id) throws HibernateException
-	{
-		return dao.delete(id) > 0;
 	}
 	
 }
