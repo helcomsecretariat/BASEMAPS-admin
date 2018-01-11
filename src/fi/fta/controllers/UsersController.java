@@ -21,6 +21,7 @@ import fi.fta.beans.response.SimpleMessage;
 import fi.fta.beans.response.SimpleResult;
 import fi.fta.beans.ui.UserUI;
 import fi.fta.data.managers.UserManager;
+import fi.fta.model.SiteModel;
 import fi.fta.validation.ClassStructureAssessor;
 import fi.fta.validation.ValidationMessage;
 
@@ -86,8 +87,23 @@ public class UsersController
 		}
 		catch (Exception ex)
 		{
-			logger.error("usersController.delete", ex);
+			logger.error("UsersController.delete", ex);
 			return SimpleMessage.newFailure(ResponseMessage.Code.ERROR_GENERAL, ex.getMessage());
+		}
+	}
+	
+	@RequestMapping(value = "/current", method = RequestMethod.GET)
+	@ResponseBody
+	public SimpleResult<UserUI> current(HttpServletRequest request, HttpServletResponse response)
+	{
+		try
+		{
+			return SimpleResult.newSuccess(SiteModel.get(request).getUserUI());
+		}
+		catch (Exception ex)
+		{
+			logger.error("UsersController.current", ex);
+			return SimpleResult.newFailure(ResponseMessage.Code.ERROR_GENERAL, ex.getMessage());
 		}
 	}
 	
