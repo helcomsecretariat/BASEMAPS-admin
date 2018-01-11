@@ -8,6 +8,7 @@ define([
 	"dijit/form/CheckBox",
 	"dojox/validate/web",
 	"basemaps/js/utils",
+	//"basemaps/messages/messages",
 	"dijit/_WidgetBase",
 	"dijit/_TemplatedMixin",
 	"dojo/text!./templates/loginWidget.html"
@@ -16,7 +17,7 @@ define([
 		templateString: template,
 		baseClass: "loginWidget",
 		utils: null,
-		constructor: function(params) {
+		constructor: function() {
 			this.utils = new utils();
 			this.utils.show("screenCover", "block");
 		},
@@ -25,16 +26,15 @@ define([
 			var password = this.passwordInput.value;
 			if (validate.isEmailAddress(email)) {
 				if (validate.isText(password)) {
-					this.loginMessage.innerHTML = "";
-					console.log("viskas tvarkoj");
+					this.utils.changeText("loginMessage", "");
 					this.loginFunction(email, password);
 				}
 				else {
-					this.loginMessage.innerHTML = "Enter password.";
+					this.utils.changeText("loginMessage", "Enter password..");
 				}
 			}
 			else {
-				this.loginMessage.innerHTML = "Enter valid email address.";
+				this.utils.changeText("loginMessage", "Enter valid email address.");
 			}
 		},
 		cancelLogin: function() {
@@ -42,27 +42,39 @@ define([
 			domConstruct.destroy(this.domNode);
 		},
 		loginFunction: function(email, password) {
-			//dojo request
-			//var url = "http://localhost:8080/login.do";
-			var url = "login.do";
-			
+			var url = "sc/login";
 			request.post(url, {
 				data: JSON.stringify({
 					"email": email, 
 					"password": password
 				}),
-				//handleAs: "json",
+				handleAs: "json",
 				headers: {
 					"Content-Type": 'application/json; charset=utf-8',
 					"Accept": "application/json"
 				}
 			}).then(
-			function(data){
-				console.log("The server returned: ", data);
-			},
-			function(error){
-				console.log("The server returned error: ", error);
-			});
+			lang.hitch(this, function(response){
+				if (response.type == "error") {
+					if (response.code == "ERROR_VALIDATION") {
+						this.utils.changeText("loginMessage", response.text);
+					}
+				}
+				else if (response.type == "success") {
+					this.utils.show("mapLink", "block");
+					this.utils.changeText("logoutLink", "Logout (" + response.item.name + ")");
+					this.utils.show("logoutLink", "block");
+					
+					// TODO: open Admin view
+					
+					this.utils.show("screenCover", "none");
+					domConstruct.destroy(this.domNode);
+				}
+			}),
+			lang.hitch(this, function(error){
+				alert("Something went wrong (on login). Contact administrator, please.");
+				console.log(error);
+			}));
 		}
 		
     /*conditionsAgree: function() {

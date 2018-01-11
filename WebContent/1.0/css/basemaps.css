@@ -101,6 +101,14 @@ html, body {
 	
 }
 
+#mapLink {
+	display: none;
+}
+
+#logoutLink {
+	display: none;
+}
+
 #centerContainer {
 	position: relative;
 	margin: 0;

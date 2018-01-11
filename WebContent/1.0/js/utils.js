@@ -19,6 +19,10 @@ define([
 		show: function(elementId, display) {
 			var element = dom.byId(elementId);
 			domStyle.set(element, {"display": display});
+		},
+		changeText: function(elementId, text) {
+			var element = dom.byId(elementId);
+			element.innerHTML = text;
 		}
 	});
 });

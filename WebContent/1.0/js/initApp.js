@@ -1,10 +1,12 @@
 define([
 	"dojo/_base/declare",
+	"dojo/_base/lang",
 	"dojo/request",
 	"dojo/on", 
 	"dojo/dom",
 	"dojo/_base/window",
 	"basemaps/js/mapManager",
+	"basemaps/js/utils",
 	"widgets/loginWidget",
 	"dojo/domReady!"
 	//"dojox/geo/openlayers/Map",
@@ -16,11 +18,12 @@ define([
 	//"widgets/scaleWidget",
 	//"require"
 ], function(
-	declare, request, on, dom, win, mapManager, loginWidget//, require
+	declare, lang, request, on, dom, win, mapManager, utils, loginWidget//, require
 ) {
 	return declare(null, {
 		mM: null,
-		login: null,
+		utils: null,
+		loggedIn: false,
 		//widgetPanel: null,
 		constructor: function(){
 			/*var cookies = document.cookie;
@@ -36,6 +39,7 @@ define([
 				document.getElementById("screenCover").style.display = "none";
 			}*/
 	
+			this.utils = new utils();
 			// read mads config file
 			var windowUrl = window.location.pathname;
 			windowUrl = windowUrl.replace("index.html", "");
@@ -49,13 +53,73 @@ define([
 				console.log("Error. Unable to read application configuration file. Error message: ", error.message);
 			});
 			
-			// on Admin link click init login window
+			// on Admin link click get logged in user.
 			var adminButton = dom.byId("adminLink");
-			on(adminButton, "click", function(evt){
-				//var startupBoxDiv = dom.byId("startupBox");
-				//document.getElementById("startupBox").style.display = "block";
-				var lgn = new loginWidget().placeAt(win.body());
-	        });
+			on(adminButton, "click", lang.hitch(this, function(evt){
+				this.getUser();
+	        }));
+			
+			// on Logout link click logout user.
+			var logoutButton = dom.byId("logoutLink");
+			on(logoutButton, "click", lang.hitch(this, function(evt){
+				this.logout();
+	        }));
+		},
+		
+		getUser: function() {
+			var url = "sc/users/current";
+			request.get(url, {
+				handleAs: "json"
+			}).then(
+				lang.hitch(this, function(response){
+					if (response.type == "error") {
+						console.log(response);
+					}
+					else if (response.type == "success") {
+						// if user not logged in, init login window
+						if (response.item.id == null) {
+							var lgn = new loginWidget().placeAt(win.body());
+						}
+						// if user logged in, enable map and logout links and open Admin view
+						else {
+							this.utils.show("mapLink", "block");
+							this.utils.changeText("logoutLink", "Logout (" + response.item.name + ")");
+							this.utils.show("logoutLink", "block");
+							
+							// TODO: open Admin view
+						}
+					}
+				}),
+				lang.hitch(this, function(error){
+					alert("Something went wrong (on checking user logged in). Contact administrator, please.");
+					console.log(error);
+				})
+			);
+		},
+		
+		logout: function() {
+			var url = "sc/logout";
+			request.post(url, {
+				handleAs: "json"
+			}).then(
+				lang.hitch(this, function(response){
+					if (response.type == "error") {
+						console.log(response);
+					}
+					// if logout succeed, disable map and logout links and open Map view
+					else if (response.type == "success") {
+						this.utils.show("mapLink", "none");
+						this.utils.changeText("logoutLink", "Logout");
+						this.utils.show("logoutLink", "none");
+						
+						// TODO: open Map view
+					}
+				}),
+				lang.hitch(this, function(error){
+					alert("Something went wrong (on logout). Contact administrator, please.");
+					console.log(error);
+				})
+			);
 		}
 
     /*requestSucceeded: function(response, io) {
