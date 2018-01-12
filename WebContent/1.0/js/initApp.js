@@ -91,7 +91,7 @@ define([
 					}
 				}),
 				lang.hitch(this, function(error){
-					alert("Something went wrong (on checking user logged in). Contact administrator, please.");
+					alert("Something went wrong (on checking user logged in). Please contact administrator.");
 					console.log(error);
 				})
 			);
@@ -116,7 +116,7 @@ define([
 					}
 				}),
 				lang.hitch(this, function(error){
-					alert("Something went wrong (on logout). Contact administrator, please.");
+					alert("Something went wrong (on logout). Please contact administrator.");
 					console.log(error);
 				})
 			);

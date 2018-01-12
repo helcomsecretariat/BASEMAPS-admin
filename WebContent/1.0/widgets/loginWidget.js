@@ -54,27 +54,28 @@ define([
 					"Accept": "application/json"
 				}
 			}).then(
-			lang.hitch(this, function(response){
-				if (response.type == "error") {
-					if (response.code == "ERROR_VALIDATION") {
-						this.utils.changeText("loginMessage", response.text);
+				lang.hitch(this, function(response){
+					if (response.type == "error") {
+						if (response.code == "ERROR_VALIDATION") {
+							this.utils.changeText("loginMessage", response.text);
+						}
 					}
-				}
-				else if (response.type == "success") {
-					this.utils.show("mapLink", "block");
-					this.utils.changeText("logoutLink", "Logout (" + response.item.name + ")");
-					this.utils.show("logoutLink", "block");
-					
-					// TODO: open Admin view
-					
-					this.utils.show("screenCover", "none");
-					domConstruct.destroy(this.domNode);
-				}
-			}),
-			lang.hitch(this, function(error){
-				alert("Something went wrong (on login). Contact administrator, please.");
-				console.log(error);
-			}));
+					else if (response.type == "success") {
+						this.utils.show("mapLink", "block");
+						this.utils.changeText("logoutLink", "Logout (" + response.item.name + ")");
+						this.utils.show("logoutLink", "block");
+						
+						// TODO: open Admin view
+						
+						this.utils.show("screenCover", "none");
+						domConstruct.destroy(this.domNode);
+					}
+				}),
+				lang.hitch(this, function(error){
+					alert("Something went wrong (on login). Please contact administrator.");
+					console.log(error);
+				})
+			);
 		}
 		
     /*conditionsAgree: function() {

@@ -1,14 +1,14 @@
 define([
   "dojo/_base/declare",
   "dojo/dom",
-  "basemaps/js/layerlistWidget",
+  "basemaps/js/layerList",
   "//openlayers.org/en/v4.4.2/build/ol.js",
   //"//cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.6/proj4.js",
   //"basemaps/js/proj3035"
 ], function(
   declare,
   dom,
-  layerlistWidget,
+  layerList,
   ol
   //proj4,
   //proj3035
@@ -67,7 +67,7 @@ define([
 
       // create layer list
       var layerlistContainer = dom.byId("layerlistContainer");
-      var llwidget = new layerlistWidget({map: map, layers: mapConfig.layers}).placeAt(layerlistContainer);
+      var llwidget = new layerList({map: map, layers: mapConfig.layers}).placeAt(layerlistContainer);
       // create popup
       /*var popup = new Popup({
         // fill symbol for polygon features
