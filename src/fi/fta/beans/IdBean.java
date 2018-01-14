@@ -56,9 +56,7 @@ public class IdBean implements Identifiable<Long>, Serializable
     @Override
     public boolean equals(Object o)
     {
-    	if (o == null || !(o instanceof IdBean))
-    		return false;
-    	return Util.equalsWithNull(this.id, ((IdBean)o).getId());
+    	return o != null && (o instanceof IdBean) && Util.equalsWithNull(this.id, ((IdBean)o).getId());
     }
     
     @Override

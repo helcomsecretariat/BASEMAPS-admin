@@ -19,6 +19,7 @@ import fi.fta.beans.response.SimpleResult;
 import fi.fta.beans.ui.CategoryUI;
 import fi.fta.data.dao.CategoryBeanDAO;
 import fi.fta.data.managers.CategoryBeanManager;
+import fi.fta.utils.Util;
 import fi.fta.validation.ClassStructureAssessor;
 import fi.fta.validation.ValidationMessage;
 
@@ -34,6 +35,22 @@ public class CategoryBeansController<
 	public CategoryBeansController(CM manager)
 	{
 		this.manager = manager;
+	}
+	
+	@RequestMapping(value = "/get/{id}", method = RequestMethod.GET)
+	@ResponseBody
+	public SimpleResult<CUI> add(
+		@PathVariable("id") Long id, HttpServletRequest request, HttpServletResponse response)
+	{
+		try
+		{
+			return SimpleResult.newSuccess(manager.getUI(id));
+		}
+		catch (Exception ex)
+		{
+			logger.error(this.getClass().getName() + ".get(" + id + ")", ex);
+			return SimpleResult.newFailure(ResponseMessage.Code.ERROR_GENERAL, Util.getStackTrace(ex));
+		}
 	}
 	
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
@@ -54,7 +71,7 @@ public class CategoryBeansController<
 		catch (Exception ex)
 		{
 			logger.error(this.getClass().getName() + ".add", ex);
-			return SimpleResult.newFailure(ResponseMessage.Code.ERROR_GENERAL, ex.getMessage());
+			return SimpleResult.newFailure(ResponseMessage.Code.ERROR_GENERAL, Util.getStackTrace(ex));
 		}
 	}
 	

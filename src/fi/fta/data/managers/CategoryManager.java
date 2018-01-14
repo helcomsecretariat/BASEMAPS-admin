@@ -39,6 +39,12 @@ public class CategoryManager extends CategoryBeanManager<Category, CategoryUI, C
 		return dao.getRoot();
 	}
 	
+	public CategoryUI getUI(Long id) throws HibernateException
+	{
+		Category c = this.get(id);
+		return c != null ? new CategoryUI(c) : new CategoryUI();
+	}
+	
 	public List<Category> getChildren(Long id) throws HibernateException
 	{
 		List<Category> ret = new ArrayList<>();

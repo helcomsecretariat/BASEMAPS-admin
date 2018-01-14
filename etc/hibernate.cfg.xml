@@ -28,6 +28,10 @@
   <mapping class="fi.fta.beans.Category"/>
   <mapping class="fi.fta.beans.User"/>
   <mapping class="fi.fta.beans.WMS"/>
+  <mapping class="fi.fta.beans.WMSInfo"/>
+  <mapping class="fi.fta.beans.WMSMetaData"/>
+  <mapping class="fi.fta.beans.WMSStyle"/>
+ 
   
  </session-factory>
 </hibernate-configuration>

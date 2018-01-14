@@ -1,6 +1,12 @@
 package fi.fta.beans.ui;
 
-public class WMSUI extends CategoryUI
+import java.util.List;
+
+import fi.fta.beans.UrlFacade;
+import fi.fta.beans.WMS;
+import fi.fta.utils.BeansUtils;
+
+public class WMSUI extends CategoryUI implements UrlFacade
 {
 	
 	/**
@@ -13,18 +19,21 @@ public class WMSUI extends CategoryUI
 	
 	protected String url;
 	
-	protected String metaDataUrl;
-	
-	protected String view;
-	
-	protected String download;
-	
-	protected String catalogueMetaId;
+	protected List<WMSMetaDataUI> metaData;
 	
 	
 	public WMSUI()
 	{}
-
+	
+	public WMSUI(WMS bean)
+	{
+		super(bean);
+		this.setParent(bean.getParent() != null ? bean.getParent().getId() : null);
+		this.setName(bean.getName());
+		this.setUrl(bean.getUrl());
+		this.setMetaData(BeansUtils.getMetaDataUI(bean.getMetadata()));
+	}
+	
 	public String getName() {
 		return name;
 	}
@@ -41,36 +50,12 @@ public class WMSUI extends CategoryUI
 		this.url = url;
 	}
 
-	public String getMetaDataUrl() {
-		return metaDataUrl;
+	public List<WMSMetaDataUI> getMetaData() {
+		return metaData;
 	}
 
-	public void setMetaDataUrl(String metaDataUrl) {
-		this.metaDataUrl = metaDataUrl;
-	}
-
-	public String getView() {
-		return view;
-	}
-
-	public void setView(String view) {
-		this.view = view;
-	}
-
-	public String getDownload() {
-		return download;
-	}
-
-	public void setDownload(String download) {
-		this.download = download;
-	}
-
-	public String getCatalogueMetaId() {
-		return catalogueMetaId;
-	}
-
-	public void setCatalogueMetaId(String catalogueMetaId) {
-		this.catalogueMetaId = catalogueMetaId;
+	public void setMetaData(List<WMSMetaDataUI> metaData) {
+		this.metaData = metaData;
 	}
 	
 }

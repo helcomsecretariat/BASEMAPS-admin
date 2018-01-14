@@ -26,11 +26,11 @@ public class Category extends CategoryBean
 	private static final long serialVersionUID = -2920194411447223477L;
 	
 	@JsonIgnore
-	@ManyToOne(targetEntity=Category.class, cascade={CascadeType.PERSIST, CascadeType.MERGE}, fetch=FetchType.EAGER)
+	@ManyToOne(targetEntity=Category.class, cascade={CascadeType.ALL}, fetch=FetchType.EAGER)
 	@JoinColumn(name = "parent")
 	protected Category parent;
 	
-	@OneToMany(mappedBy = "parent", cascade={CascadeType.PERSIST, CascadeType.MERGE}, fetch=FetchType.EAGER)
+	@OneToMany(mappedBy = "parent", targetEntity=Category.class, cascade={CascadeType.ALL}, fetch=FetchType.EAGER)
 	@OrderBy("position")
 	protected Set<Category> children;
 	

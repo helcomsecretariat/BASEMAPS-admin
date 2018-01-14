@@ -2,6 +2,9 @@ package fi.fta.beans.ui;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import fi.fta.beans.Category;
+import fi.fta.beans.CategoryBean;
+
 public class CategoryUI extends IdUI
 {
 	
@@ -20,6 +23,19 @@ public class CategoryUI extends IdUI
 	
 	public CategoryUI()
 	{}
+	
+	public CategoryUI(CategoryBean bean)
+	{
+		this.setId(bean.getId());
+		this.setLabel(bean.getLabel());
+		this.setPosition(bean.getPosition());
+	}
+	
+	public CategoryUI(Category bean)
+	{
+		this((CategoryBean)bean);
+		this.setParent(bean.getParent() != null ? bean.getParent().getId() : null);
+	}
 	
 	public String getLabel() {
 		return label;

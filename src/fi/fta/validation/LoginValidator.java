@@ -31,7 +31,7 @@ public class LoginValidator extends ClassStructureAssessor
 			}
 			else
 			{
-				validations.add(ValidationMessage.simple("password", "msg.validation.password"));
+				validations.add(ValidationMessage.simple("msg.validation.password", "password"));
 			}
 		}
 		return validations;

@@ -1,18 +1,26 @@
 package fi.fta.beans;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
+import fi.fta.beans.ui.WMSMetaDataUI;
 import fi.fta.beans.ui.WMSUI;
+import fi.fta.utils.Util;
 
 @Entity
 @Table(name="wmses")
-public class WMS extends CategoryBean implements Named
+public class WMS extends CategoryBean implements Named, UrlFacade
 {
 	
 	/**
@@ -24,19 +32,18 @@ public class WMS extends CategoryBean implements Named
 	
 	protected String url;
 	
-	@Column(name = "meta_data_url")
-	protected String metaDataUrl;
+	@OneToOne(targetEntity=WMSInfo.class, cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.REMOVE}, fetch=FetchType.EAGER)
+	@PrimaryKeyJoinColumn
+	protected WMSInfo info;
 	
-	protected String view;
-	
-	protected String download;
-	
-	@Column(name = "catalogue_meta_id")
-	protected String catalogueMetaId;
-	
-	@ManyToOne(targetEntity=Category.class, cascade={CascadeType.PERSIST, CascadeType.MERGE}, fetch=FetchType.EAGER)
+	@ManyToOne(targetEntity=Category.class, cascade={CascadeType.ALL}, fetch=FetchType.EAGER)
 	@JoinColumn(name = "parent")
 	protected Category parent;
+	
+	@OneToMany(targetEntity=WMSMetaData.class, cascade={CascadeType.ALL}, fetch=FetchType.EAGER)
+	@JoinColumn(name = "parent", nullable = false, updatable = false, insertable = true)
+	@OrderBy("id")
+	protected Set<WMSMetaData> metadata;
 	
 	
 	public WMS()
@@ -47,10 +54,17 @@ public class WMS extends CategoryBean implements Named
 		super(ui);
 		this.setName(ui.getName());
 		this.setUrl(ui.getUrl());
-		this.setMetaDataUrl(ui.getMetaDataUrl());
-		this.setView(ui.getView());
-		this.setDownload(ui.getDownload());
-		this.setCatalogueMetaId(ui.getCatalogueMetaId());
+		this.setMetadata(new HashSet<>());
+		if (!Util.isEmptyCollection(ui.getMetaData()))
+		{
+			for (WMSMetaDataUI wui : ui.getMetaData())
+			{
+				if (!Util.isEmptyString(wui.getUrl()))
+				{
+					this.getMetadata().add(new WMSMetaData(wui));
+				}
+			}
+		}
 	}
 	
 	public String getName() {
@@ -69,36 +83,12 @@ public class WMS extends CategoryBean implements Named
 		this.url = url;
 	}
 
-	public String getMetaDataUrl() {
-		return metaDataUrl;
+	public WMSInfo getInfo() {
+		return info;
 	}
 
-	public void setMetaDataUrl(String metaDataUrl) {
-		this.metaDataUrl = metaDataUrl;
-	}
-
-	public String getView() {
-		return view;
-	}
-
-	public void setView(String view) {
-		this.view = view;
-	}
-
-	public String getDownload() {
-		return download;
-	}
-
-	public void setDownload(String download) {
-		this.download = download;
-	}
-
-	public String getCatalogueMetaId() {
-		return catalogueMetaId;
-	}
-
-	public void setCatalogueMetaId(String catalogueMetaId) {
-		this.catalogueMetaId = catalogueMetaId;
+	public void setInfo(WMSInfo info) {
+		this.info = info;
 	}
 
 	public Category getParent() {
@@ -107,6 +97,14 @@ public class WMS extends CategoryBean implements Named
 
 	public void setParent(Category parent) {
 		this.parent = parent;
+	}
+
+	public Set<WMSMetaData> getMetadata() {
+		return metadata;
+	}
+
+	public void setMetadata(Set<WMSMetaData> metadata) {
+		this.metadata = metadata;
 	}
 	
 }

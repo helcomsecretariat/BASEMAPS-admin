@@ -1,5 +1,7 @@
 package fi.fta.utils;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -278,6 +280,13 @@ public class Util
 					sb.append(key + "=" + Util.URLDecode(value) + "&");
 		}
 		return sb.length() > 0 ? sb.deleteCharAt(sb.length() - 1).toString() : sb.toString();
+	}
+	
+	public static String getStackTrace(Throwable th)
+	{
+		StringWriter sw = new StringWriter();
+	    th.printStackTrace(new PrintWriter(sw));
+	    return sw.toString();
 	}
 	
 }

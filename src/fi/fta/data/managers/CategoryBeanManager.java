@@ -43,8 +43,10 @@ public abstract class CategoryBeanManager<C extends CategoryBean, UI extends Cat
 		return dao.delete(id) > 0;
 	}
 	
+	public abstract UI getUI(Long id) throws HibernateException;
+	
 	public abstract List<C> getChildren(Long id) throws HibernateException;
 	
-	public abstract Long add(UI ui) throws HibernateException;
+	public abstract Long add(UI ui) throws Exception;
 	
 }
