@@ -34,7 +34,7 @@ public class WMSLayer
 			capabilities.getService().getContactInformation().getOrganisationName().toString());
 		this.info.setFormats(capabilities.getRequest().getGetFeatureInfo().getFormats());
 		this.info.setTitle(l.getTitle());
-		this.info.setKeywords(Arrays.asList(l.getKeywords()));
+		this.info.setKeywords(l.getKeywords() != null ? Arrays.asList(l.getKeywords()) : new ArrayList<>());
 		this.info.setQueryable(l.isQueryable());
 		this.info.setScaleMin(l.getScaleDenominatorMin());
 		this.info.setScaleMax(l.getScaleDenominatorMax());
