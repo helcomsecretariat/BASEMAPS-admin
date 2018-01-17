@@ -40,11 +40,7 @@ public class CategoryBean extends IdBean
 		this();
 		this.setId(ui.getId());
 		this.setLabel(ui.getLabel());
-		this.setPosition(ui.getPosition());
-		if (ui.getPosition() == null)
-		{
-			this.setPosition(1);
-		}
+		this.setPosition(ui.getPosition() != null ? ui.getPosition() : 1);
 	}
 
 	public String getLabel() {

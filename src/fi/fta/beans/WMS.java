@@ -7,7 +7,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
@@ -36,9 +35,7 @@ public class WMS extends CategoryBean implements Named, UrlFacade
 	@PrimaryKeyJoinColumn
 	protected WMSInfo info;
 	
-	@ManyToOne(targetEntity=Category.class, cascade={CascadeType.ALL}, fetch=FetchType.EAGER)
-	@JoinColumn(name = "parent")
-	protected Category parent;
+	protected Long parent;
 	
 	@OneToMany(targetEntity=WMSMetaData.class, cascade={CascadeType.ALL}, fetch=FetchType.EAGER)
 	@JoinColumn(name = "parent", nullable = false, updatable = false, insertable = true)
@@ -91,11 +88,11 @@ public class WMS extends CategoryBean implements Named, UrlFacade
 		this.info = info;
 	}
 
-	public Category getParent() {
+	public Long getParent() {
 		return parent;
 	}
 
-	public void setParent(Category parent) {
+	public void setParent(Long parent) {
 		this.parent = parent;
 	}
 

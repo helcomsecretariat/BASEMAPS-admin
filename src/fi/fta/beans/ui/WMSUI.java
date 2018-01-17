@@ -28,7 +28,7 @@ public class WMSUI extends CategoryUI implements UrlFacade
 	public WMSUI(WMS bean)
 	{
 		super(bean);
-		this.setParent(bean.getParent() != null ? bean.getParent().getId() : null);
+		this.setParent(bean.getParent());
 		this.setName(bean.getName());
 		this.setUrl(bean.getUrl());
 		this.setMetaData(BeansUtils.getMetaDataUI(bean.getMetadata()));

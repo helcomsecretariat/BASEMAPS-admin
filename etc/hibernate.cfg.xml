@@ -16,7 +16,7 @@
   <!-- Disable the second-level cache  -->
   <property name="hibernate.cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
   <!-- Echo all executed SQL to stdout -->
-  <property name="hibernate.show_sql">false</property>
+  <property name="hibernate.show_sql">true</property>
   <property name="hibernate.connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider</property>
   <property name="hibernate.jdbc.batch_size">50</property>
   <property name="hibernate.order_inserts">true</property>

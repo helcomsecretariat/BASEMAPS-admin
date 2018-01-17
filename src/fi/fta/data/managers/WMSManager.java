@@ -28,7 +28,6 @@ import fi.fta.beans.WMSMetaData;
 import fi.fta.beans.ui.WMSLayerUI;
 import fi.fta.beans.ui.WMSUI;
 import fi.fta.cache.TimeBasedCache;
-import fi.fta.data.dao.CategoryDAO;
 import fi.fta.data.dao.WMSDAO;
 import fi.fta.filters.WMSMetaDataSourceFilter;
 import fi.fta.utils.BeansUtils;
@@ -90,10 +89,7 @@ public class WMSManager extends CategoryBeanManager<WMS, WMSUI, WMSDAO>
 	public Long add(WMSUI ui) throws Exception
 	{
 		WMS wms = new WMS(ui);
-		if (ui.getParent() != null)
-		{
-			wms.setParent(new CategoryDAO().get(ui.getParent()));
-		}
+		wms.setParent(ui.getParent());
 		WMSLayer l = this.getLayer(ui);
 		if (l != null)
 		{
