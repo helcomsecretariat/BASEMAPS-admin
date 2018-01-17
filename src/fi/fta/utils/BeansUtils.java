@@ -8,11 +8,17 @@ import org.geotools.data.ows.Layer;
 import org.geotools.data.ows.StyleImpl;
 import org.geotools.data.ows.WMSCapabilities;
 import org.geotools.data.wms.xml.MetadataURL;
+import org.hibernate.HibernateException;
 
+import fi.fta.beans.Category;
+import fi.fta.beans.WMS;
 import fi.fta.beans.WMSMetaData;
 import fi.fta.beans.WMSStyle;
+import fi.fta.beans.ui.TreeLayerUI;
+import fi.fta.beans.ui.TreeWMSLayerUI;
 import fi.fta.beans.ui.WMSMetaDataUI;
 import fi.fta.beans.ui.WMSStyleUI;
+import fi.fta.data.managers.WMSManager;
 
 public class BeansUtils
 {
@@ -95,6 +101,24 @@ public class BeansUtils
 			}
 		}
 		return ret;
+	}
+	
+	public static List<TreeLayerUI> getLayerUIs(Long parent, Collection<Category> root) throws HibernateException 
+	{
+		List<TreeLayerUI> layers = new ArrayList<>();
+		for (Category c : root)
+		{
+			TreeLayerUI ui = new TreeLayerUI(c);
+			ui.getLayers().addAll(
+				BeansUtils.getLayerUIs(c.getId(), c.getChildren()));
+			ui.setCategory(!ui.getLayers().isEmpty());
+			layers.add(ui);
+		}
+		for (WMS wms : WMSManager.getInstance().getChildren(parent))
+		{
+			layers.add(new TreeWMSLayerUI(wms));
+		}
+		return layers;
 	}
 	
 }

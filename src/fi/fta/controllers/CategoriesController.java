@@ -14,7 +14,9 @@ import fi.fta.beans.Category;
 import fi.fta.beans.response.ResponseMessage;
 import fi.fta.beans.response.SimpleResult;
 import fi.fta.beans.ui.CategoryUI;
+import fi.fta.beans.ui.TreeLayerUI;
 import fi.fta.data.managers.CategoryManager;
+import fi.fta.utils.BeansUtils;
 
 @Controller
 @RequestMapping("/categories")
@@ -37,6 +39,22 @@ public class CategoriesController extends CategoryBeansController<Category, Cate
 		catch (Exception ex)
 		{
 			logger.error("CategoriesController.getRoot", ex);
+			return SimpleResult.newFailure(ResponseMessage.Code.ERROR_GENERAL, ex.getMessage());
+		}
+	}
+	
+	@RequestMapping(value = "/tree", method = RequestMethod.GET)
+	@ResponseBody
+	public SimpleResult<List<TreeLayerUI>> getTree(HttpServletRequest request, HttpServletResponse response)
+	{
+		try
+		{
+			return SimpleResult.newSuccess(
+				BeansUtils.getLayerUIs(null, manager.getRoot()));
+		}
+		catch (Exception ex)
+		{
+			logger.error("CategoriesController.getTree", ex);
 			return SimpleResult.newFailure(ResponseMessage.Code.ERROR_GENERAL, ex.getMessage());
 		}
 	}

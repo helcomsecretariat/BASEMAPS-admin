@@ -16,7 +16,7 @@ public class WMSDAO extends CategoryBeanDAO<WMS>
 	
 	public List<WMS> getByParent(Long parent) throws HibernateException
 	{
-		return this.getByField("parent", parent);
+		return this.getByField("parent", parent, "position", true);
 	}
 	
 	@Override

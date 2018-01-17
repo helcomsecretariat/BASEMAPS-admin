@@ -1,6 +1,6 @@
 package fi.fta.beans;
 
-import java.util.Set;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -32,7 +32,7 @@ public class Category extends CategoryBean
 	
 	@OneToMany(mappedBy = "parent", targetEntity=Category.class, cascade={CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.REMOVE}, fetch=FetchType.EAGER)
 	@OrderBy("position")
-	protected Set<Category> children;
+	protected List<Category> children;
 	
 	
 	public Category()
@@ -51,11 +51,11 @@ public class Category extends CategoryBean
 		this.parent = parent;
 	}
 
-	public Set<Category> getChildren() {
+	public List<Category> getChildren() {
 		return children;
 	}
 
-	public void setChildren(Set<Category> children) {
+	public void setChildren(List<Category> children) {
 		this.children = children;
 	}
 	
