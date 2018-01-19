@@ -65,10 +65,11 @@ define([
 						this.utils.changeText("logoutLink", "Logout (" + response.item.name + ")");
 						this.utils.show("logoutLink", "block");
 						
-						// TODO: open Admin view
-						
 						this.utils.show("screenCover", "none");
 						domConstruct.destroy(this.domNode);
+						
+						// emit click event to open admin view
+						on.emit(dom.byId("adminLink"), "click", { cancelable:true, bubbles: true});
 					}
 				}),
 				lang.hitch(this, function(error){

@@ -1,0 +1,18 @@
+<div id="adminView" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
+	
+	<div id="adminToolsContainer">
+		<!-- <div style="width: 300px; height: 290px">
+			<div id="adminToolsViews" data-dojo-attach-point="tabCont"></div>
+		</div> -->
+		<div id="adminToolsViews"> 
+			<div id="layersView" class="adminViewButton" data-dojo-attach-event="onclick:layersButtonClick">Layers</div>
+			<div id="usersView" class="adminViewButton" data-dojo-attach-event="onclick:usersButtonClick">Users</div>
+		</div>
+		<div id="adminUsersSection">Users</div>
+		<div id="adminLayerListSection" data-dojo-attach-point="adminLayerListSection"></div>
+	</div>
+	<div id="adminFormsContainer" data-dojo-attach-point="adminFormsContainer">
+		<div id="adminFormsHeader" data-dojo-attach-point="adminFormsHeader"></div>
+		<div id="adminFormsBody" data-dojo-attach-point="adminFormsBody"></div>
+	</div>
+</div>

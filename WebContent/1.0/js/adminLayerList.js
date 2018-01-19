@@ -3,51 +3,82 @@ define([
   "dojo/_base/lang", "dojo/_base/fx",  // "dojo/mouse", "dojo/dom-class", "dojo/_base/window",
   "dojo/on",
   "dojo/dom",
+  "dojo/query",
   "dojo/dom-style",
   "dojo/request",
   "dojo/_base/array", "dojo/dom-construct",  //"dojo/query!css3",
   "dojo/store/Memory","dijit/tree/ObjectStoreModel", "dijit/Tree", "dijit/form/FilteringSelect",
   "dijit/form/CheckBox", "dijit/Tooltip",
-  //"dojox/validate/regexp",
+  "basemaps/js/utils",
   "//openlayers.org/en/v4.4.2/build/ol.js",
   //"esri/request", "esri/tasks/IdentifyTask", "esri/tasks/IdentifyParameters",
   //"dijit/form/HorizontalSlider", "dijit/form/HorizontalRule", "dijit/form/HorizontalRuleLabels",
   "dijit/_WidgetBase", "dijit/_TemplatedMixin",
-  "dojo/text!../templates/layerlistWidget.html"
+  "dojo/text!../templates/adminLayerList.html",
+  "dojo/text!../templates/adminFormsOneLabel.html",
 ], function(
   declare,
   lang, baseFx,  //domStyle, mouse, domClass, win,
   on,
   dom,
+  query,
   domStyle,
   request,
   array, domConstruct, //array, query,
   Memory, ObjectStoreModel, Tree, FilteringSelect,
   checkBox, Tooltip,
-  //regexp,
+  utils,
   ol,
   //esriRequest, IdentifyTask, IdentifyParameters,
   //HorizontalSlider, HorizontalRule, HorizontalRuleLabels,
-  _WidgetBase, _TemplatedMixin, template
+  _WidgetBase, _TemplatedMixin, template,
+  adminFormsOneLabel
 ){
   return declare([_WidgetBase, _TemplatedMixin], {
     templateString: template,
-    baseClass: "layerlistWidget",
+    baseClass: "adminLayerList",
     map: null,
-    //configLayers: null,
+    utils: null,
+    configLayers: null,
     tree: null,
     store: null,
-    data: [{ id: 'layerlist', leaf: false}],
+    data: null,
     dataFiltering: [{ id: 'layerlist', leaf: false}],
     legendInfo: {},
     metadataIDS: {},
     identify: {},
     visitedNodesIds: {},
+    formsContainer: null,
     constructor: function(params) {
-      this.map = params.map;
-      //this.configLayers = params.layers;
-      //console.log(JSON.stringify(this.configLayers));
+    	this.formsContainer = params.forms;
+    	this.utils = new utils();
+    	this.data = [{ id: 'layerlist', leaf: false}];
+    	
+    	// SUKURTI formos obiektą
+    	
     },
+    
+    topCategoryButtonClick: function() {
+    	console.log(this.formsContainer);
+    	var adminFormsHeader = dom.byId("adminFormsHeader");
+    	adminFormsHeader.innerHTML = "LAbas";
+    	var adminFormsBody = dom.byId("adminFormsBody");
+    	domConstruct.place(adminFormsOneLabel, adminFormsBody);
+	},
+	
+	topLayerButtonClick: function() {
+		alert("topLayerButtonClick");
+	},
+	
+	adminFormSaveClick: function() {
+    	//domConstruct.place(adminFormsOneLabel, this.formsContainer.adminFormsBody);
+	},
+	
+	adminFormCancelClick: function() {
+		alert("close");
+		var adminFormsBody = dom.byId("adminFormsBody");
+		domConstruct.empty(adminFormsBody);
+	},
 
     postCreate: function() {
       /*this.getLegendInfo();
@@ -60,7 +91,7 @@ define([
     	//this.createTree();
 
       // on search button click
-      on(this.collapseLayerList, "click", lang.hitch(this, function(){
+      /*on(this.collapseLayerList, "click", lang.hitch(this, function(){
         var llcnode = dom.byId("layerlistContainer");
         //var llcnode = dijit.byId("layerlistContainer").domNode;
         var containerWidth = domStyle.get(llcnode, "width");
@@ -130,10 +161,10 @@ define([
           }
         });
         slideZoom.play();
-      }));
+      }));*/
 
       // on collapse button click
-      on(this.collapseAllButton, "click", lang.hitch(this, function(){
+      /*on(this.collapseAllButton, "click", lang.hitch(this, function(){
         this.tree.collapseAll();
       }));
 
@@ -152,11 +183,15 @@ define([
             }
           }
         }
-      }));
+      }));*/
+    },
+    
+    destroy: function() {
+    	
     },
     
     getLayersData: function() {
-		var url = "sc/categories/root";
+		var url = "sc/categories/tree";
 		request.get(url, {
 			handleAs: "json"
 		}).then(
@@ -165,12 +200,11 @@ define([
 					console.log(response);
 				}
 				else if (response.type == "success") {
-					//console.log(JSON.stringify(response.item));
 					this.createTree(response.item);
 				}
 			}),
 			lang.hitch(this, function(error){
-				alert("Something went wrong (on categories/root). Please contact administrator.");
+				alert("Something went wrong (on categories/tree). Please contact administrator.");
 				console.log(error);
 			})
 		);
@@ -226,7 +260,8 @@ define([
     },*/
 
     addLayerToDataArray: function(layer, parentLayerId, topGroup) {
-    	var isLeaf = (layer.children.length > 0 ? false : true);
+    	//var isLeaf = (layer.children.length > 0 ? false : true);
+    	var isLeaf = (layer.name ? true : false);
     	var lyr = {
 			id: layer.id,
 			parent: parentLayerId,
@@ -246,7 +281,7 @@ define([
     	this.data.push(lyr);
     	if (!isLeaf) {
     		this.dataFiltering.push(lyr);
-    		array.forEach(layer.children, lang.hitch(this, function(l){
+    		array.forEach(layer.layers, lang.hitch(this, function(l){
     			this.addLayerToDataArray(l, layer.id, false);
     		}));
     	}
@@ -254,9 +289,9 @@ define([
 
     createDataArray: function(input) {
     	array.forEach(input, lang.hitch(this, function(record){
-    		//console.log("createDataArray", record);
     		this.addLayerToDataArray(record, "layerlist", true);
     	}));
+    	
       /*for(var i=this.map.layerIds.length-1; i>=0; i--){
         var layerId = this.map.layerIds[i];
         if (layerId !== "Basemap") {
@@ -345,7 +380,7 @@ define([
       });
 
       // data store for search (doesn't include layers, but just layer groups)
-      var storeFiltering = new Memory({
+      /*var storeFiltering = new Memory({
         data: this.dataFiltering
       });
       var filteringSelect = new FilteringSelect({
@@ -366,7 +401,7 @@ define([
           // clear search field
           dijit.byId("layerSearchInput").set("value", "");
         })
-      }, this.layerSearchInput).startup();
+      }, this.layerSearchInput).startup();*/
 
       this.tree = new Tree({
         model: treeModel,
@@ -692,7 +727,7 @@ define([
           return tnode;
         }
       });
-      this.tree.placeAt(this.layerListTree);
+      this.tree.placeAt(this.adminLayerListTree);
       this.tree.startup();
     },
 

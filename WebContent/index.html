@@ -19,7 +19,7 @@
 			var basemapsVersion = "1.0";
 			var package_path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
 			var dojoConfig = {
-				parseOnLoad: true,
+				parseOnLoad: false,
 				// The locationPath logic below may look confusing but all its doing is
 				// enabling us to load the api from a CDN and load local modules from the correct location.
 				packages: [{
@@ -33,15 +33,17 @@
 			};
 		</script>
 		<script src="//ajax.googleapis.com/ajax/libs/dojo/1.10.4/dojo/dojo.js" data-dojo-config="async: true"></script>
-		<script>
+		<!-- <script>
 			dojo.require("dijit.layout.BorderContainer");
 			dojo.require("dijit.layout.ContentPane");
-		</script>
+		</script>-->
 		<script>
 			require([
+				"dojo/parser",
 			  "basemaps/js/initApp",
 			  "dojo/domReady!"
-			], function(initApp){
+			], function(parser, initApp){
+				parser.parse();
 				var init = new initApp();
 			});
 		</script>
@@ -60,7 +62,9 @@
 	<body class="claro">
 		<div id="screenCover"></div>
 		<div id="startupBox"></div>
-		<div id="mainWindow" data-dojo-type="dijit.layout.BorderContainer" data-dojo-props="design:'headline', gutters:false">
+		<div id="mainWindow"></div>
+		<div id="map"></div>
+		<!-- <div id="mainWindow" data-dojo-type="dijit.layout.BorderContainer" data-dojo-props="design:'headline', gutters:false">
 			<div id="header" data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'top'">
 				<a id="logocontainer" href="http://helcom.fi" target="_blank"></a>
 				<a id="titlecontainer" href=".">Baltic LINes</a>
@@ -69,28 +73,18 @@
 					<a class="headerLink" id="adminLink" href="#">Admin</a>
 					<a class="headerLink" id="mapLink" href="#">Map</a>
 					<a class="headerLink" id="aboutLink" href="http://vasab.org/index.php/projects/baltic-lines" target="_blank">About</a>
-					<!--<a class="headerLink" id="meatdataLink" href="http://metadata.helcom.fi/geonetwork" target="_blank">Metadata</a>-->
 				</div>
-				<!--<div id="widgetscontainer"></div>-->
 			</div>
 			<div id="centerContainer" data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'center'">
-				<div id="map" data-dojo-type="dijit.layout.ContentPane">
-					<!--<div style="position:absolute; right:70px; top:20px; z-Index:999;">
-						<div data-dojo-type="dijit/TitlePane" data-dojo-props="title:'Basemaps', closable:false, open:false">
-							<div data-dojo-type="dijit/layout/ContentPane">
-								<div id="basemapGallery"></div>
-							</div>
-						</div>
-					</div>-->
-				</div>
+				<div id="map" data-dojo-type="dijit.layout.ContentPane"></div>
 				<div id="layerlistContainer" data-dojo-type="dijit.layout.ContentPane"></div>
-				<!--<div id="coordsContainer"></div>
-				<div id="scaleContainer"></div>
-				<div id="widgetPanel"></div>-->
+				<div id="adminWindow" data-dojo-type="dijit.layout.BorderContainer" data-dojo-props="design:'sidebar', gutters:true, liveSplitters:true">
+					
+				</div>
+				
 			</div>
-			<!--<div id="footer" data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'bottom'">
-				helcom
-			</div>-->
-		</div>
+			<div id="adminLayerListContainer" data-dojo-type="dijit.layout.ContentPane" data-dojo-props="splitter:true, region:'leading'"></div>
+			<div id="adminFormsContainer" data-dojo-type="dijit.layout.ContentPane" data-dojo-props="splitter:true, region:'center'"></div>
+		</div>-->
 	</body>
 </html>
