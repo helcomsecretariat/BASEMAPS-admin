@@ -1,11 +1,13 @@
 define([
   "dojo/_base/declare",
-  "dojo/_base/lang", "dojo/_base/fx",  // "dojo/mouse", "dojo/dom-class", "dojo/_base/window",
+  "dojo/_base/lang", "dojo/_base/fx",
+  "dojo/mouse",
   "dojo/on",
   "dojo/dom",
   "dojo/query",
   "dojo/dom-style",
   "dojo/request",
+  "dojox/validate/web",
   "dojo/_base/array", "dojo/dom-construct",  //"dojo/query!css3",
   "dojo/store/Memory","dijit/tree/ObjectStoreModel", "dijit/Tree", "dijit/form/FilteringSelect",
   "dijit/form/CheckBox", "dijit/Tooltip",
@@ -14,16 +16,17 @@ define([
   //"esri/request", "esri/tasks/IdentifyTask", "esri/tasks/IdentifyParameters",
   //"dijit/form/HorizontalSlider", "dijit/form/HorizontalRule", "dijit/form/HorizontalRuleLabels",
   "dijit/_WidgetBase", "dijit/_TemplatedMixin",
-  "dojo/text!../templates/adminLayerList.html",
-  "dojo/text!../templates/adminFormsOneLabel.html",
+  "dojo/text!../templates/adminLayerList.html"
 ], function(
   declare,
-  lang, baseFx,  //domStyle, mouse, domClass, win,
+  lang, baseFx,
+  mouse,
   on,
   dom,
   query,
   domStyle,
   request,
+  validate,
   array, domConstruct, //array, query,
   Memory, ObjectStoreModel, Tree, FilteringSelect,
   checkBox, Tooltip,
@@ -31,8 +34,7 @@ define([
   ol,
   //esriRequest, IdentifyTask, IdentifyParameters,
   //HorizontalSlider, HorizontalRule, HorizontalRuleLabels,
-  _WidgetBase, _TemplatedMixin, template,
-  adminFormsOneLabel
+  _WidgetBase, _TemplatedMixin, template
 ){
   return declare([_WidgetBase, _TemplatedMixin], {
     templateString: template,
@@ -41,6 +43,7 @@ define([
     utils: null,
     configLayers: null,
     tree: null,
+    treeModel :null,
     store: null,
     data: null,
     dataFiltering: [{ id: 'layerlist', leaf: false}],
@@ -48,38 +51,30 @@ define([
     metadataIDS: {},
     identify: {},
     visitedNodesIds: {},
-    formsContainer: null,
+    formsObj: null,
+    //formView: null,
     constructor: function(params) {
-    	this.formsContainer = params.forms;
+    	this.formsObj = params.forms;
     	this.utils = new utils();
     	this.data = [{ id: 'layerlist', leaf: false}];
-    	
-    	// SUKURTI formos obiektą
-    	
     },
     
     topCategoryButtonClick: function() {
-    	console.log(this.formsContainer);
+    	this.formsObj.formCleanUp();
+    	this.formsObj.setupForm("TOP_CATEGORY");
+    	
+    	/*console.log(this.formsContainer);
     	var adminFormsHeader = dom.byId("adminFormsHeader");
     	adminFormsHeader.innerHTML = "LAbas";
     	var adminFormsBody = dom.byId("adminFormsBody");
-    	domConstruct.place(adminFormsOneLabel, adminFormsBody);
+    	domConstruct.place(adminFormsOneLabel, adminFormsBody);*/
 	},
 	
 	topLayerButtonClick: function() {
-		alert("topLayerButtonClick");
+		this.formsObj.formCleanUp();
+    	this.formsObj.setupForm("TOP_LAYER");
 	},
 	
-	adminFormSaveClick: function() {
-    	//domConstruct.place(adminFormsOneLabel, this.formsContainer.adminFormsBody);
-	},
-	
-	adminFormCancelClick: function() {
-		alert("close");
-		var adminFormsBody = dom.byId("adminFormsBody");
-		domConstruct.empty(adminFormsBody);
-	},
-
     postCreate: function() {
       /*this.getLegendInfo();
       this.getMetadataIDS();*/
@@ -88,6 +83,18 @@ define([
       //console.log("OpenLayers.ProxyHost", ol.ProxyHost);
       
     	this.getLayersData();
+    	
+    	on(this.formsObj.adminFormSaveButton, "click", lang.hitch(this, function(){
+    		this.formsObj.hideMessage();
+			var val = this.formsObj.getOneLabelInputValue();
+			if (validate.isText(val)) {
+				this.saveCategory(val);
+			}
+			else {
+				this.formsObj.showMessage("Label is not valid.");
+			}
+		}));
+    	
     	//this.createTree();
 
       // on search button click
@@ -184,6 +191,39 @@ define([
           }
         }
       }));*/
+    },
+    
+    refreshLayerList: function() {
+    	delete this.store;
+    	this.treeModel.destroy();
+    	this.tree.destroy();
+    	domConstruct.empty(this.adminLayerListTree);
+		this.data = [{ id: 'layerlist', leaf: false}];
+		this.getLayersData();
+    },
+    
+    saveCategory: function(label) {
+    	var url = "sc/categories/add";
+		var data = {
+			"label": label
+		};
+		request.post(url, this.utils.createPostRequestParams(data)).then(
+			lang.hitch(this, function(response){
+				this.utils.clearInput("adminFormOneLabelInput");
+				if (response.type == "error") {
+					this.formsObj.showMessage("Failed to add category.");
+				}
+				else if (response.type == "success") {
+					this.formsObj.showMessage("Category added.");
+					this.refreshLayerList();
+				}
+			}),
+			lang.hitch(this, function(error){
+				this.utils.clearInput("adminFormOneLabelInput");
+				this.formsObj.showMessage("Something went wrong (on adding category). Please contact administrator.");
+				console.log(error);
+			})
+		);
     },
     
     destroy: function() {
@@ -289,6 +329,7 @@ define([
 
     createDataArray: function(input) {
     	array.forEach(input, lang.hitch(this, function(record){
+    		console.log(record);
     		this.addLayerToDataArray(record, "layerlist", true);
     	}));
     	
@@ -366,16 +407,18 @@ define([
       this.createDataArray(input);
 
       // data store for layerlist
-      var treeStore = new Memory({
+      //var treeStore = new Memory({
+      this.store = new Memory({
         data: this.data,
         getChildren: function(object){
             return this.query({parent: object.id});
         }
       });
-      this.store = treeStore;
+      //this.store = treeStore;
 
-      var treeModel = new ObjectStoreModel({
-        store: treeStore,
+      //var treeModel = new ObjectStoreModel({
+      this.treeModel = new ObjectStoreModel({
+        store: this.store,
         query: {id: 'layerlist'}
       });
 
@@ -404,7 +447,7 @@ define([
       }, this.layerSearchInput).startup();*/
 
       this.tree = new Tree({
-        model: treeModel,
+        model: this.treeModel,
         showRoot: false,
         getIconClass:function(item, opened){
 
@@ -417,6 +460,33 @@ define([
         _createTreeNode: function(args) {
           var tnode = new dijit._TreeNode(args);
           tnode.labelNode.innerHTML = args.label;
+          
+          var toolsContainer = domConstruct.create("div", { "class": "treeNodeToolsContainer" }, tnode.contentNode, "last");
+          var downButton = domConstruct.create("div", { "class": "downButton" }, toolsContainer, "last");
+          new Tooltip({
+            connectId: [downButton],
+            showDelay: 100,
+            label: "One level down"
+          });
+          
+          on(downButton, "click", function(){
+        	  console.log(tnode.item);
+          });
+          
+          var upButton = domConstruct.create("div", { "class": "upButton" }, toolsContainer, "last");
+          new Tooltip({
+            connectId: [upButton],
+            showDelay: 100,
+            label: "One level up"
+          });
+          
+          on(tnode, mouse.enter, function(){
+        	  domStyle.set(toolsContainer, {"display": "block"});
+          });
+          on(tnode, mouse.leave, function(){
+        	  domStyle.set(toolsContainer, {"display": "none"});
+          });
+          
           // if tree node is a service layer
           //if (tnode.item.topGroup) {
         	  //console.log("if (tnode.item.topGroup) {", tnode.item);
@@ -493,9 +563,9 @@ define([
             cb.placeAt(tnode.contentNode, "first");
 
             // set sublayers label width depending on sublayer level in the tree
-            var rowNodePadding = domStyle.get(tnode.rowNode, "padding-left");
-            var labelNodeWidth = 258 - rowNodePadding;
-            domStyle.set(tnode.labelNode, {"width": labelNodeWidth+"px"});
+            //var rowNodePadding = domStyle.get(tnode.rowNode, "padding-left");
+            //var labelNodeWidth = 258 - rowNodePadding;
+            //domStyle.set(tnode.labelNode, {"width": labelNodeWidth+"px"});
 
             // metadata button
             /*var metadataButton;

@@ -8,17 +8,15 @@ define([
 	"dojo/request",
 	"dojo/_base/array", 
 	"dojo/dom-construct",
-	//"dijit/layout/TabContainer",
-	//"dijit/layout/ContentPane",
 	"basemaps/js/adminLayerList",
+	"basemaps/js/adminForms",
 	"dijit/_WidgetBase", 
 	"dijit/_TemplatedMixin",
-	//"dijit/_WidgetsInTemplateMixin",
 	"dojo/text!../templates/adminView.html",
 	"dojo/domReady!"
 ], function(
-	declare, parser, lang, on, dom, domStyle, request, array, domConstruct, /*TabContainer, ContentPane,*/ adminLayerList,
-	_WidgetBase, _TemplatedMixin, /*_WidgetsInTemplateMixin,*/ template
+	declare, parser, lang, on, dom, domStyle, request, array, domConstruct, adminLayerList, adminForms,
+	_WidgetBase, _TemplatedMixin, template
 ){
 	return declare([_WidgetBase, _TemplatedMixin], {
 		templateString: template,
@@ -38,7 +36,8 @@ define([
 		},
 		
 		postCreate: function() {
-			var all = new adminLayerList({forms: this.adminFormsContainer}).placeAt(this.adminLayerListSection);
+			var af = new adminForms().placeAt(this.adminFormsSection);
+			var all = new adminLayerList({forms: af}).placeAt(this.adminLayerListSection);
 			//var llwidget = new layerList({map: map}).placeAt(this.layerlistContainer);
 			/*on(this.collapseAllButton, "click", lang.hitch(this, function(){
 			

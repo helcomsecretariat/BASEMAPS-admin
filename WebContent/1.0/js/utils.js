@@ -23,6 +23,23 @@ define([
 		changeText: function(elementId, text) {
 			var element = dom.byId(elementId);
 			element.innerHTML = text;
+		},
+		clearInput: function(elementId) {
+			var element = dom.byId(elementId);
+			element.value = "";
+		},
+		getInputValue: function(elementId) {
+			return dom.byId(elementId).value;
+		},
+		createPostRequestParams(data) {
+			return {
+				data: JSON.stringify(data),
+				handleAs: "json",
+				headers: {
+					"Content-Type": 'application/json; charset=utf-8',
+					"Accept": "application/json"
+				}
+			}
 		}
 	});
 });

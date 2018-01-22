@@ -187,7 +187,7 @@ html, body {
 	display: none;
 }
 
-#adminFormsContainer {
+#adminFormsSection {
 	background-color: #fff;
 	height: 100%;
 	padding: 20px;
@@ -221,13 +221,91 @@ html, body {
 }
 /* END admin layer list section */
 
+/* START admin layer list node tools section */
+
+.treeNodeToolsContainer {
+	margin-top: 5px;
+	margin-right: 10px;
+	float: right;
+	display: none;
+}
+
+.treeNodeToolsContainer div {
+	background-repeat: no-repeat;
+	width: 16px;
+	height: 16px;
+	margin-left: 5px;
+	float: right;
+	cursor: pointer;
+}	
+
+.downButton {
+	background-image: url("../img/down16.png");
+}
+
+.upButton {
+	background-image: url("../img/up16.png");
+}
+
+/* END admin layer list node tools section */
+
 
 /* START admin forms section */
 #adminFormsHeader {
 	padding-left: 100px;
-	font-size: 20px;
+	font-size: 26px;
 }
-/* START admin forms section */
+
+#adminFormsBody {
+	margin-top: 20px;
+}
+
+.oneLabelInputLabel {
+	font-size: 20px;	
+}
+
+.oneLabelInput {
+	width: 50%;
+	height: 30px;
+	border: 1px solid #800000;
+	border-radius: 4px;
+	background-color: transparent;
+	font-size: 20px;
+	padding: 5px 10px;
+}
+
+#oneLabelForm {
+	display: none;
+}
+
+.adminFormButton {
+	display: inline-block;
+	border: 1px solid #800000;
+	background-color: #B73C2B;
+	cursor: pointer;
+	width: 60px;
+	height: 20px;
+	line-height: 20px;
+	color: white;
+	text-align: center;
+	font-size: 14px;
+}
+
+.adminFormButton:hover {
+	font-weight: bold;	
+}
+	
+#adminFormButtons {
+	margin: 10px 0;
+	display: none;
+}
+
+#adminFormMessage {
+	display: none;
+	color: red;
+	font-size: 12px;
+}
+/* END admin forms section */
 
 
 #footer {
