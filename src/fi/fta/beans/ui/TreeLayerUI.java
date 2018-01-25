@@ -16,6 +16,8 @@ public class TreeLayerUI extends IdUI
 	
 	private String label;
 	
+	private Integer position;
+	
 	private boolean category;
 	
 	private List<TreeLayerUI> layers;
@@ -28,6 +30,7 @@ public class TreeLayerUI extends IdUI
 	{
 		super(c);
 		this.setLabel(c.getLabel());
+		this.setPosition(c.getPosition());
 		this.setCategory(false);
 		this.setLayers(new ArrayList<>());
 	}
@@ -40,6 +43,14 @@ public class TreeLayerUI extends IdUI
 		this.label = label;
 	}
 	
+	public Integer getPosition() {
+		return position;
+	}
+
+	public void setPosition(Integer position) {
+		this.position = position;
+	}
+
 	public boolean isCategory() {
 		return category;
 	}

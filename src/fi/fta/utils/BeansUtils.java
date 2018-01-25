@@ -111,7 +111,9 @@ public class BeansUtils
 			TreeLayerUI ui = new TreeLayerUI(c);
 			ui.getLayers().addAll(
 				BeansUtils.getLayerUIs(c.getId(), c.getChildren()));
-			ui.setCategory(!ui.getLayers().isEmpty());
+			ui.setCategory(
+				ui.getLayers().isEmpty() ||
+				!(ui.getLayers().listIterator(ui.getLayers().size() - 1).next() instanceof TreeWMSLayerUI));
 			layers.add(ui);
 		}
 		for (WMS wms : WMSManager.getInstance().getChildren(parent))
