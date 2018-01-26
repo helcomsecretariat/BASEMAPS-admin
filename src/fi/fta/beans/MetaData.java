@@ -8,12 +8,12 @@ import javax.persistence.Table;
 
 import org.geotools.data.wms.xml.MetadataURL;
 
-import fi.fta.beans.ui.WMSMetaDataUI;
+import fi.fta.beans.ui.MetaDataUI;
 import fi.fta.utils.Util;
 
 @Entity
-@Table(name="wmsmetadata")
-public class WMSMetaData extends IdBean implements UrlFacade
+@Table(name="metadata")
+public class MetaData extends IdBean implements UrlFacade
 {
 	
 	/**
@@ -34,10 +34,10 @@ public class WMSMetaData extends IdBean implements UrlFacade
 	public MetaDataSource source;
 	
 	
-	public WMSMetaData()
+	public MetaData()
 	{}
 	
-	public WMSMetaData(WMSMetaDataUI ui)
+	public MetaData(MetaDataUI ui)
 	{
 		super(ui.getId());
 		this.setParent(ui.getParent());
@@ -46,7 +46,7 @@ public class WMSMetaData extends IdBean implements UrlFacade
 		this.setSource(ui.getSource());
 	}
 	
-	public WMSMetaData(MetadataURL mdu)
+	public MetaData(MetadataURL mdu)
 	{
 		super();
 		this.setFormat(MetaDataFormat.fromString(mdu.getFormat()));
@@ -96,17 +96,16 @@ public class WMSMetaData extends IdBean implements UrlFacade
 	@Override
 	public boolean equals(Object o)
 	{
-		boolean equals = o != null && (o instanceof WMSMetaData);
+		boolean equals = o != null && (o instanceof MetaData);
 		if (equals)
 		{
-			WMSMetaData md = ((WMSMetaData)o);
+			MetaData md = ((MetaData)o);
 			equals = Util.equalsWithNull(this.format, md.getFormat()) &&
 				Util.equalsWithNull(this.url, md.getUrl()) &&
 				(this.id == null || md.getId() == null || this.id.equals(md.getId())) &&
 				(this.parent == null || md.getParent() == null || this.parent.equals(md.getParent()));
 		}
 		return equals;
-			
 	}
 	
 }

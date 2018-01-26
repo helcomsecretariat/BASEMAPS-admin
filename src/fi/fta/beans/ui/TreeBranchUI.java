@@ -5,42 +5,31 @@ import java.util.List;
 
 import fi.fta.beans.CategoryBean;
 
-public class TreeLayerUI extends IdUI
+public class TreeBranchUI extends IdUI
 {
-
+	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 8280196459726504709L;
 	
 	
-	private String label;
-	
 	private Integer position;
 	
 	private boolean category;
 	
-	private List<TreeLayerUI> layers;
+	private List<TreeBranchUI> layers;
 	
 	
-	public TreeLayerUI()
+	public TreeBranchUI()
 	{}
 	
-	public TreeLayerUI(CategoryBean c)
+	public TreeBranchUI(CategoryBean c)
 	{
 		super(c);
-		this.setLabel(c.getLabel());
 		this.setPosition(c.getPosition());
 		this.setCategory(false);
 		this.setLayers(new ArrayList<>());
-	}
-	
-	public String getLabel() {
-		return label;
-	}
-	
-	public void setLabel(String label) {
-		this.label = label;
 	}
 	
 	public Integer getPosition() {
@@ -59,11 +48,11 @@ public class TreeLayerUI extends IdUI
 		this.category = category;
 	}
 	
-	public List<TreeLayerUI> getLayers() {
+	public List<TreeBranchUI> getLayers() {
 		return layers;
 	}
 	
-	public void setLayers(List<TreeLayerUI> layers) {
+	public void setLayers(List<TreeBranchUI> layers) {
 		this.layers = layers;
 	}
 	

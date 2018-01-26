@@ -5,10 +5,10 @@ import java.util.List;
 import org.hibernate.HibernateException;
 
 import fi.fta.beans.CategoryBean;
-import fi.fta.beans.ui.CategoryUI;
+import fi.fta.beans.ui.CategoryBeanUI;
 import fi.fta.data.dao.CategoryBeanDAO;
 
-public abstract class CategoryBeanManager<C extends CategoryBean, UI extends CategoryUI, D extends CategoryBeanDAO<C>>
+public abstract class CategoryBeanManager<C extends CategoryBean, UI extends CategoryBeanUI, D extends CategoryBeanDAO<C>>
 {
 	
 	protected D dao;

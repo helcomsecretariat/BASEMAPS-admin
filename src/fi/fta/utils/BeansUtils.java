@@ -11,12 +11,13 @@ import org.geotools.data.wms.xml.MetadataURL;
 import org.hibernate.HibernateException;
 
 import fi.fta.beans.Category;
+import fi.fta.beans.MetaData;
 import fi.fta.beans.WMS;
-import fi.fta.beans.WMSMetaData;
 import fi.fta.beans.WMSStyle;
-import fi.fta.beans.ui.TreeLayerUI;
+import fi.fta.beans.ui.MetaDataUI;
+import fi.fta.beans.ui.TreeBranchUI;
+import fi.fta.beans.ui.TreeCategoryUI;
 import fi.fta.beans.ui.TreeWMSLayerUI;
-import fi.fta.beans.ui.WMSMetaDataUI;
 import fi.fta.beans.ui.WMSStyleUI;
 import fi.fta.data.managers.WMSManager;
 
@@ -35,37 +36,37 @@ public class BeansUtils
 		return null;
 	}
 	
-	public static List<WMSMetaData> getMetaData(Collection<MetadataURL> collection)
+	public static List<MetaData> getMetaData(Collection<MetadataURL> collection)
 	{
-		List<WMSMetaData> ret = new ArrayList<>();
+		List<MetaData> ret = new ArrayList<>();
 		if (!Util.isEmptyCollection(collection))
 		{
 			for (MetadataURL mdu : collection)
 			{
-				ret.add(new WMSMetaData(mdu));
+				ret.add(new MetaData(mdu));
 			}
 		}
 		return ret;
 	}
 	
-	public static List<WMSMetaDataUI> getMetaDataUI(Collection<WMSMetaData> collection)
+	public static List<MetaDataUI> getMetaDataUI(Collection<MetaData> collection)
 	{
-		List<WMSMetaDataUI> ret = new ArrayList<>();
+		List<MetaDataUI> ret = new ArrayList<>();
 		if (!Util.isEmptyCollection(collection))
 		{
-			for (WMSMetaData md : collection)
+			for (MetaData md : collection)
 			{
-				ret.add(new WMSMetaDataUI(md));
+				ret.add(new MetaDataUI(md));
 			}
 		}
 		return ret;
 	}
 	
-	public static boolean contains(Collection<WMSMetaData> collection, WMSMetaData bean)
+	public static boolean contains(Collection<MetaData> collection, MetaData bean)
 	{
 		if (!Util.isEmptyCollection(collection) && bean != null)
 		{
-			for (WMSMetaData md : collection)
+			for (MetaData md : collection)
 			{
 				if (bean.getUrl().equalsIgnoreCase(md.getUrl()))
 				{
@@ -103,17 +104,20 @@ public class BeansUtils
 		return ret;
 	}
 	
-	public static List<TreeLayerUI> getLayerUIs(Long parent, Collection<Category> root) throws HibernateException 
+	public static List<TreeBranchUI> getLayerUIs(Long parent, Collection<Category> root) throws HibernateException 
 	{
-		List<TreeLayerUI> layers = new ArrayList<>();
+		List<TreeBranchUI> layers = new ArrayList<>();
 		for (Category c : root)
 		{
-			TreeLayerUI ui = new TreeLayerUI(c);
+			TreeCategoryUI ui = new TreeCategoryUI(c);
 			ui.getLayers().addAll(
 				BeansUtils.getLayerUIs(c.getId(), c.getChildren()));
-			ui.setCategory(
-				ui.getLayers().isEmpty() ||
-				!(ui.getLayers().listIterator(ui.getLayers().size() - 1).next() instanceof TreeWMSLayerUI));
+			if (ui.isCategory())
+			{
+				boolean layer = !ui.getLayers().isEmpty() &&
+					(ui.getLayers().listIterator(ui.getLayers().size() - 1).next() instanceof TreeWMSLayerUI);
+				ui.setCategory(!layer);
+			}
 			layers.add(ui);
 		}
 		for (WMS wms : WMSManager.getInstance().getChildren(parent))

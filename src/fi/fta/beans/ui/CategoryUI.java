@@ -1,11 +1,13 @@
 package fi.fta.beans.ui;
 
+import java.util.List;
+
 import org.hibernate.validator.constraints.NotBlank;
 
 import fi.fta.beans.Category;
-import fi.fta.beans.CategoryBean;
+import fi.fta.utils.BeansUtils;
 
-public class CategoryUI extends IdUI
+public class CategoryUI extends CategoryBeanUI
 {
 	
 	/**
@@ -15,26 +17,21 @@ public class CategoryUI extends IdUI
 	
 	@NotBlank(message = "msg.validation.required")
 	private String label;
-	
-	private Integer position;
-	
-	private Long parent;
+
+	protected List<MetaDataUI> metaData;
 	
 	
 	public CategoryUI()
-	{}
-	
-	public CategoryUI(CategoryBean bean)
 	{
-		this.setId(bean.getId());
-		this.setLabel(bean.getLabel());
-		this.setPosition(bean.getPosition());
+		super();
 	}
 	
 	public CategoryUI(Category bean)
 	{
-		this((CategoryBean)bean);
+		super(bean);
+		this.setLabel(bean.getLabel());
 		this.setParent(bean.getParent() != null ? bean.getParent().getId() : null);
+		this.setMetaData(BeansUtils.getMetaDataUI(bean.getMetadata()));
 	}
 	
 	public String getLabel() {
@@ -45,20 +42,12 @@ public class CategoryUI extends IdUI
 		this.label = label;
 	}
 
-	public Integer getPosition() {
-		return position;
+	public List<MetaDataUI> getMetaData() {
+		return metaData;
 	}
 
-	public void setPosition(Integer position) {
-		this.position = position;
-	}
-
-	public Long getParent() {
-		return parent;
-	}
-
-	public void setParent(Long parent) {
-		this.parent = parent;
+	public void setMetaData(List<MetaDataUI> metaData) {
+		this.metaData = metaData;
 	}
 	
 }

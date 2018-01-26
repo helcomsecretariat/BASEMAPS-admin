@@ -3,9 +3,9 @@ package fi.fta.beans.ui;
 import fi.fta.beans.MetaDataFormat;
 import fi.fta.beans.MetaDataSource;
 import fi.fta.beans.UrlFacade;
-import fi.fta.beans.WMSMetaData;
+import fi.fta.beans.MetaData;
 
-public class WMSMetaDataUI extends IdUI implements UrlFacade
+public class MetaDataUI extends IdUI implements UrlFacade
 {
 	
 	/**
@@ -23,10 +23,10 @@ public class WMSMetaDataUI extends IdUI implements UrlFacade
 	protected MetaDataSource source;
 	
 	
-	public WMSMetaDataUI()
+	public MetaDataUI()
 	{}
 	
-	public WMSMetaDataUI(WMSMetaData bean)
+	public MetaDataUI(MetaData bean)
 	{
 		super(bean);
 		this.setParent(bean.getParent());

@@ -15,7 +15,7 @@ public class WMSLayerUI extends WMSLayerBean
 	private static final long serialVersionUID = 7633006930814896400L;
 	
 	
-	private List<WMSMetaDataUI> metadata;
+	private List<MetaDataUI> metadata;
 	
 	private List<WMSStyleUI> styles;
 	
@@ -29,11 +29,11 @@ public class WMSLayerUI extends WMSLayerBean
 		this.setStyles(BeansUtils.getStylesUI(layer.getInfo().getStyles()));
 	}
 	
-	public List<WMSMetaDataUI> getMetadata() {
+	public List<MetaDataUI> getMetadata() {
 		return metadata;
 	}
 
-	public void setMetadata(List<WMSMetaDataUI> metadata) {
+	public void setMetadata(List<MetaDataUI> metadata) {
 		this.metadata = metadata;
 	}
 

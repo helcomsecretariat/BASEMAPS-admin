@@ -5,7 +5,7 @@ import java.util.List;
 import fi.fta.beans.WMS;
 import fi.fta.utils.BeansUtils;
 
-public class TreeWMSLayerUI extends TreeLayerUI
+public class TreeWMSLayerUI extends TreeBranchUI
 {
 
 	/**
@@ -35,8 +35,6 @@ public class TreeWMSLayerUI extends TreeLayerUI
 	
 	private Double scaleMax;
 	
-	private List<WMSMetaDataUI> metadata;
-	
 	private List<WMSStyleUI> styles;
 	
 	
@@ -61,7 +59,6 @@ public class TreeWMSLayerUI extends TreeLayerUI
 			this.setScaleMax(wms.getInfo().getScaleMax());
 			this.setStyles(BeansUtils.getStylesUI(wms.getInfo().getStyles()));
 		}
-		this.setMetadata(BeansUtils.getMetaDataUI(wms.getMetadata()));
 	}
 
 	public String getName() {
@@ -150,14 +147,6 @@ public class TreeWMSLayerUI extends TreeLayerUI
 
 	public void setScaleMax(Double scaleMax) {
 		this.scaleMax = scaleMax;
-	}
-
-	public List<WMSMetaDataUI> getMetadata() {
-		return metadata;
-	}
-
-	public void setMetadata(List<WMSMetaDataUI> metadata) {
-		this.metadata = metadata;
 	}
 
 	public List<WMSStyleUI> getStyles() {

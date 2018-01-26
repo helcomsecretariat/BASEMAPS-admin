@@ -19,12 +19,13 @@ import org.geotools.data.wms.WebMapServer;
 import org.geotools.ows.ServiceException;
 import org.hibernate.HibernateException;
 
+import fi.fta.beans.Category;
+import fi.fta.beans.MetaData;
 import fi.fta.beans.MetaDataSource;
 import fi.fta.beans.Pair;
 import fi.fta.beans.WMS;
 import fi.fta.beans.WMSInfo;
 import fi.fta.beans.WMSLayer;
-import fi.fta.beans.WMSMetaData;
 import fi.fta.beans.ui.WMSLayerUI;
 import fi.fta.beans.ui.WMSUI;
 import fi.fta.cache.TimeBasedCache;
@@ -89,26 +90,30 @@ public class WMSManager extends CategoryBeanManager<WMS, WMSUI, WMSDAO>
 	public Long add(WMSUI ui) throws Exception
 	{
 		WMS wms = new WMS(ui);
-		wms.setParent(ui.getParent());
 		WMSLayer l = this.getLayer(ui);
 		if (l != null)
 		{
 			wms.setInfo(l.getInfo());
 			if (!l.getMetadata().isEmpty())
 			{
-				if (!wms.getMetadata().isEmpty())
+				Category c = CategoryManager.getInstance().get(ui.getParent());
+				if (c != null)
 				{
-					for (WMSMetaData md : l.getMetadata())
+					if (!c.getMetadata().isEmpty())
 					{
-						if (!BeansUtils.contains(wms.getMetadata(), md))
+						for (MetaData md : l.getMetadata())
 						{
-							wms.getMetadata().add(md);
+							if (!BeansUtils.contains(c.getMetadata(), md))
+							{
+								c.getMetadata().add(md);
+							}
 						}
 					}
-				}
-				else
-				{
-					wms.getMetadata().addAll(l.getMetadata());
+					else
+					{
+						c.getMetadata().addAll(l.getMetadata());
+					}
+					CategoryManager.getInstance().update(c);
 				}
 			}
 		}
@@ -134,12 +139,18 @@ public class WMSManager extends CategoryBeanManager<WMS, WMSUI, WMSDAO>
 				}
 				wms.getInfo().copy(layer.getInfo());
 				wms.getInfo().setUpdated(Calendar.getInstance().getTime());
-				Set<WMSMetaData> current = new WMSMetaDataSourceFilter(MetaDataSource.WMS).filter(wms.getMetadata());
-				wms.getMetadata().removeAll(
-					CollectionsUtils.removeAllByUrl(current, new HashSet<>(layer.getMetadata())));
-				wms.getMetadata().addAll(
-					CollectionsUtils.removeAllByUrl(new HashSet<>(layer.getMetadata()), current));
 				dao.update(wms);
+				
+				Category c = CategoryManager.getInstance().get(wms.getParent());
+				if (c != null)
+				{
+					Set<MetaData> current = new WMSMetaDataSourceFilter(MetaDataSource.WMS).filter(c.getMetadata());
+					c.getMetadata().removeAll(
+						CollectionsUtils.removeAllByUrl(current, new HashSet<>(layer.getMetadata())));
+					c.getMetadata().addAll(
+						CollectionsUtils.removeAllByUrl(new HashSet<>(layer.getMetadata()), current));
+					CategoryManager.getInstance().update(c);
+				}
 			}
 		}
 		finally

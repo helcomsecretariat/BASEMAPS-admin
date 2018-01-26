@@ -156,7 +156,7 @@ define([
     },
     
     getLayersData: function() {
-		var url = "sc/categories/root";
+		var url = "sc/categories/tree";
 		request.get(url, {
 			handleAs: "json"
 		}).then(
@@ -170,7 +170,7 @@ define([
 				}
 			}),
 			lang.hitch(this, function(error){
-				alert("Something went wrong (on categories/root). Please contact administrator.");
+				alert("Something went wrong (on categories/tree). Please contact administrator.");
 				console.log(error);
 			})
 		);
@@ -226,11 +226,11 @@ define([
     },*/
 
     addLayerToDataArray: function(layer, parentLayerId, topGroup) {
-    	var isLeaf = (layer.children.length > 0 ? false : true);
+    	var isLeaf = (layer.layers.length > 0 ? false : true);
     	var lyr = {
 			id: layer.id,
 			parent: parentLayerId,
-			name: layer.label,
+			name: layer.label ? layer.label : layer.name,
 			topGroup: topGroup,
 			//leaf: !layer.isGroup,
 			leaf: isLeaf,
@@ -246,7 +246,7 @@ define([
     	this.data.push(lyr);
     	if (!isLeaf) {
     		this.dataFiltering.push(lyr);
-    		array.forEach(layer.children, lang.hitch(this, function(l){
+    		array.forEach(layer.layers, lang.hitch(this, function(l){
     			this.addLayerToDataArray(l, layer.id, false);
     		}));
     	}

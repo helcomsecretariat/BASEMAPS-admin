@@ -20,7 +20,7 @@ public class WMSLayer
 	
 	private WMSInfo info;
 	
-	private List<WMSMetaData> metadata;
+	private List<MetaData> metadata;
 	
 	
 	public WMSLayer(WebMapServer server, Layer l)
@@ -64,11 +64,11 @@ public class WMSLayer
 		this.info = info;
 	}
 
-	public List<WMSMetaData> getMetadata() {
+	public List<MetaData> getMetadata() {
 		return metadata;
 	}
 
-	public void setMetadata(List<WMSMetaData> metadata) {
+	public void setMetadata(List<MetaData> metadata) {
 		this.metadata = metadata;
 	}
 	

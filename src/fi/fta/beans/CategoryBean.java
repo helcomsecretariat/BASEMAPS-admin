@@ -7,7 +7,7 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import fi.fta.beans.ui.CategoryUI;
+import fi.fta.beans.ui.CategoryBeanUI;
 
 @MappedSuperclass
 public class CategoryBean extends IdBean
@@ -18,8 +18,6 @@ public class CategoryBean extends IdBean
 	 */
 	private static final long serialVersionUID = 2794539619136248979L;
 	
-
-	protected String label;
 	
 	protected Integer position;
 	
@@ -35,20 +33,11 @@ public class CategoryBean extends IdBean
 	public CategoryBean()
 	{}
 
-	public CategoryBean(CategoryUI ui)
+	public CategoryBean(CategoryBeanUI ui)
 	{
 		this();
 		this.setId(ui.getId());
-		this.setLabel(ui.getLabel());
 		this.setPosition(ui.getPosition() != null ? ui.getPosition() : 1);
-	}
-
-	public String getLabel() {
-		return label;
-	}
-
-	public void setLabel(String label) {
-		this.label = label;
 	}
 
 	public Integer getPosition() {

@@ -14,7 +14,7 @@ import fi.fta.beans.Category;
 import fi.fta.beans.response.ResponseMessage;
 import fi.fta.beans.response.SimpleResult;
 import fi.fta.beans.ui.CategoryUI;
-import fi.fta.beans.ui.TreeLayerUI;
+import fi.fta.beans.ui.TreeBranchUI;
 import fi.fta.data.managers.CategoryManager;
 import fi.fta.utils.BeansUtils;
 
@@ -45,7 +45,7 @@ public class CategoriesController extends CategoryBeansController<Category, Cate
 	
 	@RequestMapping(value = "/tree", method = RequestMethod.GET)
 	@ResponseBody
-	public SimpleResult<List<TreeLayerUI>> getTree(HttpServletRequest request, HttpServletResponse response)
+	public SimpleResult<List<TreeBranchUI>> getTree(HttpServletRequest request, HttpServletResponse response)
 	{
 		try
 		{
