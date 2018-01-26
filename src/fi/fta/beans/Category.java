@@ -52,6 +52,7 @@ public class Category extends CategoryBean
 	public Category(CategoryUI ui)
 	{
 		super(ui);
+		this.setLabel(ui.getLabel());
 		this.setMetadata(new HashSet<>());
 		if (!Util.isEmptyCollection(ui.getMetaData()))
 		{
