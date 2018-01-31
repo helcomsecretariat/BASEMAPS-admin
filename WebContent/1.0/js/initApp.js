@@ -71,7 +71,7 @@ define([
 							this.utils.changeText("logoutLink", "Logout (" + response.item.name + ")");
 							this.utils.show("logoutLink", "block");
 							
-							this.switchToAdminView();
+							this.switchToAdminView(response.item.role);
 						}
 					}
 				}),
@@ -111,15 +111,23 @@ define([
 			);
 		},
 		
-		switchToAdminView: function() {
+		switchToAdminView: function(role) {
 			if (!this.adminView) {
 				this.mM.show(false);
 				if (this.adminViewManagerObj == null) {
-					this.adminViewManagerObj = new adminViewManager().placeAt(dom.byId("mainWindow"));
+					this.adminViewManagerObj = new adminViewManager({"role": role}).placeAt(dom.byId("mainWindow"));
 				}
 				else {
 					this.adminViewManagerObj.show(true);
 				}
+				
+				if (role === "ADMIN") {
+					this.adminViewManagerObj.showViewButtons(true);
+				}
+				else if (role === "PROVIDER") {
+					this.adminViewManagerObj.showViewButtons(false);
+					this.adminViewManagerObj.showLayerList();
+				} 
 				this.adminView = true;
 			}
 		}, 

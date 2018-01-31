@@ -4,11 +4,11 @@
 		<!-- <div style="width: 300px; height: 290px">
 			<div id="adminToolsViews" data-dojo-attach-point="tabCont"></div>
 		</div> -->
-		<div id="adminToolsViews"> 
+		<div id="adminToolsViews" data-dojo-attach-point="adminToolsViews"> 
 			<div id="layersView" class="adminViewButton" data-dojo-attach-event="onclick:layersButtonClick">Layers</div>
 			<div id="usersView" class="adminViewButton" data-dojo-attach-event="onclick:usersButtonClick">Users</div>
 		</div>
-		<div id="adminUsersSection">Users</div>
+		<div id="adminUsersListSection" data-dojo-attach-point="adminUsersListSection"></div>
 		<div id="adminLayerListSection" data-dojo-attach-point="adminLayerListSection"></div>
 	</div>
 	<div id="adminFormsSection" data-dojo-attach-point="adminFormsSection"></div>

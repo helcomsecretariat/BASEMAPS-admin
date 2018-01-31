@@ -1,855 +1,554 @@
 define([
-  "dojo/_base/declare",
-  "dojo/_base/lang", "dojo/_base/fx",
-  "dojo/mouse",
-  "dojo/on",
-  "dojo/dom",
-  "dojo/query",
-  "dojo/dom-style",
-  "dojo/request",
-  "dojox/validate/web",
-  "dojo/_base/array", "dojo/dom-construct",  //"dojo/query!css3",
-  "dojo/store/Memory","dijit/tree/ObjectStoreModel", "dijit/Tree", "dijit/form/FilteringSelect",
-  "dijit/form/CheckBox", "dijit/Tooltip",
-  "basemaps/js/utils",
-  "//openlayers.org/en/v4.4.2/build/ol.js",
-  //"esri/request", "esri/tasks/IdentifyTask", "esri/tasks/IdentifyParameters",
-  //"dijit/form/HorizontalSlider", "dijit/form/HorizontalRule", "dijit/form/HorizontalRuleLabels",
-  "dijit/_WidgetBase", "dijit/_TemplatedMixin",
-  "dojo/text!../templates/adminLayerList.html"
+	"dojo/_base/declare",
+	"dojo",
+	//"dojo/aspect",
+	"dojo/_base/lang",
+	"dojo/mouse",
+	"dojo/on",
+	"dojo/dom",
+	"dojo/query",
+	"dojo/dom-style",
+	"dojo/request",
+	"dojox/validate/web",
+	"dojo/_base/array", 
+	"dojo/dom-construct",
+	"dojo/store/Memory",
+	"dijit/tree/ObjectStoreModel", 
+	"dijit/Tree",
+	//"dijit/tree/dndSource",
+	"dijit/form/FilteringSelect",
+	"dijit/form/CheckBox", 
+	"dijit/Tooltip",
+	"basemaps/js/utils",
+	"dijit/_WidgetBase", 
+	"dijit/_TemplatedMixin",
+	"dojo/text!../templates/adminLayerList.html"
 ], function(
-  declare,
-  lang, baseFx,
-  mouse,
-  on,
-  dom,
-  query,
-  domStyle,
-  request,
-  validate,
-  array, domConstruct, //array, query,
-  Memory, ObjectStoreModel, Tree, FilteringSelect,
-  checkBox, Tooltip,
-  utils,
-  ol,
-  //esriRequest, IdentifyTask, IdentifyParameters,
-  //HorizontalSlider, HorizontalRule, HorizontalRuleLabels,
-  _WidgetBase, _TemplatedMixin, template
+	declare,
+	dojo,
+	//aspect,
+	lang,
+	mouse,
+	on,
+	dom,
+	query,
+	domStyle,
+	request,
+	validate,
+	array,
+	domConstruct,
+	Memory, 
+	ObjectStoreModel, 
+	Tree,
+	//dndSource,
+	FilteringSelect,
+	checkBox, 
+	Tooltip,
+	utils,
+	_WidgetBase, 
+	_TemplatedMixin, 
+	template
 ){
-  return declare([_WidgetBase, _TemplatedMixin], {
-    templateString: template,
-    baseClass: "adminLayerList",
-    map: null,
-    utils: null,
-    configLayers: null,
-    tree: null,
-    treeModel :null,
-    store: null,
-    data: null,
-    dataFiltering: [{ id: 'layerlist', leaf: false}],
-    legendInfo: {},
-    metadataIDS: {},
-    identify: {},
-    visitedNodesIds: {},
-    formsObj: null,
-    //formView: null,
-    constructor: function(params) {
-    	this.formsObj = params.forms;
-    	this.utils = new utils();
-    	this.data = [{ id: 'layerlist', leaf: false}];
-    },
+	return declare([_WidgetBase, _TemplatedMixin], {
+		templateString: template,
+		baseClass: "adminLayerList",
+		map: null,
+		utils: null,
+		configLayers: null,
+		tree: null,
+		treeModel :null,
+		store: null,
+		data: null,
+		dataFiltering: [{ id: "layerlist", leaf: false}],
+		legendInfo: {},
+		metadataIDS: {},
+		identify: {},
+		visitedNodesIds: {},
+		formsObj: null,
+		rootLayerId: "layerlist",
+		currentObjId: null,
+		currentHeader: "",
+		treePath: [],
+		constructor: function(params) {
+			this.formsObj = params.forms;
+			this.utils = new utils();
+			this.data = [{ id: this.rootLayerId, leaf: false}];
+		},
     
-    topCategoryButtonClick: function() {
-    	this.formsObj.formCleanUp();
-    	this.formsObj.setupForm("TOP_CATEGORY");
-    	
-    	/*console.log(this.formsContainer);
-    	var adminFormsHeader = dom.byId("adminFormsHeader");
-    	adminFormsHeader.innerHTML = "LAbas";
-    	var adminFormsBody = dom.byId("adminFormsBody");
-    	domConstruct.place(adminFormsOneLabel, adminFormsBody);*/
-	},
+		topCategoryButtonClick: function() {
+			this.currentObjId = null;
+			this.formsObj.formCleanUp();
+			this.formsObj.setupAddCategoryForm("Add root layer");
+		},
 	
-	topLayerButtonClick: function() {
-		this.formsObj.formCleanUp();
-    	this.formsObj.setupForm("TOP_LAYER");
-	},
-	
-    postCreate: function() {
-      /*this.getLegendInfo();
-      this.getMetadataIDS();*/
-      //console.log("OpenLayers.ProxyHost", ol.ProxyHost);
-      //ol.ProxyHost = "http://62.236.121.188/website/MADS/v11_js_29-06-2017/proxy/proxy.ashx?url=''";
-      //console.log("OpenLayers.ProxyHost", ol.ProxyHost);
-      
-    	this.getLayersData();
+		postCreate: function() {
+			this.getLayersData();
     	
-    	on(this.formsObj.adminFormSaveButton, "click", lang.hitch(this, function(){
-    		this.formsObj.hideMessage();
-			var val = this.formsObj.getOneLabelInputValue();
-			if (validate.isText(val)) {
-				this.saveCategory(val);
-			}
-			else {
-				this.formsObj.showMessage("Label is not valid.");
-			}
-		}));
-    	
-    	//this.createTree();
-
-      // on search button click
-      /*on(this.collapseLayerList, "click", lang.hitch(this, function(){
-        var llcnode = dom.byId("layerlistContainer");
-        //var llcnode = dijit.byId("layerlistContainer").domNode;
-        var containerWidth = domStyle.get(llcnode, "width");
-        var slidePane = dojo.animateProperty({
-          node: llcnode,
-          duration: 500,
-          properties: {
-              width: {
-                  end: 25
-              }
-          },
-          onBegin: function(){
-            document.getElementById("collapseLayerList").style.display = "none";
-          },
-          onEnd: function(){
-            document.getElementById("layerlistSectionsContainer").style.display = "none";
-            document.getElementById("expandLayerList").style.display = "block";
-            var zoomcontroll = dojo.query('.ol-zoom')[0];
-            domStyle.set(zoomcontroll, {"left": "5px"});
-          }
-        });
-        slidePane.play();
-
-        var zoomcontroll = dojo.query('.ol-zoom')[0];
-        var slideZoom = dojo.animateProperty({
-          node: zoomcontroll,
-          duration: 500,
-          properties: {
-              left: {
-                  end: 30
-              }
-          }
-        });
-        slideZoom.play();
-      }));
-
-      on(this.expandLayerList, "click", lang.hitch(this, function(){
-        var llcnode = dom.byId("layerlistContainer");
-        //var llcnode = dijit.byId("layerlistContainer").domNode;
-        var containerWidth = domStyle.get(llcnode, "width");
-        var slidePane = dojo.animateProperty({
-          node: llcnode,
-          duration: 500,
-          properties: {
-              width: {
-                  end: 350
-              }
-          },
-          onBegin: function(){
-            document.getElementById("layerlistSectionsContainer").style.display = "block";
-            document.getElementById("expandLayerList").style.display = "none";
-          },
-          onEnd: function(){
-            document.getElementById("collapseLayerList").style.display = "block";
-          }
-        });
-        slidePane.play();
-
-        var zoomcontroll = dojo.query('.ol-zoom')[0];
-        var slideZoom = dojo.animateProperty({
-          node: zoomcontroll,
-          duration: 500,
-          properties: {
-              left: {
-                  end: 355
-              }
-          }
-        });
-        slideZoom.play();
-      }));*/
-
-      // on collapse button click
-      /*on(this.collapseAllButton, "click", lang.hitch(this, function(){
-        this.tree.collapseAll();
-      }));
-
-      // on hide button click
-      on(this.hideAllButton, "click", lang.hitch(this, function(){
-        //this.hideAllClicked = true;
-        for (var id in this.visitedNodesIds) {
-          if (this.visitedNodesIds.hasOwnProperty(id)) {
-            var n = this.tree.getNodeFromItem(id);
-            delete this.visitedNodesIds[id];
-            domStyle.set(n.rowNode, {
-              "background-color": ""
-            });
-            if (n.checkBox) {
-              n.checkBox.set("checked", false);
-            }
-          }
-        }
-      }));*/
-    },
-    
-    refreshLayerList: function() {
-    	delete this.store;
-    	this.treeModel.destroy();
-    	this.tree.destroy();
-    	domConstruct.empty(this.adminLayerListTree);
-		this.data = [{ id: 'layerlist', leaf: false}];
-		this.getLayersData();
-    },
-    
-    saveCategory: function(label) {
-    	var url = "sc/categories/add";
-		var data = {
-			"label": label
-		};
-		request.post(url, this.utils.createPostRequestParams(data)).then(
-			lang.hitch(this, function(response){
-				this.utils.clearInput("adminFormOneLabelInput");
-				if (response.type == "error") {
-					this.formsObj.showMessage("Failed to add category.");
+			on(this.formsObj.addCategorySaveButton, "click", lang.hitch(this, function(){
+				this.formsObj.hideMessage();
+					
+				var values = {"categoryName": this.formsObj.getCategoryInputValue()};
+				if (this.formsObj.addingWmsWithCategory) {
+					values.wmsUrl = this.formsObj.getWmsUrlInputValue();
+					if (this.formsObj.wmsValidationPassed) {
+						values.wmsName = this.formsObj.wmsNameSelector.get("value");
+					}
+					else {
+						values.wmsName = this.formsObj.getWmsNameInputValue();
+					}
 				}
-				else if (response.type == "success") {
-					this.formsObj.showMessage("Category added.");
+				
+				if (validate.isText(values.categoryName)) {
+					this.saveCategory(values);
+				}
+				else {
+					this.formsObj.showMessage("Category label is not valid.");
+				}
+			}));
+			
+			on(this.formsObj.deleteCategoryYesButton, "click", lang.hitch(this, function(){
+				this.deleteCategory();
+			}));
+			
+			on(this.formsObj.deleteCategoryNoButton, "click", lang.hitch(this, function(){
+				this.currentObjId = null;
+				this.formsObj.formCleanUp();
+			}));
+			
+			on(this.formsObj.deleteCategoryNoButton, "click", lang.hitch(this, function(){
+				this.currentObjId = null;
+				this.formsObj.formCleanUp();
+			}));
+		},
+    
+		getTreePath: function(id) {
+			while (this.store.get(id).parent) {
+				this.treePath.unshift(id);
+				id = this.store.get(id).parent;
+			}
+			this.treePath.unshift(this.rootLayerId);
+			console.log(this.treePath);
+		},
+		
+		refreshLayerList: function() {
+			delete this.store;
+			this.treeModel.destroy();
+			this.tree.destroy();
+			domConstruct.empty(this.adminLayerListTree);
+			this.data = [{ id: this.rootLayerId, leaf: false}];
+			this.getLayersData();
+		},
+    
+		saveCategory: function(values) {
+			console.log(values);
+			var url = "sc/categories/add";
+			var data = {
+				"label": values.categoryName
+			};
+			if (this.currentObjId != null) {
+				data.parent = this.currentObjId;
+				this.getTreePath(this.currentObjId);
+			}
+			request.post(url, this.utils.createPostRequestParams(data)).then(
+				lang.hitch(this, function(response){
+					this.utils.clearInput("categoryInput");
+					if (response.type == "error") {
+						this.formsObj.showMessage("Failed to add category.");
+					}
+					else if (response.type == "success") {
+						this.formsObj.showMessage("Category added.");
+						
+						if (this.formsObj.addingWmsWithCategory) {
+							if ((validate.isUrl(values.wmsUrl)) && (validate.isText(values.wmsName))) {
+								this.saveWms({"parent": response.item, "url": values.wmsUrl, "name": values.wmsName});
+							}
+							else {
+								this.formsObj.showMessage("WMS url or name is not valid. WMS is not added.");
+							}
+							/*if ((values.wfsUrl.length > 0) && (values.wfsName.length > 0)) {
+								if ((validate.isUrl(values.wfsUrl)) && (validate.isText(values.wfsName))) {
+									console.log("valid name and url wfs");
+								}
+								else {
+									this.formsObj.showMessage("WFS url or name is not valid. WFS is not added.");
+								}
+							}*/
+						}
+						else {
+							this.refreshLayerList();
+						}
+						console.log(response);
+					}
+				}),
+				lang.hitch(this, function(error){
+					this.utils.clearInput("categoryInput");
+					this.formsObj.showMessage("Something went wrong (on adding category). Please contact administrator.");
+					console.log(error);
+				})
+			);
+		},
+		
+		saveWms: function(data) {
+			console.log(data);
+			var url = "sc/wms/add";
+			request.post(url, this.utils.createPostRequestParams(data)).then(
+				lang.hitch(this, function(response){
+					this.formsObj.hideAddWmsForm();
 					this.refreshLayerList();
-				}
-			}),
-			lang.hitch(this, function(error){
-				this.utils.clearInput("adminFormOneLabelInput");
-				this.formsObj.showMessage("Something went wrong (on adding category). Please contact administrator.");
-				console.log(error);
-			})
-		);
-    },
+					if (response.type == "error") {
+						this.formsObj.showMessage("Failed to add WMS.");
+					}
+					else if (response.type == "success") {
+						this.formsObj.showMessage("WMS added.");
+						
+					}
+				}),
+				lang.hitch(this, function(error){
+					this.formsObj.hideAddWmsForm();
+					this.refreshLayerList();
+					this.formsObj.showMessage("Something went wrong (on adding category). Please contact administrator.");
+					console.log(error);
+				})
+			);
+		},
+		
+		deleteCategory: function() {
+			var url = "sc/categories/delete/" + this.currentObjId;
+			this.getTreePath(this.store.get(this.currentObjId).parent);
+			request.del(url, {
+				handleAs: "json"
+			}).then(
+				lang.hitch(this, function(response){
+					if (response.type == "error") {
+						this.currentObjId = null;
+						this.formsObj.formCleanUp();
+						this.formsObj.showMessage("Failed to delete category.");
+					}
+					else if (response.type == "success") {
+						this.currentObjId = null;
+						this.formsObj.formCleanUp();
+						this.formsObj.showMessage("Category deleted.");
+						this.refreshLayerList();
+					}
+				}),
+				lang.hitch(this, function(error){
+					this.currentObjId = null;
+					this.formsObj.formCleanUp();
+					this.formsObj.showMessage("Something went wrong (on deleting category). Please contact administrator.");
+					console.log(error);
+				})
+			);
+		},
+		
+		changeCategoryPosition: function(pos) {
+			console.log(pos);
+			var url = "sc/categories/position/"+this.currentObjId+"/"+pos;
+			this.getTreePath(this.store.get(this.currentObjId).parent);
+			request.post(url, this.utils.createPostRequestParams({})).then(
+				lang.hitch(this, function(response){
+					if (response.type == "error") {
+						this.formsObj.showMessage("Failed to change layer's position.");
+					}
+					else if (response.type == "success") {
+						this.refreshLayerList();
+					}
+				}),
+				lang.hitch(this, function(error){
+					this.formsObj.showMessage("Something went wrong (on changing category position). Please contact administrator.");
+					console.log(error);
+				})
+			);
+		},
+
+		destroy: function() {
+
+		},
     
-    destroy: function() {
-    	
-    },
-    
-    getLayersData: function() {
-		var url = "sc/categories/tree";
-		request.get(url, {
-			handleAs: "json"
-		}).then(
-			lang.hitch(this, function(response){
-				if (response.type == "error") {
-					console.log(response);
+		getLayersData: function() {
+			var url = "sc/categories/tree";
+			request.get(url, {
+				handleAs: "json"
+			}).then(
+				lang.hitch(this, function(response){
+					if (response.type == "error") {
+						console.log(response);
+						// TODO: popup box message
+					}
+					else if (response.type == "success") {
+						this.createTree(response.item);
+						if (this.treePath.length > 0) {
+							this.tree.set('paths', [this.treePath]).then(lang.hitch(this, function(path) {
+								if(!this.tree.selectedNode.isExpanded){
+									this.tree._expandNode(this.tree.selectedNode);
+								}
+								this.treePath = [];
+							}));
+						}
+					}
+				}),
+				lang.hitch(this, function(error){
+					alert("Something went wrong (on categories/tree). Please contact administrator.");
+					console.log(error);
+				})
+			);
+		},
+		
+		getLabelsFromRoot: function(id) {
+			var storeElem = this.store.query({id: id})[0];
+			var part = storeElem.name + " -> ";
+			this.currentHeader = part.concat(this.currentHeader);
+			if (storeElem.parent != this.rootLayerId) {
+				this.getLabelsFromRoot(storeElem.parent);
+			}
+		},
+
+		addLayerToDataArray: function(layer, parentLayerId, topGroup, last) {
+			//var isLeaf = (layer.children.length > 0 ? false : true);
+			//var isLeaf = (layer.name ? true : false);
+			var isLeaf = !(layer.category);
+			//var isEmpty = (layer.layers.length > 0 ? false : true);
+			var lyr = {
+				id: layer.id.toString(),
+				parent: parentLayerId,
+				name: layer.label,
+				topGroup: topGroup,
+				position: layer.position,
+				lastPos: last,
+				//leaf: !layer.isGroup,
+				leaf: isLeaf,
+				//empty: isEmpty,
+				wms: null,
+				wfs: null,
+				metadata: null
+			};
+			/*if (isLeaf) {
+				lyr["wms"] = layer.wms;
+				lyr["wfs"] = layer.wfs;
+				lyr["metadata"] = layer.metadata;
+			}*/
+			this.data.push(lyr);
+			if (!isLeaf) {
+				this.dataFiltering.push(lyr);
+				array.forEach(layer.layers, lang.hitch(this, function(l){
+					if (l.position === layer.layers.length) {
+						this.addLayerToDataArray(l, layer.id.toString(), false, true);
+					}
+					else {
+						this.addLayerToDataArray(l, layer.id.toString(), false, false);
+					}
+				}));
+			}
+		},
+
+		createDataArray: function(input) {
+			array.forEach(input, lang.hitch(this, function(record){
+				if (record.position === input.length) {
+					this.addLayerToDataArray(record, this.rootLayerId, true, true);
 				}
-				else if (response.type == "success") {
-					this.createTree(response.item);
+				else {
+					this.addLayerToDataArray(record, this.rootLayerId, true, false);
 				}
-			}),
-			lang.hitch(this, function(error){
-				alert("Something went wrong (on categories/tree). Please contact administrator.");
-				console.log(error);
-			})
-		);
-	},
-    
-    // get all services layers legend info from rest
-    getLegendInfo: function() {
-      var requestHandle = null;
-      array.forEach(this.map.layerIds, lang.hitch(this, function(layerId){
-        if (layerId !== "Basemap") {
-          var lyr = this.map.getLayer(layerId);
-          requestHandle = esriRequest({
-            url: lyr.url+"/legend",
-            content: { f: "json" },
-            handleAs: "json",
-            callbackParamName: "callback"
-          });
-          requestHandle.then(lang.hitch(this, function(response) {
-            this.legendInfo[layerId] = [];
-            array.forEach(response.layers, lang.hitch(this, function(layer){
-              this.legendInfo[layerId][layer.layerId] = layer.legend;
-            }));
-          }), lang.hitch(this, function(error) {
-            console.log("Error. Can't get legend info for " + layerId + ". Error message: ", error.message);
-          }));
-        }
-      }));
-    },
+			}));
+		},
+		
+		createTree: function(input) {
+			var that = this;
+			this.createDataArray(input);
+			
+			this.store = new Memory({
+				data: this.data,
+				getChildren: function(object){
+					return this.query({parent: object.id});
+				}
+			});
+			
+			/*aspect.around(this.store, "put", lang.hitch(this, function(originalPut){
+		        return function(obj, options){
+		            if(options && options.parent){
+		                obj.parent = options.parent.id;
+		            }
+		            return originalPut.call(this.store, obj, options);
+		        }
+		    }));*/
+			
+			this.treeModel = new ObjectStoreModel({
+				store: this.store,
+				query: {id: this.rootLayerId}
+			});
 
-    /*getMetadataIDS: function() {
-      var windowUrl = window.location.pathname;
-      windowUrl = windowUrl.replace("index.html", "");
-      var requestHandle = esriRequest({
-        url: windowUrl + "config/metadataIDS.json",
-        //url: "http://62.236.121.188/website/MADS/v10_js_11-05-2017/config/metadataIDS.json",
-        handleAs: "json"
-      });
-      requestHandle.then(lang.hitch(this, function(response) {
-        this.metadataIDS = response;
-        this.setupLayerListAndDisplayLayer();
-      }), lang.hitch(this, function(error) {
-        console.log("Error. Can't get metadata IDs. Error message: ", error.message);
-        this.setupLayerListAndDisplayLayer();
-      }));
-    },
+			this.tree = new Tree({
+				model: this.treeModel,
+				//dndController: dndSource,
+				showRoot: false,
+				getIconClass:function(item, opened){
+				
+				},
+				getNodeFromItem: function (id) {
+					return this._itemNodesMap[ id ][0];
+				},
 
-    setupLayerListAndDisplayLayer: function() {
-      this.createTree();
-      var datasetID = this.getURLParameter("datasetID");
-      if (datasetID) {
-        this.showLayer(datasetID);
-      }
-    },*/
-
-    addLayerToDataArray: function(layer, parentLayerId, topGroup) {
-    	//var isLeaf = (layer.children.length > 0 ? false : true);
-    	var isLeaf = (layer.name ? true : false);
-    	var lyr = {
-			id: layer.id,
-			parent: parentLayerId,
-			name: layer.label,
-			topGroup: topGroup,
-			//leaf: !layer.isGroup,
-			leaf: isLeaf,
-			wms: null,
-			wfs: null,
-			metadata: null
-    	};
-    	/*if (isLeaf) {
-			lyr["wms"] = layer.wms;
-			lyr["wfs"] = layer.wfs;
-			lyr["metadata"] = layer.metadata;
-    	}*/
-    	this.data.push(lyr);
-    	if (!isLeaf) {
-    		this.dataFiltering.push(lyr);
-    		array.forEach(layer.layers, lang.hitch(this, function(l){
-    			this.addLayerToDataArray(l, layer.id, false);
-    		}));
-    	}
-    },
-
-    createDataArray: function(input) {
-    	array.forEach(input, lang.hitch(this, function(record){
-    		console.log(record);
-    		this.addLayerToDataArray(record, "layerlist", true);
-    	}));
-    	
-      /*for(var i=this.map.layerIds.length-1; i>=0; i--){
-        var layerId = this.map.layerIds[i];
-        if (layerId !== "Basemap") {
-          // add top most level to layer list
-          this.data.push({id: layerId+"_top", parent: "layerlist", name: layerId, topGroup: true, leaf: false, layer: layerId});
-
-          var lyr = this.map.getLayer(layerId);
-          //for each layer in service
-          array.forEach(lyr.layerInfos, lang.hitch(this, function(lyrInfo){
-
-            // check if layer is a leaf
-            var isLeaf = false;
-            if (lyrInfo.subLayerIds) {
-              isLeaf = false;
-            }
-            else {
-              isLeaf = true;
-            }
-            // add all levels and set parent levels
-            if (lyrInfo.parentLayerId === -1) {
-              this.data.push({id: layerId+"_"+lyrInfo.id, parent: layerId+"_top", name: lyrInfo.name, topGroup: false, leaf: isLeaf, layer: layerId, visibilityId: lyrInfo.id, metadataId: this.metadataIDS[layerId+"_"+lyrInfo.id]});
-            }
-            else {
-              this.data.push({id: layerId+"_"+lyrInfo.id, parent: layerId+"_"+lyrInfo.parentLayerId, name: lyrInfo.name, topGroup: false, leaf: isLeaf, layer: layerId, visibilityId: lyrInfo.id, metadataId: this.metadataIDS[layerId+"_"+lyrInfo.id]});
-            }
-          }));
-
-          // create Identify Task for each service
-          //var idp = new IdentifyParameters();
-          //idp.tolerance = 6;
-          //idp.returnGeometry = true;
-          //idp.layerOption = IdentifyParameters.LAYER_OPTION_TOP;
-          //idp.layerIds = [];
-
-          //this.identify[layerId] = {
-          //  "task": new IdentifyTask(lyr.url),
-          //  "params": idp
-          //};
-        }
-      //}));
-      }*/
-    },
-
-    /*validURL: function(url) {
-      var pattern = new RegExp('^(https?:\/\/)?'+ // protocol
-      '((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|'+ // domain name
-      '((\d{1,3}\.){3}\d{1,3}))'+ // OR ip (v4) address
-      '(\:\d+)?(\/[-a-z\d%_.~+]*)*'+ // port and path
-      '(\?[;&a-z\d%_.~+=-]*)?'+ // query string
-      '(\#[-a-z\d_]*)?$','i'); // fragment locater
-      if(!pattern.test(url)) {
-        return false;
-      } else {
-        return true;
-      }
-    },*/
-
-    createTree: function(input) {
-      var mapa = this.map;
-      var visitedNodesIds = this.visitedNodesIds;
-
-      /*var urlPattern = new RegExp('^(https?:\/\/)?'+ // protocol
-      '((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|'+ // domain name
-      '((\d{1,3}\.){3}\d{1,3}))'+ // OR ip (v4) address
-      '(\:\d+)?(\/[-a-z\d%_.~+]*)*'+ // port and path
-      '(\?[;&a-z\d%_.~+=-]*)?'+ // query string
-      '(\#[-a-z\d_]*)?$','i'); // fragment locater
-      */
-      //var validURL = this.validURL;
-      //var identify = this.identify;
-      //var legendInfo = this.legendInfo;
-      this.createDataArray(input);
-
-      // data store for layerlist
-      //var treeStore = new Memory({
-      this.store = new Memory({
-        data: this.data,
-        getChildren: function(object){
-            return this.query({parent: object.id});
-        }
-      });
-      //this.store = treeStore;
-
-      //var treeModel = new ObjectStoreModel({
-      this.treeModel = new ObjectStoreModel({
-        store: this.store,
-        query: {id: 'layerlist'}
-      });
-
-      // data store for search (doesn't include layers, but just layer groups)
-      /*var storeFiltering = new Memory({
-        data: this.dataFiltering
-      });
-      var filteringSelect = new FilteringSelect({
-        id: "layerSearchInput",
-        name: "layerSearch",
-        class: "layerSearchInput",
-        queryExpr: "*${0}*",
-        autoComplete: false,
-        required: false,
-        forceWidth: true,
-        hasDownArrow: false,
-        placeHolder: "Search...",
-        store: storeFiltering,
-        searchAttr: "name",
-        onChange: lang.hitch(this, function(state){
-          var id = dijit.byId("layerSearchInput").get('value');
-          this.showLayer(id);
-          // clear search field
-          dijit.byId("layerSearchInput").set("value", "");
-        })
-      }, this.layerSearchInput).startup();*/
-
-      this.tree = new Tree({
-        model: this.treeModel,
-        showRoot: false,
-        getIconClass:function(item, opened){
-
-        },
-        getNodeFromItem: function (id) {
-          //return this._itemNodesMap[item.name[0]];
-          return this._itemNodesMap[ id ][0];
-        },
-
-        _createTreeNode: function(args) {
-          var tnode = new dijit._TreeNode(args);
-          tnode.labelNode.innerHTML = args.label;
+				_createTreeNode: function(args) {
+					var tnode = new dijit._TreeNode(args);
+					tnode.labelNode.innerHTML = args.label;
           
-          var toolsContainer = domConstruct.create("div", { "class": "treeNodeToolsContainer" }, tnode.contentNode, "last");
-          var downButton = domConstruct.create("div", { "class": "downButton" }, toolsContainer, "last");
-          new Tooltip({
-            connectId: [downButton],
-            showDelay: 100,
-            label: "One level down"
-          });
+					var toolsContainer = domConstruct.create("div", { "class": "treeNodeToolsContainer" }, tnode.contentNode, "last");
           
-          on(downButton, "click", function(){
-        	  console.log(tnode.item);
-          });
+					if (!tnode.item.lastPos) {
+						var downButton = domConstruct.create("div", { "class": "downButton" }, toolsContainer, "last");
+						new Tooltip({
+							connectId: [downButton],
+							showDelay: 10,
+							position: ["below"],
+							label: "One level down"
+						});
+
+						on(downButton, "click", function(){
+							that.formsObj.formCleanUp();
+							that.currentObjId = tnode.item.id;
+							that.changeCategoryPosition(tnode.item.position+1);
+						});
+					}
           
-          var upButton = domConstruct.create("div", { "class": "upButton" }, toolsContainer, "last");
-          new Tooltip({
-            connectId: [upButton],
-            showDelay: 100,
-            label: "One level up"
-          });
-          
-          on(tnode, mouse.enter, function(){
-        	  domStyle.set(toolsContainer, {"display": "block"});
-          });
-          on(tnode, mouse.leave, function(){
-        	  domStyle.set(toolsContainer, {"display": "none"});
-          });
-          
-          // if tree node is a service layer
-          //if (tnode.item.topGroup) {
-        	  //console.log("if (tnode.item.topGroup) {", tnode.item);
-            // get the service layer for changing opacity and moving up and down
-            //var layerOpacity = mapa.getLayer(tnode.item.layer);
-            // create an arrow button to open menu
-            //var topGroupButton = domConstruct.create("div", { "class": "topGroupButton" }, tnode.rowNode, "last");
-            // open menu and hide previously open menu
-            /*on(topGroupButton, "click", function(){
-                query(".layerTopGroupMenu").forEach(function(node){
-                domStyle.set(node, {"display": "none"});
-              });
-              var pos = dojo.position(topGroupButton, true);
-              domStyle.set(layerTopGroupMenu, {"top": pos.y +13+"px", "left": pos.x+"px", "display": "block"});
-            });*/
+					if (tnode.item.position > 1) {
+						var upButton = domConstruct.create("div", { "class": "upButton" }, toolsContainer, "last");
+						new Tooltip({
+							connectId: [upButton],
+							showDelay: 10,
+							position: ["below"],
+							label: "One level up"
+						});
 
-            // create a menu
-            //var layerTopGroupMenu = domConstruct.create("div", { "class": "layerTopGroupMenu" }, win.body(), "last");
-            // create opacity thing
-            //var opacityThing = domConstruct.create("div", { "class": "layerTopGroupMenuContainer", "style": "margin-bottom: 20px" }, layerTopGroupMenu, "last");
-            //var opacityLabel = domConstruct.create("div", { "class": "layerTopGroupMenuLabels", innerHTML: "Layers opacity" }, opacityThing, "first");
-            //var sliderDiv = domConstruct.create("div", { "class": "sliderDiv" }, opacityThing, "last");
-            /*var slider = new HorizontalSlider({
-              name: "slider",
-              value: layerOpacity.opacity,
-              minimum: 0,
-              maximum: 1,
-              intermediateChanges: true,
-              showButtons: false,
-              onChange: function(value){
-                layerOpacity.setOpacity(value);
-              }
-            }, sliderDiv);
+						on(upButton, "click", function(){
+							that.formsObj.formCleanUp();
+							that.currentObjId = tnode.item.id;
+							that.changeCategoryPosition(tnode.item.position-1);
+						});
+					}
+									
+					if (tnode.item.leaf) {
+						domConstruct.destroy(tnode.expandoNode);
+						
+						var wfsButton = domConstruct.create("div", { "class": "manageWfsButton" }, toolsContainer, "last");
+						new Tooltip({
+							connectId: [wfsButton],
+							showDelay: 10,
+							position: ["below"],
+							label: "Manage layers WFS"
+						});
 
-            var sliderLabelsNode = domConstruct.create("div", {}, opacityThing, "last");
-            var sliderLabels = new HorizontalRuleLabels({
-              container: "bottomDecoration",
-              labelStyle: "font-size: 10px;",
-              labels: ["min", "max"]
-            }, sliderLabelsNode);
+						on(wfsButton, "click", function(){
+							console.log("wfsButton", tnode.item);
+							// TODO
+						});
+						
+						var wmsButton = domConstruct.create("div", { "class": "manageWmsButton" }, toolsContainer, "last");
+						new Tooltip({
+							connectId: [wmsButton],
+							showDelay: 10,
+							position: ["below"],
+							label: "Manage layers WMS"
+						});
 
-            slider.startup();
-            sliderLabels.startup();*/
+						on(wmsButton, "click", function(){
+							console.log("wmsButton", tnode.item);
+							// TODO
+						});
+						
+						var removeLayerButton = domConstruct.create("div", { "class": "removeLayerButton" }, toolsContainer, "last");
+						new Tooltip({
+							connectId: [removeLayerButton],
+							showDelay: 10,
+							position: ["below"],
+							label: "Remove layer"
+						});
 
-            // create move up and down things
-            //var upThing = domConstruct.create("div", { "class": "layerTopGroupMenuMoveUp", innerHTML: "Move up" }, layerTopGroupMenu, "last");
-            //var downThing = domConstruct.create("div", { "class": "layerTopGroupMenuMoveDown", innerHTML: "Move down" }, layerTopGroupMenu, "last");
+						on(removeLayerButton, "click", function(){
+							console.log("removeLayerButton", tnode.item);
+							// TODO
+						});
+						
+						var editLayerButton = domConstruct.create("div", { "class": "editButton" }, toolsContainer, "last");
+						new Tooltip({
+							connectId: [editLayerButton],
+							showDelay: 10,
+							position: ["below"],
+							label: "Edit layer"
+						});
 
-            // on up thing clicked change layer order, move tree node and reposition menu
-            /*on(upThing, "click", function(){
-              mapa.reorderLayer(layerOpacity, mapa.layerIds.indexOf(tnode.item.name)+1);
-              dojo.place(tnode.domNode, tnode.domNode.previousSibling, "before");
-              var pos = dojo.position(topGroupButton, true);
-              domStyle.set(layerTopGroupMenu, {"top": pos.y +13+"px", "left": pos.x+"px", "display": "block"});
-            });*/
+						on(editLayerButton, "click", function(){
+							console.log("editLayerButton", tnode.item);
+							// TODO
+						});
+					}
+					else {
+						
+						
+						var removeCategoryButton = domConstruct.create("div", { "class": "removeCategoryButton" }, toolsContainer, "last");
+						new Tooltip({
+							connectId: [removeCategoryButton],
+							showDelay: 10,
+							position: ["below"],
+							label: "Remove category"
+						});
 
-            // on up thing clicked change layer order, move tree node and reposition menu
-            /*on(downThing, "click", function(){
-              // because of the Basemap layer has always index 0, check layers position before reordering
-              if (mapa.layerIds.indexOf(tnode.item.name) > 1) {
-                mapa.reorderLayer(layerOpacity, mapa.layerIds.indexOf(tnode.item.name)-1);
-                dojo.place(tnode.domNode, tnode.domNode.nextSibling, "after");
-                var pos = dojo.position(topGroupButton, true);
-                domStyle.set(layerTopGroupMenu, {"top": pos.y +13+"px", "left": pos.x+"px", "display": "block"});
-              }
-            });*/
+						on(removeCategoryButton, "click", function(){
+							that.formsObj.formCleanUp();
+							that.currentObjId = tnode.item.id;
+							that.currentHeader = tnode.item.name + " -> Delete layer";
+							if (tnode.item.parent != that.rootLayerId) {
+								that.getLabelsFromRoot(tnode.item.parent);
+							}
+							that.formsObj.setupDeleteCategoryForm(that.currentHeader);
+						});
+						
+						var addCategoryButton = domConstruct.create("div", { "class": "addCategoryButton" }, toolsContainer, "last");
+						new Tooltip({
+							connectId: [addCategoryButton],
+							showDelay: 10,
+							position: ["below"],
+							label: "Add category"
+						});
 
-          //}
-          // if tree node is a data layer
-          //else if (tnode.item.leaf) {
-          if (tnode.item.leaf) {
-            domConstruct.destroy(tnode.expandoNode);
-            var cb = new dijit.form.CheckBox();
-            cb.placeAt(tnode.contentNode, "first");
+						on(addCategoryButton, "click", function(){
+							that.formsObj.formCleanUp();
+							that.currentObjId = tnode.item.id;
+							that.currentHeader = tnode.item.name + " -> Add layer";
+							if (tnode.item.parent != that.rootLayerId) {
+								that.getLabelsFromRoot(tnode.item.parent);
+							}
+							that.formsObj.setupAddCategoryForm(that.currentHeader);
+						});
+						
+						var editCategoryButton = domConstruct.create("div", { "class": "editButton" }, toolsContainer, "last");
+						new Tooltip({
+							connectId: [editCategoryButton],
+							showDelay: 10,
+							position: ["below"],
+							label: "Edit category"
+						});
 
-            // set sublayers label width depending on sublayer level in the tree
-            //var rowNodePadding = domStyle.get(tnode.rowNode, "padding-left");
-            //var labelNodeWidth = 258 - rowNodePadding;
-            //domStyle.set(tnode.labelNode, {"width": labelNodeWidth+"px"});
-
-            // metadata button
-            /*var metadataButton;
-            //if(urlPattern.test(tnode.item.metadata)) {
-            if(tnode.item.metadata.length > 0) {
-              metadataButton = domConstruct.create("div", { "class": "metadataButtonActive" }, tnode.contentNode, "last");
-              new Tooltip({
-                connectId: [metadataButton],
-                showDelay: 100,
-                label: "View metadata"
-              });
-            }
-            else {
-              metadataButton = domConstruct.create("div", { "class": "metadataButtonInactive" }, tnode.contentNode, "last");
-              new Tooltip({
-                connectId: [metadataButton],
-                showDelay: 100,
-                label: "Metadata not available"
-              });
-            }*/
-            /*if (validURL(tnode.item.metadata)) {
-              console.log("valid");
-            }
-            else {
-              console.log("not valid");
-            }*/
-            //console.log(regexp.url(tnode.item.metadata));
-
-            /*new Tooltip({
-              connectId: [metadataButton],
-              showDelay: 100,
-              label: "View metadata"
-            });*/
-            /*if ((tnode.item.wms.url.length == 0) || (tnode.item.wms.layerName.length == 0)) {
-              domStyle.set(tnode.labelNode, {"color": "#C3C3C3"});
-              cb.set('disabled', true);
-              new Tooltip({
-                connectId: [tnode.rowNode],
-                showDelay: 100,
-                label: "Data are not available for displaying."
-              });
-            }*/
-
-
-            // create legend node
-            /*tnode.item.legendContainerDiv = domConstruct.create("div", { "class": "legendContainerDiv" }, tnode.rowNode, "last");
-            var legendURL = tnode.item.wms.url + "?SERVICE=WMS&VERSION="+tnode.item.wms.version+"&SERVICENAME="+tnode.item.wms.servicename+"&REQUEST=GetLegendGraphic&FORMAT=image%2Fpng&LOGIN="+tnode.item.wms.login+"&PASSWORD="+tnode.item.wms.password+"&LAYER="+tnode.item.wms.layerName;
-            var image = domConstruct.create('img', {
-              "src": legendURL
-            }, tnode.item.legendContainerDiv);*/
-            //var layer = mapa.getLayer(tnode.item.layer);
-            //var lIs = legendInfo[layer.id][tnode.item.visibilityId];
-            // create legend row
-            /*array.forEach(lIs, lang.hitch(this, function(lI){
-              var legendRow = domConstruct.create("div", { "class": "legendRow" }, legendContainerDiv, "last");
-
-              legendRow.innerHTML = lI.label;
-              var legendRowStyle = {
-                "background-image": 'url("'+layer.url+'/'+tnode.item.visibilityId+'/images/' + lI.url+'")',
-                "line-height": lI.height+"px",
-                "padding-left": lI.width+5+"px",
-                "margin-left": "22px",
-                "width": 238-rowNodePadding+"px"
-              };
-              domStyle.set(legendRow, legendRowStyle);
-            }));*/
-
-            // on sublayer check box click
-            on(cb, "change", function(checked){
-              //var visible = layer.visibleLayers;
-              if (checked) {
-                if (!tnode.item.wmsMapLayer) {
-                  if ((tnode.item.wms.url.length > 0) && (tnode.item.wms.layerName.length > 0)) {
-                    tnode.item.wmsMapLayer = new ol.layer.Tile({
-                      id: tnode.item.id,
-                      source: new ol.source.TileWMS({
-                        url: tnode.item.wms.url,
-                        params: {
-                          SERVICENAME: tnode.item.wms.servicename,
-                          LAYERS: tnode.item.wms.layerName,
-                          LOGIN: tnode.item.wms.login,
-                          PASSWORD: tnode.item.wms.password,
-                          //TILED: false,
-                          //VERSION: tnode.item.wms.version,
-                          VERSION: "1.3.0",
-                          CRS: "EPSG:3857"
-                        }
-                      })
-                    });
-                    /*tnode.item.wmsMapLayer = new ol.layer.Image({
-                      source: new ol.source.ImageWMS({
-                        url: tnode.item.wms.url,
-                        params: {
-                          SERVICENAME: tnode.item.wms.servicename,
-                          LAYERS: tnode.item.wms.layerName,
-                          LOGIN: tnode.item.wms.login,
-                          PASSWORD: tnode.item.wms.password//,
-                          //TILED: false,
-                          //VERSION: tnode.item.wms.version,
-                          //SRS: "EPSG:3857"
-                        },
-                        ratio: 1
-                      })
-                    });*/
-                    console.log(tnode.item.wmsMapLayer.getSource().url);
-                    mapa.addLayer(tnode.item.wmsMapLayer);
-                    domStyle.set(tnode.item.legendContainerDiv, "display", "block");
-                  }
-                  else {
-                    alert("This layer is not available.");
-                  }
-                }
-                else {
-                  tnode.item.wmsMapLayer.setVisible(true);
-                  domStyle.set(tnode.item.legendContainerDiv, "display", "block");
-                }
-                /*if (!tnode.item.wfsMapLayer) {
-                  if ((tnode.item.wfs.url.length > 0) && (tnode.item.wfs.layerName.length > 0)) {
-
-                      var vectorSource = new ol.source.Vector({
-                        format: new ol.format.GeoJSON(),
-                        url: function(extent) {
-                          return 'http://arealinformation.miljoeportal.dk/gis/services/public/MapServer/WFSServer?service=WFS&' +
-                                  'version=1.1.0&request=GetFeature&typeName=HABITAT_OMR&' +
-                                  'outputFormat=text/xml&srsname=EPSG:3857&' +
-                                  'bbox=' + extent.join(',') + ',EPSG:3857';
-                        },
-                        strategy: ol.loadingstrategy.bbox
-                      });
-                      tnode.item.wfsMapLayer = new ol.layer.Vector({
-                        source: vectorSource,
-                        style: new ol.style.Style({
-                          stroke: new ol.style.Stroke({
-                            color: 'rgba(0, 0, 100, 1.0)',
-                            width: 1
-                          })
-                        })
-                      });
-
-                      mapa.addLayer(tnode.item.wfsMapLayer);
-                  }
-                  else {
-                    alert("This layer is not available.");
-                  }
-
-                }
-                else {
-                  tnode.item.wfsMapLayer.setVisible(true);
-                }*/
-
-
-
-                // make sublayer visible
-                //visible.push(tnode.item.visibilityId);
-                //layer.setVisibleLayers(visible);
-
-                // show legend
-                //domStyle.set(legendContainerDiv, "display", "block");
-
-                // add sublayer for identify task
-                //identify[tnode.item.layer].params.layerIds.push(tnode.item.visibilityId);
-
-                // set tree path nodes style on select
-                array.forEach(tnode.tree.path, lang.hitch(this, function(object, i){
-                  if (i>0) {
-                    var n = tnode.tree.getNodeFromItem(object.id);
-                    domStyle.set(n.rowNode, {
-                      "background-color": "#A5C0DE"
-                    });
-                    if (visitedNodesIds.hasOwnProperty(object.id)) {
-                      visitedNodesIds[object.id] = visitedNodesIds[object.id] + 1;
-                    }
-                    else {
-                      visitedNodesIds[object.id] = 1;
-                    }
-                  }
-                }));
-                //console.log(visitedNodesIds);
-              }
-              else {
-                if (tnode.item.wmsMapLayer) {
-                  tnode.item.wmsMapLayer.setVisible(false);
-                }
-                // hide sublayer
-                //var index = visible.indexOf(tnode.item.visibilityId);
-                //if (index > -1) {
-                  //visible.splice(index, 1);
-                  //layer.setVisibleLayers(visible);
-
-                  // remove sublayer for identify task
-                  //identify[tnode.item.layer].params.layerIds.splice(index, 1);
-
-                  // remove tree path nodes style on unselect
-                  //console.log(tnode.tree.path);
-
-                  array.forEach(tnode.tree.path, lang.hitch(this, function(object, i){
-                    if (i>0) {
-                        var n = tnode.tree.getNodeFromItem(object.id);
-                        if (visitedNodesIds[object.id] == 1) {
-                          delete visitedNodesIds[object.id];
-                          domStyle.set(n.rowNode, {
-                            "background-color": ""
-                          });
-                        }
-                        else if (visitedNodesIds[object.id] > 1) {
-                          visitedNodesIds[object.id] = visitedNodesIds[object.id] - 1;
-                        }
-                    }
-                  }));
-                  //}
-                  //console.log(visitedNodesIds);
-                //}
-                // hide legend
-                domStyle.set(tnode.item.legendContainerDiv, "display", "none");
-              }
-            });
-            tnode.checkBox = cb;
-
-            // on row menu button click
-
-
-            /*on(metadataButton, "click", function(){
-              if (tnode.item.metadata.length > 0) {
-                window.open(tnode.item.metadata, '_blank');
-              }
-            });*/
-
-          }
-          return tnode;
-        }
-      });
-      this.tree.placeAt(this.adminLayerListTree);
-      this.tree.startup();
-    },
-
-    showLayer: function(id) {
-      var layerId = null;
-      // if layer id passed as a paramether
-      if (this.store.get(id)) {
-        layerId = id;
-      }
-      // if metadata id passed as a paramether
-      /*else {
-        for (var property in this.metadataIDS) {
-          if (this.metadataIDS.hasOwnProperty(property)) {
-            if (this.metadataIDS[property] === id) {
-              layerId = property;
-            }
-          }
-        }
-      }*/
-
-      var treePath = [];
-      if (layerId) {
-        while (this.store.get(layerId).parent) {
-          treePath.unshift(layerId);
-          layerId = this.store.get(layerId).parent;
-
-        }
-        treePath.unshift("layerlist");
-        this.tree.set('paths', [treePath]).then(lang.hitch(this, function(path) {
-          // expand found group
-          if(!this.tree.selectedNode.isExpanded){
-            this.tree._expandNode(this.tree.selectedNode);
-          }
-
-          /*if (this.tree.selectedNode.contentNode.children.length > 0) {
-            var widget = dijit.byNode(this.tree.selectedNode.contentNode.children[0]);
-            if ((widget) && (widget.type === "checkbox")) {
-              // check the checkbox to make sublayer visible
-              widget.set('checked', true);
-            }
-          }*/
-          var selectedTreeElement = document.getElementById(this.tree.selectedNode.id);
-          document.getElementById("layerListTreeID").scrollTop = selectedTreeElement.offsetTop;
-        }));
-      }
-      else {
-        //alert("No layer with Id " + id);
-      }
-    },
-
-    getURLParameter: function(name) {
-			return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [null, ''])[1].replace(/\+/g, '%20')) || null;
+						on(editCategoryButton, "click", function(){
+							console.log("editCategoryButton", tnode.item);
+							// TODO
+						});
+						
+						var rowNodePadding = domStyle.get(tnode.rowNode, "padding-left");
+						var labelNodeWidth = 300 - rowNodePadding;
+						domStyle.set(tnode.labelNode, {"width": labelNodeWidth+"px"});
+					}
+					
+					on(tnode.rowNode, mouse.enter, function(){
+						domStyle.set(toolsContainer, {"display": "block"});
+					});
+					on(tnode.rowNode, mouse.leave, function(){
+						domStyle.set(toolsContainer, {"display": "none"});
+					});
+										
+					return tnode;
+				}
+			});
+			this.tree.placeAt(this.adminLayerListTree);
+			this.tree.startup();
 		}
-  });
+	});
 });

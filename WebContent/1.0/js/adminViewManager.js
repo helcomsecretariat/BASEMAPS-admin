@@ -9,35 +9,48 @@ define([
 	"dojo/_base/array", 
 	"dojo/dom-construct",
 	"basemaps/js/adminLayerList",
+	"basemaps/js/adminUsersList",
 	"basemaps/js/adminForms",
 	"dijit/_WidgetBase", 
 	"dijit/_TemplatedMixin",
 	"dojo/text!../templates/adminView.html",
 	"dojo/domReady!"
 ], function(
-	declare, parser, lang, on, dom, domStyle, request, array, domConstruct, adminLayerList, adminForms,
+	declare, parser, lang, on, dom, domStyle, request, array, domConstruct, adminLayerList, adminUsersList, adminForms,
 	_WidgetBase, _TemplatedMixin, template
 ){
 	return declare([_WidgetBase, _TemplatedMixin], {
 		templateString: template,
 		baseClass: "adminView",
+		adminForms: null,
+		adminLayerList: null,
+		adminUsersList: null,
 		
-		constructor: function() {
-			//parser.parse();
+		constructor: function(params) {
+			console.log(params);
 			
 		},
 		
 		layersButtonClick: function() {
-			alert("Layers");
+			this.showLayerList();
 		},
 		
 		usersButtonClick: function() {
-			alert("Users");
+			if (this.adminUsersList == null) {
+				this.adminUsersList = new adminUsersList({forms: this.adminForms}).placeAt(this.adminUsersListSection);
+			}
+			//else {
+			//	domStyle.set(this.adminUsersList.domNode, {"display": "block"});
+			//}
+			this.showUsersList();
+			//domStyle.set(this.adminLayerList.domNode, {"display": "none"});
+			//this.adminLayerList.domNode.style("visibility", "hidden");
+			//console.log(this.adminLayerList.domNode);
 		},
 		
 		postCreate: function() {
-			var af = new adminForms().placeAt(this.adminFormsSection);
-			var all = new adminLayerList({forms: af}).placeAt(this.adminLayerListSection);
+			this.adminForms = new adminForms().placeAt(this.adminFormsSection);
+			this.adminLayerList = new adminLayerList({forms: this.adminForms}).placeAt(this.adminLayerListSection);
 			//var llwidget = new layerList({map: map}).placeAt(this.layerlistContainer);
 			/*on(this.collapseAllButton, "click", lang.hitch(this, function(){
 			
@@ -71,6 +84,20 @@ define([
 		
 		show: function(open) {
 			domStyle.set(this.domNode, "display", open ? "block" : "none");
+		},
+		
+		showViewButtons: function(open) {
+			domStyle.set(this.adminToolsViews, "display", open ? "block" : "none");
+		},
+		
+		showLayerList: function() {
+			domStyle.set(this.adminUsersList.domNode, {"display": "none"});
+			domStyle.set(this.adminLayerList.domNode, {"display": "block"});
+		},
+		
+		showUsersList: function() {
+			domStyle.set(this.adminLayerList.domNode, {"display": "none"});
+			domStyle.set(this.adminUsersList.domNode, {"display": "block"});
 		}
 	});
 });

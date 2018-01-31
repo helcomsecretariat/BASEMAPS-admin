@@ -139,8 +139,8 @@ html, body {
 
 #adminToolsContainer {
 	float: left;
-	width: 25%;
-	background-color: #00ff00;
+	width: 500px;
+	background-color: #ffffff;
 	height: 100%;
 	border-right: 2px solid #800000;
 	padding: 10px;
@@ -148,7 +148,7 @@ html, body {
 
 #adminToolsViews {
 	width: 100%;
-	height: 70px;
+	/*height: 70px;*/
 }
 
 .adminViewButton {
@@ -177,14 +177,16 @@ html, body {
 }
 
 #adminLayerListSection {
+	margin-top: 30px;
 	overflow-y: auto;
 	max-height: 80%;
 }
 
-#adminUsersSection {
+#adminUsersListSection {
+	margin-top: 30px;
 	overflow-y: auto;
 	max-height: 80%;
-	display: none;
+	/*display: none;*/
 }
 
 #adminFormsSection {
@@ -195,16 +197,13 @@ html, body {
 	overflow-y: auto;
 	max-height: 100%;
 }
-/* END admin view section */
 
-
-/* START admin layer list section */
-#adminLayerListButtons {
+#adminListButtons {
 	width: 100%;
 	height: 30px;
 }
 
-.adminLayerListButton {
+.adminListButton {
 	display: inline-block;
 	border: 1px solid #800000;
 	cursor: pointer;
@@ -215,13 +214,12 @@ html, body {
 	text-align: center;
 	margin: 0px 5px;
 }
+/* END admin view section */
 
+/* START admin layer list section */
 #adminLayerListTreeID {
 	margin-left: 10px;
 }
-/* END admin layer list section */
-
-/* START admin layer list node tools section */
 
 .treeNodeToolsContainer {
 	margin-top: 5px;
@@ -247,8 +245,44 @@ html, body {
 	background-image: url("../img/up16.png");
 }
 
-/* END admin layer list node tools section */
+.addLayerButton {
+	background-image: url("../img/addLayer16.png");
+}
 
+.removeLayerButton {
+	background-image: url("../img/removeLayer16.png");
+}
+
+.addCategoryButton {
+	background-image: url("../img/addCategory16.png");
+}
+
+.removeCategoryButton {
+	background-image: url("../img/removeCategory16.png");
+}
+
+.editButton {
+	background-image: url("../img/edit16.png");
+}
+
+.manageWmsButton {
+	background-image: url("../img/wms16.png");
+}
+
+.manageWfsButton {
+	background-image: url("../img/wfs16.png");
+}
+
+/* END admin layer list section */
+
+/* START admin user list section */
+.usersList {
+  position: relative;
+  margin-left: 10px;
+  max-height: 90%;
+  overflow: auto;
+}
+/* END admin user list section */
 
 /* START admin forms section */
 #adminFormsHeader {
@@ -260,11 +294,21 @@ html, body {
 	margin-top: 20px;
 }
 
-.oneLabelInputLabel {
-	font-size: 20px;	
+.formContainer {
+	margin-top: 10px;
 }
 
-.oneLabelInput {
+.textInputLabelGroup {
+	margin-bottom: 10px;
+}
+
+.textInputLabel {
+	font-size: 20px;
+	width: 100px;
+	display: inline-block;
+}
+
+.textInput {
 	width: 50%;
 	height: 30px;
 	border: 1px solid #800000;
@@ -274,11 +318,21 @@ html, body {
 	padding: 5px 10px;
 }
 
-#oneLabelForm {
-	display: none;
+.formLink {
+	cursor: pointer;
+	color: #B73C2B;
+	margin-left: 15px;
 }
 
-.adminFormButton {
+.formLink:hover {
+	color: #800000;
+}
+
+.formButtonsGroup {
+	margin: 10px 0;
+}
+
+.formButton {
 	display: inline-block;
 	border: 1px solid #800000;
 	background-color: #B73C2B;
@@ -291,14 +345,43 @@ html, body {
 	font-size: 14px;
 }
 
-.adminFormButton:hover {
+.formButton:hover {
 	font-weight: bold;	
 }
-	
-#adminFormButtons {
-	margin: 10px 0;
+
+/*#addCategoryWmsForm {
+	display: none;
+}*/
+
+.addDataFormLabel {
+	font-size: 20px;
+	font-weight: bold;
+	color: #B73C2B;
+	margin-top: 10px;
+}
+
+.selectLabel {
+	font-size: 20px;
+}
+
+.claro .dijitSelect {
+	height: 40px;
+	width: 400px;
+	font-size: 20px;
+	border-radius: 4px;
+	border: 1px solid #800000;
+}
+
+#questionForm {
 	display: none;
 }
+
+
+
+
+
+	
+
 
 #adminFormMessage {
 	display: none;

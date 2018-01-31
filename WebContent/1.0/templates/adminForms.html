@@ -1,15 +1,62 @@
 <div>
 	<div id="adminFormsHeader" data-dojo-attach-point="adminFormsHeader"></div>
 	<div id="adminFormsBody" data-dojo-attach-point="adminFormsBody">
-		<div id="oneLabelForm">
-			<label for="adminFormOneLabelInput" class="oneLabelInputLabel"> Label: </label>
-			<input id="adminFormOneLabelInput" class="oneLabelInput" type="text" tabindex="2" maxlength="200">
+		
+		<div id="addCategoryForm" class="formContainer" style="display:none;">
+			<div id="categoryLabelForm" class="textInputLabelGroup">
+				<label for="categoryInput" class="textInputLabel"> Label: </label>
+				<input id="categoryInput" class="textInput" type="text" tabindex="2" maxlength="200">
+				<span>
+					<span id="addWMSLink" class="formLink" data-dojo-attach-point="addWMSLink" data-dojo-attach-event="onclick:addWmsLinkClick">Add WMS</span>
+					<span id="addWFSLink" class="formLink" data-dojo-attach-point="addWFSLink" data-dojo-attach-event="onclick:addWfsLinkClick">Add WFS</span>
+					<span id="addMetadataLink" class="formLink" data-dojo-attach-point="addMetadataLink" data-dojo-attach-event="onclick:addMetadataLinkClick">Add metadata</span>				
+				</span>				
+			</div>
+			
+			<div id="addCategoryWmsForm" style="display:none; margin-top: 10px;">
+				<div class="addDataFormLabel">Add WMS:</div>
+				<div class="textInputLabelGroup">
+					<label for="wmsUrlInput" class="textInputLabel"> URL: </label>
+					<input id="wmsUrlInput" class="textInput" type="text" tabindex="2" maxlength="300">
+					<span id="validateWmsLink" class="formLink" data-dojo-attach-point="validateWmsLink" data-dojo-attach-event="onclick:validateWmsLinkClick">Validate</span>
+				</div>
+				<div id="wmsNameSelectForm" class="labelInputGroup" style="display:none;">
+					<span class="selectLabel">Choose WMS layer name:</span>
+					<span id="wmsNameSelect" data-dojo-attach-point="wmsNameSelect"></span>
+				</div>
+				<div id="wmsNameForm" class="textInputLabelGroup" style="display:none;">	
+					<label for="wmsNameInput" class="textInputLabel"> Name: </label>
+					<input id="wmsNameInput" class="textInput" type="text" tabindex="2" maxlength="200">
+				</div>
+			</div>
+			
+			<div id="addCategoryWfsForm" style="display:none; margin-top: 10px;">
+				<div class="addDataFormLabel">Add WFS:</div>
+			</div>
+			
+			<div id="addCategoryMetadataForm" style="display:none; margin-top: 10px;">
+				<div class="addDataFormLabel">Add metadata:</div>
+			</div>
+						
+			<div class="formButtonsGroup"> 
+				<div id="addCategorySaveButton" class="formButton" data-dojo-attach-point="addCategorySaveButton">Save</div>
+				<div id="addCategoryCloseButton" class="formButton" data-dojo-attach-point="addCategoryCloseButton">Close</div>
+			</div>
 		</div>
 		
-		<div id="adminFormButtons"> 
-			<div id="adminFormSaveButton" class="adminFormButton" data-dojo-attach-point="adminFormSaveButton"></div>
-			<div id="adminFormCancelButton" class="adminFormButton" data-dojo-attach-event="onclick:adminFormCancelButtonClick"></div>
+		
+		<div id="deleteCategoryForm" class="formContainer" style="display:none;">
+			<div>
+				Layer and all sub-layers with data will be permanently deleted. Continue?
+			</div>
+			<div class="formButtonsGroup"> 
+				<div id="deleteCategoryYesButton" class="formButton" data-dojo-attach-point="deleteCategoryYesButton">Yes</div>
+				<div id="deleteCategoryNoButton" class="formButton" data-dojo-attach-point="deleteCategoryNoButton">No</div>
+			</div>
 		</div>
+		
+		
+		
 		<div id="adminFormMessage"></div>
 	</div>
 </div>
