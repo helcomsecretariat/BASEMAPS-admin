@@ -9,7 +9,6 @@ import java.util.TreeSet;
 
 import org.geotools.data.ows.Layer;
 import org.geotools.data.ows.WMSCapabilities;
-import org.geotools.data.wms.WebMapServer;
 
 import fi.fta.utils.BeansUtils;
 
@@ -23,12 +22,11 @@ public class WMSLayer
 	private List<MetaData> metadata;
 	
 	
-	public WMSLayer(WebMapServer server, Layer l)
+	public WMSLayer(WMSCapabilities capabilities, Layer l)
 	{
 		this.layer = l;
 		this.metadata = BeansUtils.getMetaData(l.getMetadataURL());
-		this.info = new WMSInfo();
-		WMSCapabilities capabilities = server.getCapabilities();
+		this.info = new WMSInfo();	
 		this.info.setVersion(capabilities.getVersion());
 		this.info.setOrganisation(
 			capabilities.getService().getContactInformation().getOrganisationName().toString());

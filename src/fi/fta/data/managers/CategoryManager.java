@@ -66,4 +66,8 @@ public class CategoryManager extends CategoryBeanManager<Category, CategoryUI, C
 		return this.add(c);
 	}
 	
+	public Category update(CategoryUI ui) throws HibernateException
+	{
+		return super.update(new Category(ui));
+	}
 }

@@ -15,6 +15,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.log4j.Logger;
 import org.geotools.data.ows.Layer;
+import org.geotools.data.ows.WMSCapabilities;
 import org.geotools.data.wms.WebMapServer;
 import org.geotools.ows.ServiceException;
 import org.hibernate.HibernateException;
@@ -90,34 +91,50 @@ public class WMSManager extends CategoryBeanManager<WMS, WMSUI, WMSDAO>
 	public Long add(WMSUI ui) throws Exception
 	{
 		WMS wms = new WMS(ui);
-		WMSLayer l = this.getLayer(ui);
-		if (l != null)
+		try
 		{
-			wms.setInfo(l.getInfo());
-			if (!l.getMetadata().isEmpty())
+			WMSLayer l = this.getLayer(ui);
+			if (l != null)
 			{
-				Category c = CategoryManager.getInstance().get(ui.getParent());
-				if (c != null)
+				wms.setInfo(l.getInfo());
+				if (!l.getMetadata().isEmpty())
 				{
-					if (!c.getMetadata().isEmpty())
+					Category c = CategoryManager.getInstance().get(ui.getParent());
+					if (c != null)
 					{
-						for (MetaData md : l.getMetadata())
+						if (!c.getMetadata().isEmpty())
 						{
-							if (!BeansUtils.contains(c.getMetadata(), md))
+							for (MetaData md : l.getMetadata())
 							{
-								c.getMetadata().add(md);
+								if (!BeansUtils.contains(c.getMetadata(), md))
+								{
+									c.getMetadata().add(md);
+								}
 							}
 						}
+						else
+						{
+							c.getMetadata().addAll(l.getMetadata());
+						}
+						CategoryManager.getInstance().update(c);
 					}
-					else
-					{
-						c.getMetadata().addAll(l.getMetadata());
-					}
-					CategoryManager.getInstance().update(c);
 				}
 			}
 		}
+		catch (NullPointerException ex)
+		{
+			logger.error("WMSManager.add parse layer null pointer", ex);
+		}
+		catch (ServiceException ex)
+		{
+			logger.error("WMSManager.add parse layer", ex);
+		}
 		return super.add(wms);
+	}
+	
+	public WMS update(WMSUI ui) throws HibernateException
+	{
+		return super.update(new WMS(ui));
 	}
 	
 	public void updateInfo(WMS wms) throws HibernateException, MalformedURLException, IOException, ServiceException	
@@ -178,11 +195,12 @@ public class WMSManager extends CategoryBeanManager<WMS, WMSUI, WMSDAO>
 			{
 				Pair<WebMapServer, Map<String, WMSLayer>> p = new Pair<>(
 					new WebMapServer(new URL(url)), new HashMap<>());
-				for (Layer l : p.getFirst().getCapabilities().getLayerList())
+				WMSCapabilities capabilities = p.getFirst().getCapabilities();
+				for (Layer l : capabilities.getLayerList())
 				{
 					if (!Util.isEmptyString(l.getName()))
 					{
-						p.getSecond().put(l.getName(), new WMSLayer(p.getFirst(), l));
+						p.getSecond().put(l.getName(), new WMSLayer(capabilities, l));
 					}
 				}
 				cache.put(url, p);

@@ -75,6 +75,29 @@ public class CategoryBeansController<
 		}
 	}
 	
+	@RequestMapping(value = "/update", method = RequestMethod.POST)
+	@ResponseBody
+	public SimpleMessage update(
+		@RequestBody CUI ui, HttpServletRequest request, HttpServletResponse response)
+	{
+		try
+		{
+			List<ValidationMessage> validations = ClassStructureAssessor.getInstance().validate(ui);
+			if (validations.isEmpty())
+			{
+				manager.update(ui);
+				return SimpleMessage.newSuccess();
+			}
+			return SimpleMessage.newFailure(
+				ResponseMessage.Code.ERROR_VALIDATION, "Invalid " + ui.getClass().getName(), validations);
+		}
+		catch (Exception ex)
+		{
+			logger.error(this.getClass().getName() + ".update", ex);
+			return SimpleMessage.newFailure(ResponseMessage.Code.ERROR_GENERAL, Util.getStackTrace(ex));
+		}
+	}
+	
 	@RequestMapping(value = "/position/{id}/{position}", method = RequestMethod.POST)
 	@ResponseBody
 	public SimpleMessage position(
