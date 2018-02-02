@@ -85,6 +85,13 @@ define([
 			this.utils.show("deleteCategoryForm", "block");
 		},
 		
+		setupWmsInfoForm: function(headerText, url, name) {
+			this.formView = "WMS_INFO";
+			this.utils.changeText("adminFormsHeader", headerText);
+			this.utils.show("wmsInfoForm", "block");
+			this.getWmsInfo(url, name);
+		},
+		
 		formCleanUp: function() {
 			this.utils.changeText("adminFormsHeader", "");
 			this.utils.changeText("adminFormMessage", "");
@@ -93,6 +100,8 @@ define([
 	    		this.hideAddCategoryForm();
 			} else if (this.formView === "DELETE_CATEGORY") {
 				this.utils.show("deleteCategoryForm", "none");
+			} else if (this.formView === "WMS_INFO") {
+				this.utils.show("wmsInfoForm", "none");
 			}
 	    	this.formView = null;
 		},
@@ -196,6 +205,71 @@ define([
 			else {
 				this.showMessage("WMS url is not valid.");
 			}
+		},
+		
+		getWmsInfo: function(wmsUrl, wmsName) {
+			var url = "sc/wms/info";
+			var data = {
+				"url": wmsUrl,
+				"name": wmsName
+			};
+			request.post(url, this.utils.createPostRequestParams(data)).then(
+				lang.hitch(this, function(response){
+					if (response.type == "error") {
+						this.showMessage("WMS did not pass validation. Can't get WMS info.");
+					}
+					else if (response.type == "success") {
+						console.log(response);
+						this.buildWmsInfoElement("URL", wmsUrl);
+						this.buildWmsInfoElement("Layer name", wmsName);
+						this.buildWmsInfoElement("Layer title", response.item.title);
+						this.buildWmsInfoElement("WMS version", response.item.version);
+						this.buildWmsInfoElement("Organization", response.item.organisation);
+						this.buildWmsInfoElement("Keywords", response.item.keywords.join(", "));
+						this.buildWmsMetadataElement("Metadata", response.item.metadata);
+						this.buildWmsInfoElement("GetFeatureInfo support", response.item.queryable);
+						this.buildWmsInfoElement("GetFeatureInfo response formats", response.item.formats.join(", "));
+						this.buildWmsInfoElement("Supported CRSes", response.item.crs.join(", "));
+						this.buildWmsInfoElement("Min display scale", response.item.scaleMin == "NaN" ? "" : response.item.scaleMin);
+						this.buildWmsInfoElement("Maxdisplay scale", response.item.scaleMax == "NaN" ? "" : response.item.scaleMax);
+						this.buildWmsStyleElement("Styles", response.item.styles);
+					}
+				}),
+				lang.hitch(this, function(error){
+					this.showMessage("Something went wrong (on validating WMS). Please contact administrator.");
+				})
+			);
+		},
+		
+		buildWmsInfoElement: function(label, value) {
+			var infoContainer = domConstruct.create("div", {"class": "wmsInfoElementContainer"}, this.wmsInfoContainer, "last");
+			var infoLabel = domConstruct.create("div", { "class": "wmsInfoElementLabel", "innerHTML": label+":" }, infoContainer, "last");
+			var infoValue = domConstruct.create("div", { "class": "wmsInfoElementValue", "innerHTML": value }, infoContainer, "last");
+		},
+		
+		buildWmsMetadataElement: function(label, value) {
+			var infoContainer = domConstruct.create("div", {"class": "wmsInfoElementContainer"}, this.wmsInfoContainer, "last");
+			var infoLabel = domConstruct.create("div", { "class": "wmsInfoElementLabel", "innerHTML": label+":" }, infoContainer, "last");
+			var infoValue = domConstruct.create("div", { "class": "wmsInfoElementValue"}, infoContainer, "last");
+			
+			array.forEach(value, lang.hitch(this, function(record){
+				var metadataContainer = domConstruct.create("div", {"style": { "margin-bottom": "5px" }}, infoValue, "last");
+				var metadataLabel = domConstruct.create("div", { "style": { "font-size": "14px", "font-weight": "bold" }, "innerHTML": record.format }, metadataContainer, "last");
+				var metadataURL = domConstruct.create("div", { "innerHTML": record.url }, metadataContainer, "last");
+			}));
+		},
+		
+		buildWmsStyleElement: function(label, value) {
+			var infoContainer = domConstruct.create("div", {"class": "wmsInfoElementContainer"}, this.wmsInfoContainer, "last");
+			var infoLabel = domConstruct.create("div", { "class": "wmsInfoElementLabel", "innerHTML": label+":" }, infoContainer, "last");
+			var infoValue = domConstruct.create("div", { "class": "wmsInfoElementValue"}, infoContainer, "last");
+			
+			array.forEach(value, lang.hitch(this, function(record){
+				var styleContainer = domConstruct.create("div", {"style": { "margin-bottom": "5px" }}, infoValue, "last");
+				var styleName = domConstruct.create("div", { "style": { "font-size": "14px", "font-weight": "bold" }, "innerHTML": "Name: " + record.name }, styleContainer, "last");
+				var styleURL = domConstruct.create("div", { "innerHTML": record.urls[0] }, styleContainer, "last");
+				var styleImage = domConstruct.create("img", { "src": record.urls[0] }, styleContainer, "last");
+			}));
 		}
 	});
 });

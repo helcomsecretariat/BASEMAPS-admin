@@ -106,16 +106,21 @@ define([
 				}
 			}));
 			
+			on(this.formsObj.addCategoryCloseButton, "click", lang.hitch(this, function(){
+				this.currentObjId = null;
+				this.formsObj.formCleanUp();
+			}));
+			
 			on(this.formsObj.deleteCategoryYesButton, "click", lang.hitch(this, function(){
 				this.deleteCategory();
 			}));
-			
+									
 			on(this.formsObj.deleteCategoryNoButton, "click", lang.hitch(this, function(){
 				this.currentObjId = null;
 				this.formsObj.formCleanUp();
 			}));
 			
-			on(this.formsObj.deleteCategoryNoButton, "click", lang.hitch(this, function(){
+			on(this.formsObj.wmsInfoCloseButton, "click", lang.hitch(this, function(){
 				this.currentObjId = null;
 				this.formsObj.formCleanUp();
 			}));
@@ -303,6 +308,7 @@ define([
 		},
 
 		addLayerToDataArray: function(layer, parentLayerId, topGroup, last) {
+			
 			//var isLeaf = (layer.children.length > 0 ? false : true);
 			//var isLeaf = (layer.name ? true : false);
 			var isLeaf = !(layer.category);
@@ -321,6 +327,10 @@ define([
 				wfs: null,
 				metadata: null
 			};
+			if (isLeaf) {
+				lyr.wms = layer.layers[0];
+				lyr.metadata = layer.metadata;
+			}
 			/*if (isLeaf) {
 				lyr["wms"] = layer.wms;
 				lyr["wfs"] = layer.wfs;
@@ -450,23 +460,34 @@ define([
 						});
 
 						on(wmsButton, "click", function(){
-							console.log("wmsButton", tnode.item);
+							that.formsObj.formCleanUp();
+							that.currentObjId = tnode.item.id;
+							that.currentHeader = tnode.item.name + " -> WMS info";
+							if (tnode.item.parent != that.rootLayerId) {
+								that.getLabelsFromRoot(tnode.item.parent);
+							}
+							that.formsObj.setupWmsInfoForm(that.currentHeader, tnode.item.wms.url, tnode.item.wms.name);
 							// TODO
 						});
 						
-						var removeLayerButton = domConstruct.create("div", { "class": "removeLayerButton" }, toolsContainer, "last");
+						var removeCategoryButton = domConstruct.create("div", { "class": "removeCategoryButton" }, toolsContainer, "last");
 						new Tooltip({
-							connectId: [removeLayerButton],
+							connectId: [removeCategoryButton],
 							showDelay: 10,
 							position: ["below"],
 							label: "Remove layer"
 						});
 
-						on(removeLayerButton, "click", function(){
-							console.log("removeLayerButton", tnode.item);
-							// TODO
+						on(removeCategoryButton, "click", function(){
+							that.formsObj.formCleanUp();
+							that.currentObjId = tnode.item.id;
+							that.currentHeader = tnode.item.name + " -> Delete layer";
+							if (tnode.item.parent != that.rootLayerId) {
+								that.getLabelsFromRoot(tnode.item.parent);
+							}
+							that.formsObj.setupDeleteCategoryForm(that.currentHeader);
 						});
-						
+												
 						var editLayerButton = domConstruct.create("div", { "class": "editButton" }, toolsContainer, "last");
 						new Tooltip({
 							connectId: [editLayerButton],
