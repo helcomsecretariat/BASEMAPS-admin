@@ -19,9 +19,12 @@ import fi.fta.beans.UserRole;
 import fi.fta.beans.response.ResponseMessage;
 import fi.fta.beans.response.SimpleMessage;
 import fi.fta.beans.response.SimpleResult;
+import fi.fta.beans.ui.ChangePasswordUI;
+import fi.fta.beans.ui.EmailUI;
 import fi.fta.beans.ui.UserUI;
 import fi.fta.data.managers.UserManager;
 import fi.fta.model.SiteModel;
+import fi.fta.validation.ChangePasswordValidator;
 import fi.fta.validation.ClassStructureAssessor;
 import fi.fta.validation.ValidationMessage;
 
@@ -104,6 +107,59 @@ public class UsersController
 		{
 			logger.error("UsersController.current", ex);
 			return SimpleResult.newFailure(ResponseMessage.Code.ERROR_GENERAL, ex.getMessage());
+		}
+	}
+	
+	@RequestMapping(value = "/change-password", method = RequestMethod.POST)
+	@ResponseBody
+	public SimpleMessage changePassword(
+		@RequestBody ChangePasswordUI ui, HttpServletRequest request, HttpServletResponse response)
+	{
+		try
+		{
+			SiteModel model = SiteModel.get(request);
+			ChangePasswordValidator validator = new ChangePasswordValidator(model);
+			List<ValidationMessage> validations = validator.validate(ui);
+			if (validations.isEmpty())
+			{
+				model.changePassword(ui.getNewPassword());
+				return SimpleMessage.newSuccess();
+			}
+			return SimpleMessage.newFailure(
+				ResponseMessage.Code.ERROR_VALIDATION, "Invalid change password", validations);
+		}
+		catch (Exception ex)
+		{
+			logger.error("UsersController.changePassword", ex);
+			return SimpleMessage.newFailure(ResponseMessage.Code.ERROR_GENERAL, ex.getMessage());
+		}
+	}
+	
+	@RequestMapping(value = "/remind", method = RequestMethod.POST)
+	@ResponseBody
+	public SimpleMessage remind(
+		@RequestBody EmailUI ui, HttpServletRequest request, HttpServletResponse response)
+	{
+		try
+		{
+			List<ValidationMessage> validations = ClassStructureAssessor.getInstance().validate(ui);
+			if (validations.isEmpty())
+			{
+				User u = UserManager.getInstance().getByEmail(ui.getEmail());
+				if (u != null)
+				{
+					// TODO: do the remind
+					
+				}
+				return SimpleMessage.newSuccess();
+			}
+			return SimpleMessage.newFailure(
+				ResponseMessage.Code.ERROR_VALIDATION, "Invalid email", validations);
+		}
+		catch (Exception ex)
+		{
+			logger.error("UsersController.remind", ex);
+			return SimpleMessage.newFailure(ResponseMessage.Code.ERROR_GENERAL, ex.getMessage());
 		}
 	}
 	

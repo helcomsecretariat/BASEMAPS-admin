@@ -12,13 +12,17 @@ import org.hibernate.HibernateException;
 
 import fi.fta.beans.Category;
 import fi.fta.beans.MetaData;
+import fi.fta.beans.WFS;
 import fi.fta.beans.WMS;
 import fi.fta.beans.WMSStyle;
 import fi.fta.beans.ui.MetaDataUI;
 import fi.fta.beans.ui.TreeBranchUI;
+import fi.fta.beans.ui.TreeCategoryLayerUI;
 import fi.fta.beans.ui.TreeCategoryUI;
-import fi.fta.beans.ui.TreeWMSLayerUI;
+import fi.fta.beans.ui.TreeLayerUI;
 import fi.fta.beans.ui.WMSStyleUI;
+import fi.fta.data.managers.CategoryManager;
+import fi.fta.data.managers.WFSManager;
 import fi.fta.data.managers.WMSManager;
 
 public class BeansUtils
@@ -106,23 +110,44 @@ public class BeansUtils
 	
 	public static List<TreeBranchUI> getLayerUIs(Long parent, Collection<Category> root) throws HibernateException 
 	{
+		List<TreeBranchUI> layers = BeansUtils.getLayerUIs(root);
+		List<WMS> wmses = WMSManager.getInstance().getChildren(parent);
+		List<WFS> wfses = WFSManager.getInstance().getChildren(parent);
+		if (!wmses.isEmpty() || !wfses.isEmpty())
+		{
+			Category c = new Category();
+			if (parent != null)
+			{
+				c = CategoryManager.getInstance().get(parent);
+			}
+			layers.add(new TreeLayerUI(c, wmses, wfses));
+		}
+		return layers;
+	}
+	
+	public static List<TreeBranchUI> getLayerUIs(Collection<Category> root) throws HibernateException 
+	{
 		List<TreeBranchUI> layers = new ArrayList<>();
 		for (Category c : root)
 		{
-			TreeCategoryUI ui = new TreeCategoryUI(c);
-			ui.getLayers().addAll(
-				BeansUtils.getLayerUIs(c.getId(), c.getChildren()));
-			if (ui.isCategory())
+			List<WMS> wmses = WMSManager.getInstance().getChildren(c.getId());
+			List<WFS> wfses = WFSManager.getInstance().getChildren(c.getId());
+			if (wmses.isEmpty() && wfses.isEmpty())
 			{
-				boolean layer = !ui.getLayers().isEmpty() &&
-					(ui.getLayers().listIterator(ui.getLayers().size() - 1).next() instanceof TreeWMSLayerUI);
-				ui.setCategory(!layer);
+				TreeCategoryUI ui = new TreeCategoryUI(c);
+				ui.getLayers().addAll(BeansUtils.getLayerUIs(c.getChildren()));
+				layers.add(ui);
 			}
-			layers.add(ui);
-		}
-		for (WMS wms : WMSManager.getInstance().getChildren(parent))
-		{
-			layers.add(new TreeWMSLayerUI(wms));
+			else if (c.getChildren().isEmpty())
+			{
+				layers.add(new TreeLayerUI(c, wmses, wfses));
+			}
+			else
+			{
+				TreeCategoryLayerUI ui = new TreeCategoryLayerUI(c, wmses, wfses);
+				ui.getLayers().addAll(BeansUtils.getLayerUIs(c.getChildren()));
+				layers.add(ui);
+			}
 		}
 		return layers;
 	}

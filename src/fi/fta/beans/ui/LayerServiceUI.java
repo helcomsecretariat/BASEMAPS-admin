@@ -1,9 +1,10 @@
 package fi.fta.beans.ui;
 
+import fi.fta.beans.LayerService;
+import fi.fta.beans.Named;
 import fi.fta.beans.UrlFacade;
-import fi.fta.beans.WMS;
 
-public class WMSUI extends CategoryBeanUI implements UrlFacade
+public class LayerServiceUI extends CategoryBeanUI implements Named, UrlFacade
 {
 	
 	/**
@@ -17,12 +18,12 @@ public class WMSUI extends CategoryBeanUI implements UrlFacade
 	protected String url;
 	
 	
-	public WMSUI()
+	public LayerServiceUI()
 	{
 		super();
 	}
 	
-	public WMSUI(WMS bean)
+	public LayerServiceUI(LayerService bean)
 	{
 		super(bean);
 		this.setParent(bean.getParent());

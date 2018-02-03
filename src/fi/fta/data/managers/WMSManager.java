@@ -23,12 +23,14 @@ import org.hibernate.HibernateException;
 import fi.fta.beans.Category;
 import fi.fta.beans.MetaData;
 import fi.fta.beans.MetaDataSource;
+import fi.fta.beans.Named;
 import fi.fta.beans.Pair;
+import fi.fta.beans.UrlFacade;
 import fi.fta.beans.WMS;
 import fi.fta.beans.WMSInfo;
 import fi.fta.beans.WMSLayer;
+import fi.fta.beans.ui.LayerServiceUI;
 import fi.fta.beans.ui.WMSLayerUI;
-import fi.fta.beans.ui.WMSUI;
 import fi.fta.cache.TimeBasedCache;
 import fi.fta.data.dao.WMSDAO;
 import fi.fta.filters.WMSMetaDataSourceFilter;
@@ -37,7 +39,7 @@ import fi.fta.utils.CollectionsUtils;
 import fi.fta.utils.DateAndTimeUtils;
 import fi.fta.utils.Util;
 
-public class WMSManager extends CategoryBeanManager<WMS, WMSUI, WMSDAO>
+public class WMSManager extends CategoryBeanManager<WMS, LayerServiceUI, WMSDAO>
 {
 	
 	private static long WMS_CACHE_TIME = 10 * 60 * 1000;
@@ -77,10 +79,10 @@ public class WMSManager extends CategoryBeanManager<WMS, WMSUI, WMSDAO>
 	}
 	
 	@Override
-	public WMSUI getUI(Long id) throws HibernateException
+	public LayerServiceUI getUI(Long id) throws HibernateException
 	{
 		WMS wms = this.get(id);
-		return wms != null ? new WMSUI(wms) : new WMSUI();
+		return wms != null ? new LayerServiceUI(wms) : new LayerServiceUI();
 	}
 	
 	public List<WMS> getChildren(Long id) throws HibernateException
@@ -88,7 +90,7 @@ public class WMSManager extends CategoryBeanManager<WMS, WMSUI, WMSDAO>
 		return dao.getByParent(id);
 	}
 	
-	public Long add(WMSUI ui) throws Exception
+	public Long add(LayerServiceUI ui) throws Exception
 	{
 		WMS wms = new WMS(ui);
 		try
@@ -132,7 +134,7 @@ public class WMSManager extends CategoryBeanManager<WMS, WMSUI, WMSDAO>
 		return super.add(wms);
 	}
 	
-	public WMS update(WMSUI ui) throws HibernateException
+	public WMS update(LayerServiceUI ui) throws HibernateException
 	{
 		return super.update(new WMS(ui));
 	}
@@ -213,14 +215,9 @@ public class WMSManager extends CategoryBeanManager<WMS, WMSUI, WMSDAO>
 		}
 	}
 	
-	private WMSLayer getLayer(WMS wms) throws MalformedURLException, IOException, ServiceException
+	private <T extends Named & UrlFacade> WMSLayer getLayer(T wms) throws MalformedURLException, IOException, ServiceException
 	{
 		return this.getLayer(wms.getUrl(), wms.getName());
-	}
-	
-	private WMSLayer getLayer(WMSUI ui) throws MalformedURLException, IOException, ServiceException
-	{
-		return this.getLayer(ui.getUrl(), ui.getName());
 	}
 	
 	private WMSLayer getLayer(String url, String name) throws MalformedURLException, IOException, ServiceException
@@ -237,7 +234,7 @@ public class WMSManager extends CategoryBeanManager<WMS, WMSUI, WMSDAO>
 		return null;
 	}
 	
-	public List<String> verify(WMSUI ui) throws MalformedURLException, IOException, ServiceException
+	public List<String> verify(LayerServiceUI ui) throws MalformedURLException, IOException, ServiceException
 	{
 		List<String> ret = new ArrayList<>();
 		if (!Util.isEmptyString(ui.getUrl()))
@@ -248,7 +245,7 @@ public class WMSManager extends CategoryBeanManager<WMS, WMSUI, WMSDAO>
 		return ret;
 	}
 	
-	public WMSLayerUI info(WMSUI ui) throws MalformedURLException, IOException, ServiceException
+	public WMSLayerUI info(LayerServiceUI ui) throws MalformedURLException, IOException, ServiceException
 	{
 		WMSLayer l = this.getLayer(ui);
 		return l != null ? new WMSLayerUI(l) : new WMSLayerUI();

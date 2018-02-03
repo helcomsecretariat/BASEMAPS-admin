@@ -12,6 +12,7 @@ import fi.fta.beans.User;
 import fi.fta.beans.UserRole;
 import fi.fta.beans.ui.UserUI;
 import fi.fta.data.dao.UserDAO;
+import fi.fta.utils.PasswordUtils;
 
 public class SiteModel
 {
@@ -48,33 +49,50 @@ public class SiteModel
 	
 	public boolean logged()
 	{
-		return this.user != null;
+		return user != null;
 	}
 	
 	public boolean isAdmin()
 	{
-		return this.user != null && this.user.getRole().equals(UserRole.ADMIN);
+		return user != null && user.getRole().equals(UserRole.ADMIN);
 	}
 	
 	public void logout()
 	{
-		this.user = null;
-		this.loginUrl = null;
+		user = null;
+		loginUrl = null;
 	}
 	
 	public String getUserName()
 	{
-		return this.logged() ? this.user.getName() : "";
+		return this.logged() ? user.getName() : "";
 	}
 	
 	public String getUserEmail()
 	{
-		return this.logged() ? this.user.getEmail() : "";
+		return this.logged() ? user.getEmail() : "";
+	}
+	
+	public boolean checkPassword(String password)
+	{
+		return this.logged() &&
+			user.getPassword().equals(PasswordUtils.encode(password));
+	}
+	
+	public boolean changePassword(String password) throws HibernateException
+	{
+		if (this.logged())
+		{
+			user.setPassword(PasswordUtils.encode(password));
+			new UserDAO().update(user);
+			return true;
+		}
+		return false;
 	}
 	
 	public void setLoginUrl(HttpServletRequest request)
 	{
-		this.loginUrl = this.url(request);
+		loginUrl = this.url(request);
 	}
 	
 	public String getLoginUrl()

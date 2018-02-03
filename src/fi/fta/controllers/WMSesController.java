@@ -17,13 +17,13 @@ import fi.fta.beans.response.ResponseMessage;
 import fi.fta.beans.response.SimpleMessage;
 import fi.fta.beans.response.SimpleResult;
 import fi.fta.beans.ui.WMSLayerUI;
-import fi.fta.beans.ui.WMSUI;
+import fi.fta.beans.ui.LayerServiceUI;
 import fi.fta.data.managers.WMSManager;
 import fi.fta.utils.Util;
 
 @Controller
 @RequestMapping("/wms")
-public class WMSesController extends CategoryBeansController<WMS, WMSUI, WMSManager>
+public class WMSesController extends CategoryBeansController<WMS, LayerServiceUI, WMSManager>
 {
 	
 	public WMSesController()
@@ -34,7 +34,7 @@ public class WMSesController extends CategoryBeansController<WMS, WMSUI, WMSMana
 	@RequestMapping(value = "/verify", method = RequestMethod.POST)
 	@ResponseBody
 	public SimpleResult<List<String>> verify(
-		@RequestBody WMSUI ui, HttpServletRequest request, HttpServletResponse response)
+		@RequestBody LayerServiceUI ui, HttpServletRequest request, HttpServletResponse response)
 	{
 		try
 		{
@@ -50,7 +50,7 @@ public class WMSesController extends CategoryBeansController<WMS, WMSUI, WMSMana
 	@RequestMapping(value = "/info", method = RequestMethod.POST)
 	@ResponseBody
 	public SimpleResult<WMSLayerUI> info(
-		@RequestBody WMSUI ui, HttpServletRequest request, HttpServletResponse response)
+		@RequestBody LayerServiceUI ui, HttpServletRequest request, HttpServletResponse response)
 	{
 		try
 		{
