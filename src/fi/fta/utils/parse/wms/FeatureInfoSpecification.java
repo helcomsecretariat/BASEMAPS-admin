@@ -1,6 +1,6 @@
-package fi.fta.utils.parse;
+package fi.fta.utils.parse.wms;
 
-public interface WMSFeatureInfoSpecification
+public interface FeatureInfoSpecification
 {
 	
 	public String getPathOrganisation();

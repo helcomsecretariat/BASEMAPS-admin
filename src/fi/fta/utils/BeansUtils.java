@@ -24,7 +24,7 @@ import fi.fta.beans.ui.WMSStyleUI;
 import fi.fta.data.managers.CategoryManager;
 import fi.fta.data.managers.WFSManager;
 import fi.fta.data.managers.WMSManager;
-import fi.fta.utils.parse.Style;
+import fi.fta.utils.parse.wms.Style;
 
 public class BeansUtils
 {
@@ -41,12 +41,12 @@ public class BeansUtils
 		return null;
 	}
 	
-	public static List<MetaData> getMetaData(Collection<fi.fta.utils.parse.MetaData> collection)
+	public static List<MetaData> getMetaData(Collection<fi.fta.utils.parse.wms.MetaData> collection)
 	{
 		List<MetaData> ret = new ArrayList<>();
 		if (!Util.isEmptyCollection(collection))
 		{
-			for (fi.fta.utils.parse.MetaData mdu : collection)
+			for (fi.fta.utils.parse.wms.MetaData mdu : collection)
 			{
 				ret.add(new MetaData(mdu));
 			}

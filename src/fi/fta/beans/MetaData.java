@@ -44,7 +44,7 @@ public class MetaData extends IdBean implements UrlFacade
 		this.setSource(ui.getSource());
 	}
 	
-	public MetaData(fi.fta.utils.parse.MetaData md)
+	public MetaData(fi.fta.utils.parse.wms.MetaData md)
 	{
 		super();
 		this.setFormat(MetaDataFormat.fromString(md.getFormat()));

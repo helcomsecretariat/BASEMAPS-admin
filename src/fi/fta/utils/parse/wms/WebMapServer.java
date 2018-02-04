@@ -1,4 +1,4 @@
-package fi.fta.utils.parse;
+package fi.fta.utils.parse.wms;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -26,7 +26,7 @@ public class WebMapServer
 	
 	private URL url;
 	
-	private WMSSpecification specification;
+	private Specification specification;
 	
 	private FeatureInfo featureInfo;
 	
@@ -56,12 +56,12 @@ public class WebMapServer
 	
 	private void decideSpecification(Element root)
 	{
-		List<WMSSpecification> specifications = Arrays.asList(
+		List<Specification> specifications = Arrays.asList(
 			new WMS_1_3_0(), new WMS_1_1_1(), new WMS_1_1_0(), new WMS_1_0_0());
-		Iterator<WMSSpecification> it = specifications.iterator();
+		Iterator<Specification> it = specifications.iterator();
 		while (specification == null && it.hasNext())
 		{
-			WMSSpecification s = it.next();
+			Specification s = it.next();
 			if (s.getRootName().equalsIgnoreCase(root.getName()) &&
 				s.getVersion().equalsIgnoreCase(root.attributeValue("version")))
 			{
@@ -78,11 +78,11 @@ public class WebMapServer
 		this.url = url;
 	}
 
-	public WMSSpecification getSpecification() {
+	public Specification getSpecification() {
 		return specification;
 	}
 
-	public void setSpecification(WMSSpecification specification) {
+	public void setSpecification(Specification specification) {
 		this.specification = specification;
 	}
 	

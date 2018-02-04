@@ -1,4 +1,4 @@
-package fi.fta.utils.parse;
+package fi.fta.utils.parse.wms;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

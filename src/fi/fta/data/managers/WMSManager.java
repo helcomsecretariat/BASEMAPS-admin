@@ -33,8 +33,8 @@ import fi.fta.utils.BeansUtils;
 import fi.fta.utils.CollectionsUtils;
 import fi.fta.utils.DateAndTimeUtils;
 import fi.fta.utils.Util;
-import fi.fta.utils.parse.Layer;
-import fi.fta.utils.parse.WebMapServer;
+import fi.fta.utils.parse.wms.Layer;
+import fi.fta.utils.parse.wms.WebMapServer;
 
 public class WMSManager extends CategoryBeanManager<WMS, LayerServiceUI, WMSDAO>
 {

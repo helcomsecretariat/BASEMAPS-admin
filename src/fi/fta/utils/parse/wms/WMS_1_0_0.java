@@ -1,6 +1,8 @@
-package fi.fta.utils.parse;
+package fi.fta.utils.parse.wms;
 
-public class WMS_1_0_0 implements WMSSpecification
+import org.dom4j.Element;
+
+public class WMS_1_0_0 implements Specification
 {
 	
 	public String getRootName() {
@@ -20,7 +22,7 @@ public class WMS_1_0_0 implements WMSSpecification
 	}
 	
 	public String getPathSupportedLanguages() {
-		return "Capability/ExtendedCapabilities/SupportedLanguages";
+		return "Capability/VendorSpecificCapabilities/ExtendedCapabilities/SupportedLanguages";
 	}
 	
 	public String getPathDefaultLanguage() {
@@ -61,6 +63,36 @@ public class WMS_1_0_0 implements WMSSpecification
 	
 	public String getSrs() {
 		return "SRS";
+	}
+	
+	public String getScaleMin() {
+		return "ScaleHint";
+	}
+	
+	public Double retrieveScaleMin(Element e) {
+		try
+		{
+			return e != null ? new Double(e.attributeValue("min")) : null;
+		}
+		catch (NumberFormatException ex)
+		{
+			return null;
+		}
+	}
+	
+	public String getScaleMax() {
+		return "ScaleHint";
+	}
+	
+	public Double retrieveScaleMax(Element e) {
+		try
+		{
+			return e != null ? new Double(e.attributeValue("max")) : null;
+		}
+		catch (NumberFormatException ex)
+		{
+			return null;
+		}
 	}
 	
 	public String getOnlineResource() {

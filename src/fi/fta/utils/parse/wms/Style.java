@@ -1,4 +1,4 @@
-package fi.fta.utils.parse;
+package fi.fta.utils.parse.wms;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,8 +6,9 @@ import java.util.List;
 import org.dom4j.Element;
 
 import fi.fta.beans.Named;
+import fi.fta.utils.parse.XmlBean;
 
-public class Style extends XmlBean<WMSStyleSpecification> implements Named
+public class Style extends XmlBean<StyleSpecification> implements Named
 {
 	
 	private String name;
@@ -15,7 +16,7 @@ public class Style extends XmlBean<WMSStyleSpecification> implements Named
 	private List<String> urls;
 	
 	
-	public Style(Element root, WMSStyleSpecification specification)
+	public Style(Element root, StyleSpecification specification)
 	{
 		super(root, specification);
 	}
@@ -36,7 +37,7 @@ public class Style extends XmlBean<WMSStyleSpecification> implements Named
 		this.urls = urls;
 	}
 	
-	public void fromElement(Element root, WMSStyleSpecification specification)
+	public void fromElement(Element root, StyleSpecification specification)
 	{
 		this.setName(root.elementText(specification.getName()));
 		this.setUrls(new ArrayList<>());

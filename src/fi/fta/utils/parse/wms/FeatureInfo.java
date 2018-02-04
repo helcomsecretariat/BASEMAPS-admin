@@ -1,4 +1,4 @@
-package fi.fta.utils.parse;
+package fi.fta.utils.parse.wms;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,8 +6,9 @@ import java.util.List;
 import org.dom4j.Element;
 
 import fi.fta.utils.Util;
+import fi.fta.utils.parse.XmlBean;
 
-public class FeatureInfo extends XmlBean<WMSFeatureInfoSpecification>
+public class FeatureInfo extends XmlBean<FeatureInfoSpecification>
 {
 	
 	private String organisation;
@@ -17,7 +18,7 @@ public class FeatureInfo extends XmlBean<WMSFeatureInfoSpecification>
 	private List<String> supportedLanguages;
 	
 	
-	public FeatureInfo(Element root, WMSFeatureInfoSpecification specification)
+	public FeatureInfo(Element root, FeatureInfoSpecification specification)
 	{
 		super(root, specification);
 	}
@@ -47,7 +48,7 @@ public class FeatureInfo extends XmlBean<WMSFeatureInfoSpecification>
 	}
 	
 	@Override
-	public void fromElement(Element root, WMSFeatureInfoSpecification specification)
+	public void fromElement(Element root, FeatureInfoSpecification specification)
 	{
 		organisation = XmlBean.elementText(root, specification.getPathOrganisation());
 		formats = new ArrayList<>();

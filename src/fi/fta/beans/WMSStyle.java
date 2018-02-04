@@ -10,7 +10,7 @@ import org.hibernate.annotations.Type;
 
 import fi.fta.beans.ui.WMSStyleUI;
 import fi.fta.utils.Util;
-import fi.fta.utils.parse.Style;
+import fi.fta.utils.parse.wms.Style;
 
 @Entity
 @Table(name="wmsstyles")

@@ -1,4 +1,4 @@
-package fi.fta.utils.parse;
+package fi.fta.utils.parse.wms;
 
 public class WMS_1_1_1 extends WMS_1_1_0
 {

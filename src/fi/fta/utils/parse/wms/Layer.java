@@ -1,4 +1,4 @@
-package fi.fta.utils.parse;
+package fi.fta.utils.parse.wms;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,8 +6,9 @@ import java.util.List;
 import org.dom4j.Element;
 
 import fi.fta.beans.Named;
+import fi.fta.utils.parse.XmlBean;
 
-public class Layer extends XmlBean<WMSLayerSpecification> implements Named
+public class Layer extends XmlBean<LayerSpecification> implements Named
 {
 	
 	private Boolean queryable;
@@ -33,12 +34,12 @@ public class Layer extends XmlBean<WMSLayerSpecification> implements Named
 	private List<Layer> layers;
 	
 
-	public Layer(Element root, WMSLayerSpecification specification)
+	public Layer(Element root, LayerSpecification specification)
 	{
 		super(root, specification);
 	}
 	
-	public Layer(Layer parent, Element root, WMSLayerSpecification specification)
+	public Layer(Layer parent, Element root, LayerSpecification specification)
 	{
 		super();
 		this.fromElement(parent, root, specification);
@@ -132,7 +133,7 @@ public class Layer extends XmlBean<WMSLayerSpecification> implements Named
 		this.layers = layers;
 	}
 	
-	public void fromElement(Element root, WMSLayerSpecification specification)
+	public void fromElement(Element root, LayerSpecification specification)
 	{
 		Element le = XmlBean.element(root, specification.getPathLayer());
 		this.set(le, specification);
@@ -143,7 +144,7 @@ public class Layer extends XmlBean<WMSLayerSpecification> implements Named
 		}
 	}
 	
-	public void fromElement(Layer parent, Element root, WMSLayerSpecification specification)
+	public void fromElement(Layer parent, Element root, LayerSpecification specification)
 	{
 		this.setParent(parent);
 		this.set(root, specification);
@@ -154,7 +155,7 @@ public class Layer extends XmlBean<WMSLayerSpecification> implements Named
 		}
 	}
 	
-	private void set(Element e, WMSLayerSpecification specification)
+	private void set(Element e, LayerSpecification specification)
 	{
 		String av = e.attributeValue(specification.getQueryable());
 		this.setQueryable(av != null && av.equals("1"));
@@ -172,6 +173,8 @@ public class Layer extends XmlBean<WMSLayerSpecification> implements Named
 			srses.add(((Element)o).getText());
 		}
 		this.setSrs(srses);
+		this.setScaleMin(specification.retrieveScaleMin(e.element(specification.getScaleMin())));
+		this.setScaleMax(specification.retrieveScaleMax(e.element(specification.getScaleMax())));
 		this.setMetadata(new ArrayList<>());
 		for (Object o : e.elements(specification.getMetaDataURL()))
 		{

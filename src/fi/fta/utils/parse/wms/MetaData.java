@@ -1,10 +1,11 @@
-package fi.fta.utils.parse;
+package fi.fta.utils.parse.wms;
 
 import org.dom4j.Element;
 
 import fi.fta.beans.UrlFacade;
+import fi.fta.utils.parse.XmlBean;
 
-public class MetaData extends XmlBean<WMSMetaDataSpecification> implements UrlFacade
+public class MetaData extends XmlBean<MetaDataSpecification> implements UrlFacade
 {
 	
 	private String format;
@@ -12,7 +13,7 @@ public class MetaData extends XmlBean<WMSMetaDataSpecification> implements UrlFa
 	private String url;
 	
 	
-	public MetaData(Element root, WMSMetaDataSpecification specification)
+	public MetaData(Element root, MetaDataSpecification specification)
 	{
 		super(root, specification);
 	}
@@ -33,7 +34,7 @@ public class MetaData extends XmlBean<WMSMetaDataSpecification> implements UrlFa
 		this.url = url;
 	}
 	
-	public void fromElement(Element root, WMSMetaDataSpecification specification)
+	public void fromElement(Element root, MetaDataSpecification specification)
 	{
 		this.setFormat(root.elementText(specification.getMetaDataFormat()));
 		this.setUrl(root.element(specification.getOnlineResource()).attributeValue(specification.getHref()));

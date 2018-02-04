@@ -7,9 +7,9 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import fi.fta.utils.BeansUtils;
-import fi.fta.utils.parse.FeatureInfo;
-import fi.fta.utils.parse.Layer;
-import fi.fta.utils.parse.WMSSpecification;
+import fi.fta.utils.parse.wms.FeatureInfo;
+import fi.fta.utils.parse.wms.Layer;
+import fi.fta.utils.parse.wms.Specification;
 
 public class WMSLayer
 {
@@ -19,7 +19,7 @@ public class WMSLayer
 	private WMSInfo info;
 	
 	
-	public WMSLayer(WMSSpecification specification, FeatureInfo features, Layer l)
+	public WMSLayer(Specification specification, FeatureInfo features, Layer l)
 	{
 		this.metadata = BeansUtils.getMetaData(l.getMetadata());
 		this.info = new WMSInfo();	
