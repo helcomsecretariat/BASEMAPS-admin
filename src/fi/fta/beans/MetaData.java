@@ -6,8 +6,6 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
-import org.geotools.data.wms.xml.MetadataURL;
-
 import fi.fta.beans.ui.MetaDataUI;
 import fi.fta.utils.Util;
 
@@ -46,11 +44,11 @@ public class MetaData extends IdBean implements UrlFacade
 		this.setSource(ui.getSource());
 	}
 	
-	public MetaData(MetadataURL mdu)
+	public MetaData(fi.fta.utils.parse.MetaData md)
 	{
 		super();
-		this.setFormat(MetaDataFormat.fromString(mdu.getFormat()));
-		this.setUrl(mdu.getUrl().toString());
+		this.setFormat(MetaDataFormat.fromString(md.getFormat()));
+		this.setUrl(md.getUrl());
 		this.setSource(MetaDataSource.WMS);
 	}
 	

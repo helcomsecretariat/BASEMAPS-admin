@@ -1,20 +1,19 @@
-package com.binndr.tools.setup;
+package fi.fta.utils.parse;
 
 import java.io.BufferedReader;
-import java.util.ArrayList;
-import java.util.List;
-
+import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
 import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-
 import org.xml.sax.InputSource;
-import java.io.InputStreamReader;
-import java.io.StringReader;
 
+@Deprecated
 public class WmsParser {
 	
 	public static void parseXML() throws Exception {
@@ -26,7 +25,7 @@ public class WmsParser {
 		if (doc != null) {
 			String v = getVersion(doc);
 			System.out.println("Version: " + v);
-			
+			/*
 			String a = getAbstract(doc);
 			System.out.println("Abstract: " + a);
 			
@@ -42,6 +41,7 @@ public class WmsParser {
 			for (String l : languages) {
 			    System.out.println("Supported language: " + l);
 			}
+			*/
 		}	
 	  
 	}
@@ -82,7 +82,7 @@ public class WmsParser {
         }
         return v;
 	}	
-	
+	/*
 	private static String getAbstract(Document doc) {
 		NodeList nodes = doc.getElementsByTagName("Abstract");
 		String a = null;
@@ -134,4 +134,5 @@ public class WmsParser {
 		}
 		return sls;
 	}	
+	*/
 }

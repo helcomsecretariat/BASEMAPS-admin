@@ -2,7 +2,6 @@ package fi.fta.data.managers;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -14,17 +13,13 @@ import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.log4j.Logger;
-import org.geotools.data.ows.Layer;
-import org.geotools.data.ows.WMSCapabilities;
-import org.geotools.data.wms.WebMapServer;
-import org.geotools.ows.ServiceException;
+import org.dom4j.DocumentException;
 import org.hibernate.HibernateException;
 
 import fi.fta.beans.Category;
 import fi.fta.beans.MetaData;
 import fi.fta.beans.MetaDataSource;
 import fi.fta.beans.Named;
-import fi.fta.beans.Pair;
 import fi.fta.beans.UrlFacade;
 import fi.fta.beans.WMS;
 import fi.fta.beans.WMSInfo;
@@ -38,6 +33,8 @@ import fi.fta.utils.BeansUtils;
 import fi.fta.utils.CollectionsUtils;
 import fi.fta.utils.DateAndTimeUtils;
 import fi.fta.utils.Util;
+import fi.fta.utils.parse.Layer;
+import fi.fta.utils.parse.WebMapServer;
 
 public class WMSManager extends CategoryBeanManager<WMS, LayerServiceUI, WMSDAO>
 {
@@ -49,7 +46,7 @@ public class WMSManager extends CategoryBeanManager<WMS, LayerServiceUI, WMSDAO>
 	
 	protected ReentrantLock cacheLock;
 	
-	protected TimeBasedCache<String, Pair<WebMapServer, Map<String, WMSLayer>>> cache;
+	protected TimeBasedCache<String, Map<String, WMSLayer>> cache;
 	
 	protected ReentrantLock updateInfoLock;
 	
@@ -127,7 +124,7 @@ public class WMSManager extends CategoryBeanManager<WMS, LayerServiceUI, WMSDAO>
 		{
 			logger.error("WMSManager.add parse layer null pointer", ex);
 		}
-		catch (ServiceException ex)
+		catch (DocumentException ex)
 		{
 			logger.error("WMSManager.add parse layer", ex);
 		}
@@ -139,7 +136,7 @@ public class WMSManager extends CategoryBeanManager<WMS, LayerServiceUI, WMSDAO>
 		return super.update(new WMS(ui));
 	}
 	
-	public void updateInfo(WMS wms) throws HibernateException, MalformedURLException, IOException, ServiceException	
+	public void updateInfo(WMS wms) throws HibernateException, MalformedURLException, IOException, DocumentException	
 	{
 		try
 		{
@@ -178,34 +175,24 @@ public class WMSManager extends CategoryBeanManager<WMS, LayerServiceUI, WMSDAO>
 		}
 	}
 	
-	private WebMapServer getWebMapServer(String url) throws MalformedURLException, IOException, ServiceException
-	{
-		return this.getFromCache(url).getFirst();
-	}
-	
-	private Map<String, WMSLayer> getNamedLayers(String url) throws MalformedURLException, IOException, ServiceException
-	{
-		return this.getFromCache(url).getSecond();
-	}
-	
-	private Pair<WebMapServer, Map<String, WMSLayer>> getFromCache(String url) throws MalformedURLException, IOException, ServiceException
+	private Map<String, WMSLayer> getFromCache(String url) throws MalformedURLException, IOException, DocumentException
 	{
 		cacheLock.lock();
 		try
 		{
 			if (!cache.contains(url))
 			{
-				Pair<WebMapServer, Map<String, WMSLayer>> p = new Pair<>(
-					new WebMapServer(new URL(url)), new HashMap<>());
-				WMSCapabilities capabilities = p.getFirst().getCapabilities();
-				for (Layer l : capabilities.getLayerList())
+				Map<String, WMSLayer> map = new HashMap<>();
+				WebMapServer ws = new WebMapServer(url);
+				if (ws.hasSpecification())
 				{
-					if (!Util.isEmptyString(l.getName()))
+					for (Layer l : ws.getNamedLayers())
 					{
-						p.getSecond().put(l.getName(), new WMSLayer(capabilities, l));
+						map.put(l.getName(), new WMSLayer(
+							ws.getSpecification(), ws.getFeatureInfo(), l));
 					}
 				}
-				cache.put(url, p);
+				cache.put(url, map);
 			}
 			return cache.get(url);
 		}
@@ -215,17 +202,16 @@ public class WMSManager extends CategoryBeanManager<WMS, LayerServiceUI, WMSDAO>
 		}
 	}
 	
-	private <T extends Named & UrlFacade> WMSLayer getLayer(T wms) throws MalformedURLException, IOException, ServiceException
+	private <T extends Named & UrlFacade> WMSLayer getLayer(T wms) throws MalformedURLException, IOException, DocumentException
 	{
 		return this.getLayer(wms.getUrl(), wms.getName());
 	}
 	
-	private WMSLayer getLayer(String url, String name) throws MalformedURLException, IOException, ServiceException
+	private WMSLayer getLayer(String url, String name) throws MalformedURLException, IOException, DocumentException
 	{
 		if (!Util.isEmptyString(url) && !Util.isEmptyString(name))
 		{
-			String appended = WMSManager.appendLanguage(url);
-			Map<String, WMSLayer> layers = this.getNamedLayers(appended);
+			Map<String, WMSLayer> layers = this.getFromCache(url);
 			if (layers.containsKey(name))
 			{
 				return layers.get(name);
@@ -234,18 +220,17 @@ public class WMSManager extends CategoryBeanManager<WMS, LayerServiceUI, WMSDAO>
 		return null;
 	}
 	
-	public List<String> verify(LayerServiceUI ui) throws MalformedURLException, IOException, ServiceException
+	public List<String> verify(LayerServiceUI ui) throws MalformedURLException, IOException, DocumentException
 	{
 		List<String> ret = new ArrayList<>();
 		if (!Util.isEmptyString(ui.getUrl()))
 		{
-			String url = WMSManager.appendLanguage(ui.getUrl());
-			ret.addAll(this.getNamedLayers(url).keySet());
+			ret.addAll(this.getFromCache(ui.getUrl()).keySet());
 		}
 		return ret;
 	}
 	
-	public WMSLayerUI info(LayerServiceUI ui) throws MalformedURLException, IOException, ServiceException
+	public WMSLayerUI info(LayerServiceUI ui) throws MalformedURLException, IOException, DocumentException
 	{
 		WMSLayer l = this.getLayer(ui);
 		return l != null ? new WMSLayerUI(l) : new WMSLayerUI();
@@ -281,17 +266,6 @@ public class WMSManager extends CategoryBeanManager<WMS, LayerServiceUI, WMSDAO>
 		{
 			cacheLock.unlock();
 		}
-	}
-	
-	
-	private static String appendLanguage(String url)
-	{
-		StringBuffer ret = new StringBuffer(url);
-		if (url.toLowerCase().indexOf("language") < 0)
-		{
-			ret.append(url.indexOf("?") < 0 ? "?" : "&").append("LANGUAGE=eng");
-		}
-		return ret.toString();
 	}
 	
 	private static boolean needUpdate(WMSInfo info)

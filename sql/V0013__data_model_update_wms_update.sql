@@ -7,3 +7,6 @@ ALTER TABLE public.services RENAME CONSTRAINT wmses_parent_fkey TO services_pare
 ALTER TABLE public.services
   ADD COLUMN type character varying(10) NOT NULL DEFAULT 'WMS';
 ALTER TABLE public.services ALTER COLUMN type DROP DEFAULT;
+
+ALTER TABLE public.wms_infos
+  ADD COLUMN languages character varying(3)[];

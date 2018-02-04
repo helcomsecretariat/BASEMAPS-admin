@@ -22,7 +22,7 @@ public class CategoryBean extends IdBean
 	protected Integer position;
 	
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(insertable=false)
+	@Column(insertable=false, updatable=false)
 	protected Date created;
 	
 	@Temporal(TemporalType.TIMESTAMP)

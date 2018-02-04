@@ -5,9 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.geotools.data.ows.Layer;
-import org.geotools.data.ows.StyleImpl;
 import org.geotools.data.ows.WMSCapabilities;
-import org.geotools.data.wms.xml.MetadataURL;
 import org.hibernate.HibernateException;
 
 import fi.fta.beans.Category;
@@ -20,10 +18,13 @@ import fi.fta.beans.ui.TreeBranchUI;
 import fi.fta.beans.ui.TreeCategoryLayerUI;
 import fi.fta.beans.ui.TreeCategoryUI;
 import fi.fta.beans.ui.TreeLayerUI;
+import fi.fta.beans.ui.TreeWFSLayerUI;
+import fi.fta.beans.ui.TreeWMSLayerUI;
 import fi.fta.beans.ui.WMSStyleUI;
 import fi.fta.data.managers.CategoryManager;
 import fi.fta.data.managers.WFSManager;
 import fi.fta.data.managers.WMSManager;
+import fi.fta.utils.parse.Style;
 
 public class BeansUtils
 {
@@ -40,12 +41,12 @@ public class BeansUtils
 		return null;
 	}
 	
-	public static List<MetaData> getMetaData(Collection<MetadataURL> collection)
+	public static List<MetaData> getMetaData(Collection<fi.fta.utils.parse.MetaData> collection)
 	{
 		List<MetaData> ret = new ArrayList<>();
 		if (!Util.isEmptyCollection(collection))
 		{
-			for (MetadataURL mdu : collection)
+			for (fi.fta.utils.parse.MetaData mdu : collection)
 			{
 				ret.add(new MetaData(mdu));
 			}
@@ -81,12 +82,12 @@ public class BeansUtils
 		return false;
 	}
 	
-	public static List<WMSStyle> getStyles(Collection<StyleImpl> collection)
+	public static List<WMSStyle> getStyles(Collection<Style> collection)
 	{
 		List<WMSStyle> ret = new ArrayList<>();
 		if (!Util.isEmptyCollection(collection))
 		{
-			for (StyleImpl s : collection)
+			for (Style s : collection)
 			{
 				ret.add(new WMSStyle(s));
 			}
@@ -150,6 +151,32 @@ public class BeansUtils
 			}
 		}
 		return layers;
+	}
+	
+	public static List<TreeWMSLayerUI> getTreeWMSUIs(Collection<WMS> wmses)
+	{
+		List<TreeWMSLayerUI> ret = new ArrayList<>();
+		if (!Util.isEmptyCollection(wmses))
+		{
+			for (WMS wms : wmses)
+			{
+				ret.add(new TreeWMSLayerUI(wms));
+			}
+		}
+		return ret;
+	}
+	
+	public static List<TreeWFSLayerUI> getTreeWFSUIs(Collection<WFS> wfses)
+	{
+		List<TreeWFSLayerUI> ret = new ArrayList<>();
+		if (!Util.isEmptyCollection(wfses))
+		{
+			for (WFS wfs : wfses)
+			{
+				ret.add(new TreeWFSLayerUI(wfs));
+			}
+		}
+		return ret;
 	}
 	
 }

@@ -68,6 +68,11 @@ public class CategoryManager extends CategoryBeanManager<Category, CategoryUI, C
 	
 	public Category update(CategoryUI ui) throws HibernateException
 	{
-		return super.update(new Category(ui));
+		Category c = new Category(ui);
+		if (ui.getParent() != null)
+		{
+			c.setParent(dao.get(ui.getParent()));
+		}
+		return super.update(c);
 	}
 }

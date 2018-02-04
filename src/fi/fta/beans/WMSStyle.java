@@ -1,17 +1,16 @@
 package fi.fta.beans;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import org.geotools.data.ows.StyleImpl;
 import org.hibernate.annotations.Type;
 
 import fi.fta.beans.ui.WMSStyleUI;
 import fi.fta.utils.Util;
+import fi.fta.utils.parse.Style;
 
 @Entity
 @Table(name="wmsstyles")
@@ -47,20 +46,11 @@ public class WMSStyle extends IdBean implements Named
 		this.setMain(ui.getMain());
 	}
 	
-	public WMSStyle(StyleImpl s)
+	public WMSStyle(Style s)
 	{
 		super();
 		this.setName(s.getName());
-		@SuppressWarnings("unchecked")
-		List<String> list = s.getLegendURLs();
-		if (!Util.isEmptyCollection(list))
-		{
-			this.setUrls(new ArrayList<>());
-			for (String url : list)
-			{
-				this.getUrls().add(url);
-			}
-		}
+		this.setUrls(s.getUrls());
 	}
 	
 	public Long getParent() {

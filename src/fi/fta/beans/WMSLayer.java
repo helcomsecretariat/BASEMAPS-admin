@@ -1,41 +1,37 @@
 package fi.fta.beans;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.geotools.data.ows.Layer;
-import org.geotools.data.ows.WMSCapabilities;
-
 import fi.fta.utils.BeansUtils;
+import fi.fta.utils.parse.FeatureInfo;
+import fi.fta.utils.parse.Layer;
+import fi.fta.utils.parse.WMSSpecification;
 
 public class WMSLayer
 {
-	
-	private Layer layer;
+
+	private List<MetaData> metadata;
 	
 	private WMSInfo info;
 	
-	private List<MetaData> metadata;
 	
-	
-	public WMSLayer(WMSCapabilities capabilities, Layer l)
+	public WMSLayer(WMSSpecification specification, FeatureInfo features, Layer l)
 	{
-		this.layer = l;
-		this.metadata = BeansUtils.getMetaData(l.getMetadataURL());
+		this.metadata = BeansUtils.getMetaData(l.getMetadata());
 		this.info = new WMSInfo();	
-		this.info.setVersion(capabilities.getVersion());
-		this.info.setOrganisation(
-			capabilities.getService().getContactInformation().getOrganisationName().toString());
-		this.info.setFormats(capabilities.getRequest().getGetFeatureInfo().getFormats());
+		this.info.setVersion(specification.getVersion());
+		this.info.setOrganisation(features.getOrganisation());
+		this.info.setFormats(features.getFormats());
 		this.info.setTitle(l.getTitle());
-		this.info.setKeywords(l.getKeywords() != null ? Arrays.asList(l.getKeywords()) : new ArrayList<>());
-		this.info.setQueryable(l.isQueryable());
-		this.info.setScaleMin(l.getScaleDenominatorMin());
-		this.info.setScaleMax(l.getScaleDenominatorMax());
+		this.info.setKeywords(l.getKeywords());
+		this.info.setQueryable(l.getQueryable());
+		this.info.setScaleMin(l.getScaleMin());
+		this.info.setScaleMax(l.getScaleMax());
+		this.info.setLanguages(features.getSupportedLanguages());
 		this.info.setStyles(new HashSet<>(BeansUtils.getStyles(l.getStyles())));
 		Set<String> crs = new TreeSet<>(l.getSrs());
 		while (l.getParent() != null)
@@ -45,22 +41,6 @@ public class WMSLayer
 		}
 		this.info.setCrs(new ArrayList<>(crs));
 	}
-	
-	public Layer getLayer() {
-		return layer;
-	}
-
-	public void setLayer(Layer layer) {
-		this.layer = layer;
-	}
-
-	public WMSInfo getInfo() {
-		return info;
-	}
-
-	public void setInfo(WMSInfo info) {
-		this.info = info;
-	}
 
 	public List<MetaData> getMetadata() {
 		return metadata;
@@ -68,6 +48,14 @@ public class WMSLayer
 
 	public void setMetadata(List<MetaData> metadata) {
 		this.metadata = metadata;
+	}
+	
+	public WMSInfo getInfo() {
+		return info;
+	}
+
+	public void setInfo(WMSInfo info) {
+		this.info = info;
 	}
 	
 }

@@ -44,6 +44,10 @@ public class WMSLayerBean implements Serializable
 	@Column(name = "scale_max")
 	private Double scaleMax;
 	
+	@Column(columnDefinition="character varying(3)[]")
+	@Type(type="fi.fta.data.dao.PersistentStringListType")
+	private List<String> languages;
+	
 	
 	public WMSLayerBean()
 	{}
@@ -126,6 +130,14 @@ public class WMSLayerBean implements Serializable
 		this.scaleMax = scaleMax;
 	}
 
+	public List<String> getLanguages() {
+		return languages;
+	}
+
+	public void setLanguages(List<String> languages) {
+		this.languages = languages;
+	}
+
 	public void copy(WMSLayerBean from)
 	{
 		this.setVersion(from.getVersion());
@@ -137,6 +149,7 @@ public class WMSLayerBean implements Serializable
 		this.setCrs(from.getCrs());
 		this.setScaleMin(from.getScaleMin());
 		this.setScaleMax(from.getScaleMax());
+		this.setLanguages(from.getLanguages());
 	}
 	
 }
