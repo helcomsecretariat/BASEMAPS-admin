@@ -28,6 +28,7 @@ import fi.fta.beans.ui.LayerServiceUI;
 import fi.fta.beans.ui.WMSLayerUI;
 import fi.fta.cache.TimeBasedCache;
 import fi.fta.data.dao.WMSDAO;
+import fi.fta.data.dao.WMSInfoDAO;
 import fi.fta.filters.WMSMetaDataSourceFilter;
 import fi.fta.utils.BeansUtils;
 import fi.fta.utils.CollectionsUtils;
@@ -131,9 +132,23 @@ public class WMSManager extends CategoryBeanManager<WMS, LayerServiceUI, WMSDAO>
 		return super.add(wms);
 	}
 	
-	public WMS update(LayerServiceUI ui) throws HibernateException
+	public WMS update(LayerServiceUI ui) throws Exception
 	{
-		return super.update(new WMS(ui));
+		WMS wms = super.update(new WMS(ui));
+		wms.setInfo(new WMSInfoDAO().get(ui.getId()));
+		try
+		{
+			this.updateInfo(wms);
+		}
+		catch (NullPointerException ex)
+		{
+			logger.error("WMSManager.update parse layer null pointer", ex);
+		}
+		catch (DocumentException ex)
+		{
+			logger.error("WMSManager.update parse layer", ex);
+		}
+		return wms;
 	}
 	
 	public void updateInfo(WMS wms) throws HibernateException, MalformedURLException, IOException, DocumentException	

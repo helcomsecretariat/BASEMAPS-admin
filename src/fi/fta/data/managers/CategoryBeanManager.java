@@ -49,6 +49,6 @@ public abstract class CategoryBeanManager<C extends CategoryBean, UI extends Cat
 	
 	public abstract Long add(UI ui) throws Exception;
 	
-	public abstract C update(UI ui) throws HibernateException;
+	public abstract C update(UI ui) throws Exception;
 	
 }

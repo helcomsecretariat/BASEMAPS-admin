@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -31,6 +32,12 @@ public class Category extends CategoryBean
 	
 	protected String label;
 	
+	@Column(name = "helcom_metadata")
+	protected String helcomMetadata;
+	
+	@Column(name = "download_url")
+	protected String downloadUrl;
+	
 	@JsonIgnore
 	@ManyToOne(targetEntity=Category.class, cascade={CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.REMOVE}, fetch=FetchType.EAGER)
 	@JoinColumn(name = "parent")
@@ -53,6 +60,8 @@ public class Category extends CategoryBean
 	{
 		super(ui);
 		this.setLabel(ui.getLabel());
+		this.setHelcomMetadata(ui.getHelcomMetadata());
+		this.setDownloadUrl(ui.getDownloadUrl());
 		this.setMetadata(new HashSet<>());
 		if (!Util.isEmptyCollection(ui.getMetaData()))
 		{
@@ -72,6 +81,22 @@ public class Category extends CategoryBean
 
 	public void setLabel(String label) {
 		this.label = label;
+	}
+
+	public String getHelcomMetadata() {
+		return helcomMetadata;
+	}
+
+	public void setHelcomMetadata(String helcomMetadata) {
+		this.helcomMetadata = helcomMetadata;
+	}
+
+	public String getDownloadUrl() {
+		return downloadUrl;
+	}
+
+	public void setDownloadUrl(String downloadUrl) {
+		this.downloadUrl = downloadUrl;
 	}
 
 	public Category getParent() {

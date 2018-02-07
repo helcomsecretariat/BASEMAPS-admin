@@ -17,7 +17,11 @@ public class TreeBranchUI extends IdUI
 	private Integer position;
 
 	private String label;
-
+	
+	private String helcomMetadata;
+	
+	private String downloadUrl;
+	
 	private List<MetaDataUI> metadata;
 	
 	
@@ -29,6 +33,8 @@ public class TreeBranchUI extends IdUI
 		super(c);
 		this.setPosition(c.getPosition());
 		this.setLabel(c.getLabel());
+		this.setHelcomMetadata(c.getHelcomMetadata());
+		this.setDownloadUrl(c.getDownloadUrl());
 		this.setMetadata(BeansUtils.getMetaDataUI(c.getMetadata()));
 	}
 	
@@ -46,6 +52,22 @@ public class TreeBranchUI extends IdUI
 
 	public void setLabel(String label) {
 		this.label = label;
+	}
+
+	public String getHelcomMetadata() {
+		return helcomMetadata;
+	}
+
+	public void setHelcomMetadata(String helcomMetadata) {
+		this.helcomMetadata = helcomMetadata;
+	}
+
+	public String getDownloadUrl() {
+		return downloadUrl;
+	}
+
+	public void setDownloadUrl(String downloadUrl) {
+		this.downloadUrl = downloadUrl;
 	}
 
 	public List<MetaDataUI> getMetadata() {

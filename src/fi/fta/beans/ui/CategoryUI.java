@@ -17,7 +17,11 @@ public class CategoryUI extends CategoryBeanUI
 	
 	@NotBlank(message = "msg.validation.required")
 	private String label;
-
+	
+	private String helcomMetadata;
+	
+	private String downloadUrl;
+	
 	protected List<MetaDataUI> metaData;
 	
 	
@@ -30,6 +34,8 @@ public class CategoryUI extends CategoryBeanUI
 	{
 		super(bean);
 		this.setLabel(bean.getLabel());
+		this.setHelcomMetadata(bean.getHelcomMetadata());
+		this.setDownloadUrl(bean.getDownloadUrl());
 		this.setParent(bean.getParent() != null ? bean.getParent().getId() : null);
 		this.setMetaData(BeansUtils.getMetaDataUI(bean.getMetadata()));
 	}
@@ -40,6 +46,22 @@ public class CategoryUI extends CategoryBeanUI
 
 	public void setLabel(String label) {
 		this.label = label;
+	}
+
+	public String getHelcomMetadata() {
+		return helcomMetadata;
+	}
+
+	public void setHelcomMetadata(String helcomMetadata) {
+		this.helcomMetadata = helcomMetadata;
+	}
+
+	public String getDownloadUrl() {
+		return downloadUrl;
+	}
+
+	public void setDownloadUrl(String downloadUrl) {
+		this.downloadUrl = downloadUrl;
 	}
 
 	public List<MetaDataUI> getMetaData() {
