@@ -271,6 +271,10 @@ html, body {
 	background-image: url("../img/wfs16.png");
 }
 
+.manageMetadataButton {
+	background-image: url("../img/metadata16.png");
+}
+
 /* END admin layer list section */
 
 /* START admin user list section */
@@ -298,13 +302,38 @@ html, body {
 	height: 100%;
 }
 
+.scrollableContainer {
+	height: 75%; 
+	overflow-y: auto;
+}
+.formSectionGroup {
+	margin-top: 10px;
+	padding-bottom: 10px;
+	border-bottom: 1px solid #cccccc;
+}
+
+.formSection {
+	margin-left: 20px;
+}
+
 .textInputLabelGroup {
 	margin-bottom: 10px;
 }
 
+.formSectionLabel {
+	font-size: 20px;
+	font-weight: bold;
+	color: #B73C2B;
+}
+
+.formSectionMessage {
+	margin-left: 20px;
+	font-size: 14px;
+}
+
 .textInputLabel {
 	font-size: 20px;
-	width: 100px;
+	width: 150px;
 	display: inline-block;
 }
 
@@ -349,20 +378,12 @@ html, body {
 	font-weight: bold;	
 }
 
-.addDataFormLabel {
-	font-size: 20px;
-	font-weight: bold;
-	color: #B73C2B;
-	margin-top: 10px;
-}
-
 .selectLabel {
 	font-size: 20px;
 }
 
 .claro .dijitSelect {
 	height: 40px;
-	width: 400px;
 	font-size: 20px;
 	border-radius: 4px;
 	border: 1px solid #800000;
@@ -371,10 +392,10 @@ html, body {
 #adminFormMessage {
 	display: none;
 	color: red;
-	font-size: 12px;
+	font-size: 14px;
 }
 
-#wmsInfoContainer {
+.formInfoContainer {
 	height: 75%;
 	overflow-y: auto;
 }

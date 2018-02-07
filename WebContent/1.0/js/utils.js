@@ -31,6 +31,9 @@ define([
 		getInputValue: function(elementId) {
 			return dom.byId(elementId).value;
 		},
+		setInputValue: function(elementId, value) {
+			dom.byId(elementId).value = value;
+		},
 		createPostRequestParams(data) {
 			return {
 				data: JSON.stringify(data),

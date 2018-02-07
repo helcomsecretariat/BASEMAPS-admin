@@ -67,6 +67,8 @@ define([
 		formsObj: null,
 		rootLayerId: "layerlist",
 		currentObjId: null,
+		currentWms: null,
+		currentWmsId: null,
 		currentHeader: "",
 		treePath: [],
 		constructor: function(params) {
@@ -84,7 +86,58 @@ define([
 		postCreate: function() {
 			this.getLayersData();
     	
-			on(this.formsObj.addCategorySaveButton, "click", lang.hitch(this, function(){
+			on(this.formsObj.saveCategoryButton, "click", lang.hitch(this, function(){
+				this.formsObj.hideMessage();
+				this.formsObj.action = "ADD_CATEGORY";
+				var values = {
+					"categoryName": this.formsObj.getCategoryInputValue(),
+					"categoryHelcomId": this.formsObj.getHelcomIdInputValue()
+				};
+				
+				if (validate.isText(values.categoryName)) {
+					this.formsObj.action = "ADD_CATEGORY";
+					this.saveCategory(values);
+				}
+				else {
+					this.formsObj.showMessage("Layer's label is not valid.");
+				}
+			}));
+			
+			on(this.formsObj.updateCategoryButton, "click", lang.hitch(this, function(){
+				this.formsObj.action = "UPDATE_CATEGORY";
+				this.getCategory();
+			}));
+			
+			on(this.formsObj.wmsSaveButton, "click", lang.hitch(this, function(){
+				this.formsObj.hideMessage();
+					
+				var values = {
+					"parent": this.currentObjId, 
+					"url": this.formsObj.getWmsUrlInputValue()
+				};
+				
+				if (this.formsObj.wmsValidationPassed) {
+					values.name = this.formsObj.wmsNameSelector.get("value");
+				}
+				else {
+					values.name = this.formsObj.getWmsNameInputValue();
+				}
+				
+				if ((validate.isUrl(values.url)) && (validate.isText(values.name))) {
+					if (this.currentWms == null) {
+						this.formsObj.action = "ADD_WMS";
+						this.saveWms(values);
+					}
+					else {
+						this.formsObj.action = "UPDATE_WMS";
+						this.deleteWms(values);
+					}
+				}
+				else {
+					this.formsObj.showMessage("WMS url or name is not valid. WMS is not added.");
+				}
+			}));
+			/*on(this.formsObj.addCategorySaveButton, "click", lang.hitch(this, function(){
 				this.formsObj.hideMessage();
 					
 				var values = {"categoryName": this.formsObj.getCategoryInputValue()};
@@ -104,10 +157,11 @@ define([
 				else {
 					this.formsObj.showMessage("Category label is not valid.");
 				}
-			}));
+			}));*/
 			
 			on(this.formsObj.addCategoryCloseButton, "click", lang.hitch(this, function(){
 				this.currentObjId = null;
+				this.currentWms = null;
 				this.formsObj.formCleanUp();
 			}));
 			
@@ -120,10 +174,28 @@ define([
 				this.formsObj.formCleanUp();
 			}));
 			
-			on(this.formsObj.wmsInfoCloseButton, "click", lang.hitch(this, function(){
+			on(this.formsObj.wmsInfoUpdateButton, "click", lang.hitch(this, function(){
+				this.wmsUpdateInfo();
 				this.currentObjId = null;
 				this.formsObj.formCleanUp();
 			}));
+			
+			on(this.formsObj.wmsInfoCloseButton, "click", lang.hitch(this, function(){
+				this.currentObjId = null;
+				this.currentWmsId = null;
+				this.formsObj.formCleanUp();
+			}));
+			
+			on(this.formsObj.metadataSaveButton, "click", lang.hitch(this, function(){
+				this.formsObj.hideMessage();
+				this.formsObj.action = "ADD_METADATA";
+				this.getCategory();
+			}));
+			
+			/*on(this.formsObj.metadataCloseButton, "click", lang.hitch(this, function(){
+				this.currentObjId = null;
+				this.formsObj.formCleanUp();
+			}));*/
 		},
     
 		getTreePath: function(id) {
@@ -135,20 +207,21 @@ define([
 			console.log(this.treePath);
 		},
 		
-		refreshLayerList: function() {
+		refreshLayerList: function(highlightId = null) {
 			delete this.store;
 			this.treeModel.destroy();
 			this.tree.destroy();
 			domConstruct.empty(this.adminLayerListTree);
 			this.data = [{ id: this.rootLayerId, leaf: false}];
-			this.getLayersData();
+			this.getLayersData(highlightId);
 		},
     
 		saveCategory: function(values) {
 			console.log(values);
 			var url = "sc/categories/add";
 			var data = {
-				"label": values.categoryName
+				"label": values.categoryName,
+				"helcomMetadata": values.categoryHelcomId
 			};
 			if (this.currentObjId != null) {
 				data.parent = this.currentObjId;
@@ -156,38 +229,120 @@ define([
 			}
 			request.post(url, this.utils.createPostRequestParams(data)).then(
 				lang.hitch(this, function(response){
-					this.utils.clearInput("categoryInput");
 					if (response.type == "error") {
-						this.formsObj.showMessage("Failed to add category.");
+						this.formsObj.showMessage("Failed to add layer.");
 					}
 					else if (response.type == "success") {
-						this.formsObj.showMessage("Category added.");
+						this.formsObj.showMessage("Layer added.");
+						this.currentObjId = response.item.toString();
+						this.utils.show("saveCategoryButton", "none");
+						this.utils.show("updateCategoryButton", "inline-block");
+						this.utils.show("addDataCategoryButton", "inline-block");
+						this.refreshLayerList(this.currentObjId);
+					}
+					this.formsObj.action = null;
+				}),
+				lang.hitch(this, function(error){
+					this.formsObj.action = null;
+					this.formsObj.showMessage("Something went wrong (on categories/add). Please contact administrator.");
+					console.log(error);
+				})
+			);
+		},
+
+		getCategory: function() {
+			var url = "sc/categories/get/"+this.currentObjId;
+			request.get(url, {
+				handleAs: "json"
+			}).then(
+				lang.hitch(this, function(response){
+					if (response.type == "error") {
+						this.formsObj.action = null;
+						// TODO: popup box message
+					}
+					else if (response.type == "success") {
 						
-						if (this.formsObj.addingWmsWithCategory) {
-							if ((validate.isUrl(values.wmsUrl)) && (validate.isText(values.wmsName))) {
-								this.saveWms({"parent": response.item, "url": values.wmsUrl, "name": values.wmsName});
-							}
-							else {
-								this.formsObj.showMessage("WMS url or name is not valid. WMS is not added.");
-							}
-							/*if ((values.wfsUrl.length > 0) && (values.wfsName.length > 0)) {
-								if ((validate.isUrl(values.wfsUrl)) && (validate.isText(values.wfsName))) {
-									console.log("valid name and url wfs");
-								}
-								else {
-									this.formsObj.showMessage("WFS url or name is not valid. WFS is not added.");
-								}
-							}*/
+						var data = response.item;
+						if (this.formsObj.action == "UPDATE_CATEGORY") {
+							data.label = this.formsObj.getCategoryInputValue();
+							data.helcomMetadata = this.formsObj.getHelcomIdInputValue();
+							this.updateCategory(data);
 						}
-						else {
-							this.refreshLayerList();
+						else if ((this.formsObj.action == "ADD_WMS") || (this.formsObj.action == "UPDATE_WMS") || (this.formsObj.action == "METADATA_ADDED")){
+							if (data.metaData.length > 0) {
+								this.formsObj.hideDisplayMetadataForm();
+								this.utils.changeText("metadataFormMessage", "Metadata added to this layer:");
+								this.utils.show("metadataDisplayForm", "block");
+								this.formsObj.showMetadata(data.metaData);
+								console.log("Get Cat", data.metaData);
+								this.formsObj.action = null;
+							}
 						}
-						console.log(response);
+						else if (this.formsObj.action == "ADD_METADATA") {
+							var newMetadata = {
+								"parent": data.id,
+								"source": "PROVIDED",
+								"format": this.formsObj.metadataFormatSelector.get("value"),
+								"url": this.formsObj.getMetadataUrlInputValue()
+							};
+							data.metaData.push(newMetadata);
+							//console.log("ADD_METADATA", response.item, values);
+							this.updateCategory(data);
+						}
+						
+						/*var data = response.item;
+						var newMetadata = {
+							"parent": data.id,
+							"source": "PROVIDED",
+							"format": values.metadataFormat,
+							"url": values.metadataUrl
+						};
+						data.metaData.push(newMetadata);
+						
+						this.updateCategory(data);*/
 					}
 				}),
 				lang.hitch(this, function(error){
-					this.utils.clearInput("categoryInput");
-					this.formsObj.showMessage("Something went wrong (on adding category). Please contact administrator.");
+					this.formsObj.action = null;
+					alert("Something went wrong (on categories/get/{id}). Please contact administrator.");
+					console.log(error);
+				})
+			);
+		},
+		
+		updateCategory: function(data) {
+			var url = "sc/categories/update";
+			
+			request.post(url, this.utils.createPostRequestParams(data)).then(
+				lang.hitch(this, function(response){
+					//this.refreshLayerList();
+					this.refreshLayerList(this.currentObjId);
+					if (response.type == "error") {
+						this.formsObj.showMessage("Failed to update layer.");
+						if (this.formsObj.action == "ADD_METADATA") {
+							this.formsObj.hideAddMetadataForm();
+						}
+						this.formsObj.action = null;
+					}
+					else if (response.type == "success") {
+						console.log(response);
+						this.formsObj.showMessage("Layer updated.");
+						if (this.formsObj.action == "ADD_METADATA") {
+							this.formsObj.hideAddMetadataForm();
+							this.formsObj.action = "METADATA_ADDED";
+							this.getCategory();
+						}
+						else {
+							this.formsObj.action = null;
+						}
+					}
+				}),
+				lang.hitch(this, function(error){
+					if (this.formsObj.action == "ADD_METADATA") {
+						this.formsObj.hideAddMetadataForm();
+					}
+					this.formsObj.action = null;
+					this.formsObj.showMessage("Something went wrong (on categories/update). Please contact administrator.");
 					console.log(error);
 				})
 			);
@@ -198,23 +353,150 @@ define([
 			var url = "sc/wms/add";
 			request.post(url, this.utils.createPostRequestParams(data)).then(
 				lang.hitch(this, function(response){
-					this.formsObj.hideAddWmsForm();
-					this.refreshLayerList();
+					this.refreshLayerList(this.currentObjId);
 					if (response.type == "error") {
+						this.formsObj.action = null;
 						this.formsObj.showMessage("Failed to add WMS.");
+						this.formsObj.hideAddWmsForm();
 					}
 					else if (response.type == "success") {
 						this.formsObj.showMessage("WMS added.");
+						this.formsObj.wmsUpdate = true;
+						this.formsObj.hideAddWmsForm();
+						if ((this.formsObj.action == "ADD_WMS") || (this.formsObj.action == "UPDATE_WMS")){
+							this.getWms(response.item);
+						}
+						console.log(response);
+					}
+				}),
+				lang.hitch(this, function(error){
+					this.formsObj.action = null;
+					this.formsObj.hideAddWmsForm();
+					this.refreshLayerList();
+					this.formsObj.showMessage("Something went wrong (on wms/add). Please contact administrator.");
+					console.log(error);
+				})
+			);
+		},
+		
+		getWms: function(id) {
+			var url = "sc/wms/get/"+id;
+			request.get(url, {
+				handleAs: "json"
+			}).then(
+				lang.hitch(this, function(response){
+					if (response.type == "error") {
+						this.formsObj.action = null;
+						// TODO: popup box message
+					}
+					else if (response.type == "success") {
+						if ((this.formsObj.action == "ADD_WMS") || (this.formsObj.action == "UPDATE_WMS")){
+							this.currentWms = {
+								"id": response.item.id,
+								"url": response.item.url,
+								"name": response.item.name
+							};
+							this.utils.changeText("wmsFormMessage", "WMS added to this layer:");
+							this.utils.changeText("wmsDisplayUrl", this.currentWms.url);
+							this.utils.changeText("wmsDisplayName", this.currentWms.name);
+							this.utils.show("wmsDisplayForm", "block");
+							
+							this.getCategory();
+						}
+						
+						//console.log(response);
+					}
+				}),
+				lang.hitch(this, function(error){
+					this.formsObj.action = null;
+					alert("Something went wrong (on wms/get/{id}). Please contact administrator.");
+					console.log(error);
+				})
+			);
+		},
+		
+		deleteWms: function(values) {
+			var url = "sc/wms/delete/" + this.currentWms.id;
+			request.del(url, {
+				handleAs: "json"
+			}).then(
+				lang.hitch(this, function(response){
+					if (response.type == "error") {
+						this.formsObj.action =null;
+						this.formsObj.showMessage("Failed to delete wms.");
+					}
+					else if (response.type == "success") {
+						if (this.formsObj.action == "UPDATE_WMS") {
+							this.saveWms(values);
+						}
+					}
+				}),
+				lang.hitch(this, function(error){
+					this.formsObj.action =null;
+					this.formsObj.showMessage("Something went wrong (on wms/delete/{id}). Please contact administrator.");
+					console.log(error);
+				})
+			);
+		},
+		
+		/*updateCategory: function(data) {
+			console.log("update category", data);
+			var url = "sc/categories/update";
+			request.post(url, this.utils.createPostRequestParams(data)).then(
+				lang.hitch(this, function(response){
+					this.currentObjId = null;
+					this.formsObj.formCleanUp();
+					this.refreshLayerList();
+					if (response.type == "error") {
+						this.formsObj.showMessage("Failed to update layer.");
+					}
+					else if (response.type == "success") {
+						this.formsObj.showMessage("Layer updated.");
 						
 					}
 				}),
 				lang.hitch(this, function(error){
-					this.formsObj.hideAddWmsForm();
+					this.currentObjId = null;
+					this.formsObj.formCleanUp();
 					this.refreshLayerList();
-					this.formsObj.showMessage("Something went wrong (on adding category). Please contact administrator.");
+					this.formsObj.showMessage("Something went wrong (on categories/update). Please contact administrator.");
 					console.log(error);
 				})
 			);
+		},*/
+		
+		getCategoryForMetadataUpdate: function(values) {
+			console.log("get category", values);
+			var url = "sc/categories/get/"+this.currentObjId;
+			request.get(url, {
+				handleAs: "json"
+			}).then(
+				lang.hitch(this, function(response){
+					if (response.type == "error") {
+						console.log(response);
+						// TODO: popup box message
+					}
+					else if (response.type == "success") {
+						console.log(response);
+						var data = response.item;
+						var newMetadata = {
+							"parent": data.id,
+							"source": "PROVIDED",
+							"format": values.metadataFormat,
+							"url": values.metadataUrl
+						};
+						data.metaData.push(newMetadata);
+						
+						this.updateCategory(data);
+					}
+				}),
+				lang.hitch(this, function(error){
+					alert("Something went wrong (on categories/get/{id}). Please contact administrator.");
+					console.log(error);
+				})
+			);
+			console.log(values);
+			console.log(this.currentObjId);
 		},
 		
 		deleteCategory: function() {
@@ -227,19 +509,19 @@ define([
 					if (response.type == "error") {
 						this.currentObjId = null;
 						this.formsObj.formCleanUp();
-						this.formsObj.showMessage("Failed to delete category.");
+						this.formsObj.showMessage("Failed to delete layer.");
 					}
 					else if (response.type == "success") {
 						this.currentObjId = null;
 						this.formsObj.formCleanUp();
-						this.formsObj.showMessage("Category deleted.");
+						this.formsObj.showMessage("Layer deleted.");
 						this.refreshLayerList();
 					}
 				}),
 				lang.hitch(this, function(error){
 					this.currentObjId = null;
 					this.formsObj.formCleanUp();
-					this.formsObj.showMessage("Something went wrong (on deleting category). Please contact administrator.");
+					this.formsObj.showMessage("Something went wrong (on categories/delete/{id}). Please contact administrator.");
 					console.log(error);
 				})
 			);
@@ -259,17 +541,35 @@ define([
 					}
 				}),
 				lang.hitch(this, function(error){
-					this.formsObj.showMessage("Something went wrong (on changing category position). Please contact administrator.");
+					this.formsObj.showMessage("Something went wrong (on categories/position/{id}/{pos}). Please contact administrator.");
 					console.log(error);
 				})
 			);
+		},
+		
+		wmsUpdateInfo: function() {
+			var url = "sc/wms/update-info/"+this.currentWmsId;
+			request.post(url, this.utils.createPostRequestParams({})).then(
+					lang.hitch(this, function(response){
+						if (response.type == "error") {
+							this.formsObj.showMessage("Failed to update wms info.");
+						}
+						else if (response.type == "success") {
+							this.currentWmsId == null;
+						}
+					}),
+					lang.hitch(this, function(error){
+						this.formsObj.showMessage("Something went wrong (on wms/update-info/{id}). Please contact administrator.");
+						console.log(error);
+					})
+				);
 		},
 
 		destroy: function() {
 
 		},
     
-		getLayersData: function() {
+		getLayersData: function(highlightId) {
 			var url = "sc/categories/tree";
 			request.get(url, {
 				handleAs: "json"
@@ -281,6 +581,12 @@ define([
 					}
 					else if (response.type == "success") {
 						this.createTree(response.item);
+						if (highlightId != null) {
+							this.getTreePath(highlightId)
+							this.currentHeader = " Manage layer";
+							this.getLabelsFromRoot(highlightId);
+							this.utils.changeText("adminFormsHeader", this.currentHeader);
+						}
 						if (this.treePath.length > 0) {
 							this.tree.set('paths', [this.treePath]).then(lang.hitch(this, function(path) {
 								if(!this.tree.selectedNode.isExpanded){
@@ -308,36 +614,52 @@ define([
 		},
 
 		addLayerToDataArray: function(layer, parentLayerId, topGroup, last) {
-			
+			//console.log(layer);
 			//var isLeaf = (layer.children.length > 0 ? false : true);
 			//var isLeaf = (layer.name ? true : false);
-			var isLeaf = !(layer.category);
+			//var isLeaf = !(layer.category);
 			//var isEmpty = (layer.layers.length > 0 ? false : true);
 			var lyr = {
 				id: layer.id.toString(),
 				parent: parentLayerId,
 				name: layer.label,
+				helcomId: layer.helcomMetadata,
 				topGroup: topGroup,
 				position: layer.position,
 				lastPos: last,
-				//leaf: !layer.isGroup,
-				leaf: isLeaf,
-				//empty: isEmpty,
+				leaf: null,
+				emptyCategory: null,
 				wms: null,
 				wfs: null,
 				metadata: null
 			};
-			if (isLeaf) {
-				lyr.wms = layer.layers[0];
+			
+			if (layer.layers) {
+				lyr.leaf = false;
+				if (layer.layers.length == 0) {
+					lyr.emptyCategory = true;
+				}
+				else {
+					lyr.emptyCategory = false;
+				}
+			}
+			else {
+				lyr.leaf = true;
+				lyr.emptyCategory = false;
+			}
+			
+			if (lyr.leaf) {
+				if (layer.wmses[0]) {
+					lyr.wms = layer.wmses[0];
+				}
+				if (layer.wfses[0]) {
+					lyr.wfs = layer.wfses[0];
+				}
 				lyr.metadata = layer.metadata;
 			}
-			/*if (isLeaf) {
-				lyr["wms"] = layer.wms;
-				lyr["wfs"] = layer.wfs;
-				lyr["metadata"] = layer.metadata;
-			}*/
+			
 			this.data.push(lyr);
-			if (!isLeaf) {
+			if (!lyr.leaf) {
 				this.dataFiltering.push(lyr);
 				array.forEach(layer.layers, lang.hitch(this, function(l){
 					if (l.position === layer.layers.length) {
@@ -409,7 +731,7 @@ define([
 							connectId: [downButton],
 							showDelay: 10,
 							position: ["below"],
-							label: "One level down"
+							label: "Move down"
 						});
 
 						on(downButton, "click", function(){
@@ -425,7 +747,7 @@ define([
 							connectId: [upButton],
 							showDelay: 10,
 							position: ["below"],
-							label: "One level up"
+							label: "Move up"
 						});
 
 						on(upButton, "click", function(){
@@ -438,7 +760,26 @@ define([
 					if (tnode.item.leaf) {
 						domConstruct.destroy(tnode.expandoNode);
 						
-						var wfsButton = domConstruct.create("div", { "class": "manageWfsButton" }, toolsContainer, "last");
+						/*var metadataButton = domConstruct.create("div", { "class": "manageMetadataButton" }, toolsContainer, "last");
+						new Tooltip({
+							connectId: [metadataButton],
+							showDelay: 10,
+							position: ["below"],
+							label: "Manage layers metadata"
+						});
+
+						on(metadataButton, "click", function(){
+							console.log(tnode.item);
+							that.formsObj.formCleanUp();
+							that.currentObjId = tnode.item.id;
+							that.currentHeader = tnode.item.name + " -> metadata";
+							if (tnode.item.parent != that.rootLayerId) {
+								that.getLabelsFromRoot(tnode.item.parent);
+							}
+							that.formsObj.setupMetadataForm(that.currentHeader, tnode.item.metadata);
+						});*/
+						
+						/*var wfsButton = domConstruct.create("div", { "class": "manageWfsButton" }, toolsContainer, "last");
 						new Tooltip({
 							connectId: [wfsButton],
 							showDelay: 10,
@@ -449,25 +790,26 @@ define([
 						on(wfsButton, "click", function(){
 							console.log("wfsButton", tnode.item);
 							// TODO
-						});
+						});*/
 						
 						var wmsButton = domConstruct.create("div", { "class": "manageWmsButton" }, toolsContainer, "last");
 						new Tooltip({
 							connectId: [wmsButton],
 							showDelay: 10,
 							position: ["below"],
-							label: "Manage layers WMS"
+							label: "WMS info"
 						});
 
 						on(wmsButton, "click", function(){
+							//console.log(tnode.item);
 							that.formsObj.formCleanUp();
 							that.currentObjId = tnode.item.id;
+							that.currentWmsId = tnode.item.wms.id;
 							that.currentHeader = tnode.item.name + " -> WMS info";
 							if (tnode.item.parent != that.rootLayerId) {
 								that.getLabelsFromRoot(tnode.item.parent);
 							}
 							that.formsObj.setupWmsInfoForm(that.currentHeader, tnode.item.wms.url, tnode.item.wms.name);
-							// TODO
 						});
 						
 						var removeCategoryButton = domConstruct.create("div", { "class": "removeCategoryButton" }, toolsContainer, "last");
@@ -488,7 +830,7 @@ define([
 							that.formsObj.setupDeleteCategoryForm(that.currentHeader);
 						});
 												
-						var editLayerButton = domConstruct.create("div", { "class": "editButton" }, toolsContainer, "last");
+						/*var editLayerButton = domConstruct.create("div", { "class": "editButton" }, toolsContainer, "last");
 						new Tooltip({
 							connectId: [editLayerButton],
 							showDelay: 10,
@@ -499,7 +841,7 @@ define([
 						on(editLayerButton, "click", function(){
 							console.log("editLayerButton", tnode.item);
 							// TODO
-						});
+						});*/
 					}
 					else {
 						
@@ -509,7 +851,7 @@ define([
 							connectId: [removeCategoryButton],
 							showDelay: 10,
 							position: ["below"],
-							label: "Remove category"
+							label: "Remove layer"
 						});
 
 						on(removeCategoryButton, "click", function(){
@@ -527,7 +869,7 @@ define([
 							connectId: [addCategoryButton],
 							showDelay: 10,
 							position: ["below"],
-							label: "Add category"
+							label: "Add layer"
 						});
 
 						on(addCategoryButton, "click", function(){
@@ -537,26 +879,31 @@ define([
 							if (tnode.item.parent != that.rootLayerId) {
 								that.getLabelsFromRoot(tnode.item.parent);
 							}
-							that.formsObj.setupAddCategoryForm(that.currentHeader);
-						});
-						
-						var editCategoryButton = domConstruct.create("div", { "class": "editButton" }, toolsContainer, "last");
-						new Tooltip({
-							connectId: [editCategoryButton],
-							showDelay: 10,
-							position: ["below"],
-							label: "Edit category"
-						});
-
-						on(editCategoryButton, "click", function(){
-							console.log("editCategoryButton", tnode.item);
-							// TODO
+							that.formsObj.setupCategoryForm("MANAGE_CATEGORY", null, that.currentHeader);
 						});
 						
 						var rowNodePadding = domStyle.get(tnode.rowNode, "padding-left");
 						var labelNodeWidth = 300 - rowNodePadding;
 						domStyle.set(tnode.labelNode, {"width": labelNodeWidth+"px"});
 					}
+					
+					var editCategoryButton = domConstruct.create("div", { "class": "editButton" }, toolsContainer, "last");
+					new Tooltip({
+						connectId: [editCategoryButton],
+						showDelay: 10,
+						position: ["below"],
+						label: "Manage layer"
+					});
+
+					on(editCategoryButton, "click", function(){
+						that.formsObj.formCleanUp();
+						that.currentObjId = tnode.item.id;
+						that.currentHeader = tnode.item.name + " -> Manage layer";
+						if (tnode.item.parent != that.rootLayerId) {
+							that.getLabelsFromRoot(tnode.item.parent);
+						}
+						that.formsObj.setupCategoryForm("MANAGE_CATEGORY", tnode.item, that.currentHeader);
+					});
 					
 					on(tnode.rowNode, mouse.enter, function(){
 						domStyle.set(toolsContainer, {"display": "block"});

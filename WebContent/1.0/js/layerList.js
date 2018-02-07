@@ -43,6 +43,7 @@ define([
     metadataIDS: {},
     identify: {},
     visitedNodesIds: {},
+    rootLayerId: "layerlist",
     constructor: function(params) {
       this.map = params.map;
       //this.configLayers = params.layers;
@@ -225,80 +226,81 @@ define([
       }
     },*/
 
-    addLayerToDataArray: function(layer, parentLayerId, topGroup) {
-    	var isLeaf = (layer.layers.length > 0 ? false : true);
+    addLayerToDataArray: function(layer, parentLayerId, topGroup, last) {
+    	//var isLeaf = (layer.layers.length > 0 ? false : true);
     	var lyr = {
-			id: layer.id,
+			id: layer.id.toString(),
 			parent: parentLayerId,
-			name: layer.label ? layer.label : layer.name,
+			name: layer.label,
 			topGroup: topGroup,
-			//leaf: !layer.isGroup,
-			leaf: isLeaf,
+			position: layer.position,
+			lastPos: last,
+			leaf: null,
+			emptyCategory: null,
 			wms: null,
 			wfs: null,
 			metadata: null
     	};
+    	
+    	if (layer.layers) {
+			lyr.leaf = false;
+			if (layer.layers.length == 0) {
+				lyr.emptyCategory = true;
+			}
+			else {
+				lyr.emptyCategory = false;
+			}
+		}
+		else {
+			lyr.leaf = true;
+			lyr.emptyCategory = false;
+		}
+    	
+    	if (lyr.leaf) {
+			if (layer.wmses[0]) {
+				lyr.wms = layer.wmses[0];
+			}
+			if (layer.wfses[0]) {
+				lyr.wfs = layer.wfses[0];
+			}
+			lyr.metadata = layer.metadata;
+		}
     	/*if (isLeaf) {
 			lyr["wms"] = layer.wms;
 			lyr["wfs"] = layer.wfs;
 			lyr["metadata"] = layer.metadata;
     	}*/
     	this.data.push(lyr);
-    	if (!isLeaf) {
-    		this.dataFiltering.push(lyr);
-    		array.forEach(layer.layers, lang.hitch(this, function(l){
-    			this.addLayerToDataArray(l, layer.id, false);
-    		}));
-    	}
+		if (!lyr.leaf) {
+			this.dataFiltering.push(lyr);
+			array.forEach(layer.layers, lang.hitch(this, function(l){
+				if (l.position === layer.layers.length) {
+					this.addLayerToDataArray(l, layer.id.toString(), false, true);
+				}
+				else {
+					this.addLayerToDataArray(l, layer.id.toString(), false, false);
+				}
+			}));
+		}
     },
 
     createDataArray: function(input) {
+		array.forEach(input, lang.hitch(this, function(record){
+			if (record.position === input.length) {
+				this.addLayerToDataArray(record, this.rootLayerId, true, true);
+			}
+			else {
+				this.addLayerToDataArray(record, this.rootLayerId, true, false);
+			}
+		}));
+	},
+    /*createDataArray: function(input) {
     	array.forEach(input, lang.hitch(this, function(record){
     		//console.log("createDataArray", record);
     		this.addLayerToDataArray(record, "layerlist", true);
     	}));
-      /*for(var i=this.map.layerIds.length-1; i>=0; i--){
-        var layerId = this.map.layerIds[i];
-        if (layerId !== "Basemap") {
-          // add top most level to layer list
-          this.data.push({id: layerId+"_top", parent: "layerlist", name: layerId, topGroup: true, leaf: false, layer: layerId});
-
-          var lyr = this.map.getLayer(layerId);
-          //for each layer in service
-          array.forEach(lyr.layerInfos, lang.hitch(this, function(lyrInfo){
-
-            // check if layer is a leaf
-            var isLeaf = false;
-            if (lyrInfo.subLayerIds) {
-              isLeaf = false;
-            }
-            else {
-              isLeaf = true;
-            }
-            // add all levels and set parent levels
-            if (lyrInfo.parentLayerId === -1) {
-              this.data.push({id: layerId+"_"+lyrInfo.id, parent: layerId+"_top", name: lyrInfo.name, topGroup: false, leaf: isLeaf, layer: layerId, visibilityId: lyrInfo.id, metadataId: this.metadataIDS[layerId+"_"+lyrInfo.id]});
-            }
-            else {
-              this.data.push({id: layerId+"_"+lyrInfo.id, parent: layerId+"_"+lyrInfo.parentLayerId, name: lyrInfo.name, topGroup: false, leaf: isLeaf, layer: layerId, visibilityId: lyrInfo.id, metadataId: this.metadataIDS[layerId+"_"+lyrInfo.id]});
-            }
-          }));
-
-          // create Identify Task for each service
-          //var idp = new IdentifyParameters();
-          //idp.tolerance = 6;
-          //idp.returnGeometry = true;
-          //idp.layerOption = IdentifyParameters.LAYER_OPTION_TOP;
-          //idp.layerIds = [];
-
-          //this.identify[layerId] = {
-          //  "task": new IdentifyTask(lyr.url),
-          //  "params": idp
-          //};
-        }
-      //}));
-      }*/
-    },
+      
+    },*/
 
     /*validURL: function(url) {
       var pattern = new RegExp('^(https?:\/\/)?'+ // protocol
@@ -533,16 +535,16 @@ define([
               //var visible = layer.visibleLayers;
               if (checked) {
                 if (!tnode.item.wmsMapLayer) {
-                  if ((tnode.item.wms.url.length > 0) && (tnode.item.wms.layerName.length > 0)) {
+                  if ((tnode.item.wms.url.length > 0) && (tnode.item.wms.name.length > 0)) {
                     tnode.item.wmsMapLayer = new ol.layer.Tile({
                       id: tnode.item.id,
                       source: new ol.source.TileWMS({
                         url: tnode.item.wms.url,
                         params: {
-                          SERVICENAME: tnode.item.wms.servicename,
-                          LAYERS: tnode.item.wms.layerName,
-                          LOGIN: tnode.item.wms.login,
-                          PASSWORD: tnode.item.wms.password,
+                          //SERVICENAME: tnode.item.wms.servicename,
+                          LAYERS: tnode.item.wms.name,
+                          //LOGIN: tnode.item.wms.login,
+                          //PASSWORD: tnode.item.wms.password,
                           //TILED: false,
                           //VERSION: tnode.item.wms.version,
                           VERSION: "1.3.0",
@@ -565,7 +567,7 @@ define([
                         ratio: 1
                       })
                     });*/
-                    console.log(tnode.item.wmsMapLayer.getSource().url);
+                    //console.log(tnode.item.wmsMapLayer.getSource().url);
                     mapa.addLayer(tnode.item.wmsMapLayer);
                     domStyle.set(tnode.item.legendContainerDiv, "display", "block");
                   }
