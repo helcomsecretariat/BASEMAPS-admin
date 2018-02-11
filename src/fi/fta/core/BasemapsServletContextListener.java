@@ -8,6 +8,7 @@ import javax.servlet.ServletContextListener;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import fi.fta.data.managers.WFSManager;
 import fi.fta.data.managers.WMSManager;
 
 
@@ -20,6 +21,7 @@ public class BasemapsServletContextListener implements ServletContextListener
 	public void contextDestroyed(ServletContextEvent arg0)
 	{
 		WMSManager.getInstance().clear();
+		WFSManager.getInstance().clear();
 		
 		// Axis 2 commons-httpclient-3.1 memory leak workaround
 		//MultiThreadedHttpConnectionManager.shutdownAll();

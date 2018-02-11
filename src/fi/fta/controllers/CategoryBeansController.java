@@ -24,7 +24,8 @@ import fi.fta.validation.ClassStructureAssessor;
 import fi.fta.validation.ValidationMessage;
 
 public class CategoryBeansController<
-	C extends CategoryBean, CUI extends CategoryBeanUI, CM extends CategoryBeanManager<C, CUI, ? extends CategoryBeanDAO<C>>>
+	C extends CategoryBean, CUI extends CategoryBeanUI,
+	CM extends CategoryBeanManager<C, CUI, ? extends CategoryBeanDAO<C>>>
 {
 	
 	protected static Logger logger = Logger.getLogger(CategoryBeansController.class);

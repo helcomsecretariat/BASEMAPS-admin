@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.geotools.data.ows.Layer;
-import org.geotools.data.ows.WMSCapabilities;
 import org.hibernate.HibernateException;
 
 import fi.fta.beans.Category;
@@ -28,18 +26,6 @@ import fi.fta.utils.parse.wms.Style;
 
 public class BeansUtils
 {
-	
-	public static Layer getLayerByName(WMSCapabilities capabilities, String name)
-	{
-		for (Layer l : capabilities.getLayerList())
-		{
-			if (!Util.isEmptyString(l.getName()) && l.getName().equalsIgnoreCase(name))
-			{
-				return l;
-			}
-		}
-		return null;
-	}
 	
 	public static List<MetaData> getMetaData(Collection<fi.fta.utils.parse.wms.MetaData> collection)
 	{

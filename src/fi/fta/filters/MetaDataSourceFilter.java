@@ -1,14 +1,14 @@
 package fi.fta.filters;
 
-import fi.fta.beans.MetaDataSource;
 import fi.fta.beans.MetaData;
+import fi.fta.beans.MetaDataSource;
 
-public class WMSMetaDataSourceFilter extends GenericFilter<MetaData>
+public class MetaDataSourceFilter extends GenericFilter<MetaData>
 {
 	
 	private MetaDataSource source;
 	
-	public WMSMetaDataSourceFilter(MetaDataSource source)
+	public MetaDataSourceFilter(MetaDataSource source)
 	{
 		this.source = source;
 	}

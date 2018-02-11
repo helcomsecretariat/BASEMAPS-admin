@@ -3,21 +3,33 @@ package fi.fta.data.managers;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.log4j.Logger;
-import org.geotools.ows.ServiceException;
+import org.dom4j.DocumentException;
 import org.hibernate.HibernateException;
 
+import fi.fta.beans.MetaDataSource;
+import fi.fta.beans.Named;
+import fi.fta.beans.UrlFacade;
 import fi.fta.beans.WFS;
+import fi.fta.beans.WFSFeatures;
 import fi.fta.beans.WFSInfo;
+import fi.fta.beans.WFSLayerBean;
 import fi.fta.beans.ui.LayerServiceUI;
 import fi.fta.cache.TimeBasedCache;
 import fi.fta.data.dao.WFSDAO;
 import fi.fta.utils.DateAndTimeUtils;
+import fi.fta.utils.Util;
+import fi.fta.utils.parse.wfs.FeatureType;
+import fi.fta.utils.parse.wfs.WebFeatureServer;
 
-public class WFSManager extends CategoryBeanManager<WFS, LayerServiceUI, WFSDAO>
+public class WFSManager extends ServiceManager<WFS, WFSDAO>
 {
 	
 	private static long WFS_CACHE_TIME = 10 * 60 * 1000;
@@ -27,7 +39,7 @@ public class WFSManager extends CategoryBeanManager<WFS, LayerServiceUI, WFSDAO>
 	
 	protected ReentrantLock cacheLock;
 	
-	protected TimeBasedCache<String, String> cache;
+	protected TimeBasedCache<String, Map<String, WFSFeatures>> cache;
 	
 	protected ReentrantLock updateInfoLock;
 	
@@ -50,109 +62,71 @@ public class WFSManager extends CategoryBeanManager<WFS, LayerServiceUI, WFSDAO>
 	
 	protected WFSManager()
 	{
-		super(new WFSDAO());
+		super(new WFSDAO(), MetaDataSource.WFS);
 		this.cacheLock = new ReentrantLock();
 		this.cache = new TimeBasedCache<>(WFSManager.WFS_CACHE_TIME);
 		this.updateInfoLock = new ReentrantLock();
 	}
 	
-	@Override
-	public LayerServiceUI getUI(Long id) throws HibernateException
-	{
-		WFS wfs = this.get(id);
-		return wfs != null ? new LayerServiceUI(wfs) : new LayerServiceUI();
-	}
-	
-	public List<WFS> getChildren(Long id) throws HibernateException
-	{
-		return dao.getByParent(id);
-	}
-	
 	public Long add(LayerServiceUI ui) throws Exception
 	{
-		WFS wms = new WFS(ui);
-		/*
+		WFS wfs = new WFS(ui);
 		try
 		{
-			WMSLayer l = this.getLayer(ui);
-			if (l != null)
+			WFSFeatures s = this.getFeatures(wfs);
+			if (s != null)
 			{
-				wms.setInfo(l.getInfo());
-				if (!l.getMetadata().isEmpty())
-				{
-					Category c = CategoryManager.getInstance().get(ui.getParent());
-					if (c != null)
-					{
-						if (!c.getMetadata().isEmpty())
-						{
-							for (MetaData md : l.getMetadata())
-							{
-								if (!BeansUtils.contains(c.getMetadata(), md))
-								{
-									c.getMetadata().add(md);
-								}
-							}
-						}
-						else
-						{
-							c.getMetadata().addAll(l.getMetadata());
-						}
-						CategoryManager.getInstance().update(c);
-					}
-				}
+				wfs.setInfo(s.getInfo());
+				super.addMetaData(ui, s.getMetadata());
 			}
 		}
 		catch (NullPointerException ex)
 		{
-			logger.error("WMSManager.add parse layer null pointer", ex);
+			logger.error("WFSManager.add parse null pointer", ex);
 		}
-		catch (ServiceException ex)
+		catch (DocumentException ex)
 		{
-			logger.error("WMSManager.add parse layer", ex);
+			logger.error("WFSManager.add parse", ex);
 		}
-		*/
-		return super.add(wms);
+		return super.add(wfs);
 	}
 	
-	public WFS update(LayerServiceUI ui) throws HibernateException
+	public WFS update(LayerServiceUI ui) throws Exception
 	{
-		return super.update(new WFS(ui));
+		WFS wfs = super.update(new WFS(ui));
+		//wfs.setInfo(new WFSInfoDAO().get(ui.getId()));
+		try
+		{
+			this.updateInfo(wfs);
+		}
+		catch (NullPointerException ex)
+		{
+			logger.error("WFSManager.update parse null pointer", ex);
+		}
+		catch (DocumentException ex)
+		{
+			logger.error("WFSManager.update parse", ex);
+		}
+		return wfs;
 	}
 	
-	public void updateInfo(WFS wms) throws HibernateException, MalformedURLException, IOException, ServiceException	
+	public void updateInfo(WFS wfs) throws HibernateException, MalformedURLException, IOException, DocumentException	
 	{
 		try
 		{
 			updateInfoLock.lock();
-			/*
-			WMSLayer layer = this.getLayer(wms);
-			if (layer != null)
+			WFSFeatures features = this.getFeatures(wfs);
+			if (features != null)
 			{
-				if (wms.getInfo() == null)
+				if (wfs.getInfo() == null)
 				{
-					wms.setInfo(new WMSInfo());
-					wms.getInfo().setStyles(layer.getInfo().getStyles());
+					wfs.setInfo(new WFSInfo());
 				}
-				else
-				{
-					wms.getInfo().getStyles().retainAll(layer.getInfo().getStyles());
-				}
-				wms.getInfo().copy(layer.getInfo());
-				wms.getInfo().setUpdated(Calendar.getInstance().getTime());
-				dao.update(wms);
-				
-				Category c = CategoryManager.getInstance().get(wms.getParent());
-				if (c != null)
-				{
-					Set<MetaData> current = new WMSMetaDataSourceFilter(MetaDataSource.WMS).filter(c.getMetadata());
-					c.getMetadata().removeAll(
-						CollectionsUtils.removeAllByUrl(current, new HashSet<>(layer.getMetadata())));
-					c.getMetadata().addAll(
-						CollectionsUtils.removeAllByUrl(new HashSet<>(layer.getMetadata()), current));
-					CategoryManager.getInstance().update(c);
-				}
+				wfs.getInfo().copy(features.getInfo());
+				wfs.getInfo().setUpdated(Calendar.getInstance().getTime());
+				dao.update(wfs);
+				super.updateMetaData(wfs, features.getMetadata());
 			}
-			*/
 		}
 		finally
 		{
@@ -160,26 +134,24 @@ public class WFSManager extends CategoryBeanManager<WFS, LayerServiceUI, WFSDAO>
 		}
 	}
 	
-	private String getFromCache(String url) throws MalformedURLException, IOException, ServiceException
+	private Map<String, WFSFeatures> getFromCache(String url) throws MalformedURLException, IOException, DocumentException
 	{
 		cacheLock.lock();
 		try
 		{
 			if (!cache.contains(url))
 			{
-				/*
-				Pair<WebMapServer, Map<String, WMSLayer>> p = new Pair<>(
-					new WebMapServer(new URL(url)), new HashMap<>());
-				WMSCapabilities capabilities = p.getFirst().getCapabilities();
-				for (Layer l : capabilities.getLayerList())
+				Map<String, WFSFeatures> map = new HashMap<>();
+				WebFeatureServer ws = new WebFeatureServer(url);
+				if (ws.hasSpecification())
 				{
-					if (!Util.isEmptyString(l.getName()))
+					for (FeatureType ft : ws.getNamedFeatureTypes())
 					{
-						p.getSecond().put(l.getName(), new WMSLayer(capabilities, l));
+						map.put(ft.getName(), new WFSFeatures(
+							ws.getSpecification(), ws.getFeatureInfo(), ft));
 					}
 				}
-				*/
-				cache.put(url, url);
+				cache.put(url, map);
 			}
 			return cache.get(url);
 		}
@@ -187,6 +159,42 @@ public class WFSManager extends CategoryBeanManager<WFS, LayerServiceUI, WFSDAO>
 		{
 			cacheLock.unlock();
 		}
+	}
+	
+	private <T extends Named & UrlFacade> WFSFeatures getFeatures(T wfs) throws MalformedURLException, IOException, DocumentException
+	{
+		return this.getFeatures(wfs.getUrl(), wfs.getName());
+	}
+	
+	private WFSFeatures getFeatures(String url, String name) throws MalformedURLException, IOException, DocumentException
+	{
+		if (!Util.isEmptyString(url) && !Util.isEmptyString(name))
+		{
+			Map<String, WFSFeatures> features = this.getFromCache(url);
+			if (features.containsKey(name))
+			{
+				return features.get(name);
+			}
+		}
+		return null;
+	}
+	
+	@Override
+	public List<String> verify(LayerServiceUI ui) throws MalformedURLException, IOException, DocumentException
+	{
+		List<String> ret = new ArrayList<>();
+		if (!Util.isEmptyString(ui.getUrl()))
+		{
+			ret.addAll(this.getFromCache(ui.getUrl()).keySet());
+		}
+		return ret;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public WFSLayerBean info(LayerServiceUI ui) throws MalformedURLException, IOException, DocumentException
+	{
+		WFSFeatures f = this.getFeatures(ui);
+		return f != null ? new WFSLayerBean(f.getInfo()) : new WFSLayerBean();
 	}
 	
 	public void scheduleUpdateInfo(Long id)

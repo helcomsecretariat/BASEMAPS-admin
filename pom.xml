@@ -901,19 +901,19 @@
 
 		<!-- Manual added -->
 		<!-- https://mvnrepository.com/artifact/org.geotools/gt-wms -->
-		<dependency>
+		<!-- dependency>
 		    <groupId>org.geotools</groupId>
 		    <artifactId>gt-wms</artifactId>
 		    <version>${gt-wms.version}</version>
 		    <scope>compile</scope>
-		</dependency>
+		</dependency -->
 		<!-- https://mvnrepository.com/artifact/org.geotools/gt-wfs -->
-		<dependency>
+		<!-- dependency>
 		    <groupId>org.geotools</groupId>
 		    <artifactId>gt-wfs</artifactId>
 		    <version>${gt-wfs.version}</version>
 		    <scope>compile</scope>
-		</dependency>
+		</dependency -->
 		
     </dependencies>
     

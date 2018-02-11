@@ -1,9 +1,9 @@
 package fi.fta.beans.ui;
 
+import fi.fta.beans.MetaData;
 import fi.fta.beans.MetaDataFormat;
 import fi.fta.beans.MetaDataSource;
 import fi.fta.beans.UrlFacade;
-import fi.fta.beans.MetaData;
 
 public class MetaDataUI extends IdUI implements UrlFacade
 {

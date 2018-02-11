@@ -1,24 +1,15 @@
 package fi.fta.data.dao;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.hibernate.HibernateException;
 
 import fi.fta.beans.WFS;
 
-public class WFSDAO extends CategoryBeanDAO<WFS>
+public class WFSDAO extends LayerServiceDAO<WFS>
 {
 	
 	public WFSDAO()
 	{
 		super(WFS.class);
-	}
-	
-	public List<WFS> getByParent(Long parent) throws HibernateException
-	{
-		//return this.getByField("parent", parent, "position", true);
-		return new ArrayList<>();
 	}
 	
 	@Override

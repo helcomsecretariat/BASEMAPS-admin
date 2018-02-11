@@ -2,6 +2,7 @@ package fi.fta.beans;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.Transient;
 
 import fi.fta.beans.ui.LayerServiceUI;
 
@@ -18,6 +19,7 @@ public class WFS extends LayerService
 	
 	//@OneToOne(targetEntity=WFSInfo.class, cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.REMOVE}, fetch=FetchType.EAGER)
 	//@PrimaryKeyJoinColumn
+	@Transient
 	protected WFSInfo info;
 	
 	

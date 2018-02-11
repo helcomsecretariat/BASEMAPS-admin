@@ -6,18 +6,14 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.log4j.Logger;
 import org.dom4j.DocumentException;
 import org.hibernate.HibernateException;
 
-import fi.fta.beans.Category;
-import fi.fta.beans.MetaData;
 import fi.fta.beans.MetaDataSource;
 import fi.fta.beans.Named;
 import fi.fta.beans.UrlFacade;
@@ -29,15 +25,12 @@ import fi.fta.beans.ui.WMSLayerUI;
 import fi.fta.cache.TimeBasedCache;
 import fi.fta.data.dao.WMSDAO;
 import fi.fta.data.dao.WMSInfoDAO;
-import fi.fta.filters.WMSMetaDataSourceFilter;
-import fi.fta.utils.BeansUtils;
-import fi.fta.utils.CollectionsUtils;
 import fi.fta.utils.DateAndTimeUtils;
 import fi.fta.utils.Util;
 import fi.fta.utils.parse.wms.Layer;
 import fi.fta.utils.parse.wms.WebMapServer;
 
-public class WMSManager extends CategoryBeanManager<WMS, LayerServiceUI, WMSDAO>
+public class WMSManager extends ServiceManager<WMS, WMSDAO>
 {
 	
 	private static long WMS_CACHE_TIME = 10 * 60 * 1000;
@@ -70,22 +63,10 @@ public class WMSManager extends CategoryBeanManager<WMS, LayerServiceUI, WMSDAO>
 	
 	protected WMSManager()
 	{
-		super(new WMSDAO());
+		super(new WMSDAO(), MetaDataSource.WMS);
 		this.cacheLock = new ReentrantLock();
 		this.cache = new TimeBasedCache<>(WMSManager.WMS_CACHE_TIME);
 		this.updateInfoLock = new ReentrantLock();
-	}
-	
-	@Override
-	public LayerServiceUI getUI(Long id) throws HibernateException
-	{
-		WMS wms = this.get(id);
-		return wms != null ? new LayerServiceUI(wms) : new LayerServiceUI();
-	}
-	
-	public List<WMS> getChildren(Long id) throws HibernateException
-	{
-		return dao.getByParent(id);
 	}
 	
 	public Long add(LayerServiceUI ui) throws Exception
@@ -97,28 +78,7 @@ public class WMSManager extends CategoryBeanManager<WMS, LayerServiceUI, WMSDAO>
 			if (l != null)
 			{
 				wms.setInfo(l.getInfo());
-				if (!l.getMetadata().isEmpty())
-				{
-					Category c = CategoryManager.getInstance().get(ui.getParent());
-					if (c != null)
-					{
-						if (!c.getMetadata().isEmpty())
-						{
-							for (MetaData md : l.getMetadata())
-							{
-								if (!BeansUtils.contains(c.getMetadata(), md))
-								{
-									c.getMetadata().add(md);
-								}
-							}
-						}
-						else
-						{
-							c.getMetadata().addAll(l.getMetadata());
-						}
-						CategoryManager.getInstance().update(c);
-					}
-				}
+				super.addMetaData(ui, l.getMetadata());
 			}
 		}
 		catch (NullPointerException ex)
@@ -171,17 +131,7 @@ public class WMSManager extends CategoryBeanManager<WMS, LayerServiceUI, WMSDAO>
 				wms.getInfo().copy(layer.getInfo());
 				wms.getInfo().setUpdated(Calendar.getInstance().getTime());
 				dao.update(wms);
-				
-				Category c = CategoryManager.getInstance().get(wms.getParent());
-				if (c != null)
-				{
-					Set<MetaData> current = new WMSMetaDataSourceFilter(MetaDataSource.WMS).filter(c.getMetadata());
-					c.getMetadata().removeAll(
-						CollectionsUtils.removeAllByUrl(current, new HashSet<>(layer.getMetadata())));
-					c.getMetadata().addAll(
-						CollectionsUtils.removeAllByUrl(new HashSet<>(layer.getMetadata()), current));
-					CategoryManager.getInstance().update(c);
-				}
+				super.updateMetaData(wms, layer.getMetadata());
 			}
 		}
 		finally
@@ -245,6 +195,7 @@ public class WMSManager extends CategoryBeanManager<WMS, LayerServiceUI, WMSDAO>
 		return ret;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public WMSLayerUI info(LayerServiceUI ui) throws MalformedURLException, IOException, DocumentException
 	{
 		WMSLayer l = this.getLayer(ui);

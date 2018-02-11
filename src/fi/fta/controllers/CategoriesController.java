@@ -20,7 +20,8 @@ import fi.fta.utils.BeansUtils;
 
 @Controller
 @RequestMapping("/categories")
-public class CategoriesController extends CategoryBeansController<Category, CategoryUI, CategoryManager>
+public class CategoriesController
+	extends CategoryBeansController<Category, CategoryUI, CategoryManager>
 {
 	
 	public CategoriesController()

@@ -1,6 +1,5 @@
 package fi.fta.beans;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -8,7 +7,7 @@ import javax.persistence.Id;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-public class WFSInfo implements Serializable
+public class WFSInfo extends WFSLayerBean
 {
 
 	/**
