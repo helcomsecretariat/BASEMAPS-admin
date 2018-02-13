@@ -40,7 +40,7 @@ public class CategoryBeansController<
 	
 	@RequestMapping(value = "/get/{id}", method = RequestMethod.GET)
 	@ResponseBody
-	public SimpleResult<CUI> add(
+	public SimpleResult<CUI> get(
 		@PathVariable("id") Long id, HttpServletRequest request, HttpServletResponse response)
 	{
 		try

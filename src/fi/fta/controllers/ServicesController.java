@@ -32,6 +32,22 @@ public class ServicesController<
 		super(manager);
 	}
 	
+	@RequestMapping(value = "/add", method = RequestMethod.POST)
+	@ResponseBody
+	public SimpleResult<Long> add(
+		@RequestBody LayerServiceUI ui, HttpServletRequest request, HttpServletResponse response)
+	{
+		return super.add(ui, request, response);
+	}
+	
+	@RequestMapping(value = "/update", method = RequestMethod.POST)
+	@ResponseBody
+	public SimpleMessage update(
+		@RequestBody LayerServiceUI ui, HttpServletRequest request, HttpServletResponse response)
+	{
+		return super.update(ui, request, response);
+	}
+	
 	@RequestMapping(value = "/verify", method = RequestMethod.POST)
 	@ResponseBody
 	public SimpleResult<List<String>> verify(
