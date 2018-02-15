@@ -801,7 +801,7 @@ html, body {
   position: absolute;
   height: 85%;
   width: 320px;
-  font-size: 12px;
+  font-size: 14px;
   padding: 5px 0px;
 }
 .layerListTree {
@@ -893,9 +893,9 @@ html, body {
   cursor: pointer;
 }
 
-.layerTopGroupMenu {
-  width: 160px;
-  height: 100px;
+.metadataBox {
+  /*width: 160px;
+  height: 100px;*/
   border: 1px solid #800000;
   background-color: #fff;
   position: absolute;
@@ -903,6 +903,16 @@ html, body {
   display: none;
   z-index: 11;
   font-size: 12px;
+}
+
+.metadataLink {
+	display: block; 
+	text-decoration: none;
+	color: #800000;
+}
+
+.metadataLink:hover {
+	text-decoration: underline;
 }
 
 .layerTopGroupMenuContainer {
@@ -1034,10 +1044,10 @@ html, body {
 	width: 96%;
 	font-size: 12px;
 	padding: 5px;
-  border: 1px solid #800000;
+	border: 1px solid #800000;
 	border-radius: 4px;
-  margin-top: 3px;
-  float:right;
+	margin-top: 3px;
+	float:right;
 }
 
 #wmsSearchButton {

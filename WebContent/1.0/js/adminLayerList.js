@@ -756,7 +756,11 @@ define([
 							that.changeCategoryPosition(tnode.item.position-1);
 						});
 					}
-									
+						
+					if (tnode.item.emptyCategory) {
+						domConstruct.destroy(tnode.expandoNode);
+						domStyle.set(tnode.labelNode, {"color": "red"});
+					}
 					if (tnode.item.leaf) {
 						domConstruct.destroy(tnode.expandoNode);
 						

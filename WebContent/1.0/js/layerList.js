@@ -1,11 +1,12 @@
 define([
   "dojo/_base/declare",
-  "dojo/_base/lang", "dojo/_base/fx",  // "dojo/mouse", "dojo/dom-class", "dojo/_base/window",
+  "dojo/_base/lang", "dojo/_base/fx",  // "dojo/mouse", "dojo/dom-class", 
+  "dojo/_base/window",
   "dojo/on",
   "dojo/dom",
   "dojo/dom-style",
   "dojo/request",
-  "dojo/_base/array", "dojo/dom-construct",  //"dojo/query!css3",
+  "dojo/_base/array", "dojo/dom-construct",  "dojo/query!css3",
   "dojo/store/Memory","dijit/tree/ObjectStoreModel", "dijit/Tree", "dijit/form/FilteringSelect",
   "dijit/form/CheckBox", "dijit/Tooltip",
   //"dojox/validate/regexp",
@@ -16,12 +17,13 @@ define([
   "dojo/text!../templates/layerlistWidget.html"
 ], function(
   declare,
-  lang, baseFx,  //domStyle, mouse, domClass, win,
+  lang, baseFx,  //domStyle, mouse, domClass, 
+  win,
   on,
   dom,
   domStyle,
   request,
-  array, domConstruct, //array, query,
+  array, domConstruct, query,
   Memory, ObjectStoreModel, Tree, FilteringSelect,
   checkBox, Tooltip,
   //regexp,
@@ -270,8 +272,11 @@ define([
 			lyr["wfs"] = layer.wfs;
 			lyr["metadata"] = layer.metadata;
     	}*/
-    	this.data.push(lyr);
-		if (!lyr.leaf) {
+    	if (!lyr.emptyCategory) {
+    		this.data.push(lyr);
+    	}
+    	
+		if ((!lyr.emptyCategory) && (!lyr.leaf)) {
 			this.dataFiltering.push(lyr);
 			array.forEach(layer.layers, lang.hitch(this, function(l){
 				if (l.position === layer.layers.length) {
@@ -465,13 +470,21 @@ define([
             domStyle.set(tnode.labelNode, {"width": labelNodeWidth+"px"});
 
             // metadata button
-            /*var metadataButton;
+            var metadataButton;
+            var metadataMenu;
             //if(urlPattern.test(tnode.item.metadata)) {
             if(tnode.item.metadata.length > 0) {
+            	metadataMenu = domConstruct.create("div", { "class": "metadataBox" }, win.body(), "last");
+            	var header = domConstruct.create("div", { "innerHTML": "Metadata", "style": "margin-bottom: 10px; text-align: center;" }, metadataMenu, "last");
+            	array.forEach(tnode.item.metadata, lang.hitch(this, function(metadata, i){
+            		domConstruct.create("a", { "href": metadata.url, "class": "metadataLink", "target": "_blank", "innerHTML": "Source: " + metadata.source + ", format: " + metadata.format }, metadataMenu, "last");
+            	}));
+            	
               metadataButton = domConstruct.create("div", { "class": "metadataButtonActive" }, tnode.contentNode, "last");
               new Tooltip({
                 connectId: [metadataButton],
-                showDelay: 100,
+                showDelay: 10,
+                position: ["below"],
                 label: "View metadata"
               });
             }
@@ -482,7 +495,17 @@ define([
                 showDelay: 100,
                 label: "Metadata not available"
               });
-            }*/
+            }
+            
+            on(metadataButton, "click", function(){
+            	console.log(tnode.item.metadata);
+                query(".metadataBox").forEach(function(node){
+                domStyle.set(node, {"display": "none"});
+              });
+              var pos = dojo.position(metadataButton, true);
+              domStyle.set(metadataMenu, {"top": pos.y	+"px", "left": pos.x+20+"px", "display": "block"});
+            });
+            
             /*if (validURL(tnode.item.metadata)) {
               console.log("valid");
             }

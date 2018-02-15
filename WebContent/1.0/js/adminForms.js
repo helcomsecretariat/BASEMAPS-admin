@@ -114,7 +114,7 @@ define([
 				// TODO: display category update form
 				//this.wmsUpdate = true;
 				console.log(layer);
-				this.setupAddCategoryForm(layer.leaf, layer.name, layer.helcomId);
+				this.setupAddCategoryForm(layer.leaf, layer.emptyCategory, layer.name, layer.helcomId);
 				if (layer.leaf) {
 					if (layer.metadata) {
 						if (layer.metadata.length > 0) {
@@ -217,20 +217,25 @@ define([
 		},
 		
 		/* Category section functions*/
-		setupAddCategoryForm: function(leaf, label, helcomId) {
+		setupAddCategoryForm: function(leaf, emptyCategory, label, helcomId) {
 			this.setCategoryInputValue(label);
 			if (!leaf) {
 				this.utils.show("helcomCatalogueIdLabelForm", "none");
 				this.utils.show("addDataForCategoryForm", "none");
+				this.utils.show("addDataCategoryButton", "none");
 			}
 			else {
 				this.setHelcomIdInputValue(helcomId);
 				this.utils.show("helcomCatalogueIdLabelForm", "block");
 				this.utils.show("addDataForCategoryForm", "block");
+				this.utils.show("addDataCategoryButton", "none");
+			}
+			if (emptyCategory) {
+				this.utils.show("addDataCategoryButton", "inline-block");
 			}
 			this.utils.show("saveCategoryButton", "none");
 			this.utils.show("updateCategoryButton", "inline-block");
-			this.utils.show("addDataCategoryButton", "none");
+			//this.utils.show("addDataCategoryButton", "none");
 		},
 		
 		hideAddCategoryForm: function() {
@@ -415,10 +420,11 @@ define([
 					}
 					else if (response.type == "success") {
 						console.log(response);
-						this.buildWmsInfoElement("URL", wmsUrl);
+						this.buildWmsInfoElement("WMS service URL", wmsUrl);
 						this.buildWmsInfoElement("Layer name", wmsName);
 						this.buildWmsInfoElement("Layer title", response.item.title);
 						this.buildWmsInfoElement("WMS version", response.item.version);
+						this.buildWmsInfoElement("Supported languages", response.item.languages.join(", "));
 						this.buildWmsInfoElement("Organization", response.item.organisation);
 						this.buildWmsInfoElement("Keywords", response.item.keywords.join(", "));
 						this.buildWmsMetadataElement("Metadata", response.item.metadata);

@@ -3,13 +3,14 @@ define([
 	"dojo/dom",
 	"dojo/dom-construct",
 	"dojo/dom-style",
+	"dojo/query!css3",
 	"basemaps/js/layerList",
 	"//openlayers.org/en/v4.4.2/build/ol.js",
 	"dijit/_WidgetBase", 
 	"dijit/_TemplatedMixin",
 	"dojo/text!../templates/mapView.html"
 ], function(
-	declare, dom, domConstruct, domStyle,
+	declare, dom, domConstruct, domStyle, query,
 	layerList,
 	ol,
 	_WidgetBase, _TemplatedMixin, template
@@ -58,6 +59,9 @@ define([
 					  {'INFO_FORMAT': 'application/json'}
 					));*/
 				});
+				query(".metadataBox").forEach(function(node){
+		              domStyle.set(node, {"display": "none"});
+		            });
 			});
 
 			var mapNode = dom.byId("map");
