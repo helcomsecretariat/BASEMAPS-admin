@@ -1,7 +1,6 @@
 package fi.fta.controllers;
 
 import java.io.Serializable;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,6 +16,7 @@ import fi.fta.beans.response.ResponseMessage;
 import fi.fta.beans.response.SimpleMessage;
 import fi.fta.beans.response.SimpleResult;
 import fi.fta.beans.ui.LayerServiceUI;
+import fi.fta.beans.ui.VerifyUI;
 import fi.fta.data.dao.LayerServiceDAO;
 import fi.fta.data.managers.ServiceManager;
 import fi.fta.utils.Util;
@@ -50,7 +50,7 @@ public class ServicesController<
 	
 	@RequestMapping(value = "/verify", method = RequestMethod.POST)
 	@ResponseBody
-	public SimpleResult<List<String>> verify(
+	public SimpleResult<VerifyUI> verify(
 		@RequestBody LayerServiceUI ui, HttpServletRequest request, HttpServletResponse response)
 	{
 		try

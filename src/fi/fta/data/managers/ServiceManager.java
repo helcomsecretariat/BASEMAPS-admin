@@ -15,6 +15,7 @@ import fi.fta.beans.LayerService;
 import fi.fta.beans.MetaData;
 import fi.fta.beans.MetaDataSource;
 import fi.fta.beans.ui.LayerServiceUI;
+import fi.fta.beans.ui.VerifyUI;
 import fi.fta.data.dao.LayerServiceDAO;
 import fi.fta.filters.MetaDataSourceFilter;
 import fi.fta.utils.BeansUtils;
@@ -83,7 +84,7 @@ public abstract class ServiceManager<S extends LayerService, D extends LayerServ
 		}
 	}
 	
-	public abstract List<String> verify(LayerServiceUI ui) throws MalformedURLException, IOException, DocumentException;
+	public abstract VerifyUI verify(LayerServiceUI ui) throws MalformedURLException, IOException, DocumentException;
 	
 	public abstract <SUI extends Serializable> SUI info(LayerServiceUI ui) throws MalformedURLException, IOException, DocumentException;
 	

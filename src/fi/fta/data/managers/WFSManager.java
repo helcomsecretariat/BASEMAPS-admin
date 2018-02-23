@@ -6,8 +6,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.log4j.Logger;
@@ -22,6 +22,7 @@ import fi.fta.beans.WFSFeatures;
 import fi.fta.beans.WFSInfo;
 import fi.fta.beans.WFSLayerBean;
 import fi.fta.beans.ui.LayerServiceUI;
+import fi.fta.beans.ui.VerifyUI;
 import fi.fta.cache.TimeBasedCache;
 import fi.fta.data.dao.WFSDAO;
 import fi.fta.utils.DateAndTimeUtils;
@@ -180,12 +181,16 @@ public class WFSManager extends ServiceManager<WFS, WFSDAO>
 	}
 	
 	@Override
-	public List<String> verify(LayerServiceUI ui) throws MalformedURLException, IOException, DocumentException
+	public VerifyUI verify(LayerServiceUI ui) throws MalformedURLException, IOException, DocumentException
 	{
-		List<String> ret = new ArrayList<>();
+		VerifyUI ret = new VerifyUI();
 		if (!Util.isEmptyString(ui.getUrl()))
 		{
-			ret.addAll(this.getFromCache(ui.getUrl()).keySet());
+			Map<String, WFSFeatures> map = this.getFromCache(ui.getUrl());
+			ret.setNames(new ArrayList<>());
+			Set<String> set = map.keySet();
+			ret.getNames().addAll(set);
+			ret.setOrganization(map.get(set.iterator().next()).getInfo().getProvider());
 		}
 		return ret;
 	}
