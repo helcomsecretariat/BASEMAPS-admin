@@ -12,12 +12,14 @@ import fi.fta.beans.ui.CategoryBeanUI;
 @MappedSuperclass
 public class CategoryBean extends IdBean
 {
-
+	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 2794539619136248979L;
 	
+
+	protected String label;
 	
 	protected Integer position;
 	
@@ -28,6 +30,9 @@ public class CategoryBean extends IdBean
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(insertable=false)
 	protected Date updated;
+
+	@Column(name = "helcom_metadata")
+	protected String helcomMetadata;
 	
 	
 	public CategoryBean()
@@ -37,7 +42,17 @@ public class CategoryBean extends IdBean
 	{
 		this();
 		this.setId(ui.getId());
+		this.setLabel(ui.getLabel());
 		this.setPosition(ui.getPosition() != null ? ui.getPosition() : 1);
+		this.setHelcomMetadata(ui.getHelcomMetadata());
+	}
+
+	public String getLabel() {
+		return label;
+	}
+
+	public void setLabel(String label) {
+		this.label = label;
 	}
 
 	public Integer getPosition() {
@@ -62,6 +77,14 @@ public class CategoryBean extends IdBean
 
 	public void setUpdated(Date updated) {
 		this.updated = updated;
+	}
+
+	public String getHelcomMetadata() {
+		return helcomMetadata;
+	}
+
+	public void setHelcomMetadata(String helcomMetadata) {
+		this.helcomMetadata = helcomMetadata;
 	}
 	
 }

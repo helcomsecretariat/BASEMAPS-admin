@@ -21,6 +21,7 @@ import fi.fta.beans.response.SimpleMessage;
 import fi.fta.beans.response.SimpleResult;
 import fi.fta.beans.ui.ChangePasswordUI;
 import fi.fta.beans.ui.EmailUI;
+import fi.fta.beans.ui.UserRightUI;
 import fi.fta.beans.ui.UserUI;
 import fi.fta.data.managers.UserManager;
 import fi.fta.model.SiteModel;
@@ -75,6 +76,53 @@ public class UsersController
 		{
 			logger.error("UsersController.add", ex);
 			return SimpleResult.newFailure(ResponseMessage.Code.ERROR_GENERAL, ex.getMessage());
+		}
+	}
+	
+	@RequestMapping(value = "/add-right", method = RequestMethod.POST)
+	@ResponseBody
+	public SimpleMessage addRight(
+		@RequestBody UserRightUI ui, HttpServletRequest request, HttpServletResponse response)
+	{
+		try
+		{
+			List<ValidationMessage> validations = ClassStructureAssessor.getInstance().validate(ui);
+			if (!validations.isEmpty())
+			{
+				return SimpleMessage.newFailure(
+					ResponseMessage.Code.ERROR_VALIDATION, "Invalid user right", validations);
+			}
+			UserManager.getInstance().add(ui);
+			return SimpleMessage.newSuccess();
+		}
+		catch (Exception ex)
+		{
+			logger.error("UsersController.addRight", ex);
+			return SimpleMessage.newFailure(ResponseMessage.Code.ERROR_GENERAL, ex.getMessage());
+		}
+	}
+	
+	@RequestMapping(value = "/update", method = RequestMethod.POST)
+	@ResponseBody
+	public SimpleMessage update(
+		@RequestBody UserUI ui, HttpServletRequest request, HttpServletResponse response)
+	{
+		try
+		{
+			List<ValidationMessage> validations = ClassStructureAssessor.getInstance().validate(ui);
+			if (validations.isEmpty() ||
+				(validations.size() == 1 && validations.get(0).getField().getName().equals("password")))
+			{
+				UserManager.getInstance().update(ui);
+				return SimpleMessage.newSuccess();
+			}
+			return SimpleMessage.newFailure(
+				ResponseMessage.Code.ERROR_VALIDATION, "Invalid user", validations);
+		}
+		catch (Exception ex)
+		{
+			logger.error("UsersController.update", ex);
+			return SimpleMessage.newFailure(ResponseMessage.Code.ERROR_GENERAL, ex.getMessage());
 		}
 	}
 	

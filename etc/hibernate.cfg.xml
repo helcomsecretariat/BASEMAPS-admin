@@ -28,6 +28,7 @@
   <mapping class="fi.fta.beans.Category"/>
   <mapping class="fi.fta.beans.MetaData"/>
   <mapping class="fi.fta.beans.User"/>
+  <mapping class="fi.fta.beans.UserRight"/>
   <mapping class="fi.fta.beans.LayerService"/>
   <mapping class="fi.fta.beans.WMS"/>
   <mapping class="fi.fta.beans.WMSInfo"/>

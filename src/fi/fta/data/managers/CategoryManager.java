@@ -2,12 +2,17 @@ package fi.fta.data.managers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.hibernate.HibernateException;
 
 import fi.fta.beans.Category;
+import fi.fta.beans.MetaData;
 import fi.fta.beans.ui.CategoryUI;
 import fi.fta.data.dao.CategoryDAO;
+import fi.fta.data.dao.MetaDataDAO;
+import fi.fta.utils.Util;
 
 public class CategoryManager extends CategoryBeanManager<Category, CategoryUI, CategoryDAO>
 {
@@ -73,6 +78,17 @@ public class CategoryManager extends CategoryBeanManager<Category, CategoryUI, C
 		{
 			c.setParent(dao.get(ui.getParent()));
 		}
-		return super.update(c);
+		Category old = dao.get(ui.getId());
+		c = super.update(c);
+		if (old != null && !old.getMetadata().isEmpty())
+		{
+			Set<MetaData> remove = new TreeSet<>(
+				(m1, m2) -> {return Util.compareAsc(m1.getId(), m2.getId());});
+			remove.addAll(old.getMetadata());
+			remove.removeAll(c.getMetadata());
+			new MetaDataDAO().deleteAll(remove);
+		}
+		return c;
 	}
+	
 }

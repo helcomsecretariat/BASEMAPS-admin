@@ -87,8 +87,9 @@ public class MetaData extends IdBean implements UrlFacade
 	@Override
     public int hashCode()
     {
-    	return format == null ? super.hashCode() : format.hashCode() +
-    		7 * (url == null ? super.hashCode() : url.hashCode());
+    	return super.hashCode() +
+    		7 * (format == null ? super.hashCode() : format.hashCode()) +
+    		19 * (url == null ? super.hashCode() : url.hashCode());
     }
 	
 	@Override
@@ -98,10 +99,11 @@ public class MetaData extends IdBean implements UrlFacade
 		if (equals)
 		{
 			MetaData md = ((MetaData)o);
-			equals = Util.equalsWithNull(this.format, md.getFormat()) &&
-				Util.equalsWithNull(this.url, md.getUrl()) &&
-				(this.id == null || md.getId() == null || this.id.equals(md.getId())) &&
-				(this.parent == null || md.getParent() == null || this.parent.equals(md.getParent()));
+			equals = (this.id != null && md.getId() != null && this.id.equals(md.getId())) ||
+				(this.parent != null && md.getParent() != null &&
+				this.parent.equals(md.getParent()) &&
+				Util.equalsWithNull(this.format, md.getFormat()) &&
+				Util.equalsWithNull(this.url, md.getUrl()));
 		}
 		return equals;
 	}

@@ -88,8 +88,8 @@ public class WMSStyle extends IdBean implements Named
 	@Override
     public int hashCode()
     {
-    	return name == null ? super.hashCode() : name.hashCode() +
-    		7 * (id == null ? super.hashCode() : id.hashCode());
+    	return super.hashCode() +
+    		7 * (name == null ? super.hashCode() : name.hashCode());
     }
 	
 	@Override
@@ -99,12 +99,12 @@ public class WMSStyle extends IdBean implements Named
 		if (equals)
 		{
 			WMSStyle s = ((WMSStyle)o);
-			equals = Util.equalsWithNull(this.name, s.getName()) &&
-				(this.id == null || s.getId() == null || this.id.equals(s.getId())) &&
-				(this.parent == null || s.getParent() == null || this.parent.equals(s.getParent()));
+			equals = (this.id != null && s.getId() != null && this.id.equals(s.getId())) ||
+				(this.parent != null && s.getParent() != null &&
+				this.parent.equals(s.getParent()) &&
+				Util.equalsWithNull(this.name, s.getName()));
 		}
 		return equals;
-			
 	}
 	
 }
