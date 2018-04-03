@@ -56,7 +56,7 @@ public class PersistentStringListType implements UserType
 			while (tokenizer.hasMoreElements())
 			{
 				String val = (String)tokenizer.nextElement();
-				list.add(val);
+				list.add(val.replaceAll("^\"", "").replaceAll("\"$", ""));
 			}
 		}
 		return list;
