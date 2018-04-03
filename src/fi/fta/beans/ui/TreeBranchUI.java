@@ -1,9 +1,6 @@
 package fi.fta.beans.ui;
 
-import java.util.List;
-
-import fi.fta.beans.Category;
-import fi.fta.utils.BeansUtils;
+import fi.fta.beans.CategoryBean;
 
 public class TreeBranchUI extends IdUI
 {
@@ -15,27 +12,15 @@ public class TreeBranchUI extends IdUI
 	
 	
 	private Integer position;
-
-	private String label;
-	
-	private String helcomMetadata;
-	
-	private String downloadUrl;
-	
-	private List<MetaDataUI> metadata;
 	
 	
 	public TreeBranchUI()
 	{}
 	
-	public TreeBranchUI(Category c)
+	public TreeBranchUI(CategoryBean c)
 	{
 		super(c);
 		this.setPosition(c.getPosition());
-		this.setLabel(c.getLabel());
-		this.setHelcomMetadata(c.getHelcomMetadata());
-		this.setDownloadUrl(c.getDownloadUrl());
-		this.setMetadata(BeansUtils.getMetaDataUI(c.getMetadata()));
 	}
 	
 	public Integer getPosition() {
@@ -44,38 +29,6 @@ public class TreeBranchUI extends IdUI
 
 	public void setPosition(Integer position) {
 		this.position = position;
-	}
-
-	public String getLabel() {
-		return label;
-	}
-
-	public void setLabel(String label) {
-		this.label = label;
-	}
-
-	public String getHelcomMetadata() {
-		return helcomMetadata;
-	}
-
-	public void setHelcomMetadata(String helcomMetadata) {
-		this.helcomMetadata = helcomMetadata;
-	}
-
-	public String getDownloadUrl() {
-		return downloadUrl;
-	}
-
-	public void setDownloadUrl(String downloadUrl) {
-		this.downloadUrl = downloadUrl;
-	}
-
-	public List<MetaDataUI> getMetadata() {
-		return metadata;
-	}
-
-	public void setMetadata(List<MetaDataUI> metadata) {
-		this.metadata = metadata;
 	}
 	
 }
