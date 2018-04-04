@@ -6,11 +6,11 @@
 			<div class="scrollableContainer" style="padding: 10px; border: 1px solid #800000;">
 			
 				<div id="addCategoryForm" class="formSectionGroup">
-					<div id="categoryLabelForm" class="textInputLabelGroup">
+					<div id="categoryLabelForm" class="inputLabelGroup">
 						<label for="categoryInput" class="textInputLabel"> Label: </label>
 						<input id="categoryInput" class="textInput" type="text" tabindex="2" maxlength="200">
 					</div>
-					<div id="helcomCatalogueIdLabelForm" class="textInputLabelGroup">
+					<div id="helcomCatalogueIdLabelForm" class="inputLabelGroup">
 						<label for="helcomCatalogueIdInput" class="textInputLabel"> HELCOM id: </label>
 						<input id="helcomCatalogueIdInput" class="textInput" type="text" tabindex="2" maxlength="200">			
 					</div>
@@ -26,11 +26,11 @@
 						<div class="formSectionLabel">Metadata:</div>
 						<div id="metadataFormMessage" class="formSectionMessage">No metadata added to this layer (Add WMS, WFS first. Metadata will be added automatically if any present in WMS and WFS.)</div>
 						<div id="addMetadataForm" class="formSection" style="display:none;">
-							<div class="textInputLabelGroup">	
+							<div class="inputLabelGroup">	
 								<label for="metadataUrlInput" class="textInputLabel"> URL: </label>
 								<input id="metadataUrlInput" class="textInput" type="text" tabindex="2" maxlength="300">
 							</div>
-							<div class="labelInputGroup">
+							<div class="inputLabelGroup">
 								<span class="selectLabel">Choose metadata format:</span>
 								<span id="metadataFormatSelect" data-dojo-attach-point="metadataFormatSelect"></span>
 							</div>
@@ -47,18 +47,22 @@
 						<div class="formSectionLabel">WMS:</div>
 						<div id="wmsFormMessage" class="formSectionMessage">No WMS added to this layer</div>
 						<div id="addWmsForm" class="formSection" style="display:none;">
-							<div class="textInputLabelGroup">
+							<div class="inputLabelGroup">
 								<label for="wmsUrlInput" class="textInputLabel"> URL: </label>
 								<input id="wmsUrlInput" class="textInput" type="text" tabindex="2" maxlength="300">
 								<span id="validateWmsLink" class="formLink" data-dojo-attach-point="validateWmsLink" data-dojo-attach-event="onclick:validateWmsLinkClick">Validate</span>
 							</div>
-							<div id="wmsNameSelectForm" class="labelInputGroup" style="display:none;">
+							<div id="wmsNameSelectForm" class="inputLabelGroup" style="display:none;">
 								<span class="selectLabel">Choose WMS layer name:</span>
 								<span id="wmsNameSelect" data-dojo-attach-point="wmsNameSelect"></span>
 							</div>
-							<div id="wmsNameForm" class="textInputLabelGroup" style="display:none;">	
-								<label for="wmsNameInput" class="textInputLabel"> Name: </label>
+							<div id="wmsNameForm" class="inputLabelGroup" style="display:none;">	
+								<label for="wmsNameInput" class="textInputLabel"> WMS layer name: </label>
 								<input id="wmsNameInput" class="textInput" type="text" tabindex="2" maxlength="200">
+							</div>
+							<div id="wmsLabelForm" class="inputLabelGroup" style="display:none;">	
+								<label for="wmsLabelInput" class="textInputLabel"> WMS layer label: </label>
+								<input id="wmsLabelInput" class="textInput" type="text" tabindex="2" maxlength="200">
 							</div>
 							<div class="formButtonsGroup"> 
 								<div id="wmsSaveButton" class="formButton" data-dojo-attach-point="wmsSaveButton">Save</div>
@@ -66,11 +70,11 @@
 							</div>
 						</div>
 						<div id="wmsDisplayForm" class="formSection" style="display:none;">
-							<div class="textInputLabelGroup">
+							<div class="inputLabelGroup">
 								<span class="textInputLabel">URL:</span>
 								<span id="wmsDisplayUrl"></span>
 							</div>
-							<div class="textInputLabelGroup">
+							<div class="inputLabelGroup">
 								<span class="textInputLabel">Name:</span>
 								<span id="wmsDisplayName"></span>
 							</div>
@@ -104,7 +108,7 @@
 		</div>
 		
 		<!-- <div id="addCategoryForm" class="formContainer" style="display:none;">
-			<div id="categoryLabelForm" class="textInputLabelGroup">
+			<div id="categoryLabelForm" class="inputLabelGroup">
 				<label for="categoryInput" class="textInputLabel"> Label: </label>
 				<input id="categoryInput" class="textInput" type="text" tabindex="2" maxlength="200">
 				<span>
@@ -116,16 +120,16 @@
 			
 			<div id="addCategoryWmsForm" style="display:none; margin-top: 10px;">
 				<div class="addDataFormLabel">Add WMS:</div>
-				<div class="textInputLabelGroup">
+				<div class="inputLabelGroup">
 					<label for="wmsUrlInput" class="textInputLabel"> URL: </label>
 					<input id="wmsUrlInput" class="textInput" type="text" tabindex="2" maxlength="300">
 					<span id="validateWmsLink" class="formLink" data-dojo-attach-point="validateWmsLink" data-dojo-attach-event="onclick:validateWmsLinkClick">Validate</span>
 				</div>
-				<div id="wmsNameSelectForm" class="labelInputGroup" style="display:none;">
+				<div id="wmsNameSelectForm" class="inputLabelGroup" style="display:none;">
 					<span class="selectLabel">Choose WMS layer name:</span>
 					<span id="wmsNameSelect" data-dojo-attach-point="wmsNameSelect"></span>
 				</div>
-				<div id="wmsNameForm" class="textInputLabelGroup" style="display:none;">	
+				<div id="wmsNameForm" class="inputLabelGroup" style="display:none;">	
 					<label for="wmsNameInput" class="textInputLabel"> Name: </label>
 					<input id="wmsNameInput" class="textInput" type="text" tabindex="2" maxlength="200">
 				</div>
@@ -167,11 +171,11 @@
 		
 		<!-- <div id="metadataForm" class="formContainer" style="display:none;">
 			<div id="metadataNewButton" class="formButton" data-dojo-attach-point="metadataNewButton">New</div>
-			<div id="metadataUrlForm" class="textInputLabelGroup" style="display:none;">	
+			<div id="metadataUrlForm" class="inputLabelGroup" style="display:none;">	
 				<label for="metadataUrlInput" class="textInputLabel"> URL: </label>
 				<input id="metadataUrlInput" class="textInput" type="text" tabindex="2" maxlength="300">
 			</div>
-			<div id="metadataFormatForm" class="labelInputGroup" style="display:none;">
+			<div id="metadataFormatForm" class="inputLabelGroup" style="display:none;">
 				<span class="selectLabel">Choose metadata format:</span>
 				<span id="metadataFormatSelect" data-dojo-attach-point="metadataFormatSelect"></span>
 			</div>

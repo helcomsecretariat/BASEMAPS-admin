@@ -1,0 +1,252 @@
+<div>
+	<div id="adminFormsHeader" data-dojo-attach-point="adminFormsHeader"></div>
+	<div id="adminFormsBody" data-dojo-attach-point="adminFormsBody">
+		<div id="adminFormMessage"></div>
+		<div id="categoryForm" class="formContainer" style="display:none;">
+			<div class="scrollableContainer">
+			
+				<!-- Category INFO section -->
+				<div id="categoryInfoForm" class="formSectionGroup">
+					<div class="formSectionLabel">Category info:</div>
+					<div class="inputLabelGroup">
+						<span class="textInputLabel">Label:</span>
+						<span id="categoryLabel" class="textLabel"></span>
+						<input id="categoryLabelInput" class="textInput" type="text" tabindex="2" maxlength="200" style="display: none;">	
+						<span id="editCategoryLabel" class="formLink" data-dojo-attach-event="onclick:editCategoryLabelClick">Edit</span>
+						<span id="cancelCategoryLabel" class="formLink" style="display: none;" data-dojo-attach-event="onclick:cancelCategoryLabelClick">Cancel</span>
+						<span id="saveCategoryLabel" class="formLink" style="display: none;" data-dojo-attach-point="saveCategoryLabel">Save</span>
+					</div>
+					<div class="inputLabelGroup">
+						<span class="textInputLabel">HELCOM id:</span>
+						<span id="helcomCatalogueId" class="textLabel"></span>
+						<input id="helcomCatalogueIdInput" class="textInput" type="text" tabindex="2" maxlength="200" style="display: none;">
+						<span id="editHelcomCatalogueId" class="formLink" data-dojo-attach-event="onclick:editHelcomCatalogueIdClick">Edit</span>
+						<span id="cancelHelcomCatalogueId" class="formLink" style="display: none;" data-dojo-attach-event="onclick:cancelHelcomCatalogueIdClick">Cancel</span>
+						<span id="saveHelcomCatalogueId" class="formLink" style="display: none;" data-dojo-attach-point="saveHelcomCatalogueId">Save</span>
+					</div>
+					<div id=categoryMetadataSection class="inputLabelGroup">
+						<span class="textInputLabel">Metadata:</span>
+						<span id="categoryMetadataLink" class="textLabel"></span>
+						<input id="categoryMetadataLinkInput" class="textInput" type="text" tabindex="2" maxlength="200" style="display: none;">
+						<span id="editCategoryMetadataLink" class="formLink" data-dojo-attach-event="onclick:editCategoryMetadataLinkClick">Edit</span>
+						<span id="cancelCategoryMetadataLink" class="formLink" style="display: none;" data-dojo-attach-event="onclick:cancelCategoryMetadataLinkClick">Cancel</span>
+						<span id="saveCategoryMetadataLink" class="formLink" style="display: none;" data-dojo-attach-point="saveCategoryMetadataLink">Save</span>
+					</div>
+				</div>
+				
+				<!-- Category METADATA section -->
+				<div id="categoryMetadataForm" class="formSectionGroup">
+					<div class="formSectionLabel">Metadata:</div>
+					<div id="addMetadata" class="formLink" data-dojo-attach-event="onclick:addMetadataClick">Add new</div>
+					<div id="addMetadataForm" class="formSubSectionGroup" style="display: none;">
+						<div class="formSubSectionLabel">Add new metadata</div>
+						<div class="inputLabelGroup">
+							<span class="textInputLabel">URL:</span>
+							<input id="metadataUrlInput" class="textInput" type="text" tabindex="2" maxlength="200">
+						</div>
+						<div class="inputLabelGroup">
+							<span class="textInputLabel">Metadata format:</span>
+							<span id="metadataFormatSelect" data-dojo-attach-point="metadataFormatSelect"></span>
+						</div>
+						<span id="saveMetadata" class="formLink" data-dojo-attach-point="saveMetadata">Save</span>
+						<span id="cancelMetadata" class="formLink" data-dojo-attach-event="onclick:cancelMetadataClick">Cancel</span>
+					</div>
+					<div id="metadataDisplayForm" data-dojo-attach-point="metadataDisplayForm"></div>
+				</div>
+				
+				<!-- Category CATEGORIES section -->
+				<div id="categoryCategoriesForm" class="formSectionGroup">
+					<div class="formSectionLabel">Sub-categories:</div>
+					<div id="addCategory" class="formLink" data-dojo-attach-event="onclick:addCategoryClick">Add new</div>
+					<div id="addCategoryForm" class="formSubSectionGroup" style="display: none;">
+						<div class="formSubSectionLabel">Add new category</div>
+						<div class="inputLabelGroup">
+							<span class="textInputLabel">Label:</span>
+							<input id="addCategoryLabelInput" class="textInput" type="text" tabindex="2" maxlength="200">
+						</div>
+						<div class="inputLabelGroup">
+							<span class="textInputLabel">HELCOM id:</span>
+							<input id="addCategoryHelcomIdInput" class="textInput" type="text" tabindex="2" maxlength="200">
+						</div>
+						<div class="inputLabelGroup">
+							<span class="textInputLabel">Metadata URL:</span>
+							<input id="addCategoryMetadataUrlInput" class="textInput" type="text" tabindex="2" maxlength="200">
+						</div>
+						<div class="inputLabelGroup">
+							<span class="textInputLabel">Metadata format:</span>
+							<span id="addCategoryMetadataFormatSelect" data-dojo-attach-point="addCategoryMetadataFormatSelect"></span>
+						</div>
+						<span id="saveCategory" class="formLink" data-dojo-attach-point="saveCategory">Save</span>
+						<span id="cancelCategory" class="formLink" data-dojo-attach-event="onclick:cancelCategoryClick">Cancel</span>
+					</div>
+					<div id="categoryDisplayForm" data-dojo-attach-point="categoryDisplayForm"></div>
+				</div>
+				
+				<!-- Category WMS section -->
+				<div id="categoryWmsForm" class="formSectionGroup">
+					<div class="formSectionLabel">WMS layers:</div>
+					<div id="addWms" class="formLink" data-dojo-attach-event="onclick:addWmsClick">Add new</div>
+					<div id="addWmsForm" class="formSubSectionGroup" style="display: none;">
+						<div class="formSubSectionLabel">Add new WMS layer</div>
+						<div class="inputLabelGroup">
+							<span class="textInputLabel">URL:</span>
+							<input id="wmsUrlInput" class="textInput" type="text" tabindex="2" maxlength="200">
+							<span id="validateWms" class="formLink" data-dojo-attach-event="onclick:validateWmsClick">Validate</span>
+						</div>
+						<div id="wmsLayerNameSelectGroup" class="inputLabelGroup" style="display:none;">
+							<span class="textInputLabel">WMS layer name:</span>
+							<span id="wmsNameSelect" data-dojo-attach-point="wmsNameSelect"></span>
+						</div>
+						<div id="wmsLayerNameInputGroup" class="inputLabelGroup" style="display:none;">
+							<span class="textInputLabel">WMS layer name:</span>
+							<input id="wmsNameInput" class="textInput" type="text" tabindex="2" maxlength="200">
+						</div>
+						<div class="inputLabelGroup">
+							<span class="textInputLabel">Label:</span>
+							<input id="wmsLabelInput" class="textInput" type="text" tabindex="2" maxlength="200">
+						</div>
+						<div class="inputLabelGroup">
+							<span class="textInputLabel">HELCOM id:</span>
+							<input id="wmsHelcomIdInput" class="textInput" type="text" tabindex="2" maxlength="200">
+						</div>
+						<span id="saveWms" class="formLink" data-dojo-attach-point="saveWms">Save</span>
+						<span id="cancelWms" class="formLink" data-dojo-attach-event="onclick:cancelWmsClick">Cancel</span>
+					</div>
+					<div id="wmsDisplayForm" data-dojo-attach-point="wmsDisplayForm"></div>
+				</div>
+				
+				<!-- Category WMS INFO section -->
+				<div id="categoryWmsInfoForm" class="formSectionGroup">
+					<div class="formSectionLabel">WMS GetCapabilities info </div>
+					<div id="wmsDisplayInfoForm" data-dojo-attach-point="wmsDisplayInfoForm"></div>
+				</div>
+				
+				<!-- <div id="wmsInfoForm" class="formContainer" style="display:none;">
+					<div id="wmsInfoContainer" class="formInfoContainer" data-dojo-attach-point="wmsInfoContainer"></div>
+					<div class="formButtonsGroup"> 
+						<div id="wmsInfoUpdateButton" class="formButton" data-dojo-attach-point="wmsInfoUpdateButton">Update</div>
+						<div id="wmsInfoCloseButton" class="formButton" data-dojo-attach-point="wmsInfoCloseButton">Close</div>
+					</div>
+				</div> -->
+				<!-- <div id="addCategoryForm" class="formSectionGroup">
+					<div id="categoryLabelForm" class="inputLabelGroup">
+						<label for="categoryInput" class="textInputLabel"> Label: </label>
+						<input id="categoryInput" class="textInput" type="text" tabindex="2" maxlength="200">
+					</div>
+					<div id="helcomCatalogueIdLabelForm" class="inputLabelGroup">
+						<label for="helcomCatalogueIdInput" class="textInputLabel"> HELCOM id: </label>
+						<input id="helcomCatalogueIdInput" class="textInput" type="text" tabindex="2" maxlength="200">			
+					</div>
+					<div class="formButtonsGroup">
+						<div id="saveCategoryButton" class="formButton" data-dojo-attach-point="saveCategoryButton">Save</div>
+						<div id="updateCategoryButton" class="formButton" style="display:none;" data-dojo-attach-point="updateCategoryButton">Update</div>
+						<div id="addDataCategoryButton" class="formButton" style="display:none;" data-dojo-attach-point="addDataCategoryButton">Add data</div>
+					</div>
+				</div>-->
+				
+				<div id="addDataForCategoryForm" style="display:none;">
+					<div id="metadataSection" class="formSectionGroup">
+						<div class="formSectionLabel">Metadata:</div>
+						<div id="metadataFormMessage" class="formSectionMessage">No metadata added to this layer (Add WMS, WFS first. Metadata will be added automatically if any present in WMS and WFS.)</div>
+						<!-- <div id="addMetadataForm" class="formSection" style="display:none;">
+							<div class="inputLabelGroup">	
+								<label for="metadataUrlInput" class="textInputLabel"> URL: </label>
+								<input id="metadataUrlInput" class="textInput" type="text" tabindex="2" maxlength="300">
+							</div>
+							<div class="inputLabelGroup">
+								<span class="selectLabel">Choose metadata format:</span>
+								<span id="metadataFormatSelect" data-dojo-attach-point="metadataFormatSelect"></span>
+							</div>
+							<div class="formButtonsGroup"> 
+								<div id="metadataSaveButton" class="formButton" data-dojo-attach-point="metadataSaveButton">Save</div>
+								<div id="metadataCancelButton" class="formButton" data-dojo-attach-point="metadataCancelButton">Cancel</div>
+							</div>
+						</div> -->
+						
+						<div id="addMetadataButton" class="formButton" style="margin-left: 20px;" data-dojo-attach-point="addMetadataButton">Add</div>
+					</div>
+					
+					<!-- <div id="wmsSection" class="formSectionGroup">
+						<div class="formSectionLabel">WMS:</div>
+						<div id="wmsFormMessage" class="formSectionMessage">No WMS added to this layer</div>
+						<div id="addWmsForm" class="formSection" style="display:none;">
+							<div class="inputLabelGroup">
+								<label for="wmsUrlInput" class="textInputLabel"> URL: </label>
+								<input id="wmsUrlInput" class="textInput" type="text" tabindex="2" maxlength="300">
+								<span id="validateWmsLink" class="formLink" data-dojo-attach-point="validateWmsLink" data-dojo-attach-event="onclick:validateWmsLinkClick">Validate</span>
+							</div>
+							<div id="wmsNameSelectForm" class="inputLabelGroup" style="display:none;">
+								<span class="selectLabel">Choose WMS layer name:</span>
+								<span id="wmsNameSelect" data-dojo-attach-point="wmsNameSelect"></span>
+							</div>
+							<div id="wmsNameForm" class="inputLabelGroup" style="display:none;">	
+								<label for="wmsNameInput" class="textInputLabel"> WMS layer name: </label>
+								<input id="wmsNameInput" class="textInput" type="text" tabindex="2" maxlength="200">
+							</div>
+							<div id="wmsLabelForm" class="inputLabelGroup" style="display:none;">	
+								<label for="wmsLabelInput" class="textInputLabel"> WMS layer label: </label>
+								<input id="wmsLabelInput" class="textInput" type="text" tabindex="2" maxlength="200">
+							</div>
+							<div class="formButtonsGroup"> 
+								<div id="wmsSaveButton" class="formButton" data-dojo-attach-point="wmsSaveButton">Save</div>
+								<div id="wmsCancelButton" class="formButton" data-dojo-attach-point="wmsCancelButton">Cancel</div>
+							</div>
+						</div>
+						<div id="wmsDisplayForm" class="formSection" style="display:none;">
+							<div class="inputLabelGroup">
+								<span class="textInputLabel">URL:</span>
+								<span id="wmsDisplayUrl"></span>
+							</div>
+							<div class="inputLabelGroup">
+								<span class="textInputLabel">Name:</span>
+								<span id="wmsDisplayName"></span>
+							</div>
+							<div id="updateWmsButton" class="formButton" data-dojo-attach-point="updateWmsButton">Update</div>
+						</div>
+						<div id="addWmsButton" class="formButton" style="margin-left: 20px;" data-dojo-attach-point="addWmsButton">Add</div>
+					</div>-->
+					
+					<div id="addWfsForm" class="formSectionGroup">
+						<div class="formSectionLabel">WFS:</div>
+						<div class="formNoDataMessage">No WFS added to this layer</div>
+						<div id="addWfsButton" class="formButton" style="margin-left: 20px;" data-dojo-attach-point="addWfsButton">Add</div>
+					</div>
+					
+					<div id="addArcgisMapServerForm" class="formSectionGroup">
+						<div class="formSectionLabel">Arcgis MapServer:</div>
+						<div class="formNoDataMessage">No Arcgis MapServer added to this layer</div>
+						<div id="addArcgisMapServerButton" class="formButton" style="margin-left: 20px;" data-dojo-attach-point="addArcgisMapServerButton">Add</div>
+					</div>
+					
+					
+					
+					<div id="addDownloadableResourceForm" class="formSectionGroup">
+						<div class="formSectionLabel">Downloadable Resource:</div>
+						<div class="formNoDataMessage">No downloadable resource added to this layer</div>
+						<div id="addDownloadableResourceButton" class="formButton" style="margin-left: 20px;" data-dojo-attach-point="addDownloadableResourceButton">Add</div>
+					</div>
+				</div>
+			</div>
+			<div id="manageCategoryCloseButton" class="formButton" style="margin-top: 10px;" data-dojo-attach-event="onclick:manageCategoryCloseButtonClick">Close</div>
+		</div>
+				
+		<!-- <div id="deleteCategoryForm" class="formContainer" style="display:none;">
+			<div>
+				Layer and all sub-layers with data will be permanently deleted. Continue?
+			</div>
+			<div class="formButtonsGroup"> 
+				<div id="deleteCategoryYesButton" class="formButton" data-dojo-attach-point="deleteCategoryYesButton">Yes</div>
+				<div id="deleteCategoryNoButton" class="formButton" data-dojo-attach-point="deleteCategoryNoButton">No</div>
+			</div>
+		</div>
+		
+		
+		<div id="wmsInfoForm" class="formContainer" style="display:none;">
+			<div id="wmsInfoContainer" class="formInfoContainer" data-dojo-attach-point="wmsInfoContainer"></div>
+			<div class="formButtonsGroup"> 
+				<div id="wmsInfoUpdateButton" class="formButton" data-dojo-attach-point="wmsInfoUpdateButton">Update</div>
+				<div id="wmsInfoCloseButton" class="formButton" data-dojo-attach-point="wmsInfoCloseButton">Close</div>
+			</div>
+		</div>-->
+	</div>
+</div>

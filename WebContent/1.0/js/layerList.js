@@ -9,7 +9,7 @@ define([
   "dojo/_base/array", "dojo/dom-construct",  "dojo/query!css3",
   "dojo/store/Memory","dijit/tree/ObjectStoreModel", "dijit/Tree", "dijit/form/FilteringSelect",
   "dijit/form/CheckBox", "dijit/Tooltip",
-  //"dojox/validate/regexp",
+  "widgets/servicePanelWidget",
   "//openlayers.org/en/v4.4.2/build/ol.js",
   //"esri/request", "esri/tasks/IdentifyTask", "esri/tasks/IdentifyParameters",
   //"dijit/form/HorizontalSlider", "dijit/form/HorizontalRule", "dijit/form/HorizontalRuleLabels",
@@ -26,7 +26,7 @@ define([
   array, domConstruct, query,
   Memory, ObjectStoreModel, Tree, FilteringSelect,
   checkBox, Tooltip,
-  //regexp,
+  servicePanelWidget,
   ol,
   //esriRequest, IdentifyTask, IdentifyParameters,
   //HorizontalSlider, HorizontalRule, HorizontalRuleLabels,
@@ -46,6 +46,7 @@ define([
     identify: {},
     visitedNodesIds: {},
     rootLayerId: "layerlist",
+    servicePanel: null,
     constructor: function(params) {
       this.map = params.map;
       //this.configLayers = params.layers;
@@ -58,12 +59,12 @@ define([
       //console.log("OpenLayers.ProxyHost", ol.ProxyHost);
       //ol.ProxyHost = "http://62.236.121.188/website/MADS/v11_js_29-06-2017/proxy/proxy.ashx?url=''";
       //console.log("OpenLayers.ProxyHost", ol.ProxyHost);
-      
+    	this.servicePanel = new servicePanelWidget();
     	this.getLayersData();
     	//this.createTree();
 
       // on search button click
-      on(this.collapseLayerList, "click", lang.hitch(this, function(){
+      on(this.collapseLayerList, "click", lang.hitch(this, function() {
         var llcnode = dom.byId("layerlistContainer");
         //var llcnode = dijit.byId("layerlistContainer").domNode;
         var containerWidth = domStyle.get(llcnode, "width");
@@ -100,7 +101,7 @@ define([
         slideZoom.play();
       }));
 
-      on(this.expandLayerList, "click", lang.hitch(this, function(){
+      on(this.expandLayerList, "click", lang.hitch(this, function() {
         var llcnode = dom.byId("layerlistContainer");
         //var llcnode = dijit.byId("layerlistContainer").domNode;
         var containerWidth = domStyle.get(llcnode, "width");
@@ -136,12 +137,12 @@ define([
       }));
 
       // on collapse button click
-      on(this.collapseAllButton, "click", lang.hitch(this, function(){
+      on(this.collapseAllButton, "click", lang.hitch(this, function() {
         this.tree.collapseAll();
       }));
 
       // on hide button click
-      on(this.hideAllButton, "click", lang.hitch(this, function(){
+      on(this.hideAllButton, "click", lang.hitch(this, function() {
         //this.hideAllClicked = true;
         for (var id in this.visitedNodesIds) {
           if (this.visitedNodesIds.hasOwnProperty(id)) {
@@ -228,85 +229,46 @@ define([
       }
     },*/
 
-    addLayerToDataArray: function(layer, parentLayerId, topGroup, last) {
-    	//var isLeaf = (layer.layers.length > 0 ? false : true);
+    addLayerToDataArray: function(layer, parentLayerId) {
     	var lyr = {
 			id: layer.id.toString(),
 			parent: parentLayerId,
 			name: layer.label,
-			topGroup: topGroup,
-			position: layer.position,
-			lastPos: last,
-			leaf: null,
-			emptyCategory: null,
+			helcomId: layer.helcomMetadata,
+			type: null,
 			wms: null,
 			wfs: null,
-			metadata: null
+			metadata: layer.metadata
     	};
     	
-    	if (layer.layers) {
-			lyr.leaf = false;
-			if (layer.layers.length == 0) {
-				lyr.emptyCategory = true;
-			}
-			else {
-				lyr.emptyCategory = false;
-			}
+    	if ((layer.wmses) && (layer.wmses[0])) {
+			lyr.wms = layer.wmses[0];
+			lyr.type = "WMS";
 		}
-		else {
-			lyr.leaf = true;
-			lyr.emptyCategory = false;
+		if ((layer.wfses) && (layer.wfses[0])) {
+			lyr.wfs = layer.wfses[0];
+			lyr.type = "WFS";
 		}
-    	
-    	if (lyr.leaf) {
-			if (layer.wmses[0]) {
-				lyr.wms = layer.wmses[0];
-			}
-			if (layer.wfses[0]) {
-				lyr.wfs = layer.wfses[0];
-			}
-			lyr.metadata = layer.metadata;
+		if (layer.layers) {
+			lyr.type = "CATEGORY";
 		}
-    	/*if (isLeaf) {
-			lyr["wms"] = layer.wms;
-			lyr["wfs"] = layer.wfs;
-			lyr["metadata"] = layer.metadata;
-    	}*/
-    	if (!lyr.emptyCategory) {
-    		this.data.push(lyr);
-    	}
-    	
-		if ((!lyr.emptyCategory) && (!lyr.leaf)) {
+		
+		this.data.push(lyr);
+		
+		if (lyr.type == "CATEGORY") {
 			this.dataFiltering.push(lyr);
-			array.forEach(layer.layers, lang.hitch(this, function(l){
-				if (l.position === layer.layers.length) {
-					this.addLayerToDataArray(l, layer.id.toString(), false, true);
-				}
-				else {
-					this.addLayerToDataArray(l, layer.id.toString(), false, false);
-				}
+			array.forEach(layer.layers, lang.hitch(this, function(l) {
+				this.addLayerToDataArray(l, layer.id.toString());
 			}));
 		}
     },
 
     createDataArray: function(input) {
-		array.forEach(input, lang.hitch(this, function(record){
-			if (record.position === input.length) {
-				this.addLayerToDataArray(record, this.rootLayerId, true, true);
-			}
-			else {
-				this.addLayerToDataArray(record, this.rootLayerId, true, false);
-			}
+		array.forEach(input, lang.hitch(this, function(record) {
+			this.addLayerToDataArray(record, this.rootLayerId);
 		}));
 	},
-    /*createDataArray: function(input) {
-    	array.forEach(input, lang.hitch(this, function(record){
-    		//console.log("createDataArray", record);
-    		this.addLayerToDataArray(record, "layerlist", true);
-    	}));
-      
-    },*/
-
+    
     /*validURL: function(url) {
       var pattern = new RegExp('^(https?:\/\/)?'+ // protocol
       '((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|'+ // domain name
@@ -320,9 +282,19 @@ define([
         return true;
       }
     },*/
+	
+	getLabelsFromRoot: function(id) {
+		var storeElem = this.store.query({id: id})[0];
+		var part = storeElem.name + " -> ";
+		this.servicePanel.header = part.concat(this.servicePanel.header);
+		if (storeElem.parent != this.rootLayerId) {
+			this.getLabelsFromRoot(storeElem.parent);
+		}
+	},
 
     createTree: function(input) {
       var mapa = this.map;
+      var that = this;
       var visitedNodesIds = this.visitedNodesIds;
 
       /*var urlPattern = new RegExp('^(https?:\/\/)?'+ // protocol
@@ -458,8 +430,11 @@ define([
 
           //}
           // if tree node is a data layer
-          //else if (tnode.item.leaf) {
-          if (tnode.item.leaf) {
+          
+          if (tnode.item.type == "WMS") {
+          //if (tnode.item.leaf) {
+        	  
+        	domStyle.set(tnode.labelNode, {"color": "green"});
             domConstruct.destroy(tnode.expandoNode);
             var cb = new dijit.form.CheckBox();
             cb.placeAt(tnode.contentNode, "first");
@@ -470,10 +445,11 @@ define([
             domStyle.set(tnode.labelNode, {"width": labelNodeWidth+"px"});
 
             // metadata button
-            var metadataButton;
-            var metadataMenu;
+            var metadataButton = domConstruct.create("div", { "class": "metadataButtonActive" }, tnode.contentNode, "last");
+            //var metadataMenu;
             //if(urlPattern.test(tnode.item.metadata)) {
-            if(tnode.item.metadata.length > 0) {
+            /*if ((tnode.item.metadata) && (tnode.item.metadata.length > 0)) {
+            //if(tnode.item.metadata.length > 0) {
             	metadataMenu = domConstruct.create("div", { "class": "metadataBox" }, win.body(), "last");
             	var header = domConstruct.create("div", { "innerHTML": "Metadata", "style": "margin-bottom: 10px; text-align: center;" }, metadataMenu, "last");
             	array.forEach(tnode.item.metadata, lang.hitch(this, function(metadata, i){
@@ -495,15 +471,17 @@ define([
                 showDelay: 100,
                 label: "Metadata not available"
               });
-            }
+            }*/
             
-            on(metadataButton, "click", function(){
-            	console.log(tnode.item.metadata);
-                query(".metadataBox").forEach(function(node){
+            on(metadataButton, "click", function() {
+            	that.servicePanel.header = tnode.item.name;
+            	that.getLabelsFromRoot(tnode.item.parent);
+            	that.servicePanel.setupAndShowServicePanel(tnode.item);
+            	/*query(".metadataBox").forEach(function(node){
                 domStyle.set(node, {"display": "none"});
               });
               var pos = dojo.position(metadataButton, true);
-              domStyle.set(metadataMenu, {"top": pos.y	+"px", "left": pos.x+20+"px", "display": "block"});
+              domStyle.set(metadataMenu, {"top": pos.y	+"px", "left": pos.x+20+"px", "display": "block"});*/
             });
             
             /*if (validURL(tnode.item.metadata)) {
@@ -529,13 +507,15 @@ define([
               });
             }*/
 
-
             // create legend node
-            /*tnode.item.legendContainerDiv = domConstruct.create("div", { "class": "legendContainerDiv" }, tnode.rowNode, "last");
-            var legendURL = tnode.item.wms.url + "?SERVICE=WMS&VERSION="+tnode.item.wms.version+"&SERVICENAME="+tnode.item.wms.servicename+"&REQUEST=GetLegendGraphic&FORMAT=image%2Fpng&LOGIN="+tnode.item.wms.login+"&PASSWORD="+tnode.item.wms.password+"&LAYER="+tnode.item.wms.layerName;
-            var image = domConstruct.create('img', {
-              "src": legendURL
-            }, tnode.item.legendContainerDiv);*/
+            tnode.item.legendContainerDiv = domConstruct.create("div", { "class": "legendContainerDiv" }, tnode.rowNode, "last");
+            if (tnode.item.wms.styles.length > 0) {
+            	var legendURL = tnode.item.wms.styles[0].urls[0];
+                var image = domConstruct.create('img', {
+                  "src": legendURL
+                }, tnode.item.legendContainerDiv);
+            }
+            
             //var layer = mapa.getLayer(tnode.item.layer);
             //var lIs = legendInfo[layer.id][tnode.item.visibilityId];
             // create legend row
@@ -554,7 +534,7 @@ define([
             }));*/
 
             // on sublayer check box click
-            on(cb, "change", function(checked){
+            on(cb, "change", function(checked) {
               //var visible = layer.visibleLayers;
               if (checked) {
                 if (!tnode.item.wmsMapLayer) {
@@ -602,6 +582,10 @@ define([
                   tnode.item.wmsMapLayer.setVisible(true);
                   domStyle.set(tnode.item.legendContainerDiv, "display", "block");
                 }
+                
+                var view = mapa.getView();
+            	view.fit(ol.proj.transformExtent([2.47842, 53.015, 17.5578, 58.6403], 'EPSG:4326', 'EPSG:3857'));
+            	
                 /*if (!tnode.item.wfsMapLayer) {
                   if ((tnode.item.wfs.url.length > 0) && (tnode.item.wfs.layerName.length > 0)) {
 
@@ -649,7 +633,7 @@ define([
                 //identify[tnode.item.layer].params.layerIds.push(tnode.item.visibilityId);
 
                 // set tree path nodes style on select
-                array.forEach(tnode.tree.path, lang.hitch(this, function(object, i){
+                array.forEach(tnode.tree.path, lang.hitch(this, function(object, i) {
                   if (i>0) {
                     var n = tnode.tree.getNodeFromItem(object.id);
                     domStyle.set(n.rowNode, {
@@ -681,7 +665,7 @@ define([
                   // remove tree path nodes style on unselect
                   //console.log(tnode.tree.path);
 
-                  array.forEach(tnode.tree.path, lang.hitch(this, function(object, i){
+                  array.forEach(tnode.tree.path, lang.hitch(this, function(object, i) {
                     if (i>0) {
                         var n = tnode.tree.getNodeFromItem(object.id);
                         if (visitedNodesIds[object.id] == 1) {

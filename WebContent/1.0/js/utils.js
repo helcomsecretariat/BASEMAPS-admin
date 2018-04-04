@@ -34,6 +34,12 @@ define([
 		setInputValue: function(elementId, value) {
 			dom.byId(elementId).value = value;
 		},
+		getTextValue: function(elementId) {
+			return dom.byId(elementId).innerHTML;
+		},
+		setTextValue: function(elementId, value) {
+			dom.byId(elementId).innerHTML = value;
+		},
 		createPostRequestParams(data) {
 			return {
 				data: JSON.stringify(data),

@@ -8,9 +8,9 @@ define([
 	"dojo/request",
 	"dojo/_base/array", 
 	"dojo/dom-construct",
-	"basemaps/js/adminLayerList",
+	"basemaps/js/adminLayerList2",
 	"basemaps/js/adminUsersList",
-	"basemaps/js/adminForms",
+	"basemaps/js/adminForms2",
 	"dijit/_WidgetBase", 
 	"dijit/_TemplatedMixin",
 	"dojo/text!../templates/adminView.html",
@@ -51,6 +51,8 @@ define([
 		postCreate: function() {
 			this.adminForms = new adminForms().placeAt(this.adminFormsSection);
 			this.adminLayerList = new adminLayerList({forms: this.adminForms}).placeAt(this.adminLayerListSection);
+			
+			
 			//var llwidget = new layerList({map: map}).placeAt(this.layerlistContainer);
 			/*on(this.collapseAllButton, "click", lang.hitch(this, function(){
 			

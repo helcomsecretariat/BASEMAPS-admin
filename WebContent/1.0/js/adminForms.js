@@ -12,7 +12,7 @@ define([
 	"dijit/form/Select",
 	"basemaps/js/utils",
 	"dijit/_WidgetBase", "dijit/_TemplatedMixin",
-	"dojo/text!../templates/adminForms.html"
+	"dojo/text!../templates/adminForms2.html"
 ], function(
 	declare,
 	lang, on, dom, domConstruct, query, domStyle,
@@ -195,6 +195,10 @@ define([
 			return this.utils.getInputValue("wmsNameInput");
 		},
 		
+		getWmsLabelInputValue: function() {
+			return this.utils.getInputValue("wmsLabelInput");
+		},
+		
 		getMetadataUrlInputValue: function() {
 			return this.utils.getInputValue("metadataUrlInput");
 		},
@@ -267,7 +271,7 @@ define([
 		
 		hideAddWmsForm: function() {
 			this.utils.clearInput("wmsUrlInput");
-			this.hideWmsNameSelector();
+			this.hideWmsNameAndLabelSelector();
 			this.utils.show("addWmsForm", "none");
 			if (!this.wmsUpdate) {					
 				this.utils.show("addWmsButton", "block");
@@ -278,7 +282,7 @@ define([
 			}
 		},
 		
-		hideWmsNameSelector: function() {
+		hideWmsNameAndLabelSelector: function() {
 			if (this.wmsNameSelector != null) {
 				this.wmsNameSelector.destroy();
 				this.wmsNameSelector = null;
@@ -286,6 +290,8 @@ define([
 			this.utils.show("wmsNameSelectForm", "none");
 			this.utils.clearInput("wmsNameInput");
 			this.utils.show("wmsNameForm", "none");
+			this.utils.clearInput("wmsLabelInput");
+			this.utils.show("wmsLabelForm", "none");
 			this.wmsValidationPassed = false;
 		},
 		
@@ -363,7 +369,7 @@ define([
 		},
 		
 		validateWmsLinkClick: function() {
-			this.hideWmsNameSelector();
+			this.hideWmsNameAndLabelSelector();
 			var wmsUrl = this.getWmsUrlInputValue();
 			if (validate.isUrl(wmsUrl)) {
 				this.action = "VALIDATE_WMS";
@@ -373,7 +379,8 @@ define([
 				};
 				request.post(url, this.utils.createPostRequestParams(data)).then(
 					lang.hitch(this, function(response){
-						this.hideWmsNameSelector();
+						console.log(response);
+						this.hideWmsNameAndLabelSelector();
 						if (response.type == "error") {
 							this.wmsValidationPassed = false;
 							this.showMessage("WMS did not pass validation.");
@@ -384,8 +391,9 @@ define([
 							this.showMessage("WMS is valid.");
 							this.utils.show("wmsNameSelectForm", "block");
 							
+							this.utils.setInputValue("wmsLabelInput", response.item.organization);
 							var layerNames = [];
-							array.forEach(response.item, lang.hitch(this, function(name){
+							array.forEach(response.item.names, lang.hitch(this, function(name){
 								layerNames.push({label: name, value: name});
 							}));
 							this.wmsNameSelector = new Select({
@@ -394,6 +402,7 @@ define([
 							this.wmsNameSelector.placeAt(this.wmsNameSelect);
 							this.wmsNameSelector.startup();
 						}
+						this.utils.show("wmsLabelForm", "block");
 						this.action = null;
 					}),
 					lang.hitch(this, function(error){

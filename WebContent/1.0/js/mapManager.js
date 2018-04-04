@@ -46,8 +46,11 @@ define([
 				view: new ol.View({
 					projection: 'EPSG:3857',
 					center: [2290596.795329124, 8263216.845732588],
-					zoom: 5
+					zoom: 5//,
+					//extent: ol.proj.transform([57.000000, 20.373333, 60.000000, 28.209038], 'EPSG:4326', 'EPSG:3857')
+					//extent: [2267949.0925025064, 7760118.672726451, 3140215.762959987, 8399737.889636647]
 				})
+			//<BoundingBox CRS="EPSG:3857" maxx="3140215.762959987" maxy="8399737.889636647" minx="2267949.0925025064" miny="7760118.672726451"/>
 			});
 			map.on('singleclick', function(evt) {
 				map.getLayers().forEach(function (lyr) {

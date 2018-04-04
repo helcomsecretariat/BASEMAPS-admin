@@ -303,25 +303,44 @@ html, body {
 }
 
 .scrollableContainer {
+	padding: 10px; 
+	border: 1px solid #800000;
 	height: 75%; 
 	overflow-y: auto;
 }
 .formSectionGroup {
 	margin-top: 10px;
-	padding-bottom: 10px;
-	border-bottom: 1px solid #cccccc;
+	padding: 10px;
+	border: 1px solid #cccccc;
+}
+
+.formSubSectionGroup {
+	border: 1px dashed #cccccc;
+	margin-bottom: 5px;
+	margin-top: 5px;
+	margin-left: 20px;
+	padding: 5px;
 }
 
 .formSection {
 	margin-left: 20px;
 }
 
-.textInputLabelGroup {
+.inputLabelGroup {
 	margin-bottom: 10px;
+	margin-left: 20px;
 }
 
 .formSectionLabel {
+	margin-bottom: 10px;
 	font-size: 20px;
+	font-weight: bold;
+	color: #B73C2B;
+}
+
+.formSubSectionLabel {
+	margin-bottom: 10px;
+	font-size: 16px;
 	font-weight: bold;
 	color: #B73C2B;
 }
@@ -332,28 +351,64 @@ html, body {
 }
 
 .textInputLabel {
-	font-size: 20px;
+	font-size: 16px;
+	font-weight: bold;
 	width: 150px;
 	display: inline-block;
 }
 
 .textInput {
 	width: 50%;
-	height: 30px;
 	border: 1px solid #800000;
 	border-radius: 4px;
 	background-color: transparent;
-	font-size: 20px;
+	font-size: 16px;
 	padding: 5px 10px;
+}
+
+.textLabel {
+	font-size: 16px;
+}
+
+.wmsInfoElementContainer {
+	width: 98%;
+	border-bottom: 1px solid #cccccc;
+	margin-bottom: 5px;
+	margin-left: 20px;
+	display:table;
+}
+
+.wmsInfoElementLabel {
+	width: 150px;
+	font-size: 16px;
+	font-weight: bold;
+	display:table-cell;
+}
+
+.wmsInfoElementValue {
+	font-size: 16px;
+	display: table-cell;
 }
 
 .formLink {
 	cursor: pointer;
 	color: #B73C2B;
-	margin-left: 15px;
+	margin-left: 20px;
+	font-size: 14px;
 }
 
 .formLink:hover {
+	color: #800000;
+}
+
+.formDeleteLink {
+	cursor: pointer;
+	color: #B73C2B;
+	font-size: 14px;
+	float: right;
+}
+
+.formDeleteLink:hover {
 	color: #800000;
 }
 
@@ -383,8 +438,7 @@ html, body {
 }
 
 .claro .dijitSelect {
-	height: 40px;
-	font-size: 20px;
+	font-size: 16px;
 	border-radius: 4px;
 	border: 1px solid #800000;
 }
@@ -401,22 +455,23 @@ html, body {
 }
 
 .wmsInfoElementContainer {
-	width: 100%;
+	width: 98%;
 	border-bottom: 1px solid #cccccc;
 	margin-bottom: 5px;
+	margin-left: 20px;
 	display:table;
 }
 
 .wmsInfoElementLabel {
-	width: 200px;
-	font-size: 20px;
+	width: 150px;
+	font-size: 16px;
 	font-weight: bold;
 	display:table-cell;
 }
 
 .wmsInfoElementValue {
-	font-size: 20px;
-	display:table-cell;
+	font-size: 16px;
+	display: table-cell;
 }
 
 /* END admin forms section */
@@ -571,8 +626,8 @@ html, body {
 	background:url('../img/tabClose.png') no-repeat center center;
 	width:16px;
 	height:16px;
-  margin-top: 4px;
-  margin-right: 4px;
+	margin-top: 4px;
+	margin-right: 4px;
 	overflow:hidden;
 	float:right;
 }
@@ -600,7 +655,7 @@ html, body {
 	display: none;
 }
 
-.loginWidget{
+.loginWidget {
 	position: absolute;
 	top: 50%;
 	left: 50%;
@@ -614,6 +669,68 @@ html, body {
 	text-align: center;
 	font-family: "Istok Web", "Calibri", sans-serif;
 	z-index: 100;
+}
+
+.servicePanelWidget {
+	position: absolute;
+	top: 70px;
+	right: 7px;
+	width: 30%;
+	border: 1px solid #800000;
+	font-family: "Istok Web", "Calibri", sans-serif;
+	z-index: 100;
+	display: none;
+}
+
+.servicePanelWidgetCloseButton {
+	cursor: pointer;
+	background: url('../img/tabClose.png') no-repeat center center;
+	width: 16px;
+	height: 16px;
+	margin-top: 6px;
+	margin-right: 6px;
+	overflow: hidden;
+	float: right;
+}
+
+#servicePanel .dijitTitlePaneTitle {
+    background-color: #B73C2B;
+    color: white;
+    font-size: 18px;
+    text-align: center;
+    border: 0;
+    background-image : none;
+    background-repeat : repeat;
+    padding : 0;
+}
+
+#servicePanel .dijitTitlePaneTitleFocus {
+	margin-top : 0;
+}
+
+.servicePanelInfoElementContainer {
+	width: 100%;
+	border-bottom: 1px solid #cccccc;
+	margin-bottom: 5px;
+	display:table;
+}
+
+.servicePanelInfoElementLabel {
+	width: 150px;
+	font-size: 16px;
+	font-weight: bold;
+	display: table-cell;
+}
+
+.servicePanelInfoElementValue {
+	font-size: 16px;
+	display: table-cell;
+}
+
+.servicePanelMetadataBox {
+	border: 1px dashed #cccccc;
+	margin: 5px;
+	padding: 5px;
 }
 
 .popupHeader {
