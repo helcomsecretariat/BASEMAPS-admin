@@ -25,16 +25,6 @@ public class Layer extends XmlBean<LayerSpecification> implements Named
 	
 	private Double scaleMax;
 	
-	private String description;
-	
-	private Double boundWest;
-	
-	private Double boundEast;
-	
-	private Double boundSouth;
-	
-	private Double boundNorth;
-	
 	private List<Style> styles;
 	
 	private List<MetaData> metadata;
@@ -111,46 +101,6 @@ public class Layer extends XmlBean<LayerSpecification> implements Named
 		this.scaleMax = scaleMax;
 	}
 
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public Double getBoundWest() {
-		return boundWest;
-	}
-
-	public void setBoundWest(Double boundWest) {
-		this.boundWest = boundWest;
-	}
-
-	public Double getBoundEast() {
-		return boundEast;
-	}
-
-	public void setBoundEast(Double boundEast) {
-		this.boundEast = boundEast;
-	}
-
-	public Double getBoundSouth() {
-		return boundSouth;
-	}
-
-	public void setBoundSouth(Double boundSouth) {
-		this.boundSouth = boundSouth;
-	}
-
-	public Double getBoundNorth() {
-		return boundNorth;
-	}
-
-	public void setBoundNorth(Double boundNorth) {
-		this.boundNorth = boundNorth;
-	}
-
 	public List<Style> getStyles() {
 		return styles;
 	}
@@ -225,11 +175,6 @@ public class Layer extends XmlBean<LayerSpecification> implements Named
 		this.setSrs(srses);
 		this.setScaleMin(specification.retrieveScaleMin(e.element(specification.getScaleMin())));
 		this.setScaleMax(specification.retrieveScaleMax(e.element(specification.getScaleMax())));
-		this.setDescription(e.elementText(specification.getDescription()));
-		this.setBoundWest(specification.retrieveBoundWest(e.element(specification.getBoundBox())));
-		this.setBoundEast(specification.retrieveBoundEast(e.element(specification.getBoundBox())));
-		this.setBoundSouth(specification.retrieveBoundSouth(e.element(specification.getBoundBox())));
-		this.setBoundNorth(specification.retrieveBoundNorth(e.element(specification.getBoundBox())));
 		this.setMetadata(new ArrayList<>());
 		for (Object o : e.elements(specification.getMetaDataURL()))
 		{

@@ -44,20 +44,6 @@ public class WMSLayerBean implements Serializable
 	@Column(name = "scale_max")
 	private Double scaleMax;
 	
-	private String description;
-	
-	@Column(name = "bound_west")
-	private Double boundWest;
-	
-	@Column(name = "bound_east")
-	private Double boundEast;
-	
-	@Column(name = "bound_south")
-	private Double boundSouth;
-	
-	@Column(name = "bound_north")
-	private Double boundNorth;
-	
 	@Column(columnDefinition="character varying(3)[]")
 	@Type(type="fi.fta.data.dao.PersistentStringListType")
 	private List<String> languages;
@@ -144,46 +130,6 @@ public class WMSLayerBean implements Serializable
 		this.scaleMax = scaleMax;
 	}
 
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public Double getBoundWest() {
-		return boundWest;
-	}
-
-	public void setBoundWest(Double boundWest) {
-		this.boundWest = boundWest;
-	}
-
-	public Double getBoundEast() {
-		return boundEast;
-	}
-
-	public void setBoundEast(Double boundEast) {
-		this.boundEast = boundEast;
-	}
-
-	public Double getBoundSouth() {
-		return boundSouth;
-	}
-
-	public void setBoundSouth(Double boundSouth) {
-		this.boundSouth = boundSouth;
-	}
-
-	public Double getBoundNorth() {
-		return boundNorth;
-	}
-
-	public void setBoundNorth(Double boundNorth) {
-		this.boundNorth = boundNorth;
-	}
-
 	public List<String> getLanguages() {
 		return languages;
 	}
@@ -203,11 +149,6 @@ public class WMSLayerBean implements Serializable
 		this.setCrs(from.getCrs());
 		this.setScaleMin(from.getScaleMin());
 		this.setScaleMax(from.getScaleMax());
-		this.setDescription(from.getDescription());
-		this.setBoundWest(from.getBoundWest());
-		this.setBoundEast(from.getBoundEast());
-		this.setBoundSouth(from.getBoundSouth());
-		this.setBoundNorth(from.getBoundNorth());
 		this.setLanguages(from.getLanguages());
 	}
 	

@@ -74,7 +74,7 @@ public class WMS_1_0_0 implements Specification
 		{
 			return e != null ? new Double(e.attributeValue("min")) : null;
 		}
-		catch (Exception ex)
+		catch (NumberFormatException ex)
 		{
 			return null;
 		}
@@ -89,59 +89,7 @@ public class WMS_1_0_0 implements Specification
 		{
 			return e != null ? new Double(e.attributeValue("max")) : null;
 		}
-		catch (Exception ex)
-		{
-			return null;
-		}
-	}
-	
-	public String getDescription() {
-		return "Abstract";
-	}
-	
-	public String getBoundBox() {
-		return "LatLonBoundingBox";
-	}
-	
-	public Double retrieveBoundWest(Element e) {
-		try
-		{
-			return e != null ? new Double(e.attributeValue("minx")) : null;
-		}
-		catch (Exception ex)
-		{
-			return null;
-		}
-	}
-	
-	public Double retrieveBoundEast(Element e) {
-		try
-		{
-			return e != null ? new Double(e.attributeValue("maxx")) : null;
-		}
-		catch (Exception ex)
-		{
-			return null;
-		}
-	}
-	
-	public Double retrieveBoundSouth(Element e) {
-		try
-		{
-			return e != null ? new Double(e.attributeValue("miny")) : null;
-		}
-		catch (Exception ex)
-		{
-			return null;
-		}
-	}
-	
-	public Double retrieveBoundNorth(Element e) {
-		try
-		{
-			return e != null ? new Double(e.attributeValue("maxy")) : null;
-		}
-		catch (Exception ex)
+		catch (NumberFormatException ex)
 		{
 			return null;
 		}

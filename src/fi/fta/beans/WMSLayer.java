@@ -31,11 +31,6 @@ public class WMSLayer
 		this.info.setQueryable(l.getQueryable());
 		this.info.setScaleMin(l.getScaleMin());
 		this.info.setScaleMax(l.getScaleMax());
-		this.info.setDescription(l.getDescription());
-		this.info.setBoundWest(l.getBoundWest());
-		this.info.setBoundEast(l.getBoundEast());
-		this.info.setBoundSouth(l.getBoundSouth());
-		this.info.setBoundNorth(l.getBoundNorth());
 		this.info.setLanguages(features.getSupportedLanguages());
 		this.info.setStyles(new HashSet<>(BeansUtils.getStyles(l.getStyles())));
 		Set<String> crs = new TreeSet<>(l.getSrs());

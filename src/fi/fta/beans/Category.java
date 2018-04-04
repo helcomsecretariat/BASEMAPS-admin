@@ -29,8 +29,6 @@ public class Category extends CategoryBean
 	 * 
 	 */
 	private static final long serialVersionUID = -2920194411447223477L;
-
-	protected String label;
 	
 	@Column(name = "download_url")
 	protected String downloadUrl;
@@ -48,9 +46,6 @@ public class Category extends CategoryBean
 	@JoinColumn(name = "parent", nullable = false, updatable = false, insertable = true)
 	@OrderBy("id")
 	protected Set<MetaData> metadata;
-
-	@Column(name = "helcom_metadata")
-	protected String helcomMetadata;
 	
 	
 	public Category()
@@ -59,7 +54,6 @@ public class Category extends CategoryBean
 	public Category(CategoryUI ui)
 	{
 		super(ui);
-		this.setLabel(ui.getLabel());
 		this.setDownloadUrl(ui.getDownloadUrl());
 		this.setMetadata(new HashSet<>());
 		if (!Util.isEmptyCollection(ui.getMetaData()))
@@ -72,17 +66,8 @@ public class Category extends CategoryBean
 				}
 			}
 		}
-		this.setHelcomMetadata(ui.getHelcomMetadata());
 	}
-
-	public String getLabel() {
-		return label;
-	}
-
-	public void setLabel(String label) {
-		this.label = label;
-	}
-
+	
 	public String getDownloadUrl() {
 		return downloadUrl;
 	}
@@ -113,14 +98,6 @@ public class Category extends CategoryBean
 
 	public void setMetadata(Set<MetaData> metadata) {
 		this.metadata = metadata;
-	}
-
-	public String getHelcomMetadata() {
-		return helcomMetadata;
-	}
-
-	public void setHelcomMetadata(String helcomMetadata) {
-		this.helcomMetadata = helcomMetadata;
 	}
 	
 }
