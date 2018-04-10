@@ -22,6 +22,8 @@ public class MetaDataUI extends IdUI implements UrlFacade
 	
 	protected MetaDataSource source;
 	
+	protected String description;
+	
 	
 	public MetaDataUI()
 	{}
@@ -33,6 +35,7 @@ public class MetaDataUI extends IdUI implements UrlFacade
 		this.setFormat(bean.getFormat());
 		this.setUrl(bean.getUrl());
 		this.setSource(bean.getSource());
+		this.setDescription(bean.getDescription());
 	}
 	
 	public Long getParent() {
@@ -65,6 +68,14 @@ public class MetaDataUI extends IdUI implements UrlFacade
 
 	public void setSource(MetaDataSource source) {
 		this.source = source;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	
 }

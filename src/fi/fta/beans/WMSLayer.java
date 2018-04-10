@@ -37,12 +37,30 @@ public class WMSLayer
 		this.info.setBoundSouth(l.getBoundSouth());
 		this.info.setBoundNorth(l.getBoundNorth());
 		this.info.setLanguages(features.getSupportedLanguages());
+		this.info.setFees(features.getFees());
+		this.info.setAccessConstraints(features.getAccessConstraints());
 		this.info.setStyles(new HashSet<>(BeansUtils.getStyles(l.getStyles())));
 		Set<String> crs = new TreeSet<>(l.getSrs());
 		while (l.getParent() != null)
 		{
 			l = l.getParent();
 			crs.addAll(l.getSrs());
+			if (this.info.getBoundWest() == null && l.getBoundWest() != null)
+			{
+				this.info.setBoundWest(l.getBoundWest());
+			}
+			if (this.info.getBoundEast() == null && l.getBoundEast() != null)
+			{
+				this.info.setBoundEast(l.getBoundEast());
+			}
+			if (this.info.getBoundSouth() == null && l.getBoundSouth() != null)
+			{
+				this.info.setBoundSouth(l.getBoundSouth());
+			}
+			if (this.info.getBoundNorth() == null && l.getBoundNorth() != null)
+			{
+				this.info.setBoundNorth(l.getBoundNorth());
+			}
 		}
 		this.info.setCrs(new ArrayList<>(crs));
 	}

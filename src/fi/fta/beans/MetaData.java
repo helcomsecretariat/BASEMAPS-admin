@@ -31,6 +31,8 @@ public class MetaData extends IdBean implements UrlFacade
 	@Enumerated(EnumType.STRING)
 	public MetaDataSource source;
 	
+	public String description;
+	
 	
 	public MetaData()
 	{}
@@ -42,6 +44,7 @@ public class MetaData extends IdBean implements UrlFacade
 		this.setFormat(ui.getFormat());
 		this.setUrl(ui.getUrl());
 		this.setSource(ui.getSource());
+		this.setDescription(ui.getDescription());
 	}
 	
 	public MetaData(fi.fta.utils.parse.wms.MetaData md)
@@ -84,6 +87,14 @@ public class MetaData extends IdBean implements UrlFacade
 		this.source = source;
 	}
 	
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
 	@Override
     public int hashCode()
     {

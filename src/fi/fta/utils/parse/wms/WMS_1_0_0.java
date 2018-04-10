@@ -37,6 +37,14 @@ public class WMS_1_0_0 implements Specification
 		return "Language";
 	}
 	
+	public String getPathFees() {
+		return "Service/Fees";
+	}
+	
+	public String getPathAccessConstraints() {
+		return "Service/AccessConstraints";
+	}
+	
 	public String getPathLayer() {
 		return "Capability/Layer";
 	}

@@ -16,6 +16,10 @@ public class FeatureInfo extends XmlBean<FeatureInfoSpecification>
 	private List<String> formats;
 	
 	private List<String> supportedLanguages;
+
+	private String fees;
+	
+	private String accessConstraints;
 	
 	
 	public FeatureInfo(Element root, FeatureInfoSpecification specification)
@@ -46,7 +50,23 @@ public class FeatureInfo extends XmlBean<FeatureInfoSpecification>
 	public void setSupportedLanguages(List<String> supportedLanguages) {
 		this.supportedLanguages = supportedLanguages;
 	}
-	
+
+	public String getFees() {
+		return fees;
+	}
+
+	public void setFees(String fees) {
+		this.fees = fees;
+	}
+
+	public String getAccessConstraints() {
+		return accessConstraints;
+	}
+
+	public void setAccessConstraints(String accessConstraints) {
+		this.accessConstraints = accessConstraints;
+	}
+
 	@Override
 	public void fromElement(Element root, FeatureInfoSpecification specification)
 	{
@@ -74,6 +94,8 @@ public class FeatureInfo extends XmlBean<FeatureInfoSpecification>
 				}
 			}
 		}
+		fees = XmlBean.elementText(root, specification.getPathFees());
+		accessConstraints = XmlBean.elementText(root, specification.getPathAccessConstraints());
 	}
 	
 }

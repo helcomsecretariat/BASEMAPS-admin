@@ -9,5 +9,7 @@ public interface FeatureInfoSpecification
 	public String getPathDefaultLanguage();
 	public String getSupportedLanguage();
 	public String getLanguage();
+	public String getPathFees();
+	public String getPathAccessConstraints();
 	
 }

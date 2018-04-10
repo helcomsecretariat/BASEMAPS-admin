@@ -62,6 +62,11 @@ public class WMSLayerBean implements Serializable
 	@Type(type="fi.fta.data.dao.PersistentStringListType")
 	private List<String> languages;
 	
+	private String fees;
+	
+	@Column(name = "access_constraints")
+	private String accessConstraints;
+	
 	
 	public WMSLayerBean()
 	{}
@@ -192,6 +197,22 @@ public class WMSLayerBean implements Serializable
 		this.languages = languages;
 	}
 
+	public String getFees() {
+		return fees;
+	}
+
+	public void setFees(String fees) {
+		this.fees = fees;
+	}
+
+	public String getAccessConstraints() {
+		return accessConstraints;
+	}
+
+	public void setAccessConstraints(String accessConstraints) {
+		this.accessConstraints = accessConstraints;
+	}
+
 	public void copy(WMSLayerBean from)
 	{
 		this.setVersion(from.getVersion());
@@ -209,6 +230,8 @@ public class WMSLayerBean implements Serializable
 		this.setBoundSouth(from.getBoundSouth());
 		this.setBoundNorth(from.getBoundNorth());
 		this.setLanguages(from.getLanguages());
+		this.setFees(from.getFees());
+		this.setAccessConstraints(from.getAccessConstraints());
 	}
 	
 }

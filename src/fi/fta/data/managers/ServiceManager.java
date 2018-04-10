@@ -3,7 +3,6 @@ package fi.fta.data.managers;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.MalformedURLException;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -17,6 +16,7 @@ import fi.fta.beans.MetaDataSource;
 import fi.fta.beans.ui.LayerServiceUI;
 import fi.fta.beans.ui.VerifyUI;
 import fi.fta.data.dao.LayerServiceDAO;
+import fi.fta.data.dao.MetaDataDAO;
 import fi.fta.filters.MetaDataSourceFilter;
 import fi.fta.utils.BeansUtils;
 import fi.fta.utils.CollectionsUtils;
@@ -76,11 +76,26 @@ public abstract class ServiceManager<S extends LayerService, D extends LayerServ
 		if (c != null)
 		{
 			Set<MetaData> current = new MetaDataSourceFilter(source).filter(c.getMetadata());
-			c.getMetadata().removeAll(
-				CollectionsUtils.removeAllByUrl(current, new HashSet<>(metadata)));
-			c.getMetadata().addAll(
-				CollectionsUtils.removeAllByUrl(new HashSet<>(metadata), current));
+			Set<MetaData> toRemove = CollectionsUtils.removeAllByUrl(current, metadata);
+			Set<MetaData> toAdd = CollectionsUtils.removeAllByUrl(metadata, current);
+			c.getMetadata().removeAll(toRemove);
+			for (MetaData md : c.getMetadata())
+			{
+				if (md.getSource().equals(source))
+				{
+					MetaData u = CollectionsUtils.getByUrl(md.getUrl(), metadata);
+					if (u != null)
+					{
+						md.setFormat(u.getFormat());
+					}
+				}
+			}
+			c.getMetadata().addAll(toAdd);
 			CategoryManager.getInstance().update(c);
+			if (!toRemove.isEmpty())
+			{
+				new MetaDataDAO().deleteAll(toRemove);
+			}
 		}
 	}
 	
