@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
@@ -20,6 +21,7 @@ import fi.fta.beans.UrlFacade;
 import fi.fta.beans.WMS;
 import fi.fta.beans.WMSInfo;
 import fi.fta.beans.WMSLayer;
+import fi.fta.beans.WMSStyle;
 import fi.fta.beans.ui.LayerServiceUI;
 import fi.fta.beans.ui.VerifyUI;
 import fi.fta.beans.ui.WMSLayerUI;
@@ -78,7 +80,13 @@ public class WMSManager extends ServiceManager<WMS, WMSDAO>
 			WMSLayer l = this.getLayer(ui);
 			if (l != null)
 			{
-				wms.setInfo(l.getInfo());
+				wms.setInfo(new WMSInfo());
+				wms.getInfo().copy(l.getInfo());
+				wms.getInfo().setStyles(new HashSet<>());
+				for (WMSStyle s : l.getInfo().getStyles())
+				{
+					wms.getInfo().getStyles().add(new WMSStyle(s));
+				}
 				super.addMetaData(ui, l.getMetadata());
 			}
 		}
@@ -118,12 +126,16 @@ public class WMSManager extends ServiceManager<WMS, WMSDAO>
 		{
 			updateInfoLock.lock();
 			WMSLayer layer = this.getLayer(wms);
-			if (layer != null)
+			if (layer != null && layer.getInfo() != null)
 			{
 				if (wms.getInfo() == null)
 				{
 					wms.setInfo(new WMSInfo());
-					wms.getInfo().setStyles(layer.getInfo().getStyles());
+					wms.getInfo().setStyles(new HashSet<>());
+					for (WMSStyle s : layer.getInfo().getStyles())
+					{
+						wms.getInfo().getStyles().add(new WMSStyle(s));
+					}
 				}
 				else
 				{

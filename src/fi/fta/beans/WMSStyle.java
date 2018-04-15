@@ -37,6 +37,15 @@ public class WMSStyle extends IdBean implements Named
 	public WMSStyle()
 	{}
 	
+	public WMSStyle(WMSStyle style)
+	{
+		super(style.getId());
+		this.setParent(style.getParent());
+		this.setName(style.getName());
+		this.setUrls(style.getUrls());
+		this.setMain(style.getMain());
+	}
+	
 	public WMSStyle(WMSStyleUI ui)
 	{
 		super(ui.getId());
