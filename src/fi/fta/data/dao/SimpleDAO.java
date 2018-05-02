@@ -82,13 +82,14 @@ public class SimpleDAO<T>
 	
 	public List<T> getAll() throws HibernateException
 	{
-		return this.executeCustomSelectQuery("from " + this.getEntityName());
+		return this.executeCustomSelectQuery(
+			new StringBuilder("from ").append(this.getEntityName()).toString());
 	}
 	
 	public List<T> get(String key, Collection<?> ids) throws HibernateException
 	{
-		StringBuffer sb = new StringBuffer("from " + this.getEntityName());
-		sb.append(" where " + key + " in (");
+		StringBuilder sb = new StringBuilder("from ").append(this.getEntityName());
+		sb.append(" where ").append(key).append(" in (");
 		sb.append(DAOUtil.toCSV(ids));
 		sb.append(")");
 		return this.executeCustomSelectQuery(sb.toString());
@@ -256,11 +257,11 @@ public class SimpleDAO<T>
 	
 	public List<T> getByFields(Map<String, Object> fields, Map<String, Boolean> orderFields, Integer limit) throws HibernateException
 	{
-		StringBuffer sb = new StringBuffer("from " + this.getEntityName());
-		sb.append(" " + DAOUtil.prepareHibernateWhereClause(fields));
+		StringBuilder sb = new StringBuilder("from ").append(this.getEntityName());
+		sb.append(" ").append(DAOUtil.prepareHibernateWhereClause(fields));
 		if (orderFields != null)
 		{
-			sb.append(" " + DAOUtil.prepareHibernateOrderByClause(orderFields));
+			sb.append(" ").append(DAOUtil.prepareHibernateOrderByClause(orderFields));
 		}
 		return limit != null ?
 			this.executeCustomSelectQuery(sb.toString(), limit.intValue()) :
@@ -269,7 +270,7 @@ public class SimpleDAO<T>
 	
 	public boolean containsByFields(Map<String, Object> fields) throws HibernateException
 	{
-		StringBuffer sb = new StringBuffer("select count(*) from " + this.getEntityName() + " ");
+		StringBuilder sb = new StringBuilder("select count(*) from ").append(this.getEntityName()).append(" ");
 		sb.append(DAOUtil.prepareHibernateWhereClause(fields));
 		return new DAOSelectUniqueQueryUtil<Long>(this.getCurrentSession(), sb.toString(), Long.class).executeQuery() > 0;
 	}

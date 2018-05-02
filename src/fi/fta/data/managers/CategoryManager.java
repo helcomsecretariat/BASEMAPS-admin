@@ -12,6 +12,7 @@ import fi.fta.beans.MetaData;
 import fi.fta.beans.ui.CategoryUI;
 import fi.fta.data.dao.CategoryDAO;
 import fi.fta.data.dao.MetaDataDAO;
+import fi.fta.model.SiteModel;
 import fi.fta.utils.Util;
 
 public class CategoryManager extends CategoryBeanManager<Category, CategoryUI, CategoryDAO>
@@ -44,10 +45,37 @@ public class CategoryManager extends CategoryBeanManager<Category, CategoryUI, C
 		return dao.getRoot();
 	}
 	
-	public CategoryUI getUI(Long id) throws HibernateException
+	public Boolean position(Long id, Integer position, SiteModel m) throws HibernateException
 	{
-		Category c = this.get(id);
-		return c != null ? new CategoryUI(c) : new CategoryUI();
+		if (m.canWrite(id))
+		{
+			return dao.position(id, position);
+		}
+		return null;
+	}
+	
+	public Boolean delete(Long id, SiteModel m) throws HibernateException
+	{
+		if (m.canWrite(id))
+		{
+			return dao.delete(id) > 0;
+		}
+		return null;
+	}
+	
+	public Category getParent(Long id) throws HibernateException
+	{
+		return dao.getParent(id);
+	}
+	
+	public CategoryUI getUI(Long id, SiteModel m) throws HibernateException
+	{
+		if (m.canRead(id))
+		{
+			Category c = this.get(id);
+			return c != null ? new CategoryUI(c) : new CategoryUI();
+		}
+		return null;
 	}
 	
 	public List<Category> getChildren(Long id) throws HibernateException
@@ -61,34 +89,42 @@ public class CategoryManager extends CategoryBeanManager<Category, CategoryUI, C
 		return ret;
 	}
 	
-	public Long add(CategoryUI ui) throws HibernateException
+	public Long add(CategoryUI ui, SiteModel m) throws HibernateException
 	{
-		Category c = new Category(ui);
-		if (ui.getParent() != null)
+		if (m.canWrite(ui.getParent()))
 		{
-			c.setParent(dao.get(ui.getParent()));
+			Category c = new Category(ui);
+			if (ui.getParent() != null)
+			{
+				c.setParent(dao.get(ui.getParent()));
+			}
+			return this.add(c);
 		}
-		return this.add(c);
+		return null;
 	}
 	
-	public Category update(CategoryUI ui) throws HibernateException
+	public Category update(CategoryUI ui, SiteModel m) throws HibernateException
 	{
-		Category c = new Category(ui);
-		if (ui.getParent() != null)
+		if (m.canWrite(ui.getId()))
 		{
-			c.setParent(dao.get(ui.getParent()));
+			Category c = new Category(ui);
+			if (ui.getParent() != null)
+			{
+				c.setParent(dao.get(ui.getParent()));
+			}
+			Category old = dao.get(ui.getId());
+			c = super.update(c);
+			if (old != null && !old.getMetadata().isEmpty())
+			{
+				Set<MetaData> remove = new TreeSet<>(
+					(m1, m2) -> {return Util.compareAsc(m1.getId(), m2.getId());});
+				remove.addAll(old.getMetadata());
+				remove.removeAll(c.getMetadata());
+				new MetaDataDAO().deleteAll(remove);
+			}
+			return c;
 		}
-		Category old = dao.get(ui.getId());
-		c = super.update(c);
-		if (old != null && !old.getMetadata().isEmpty())
-		{
-			Set<MetaData> remove = new TreeSet<>(
-				(m1, m2) -> {return Util.compareAsc(m1.getId(), m2.getId());});
-			remove.addAll(old.getMetadata());
-			remove.removeAll(c.getMetadata());
-			new MetaDataDAO().deleteAll(remove);
-		}
-		return c;
+		return null;
 	}
 	
 }

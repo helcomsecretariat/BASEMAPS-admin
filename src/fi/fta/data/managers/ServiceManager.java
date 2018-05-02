@@ -18,6 +18,7 @@ import fi.fta.beans.ui.VerifyUI;
 import fi.fta.data.dao.LayerServiceDAO;
 import fi.fta.data.dao.MetaDataDAO;
 import fi.fta.filters.MetaDataSourceFilter;
+import fi.fta.model.SiteModel;
 import fi.fta.utils.BeansUtils;
 import fi.fta.utils.CollectionsUtils;
 
@@ -31,17 +32,67 @@ public abstract class ServiceManager<S extends LayerService, D extends LayerServ
 		super(dao);
 		this.source = source;
 	}
-
-	@Override
-	public LayerServiceUI getUI(Long id) throws HibernateException
+	
+	public Boolean position(Long id, Integer position, SiteModel m) throws HibernateException
+	{
+		Category c = this.getParent(id);
+		if (m.canWrite(c != null ? c.getId() : null))
+		{
+			return dao.position(id, position);
+		}
+		return null;
+	}
+	
+	public Boolean delete(Long id, SiteModel m) throws HibernateException
+	{
+		Category c = this.getParent(id);
+		if (m.canWrite(c != null ? c.getId() : null))
+		{
+			return dao.delete(id) > 0;
+		}
+		return null;
+	}
+	
+	public Category getParent(Long id) throws HibernateException
+	{
+		return dao.getParent(id);
+	}
+	
+	public LayerServiceUI getUI(Long id, SiteModel m) throws HibernateException
 	{
 		S s = this.get(id);
-		return s != null ? new LayerServiceUI(s) : new LayerServiceUI();
+		if (s == null)
+		{
+			return new LayerServiceUI();
+		}
+		else if (m.canRead(s.getParent()))
+		{
+			return new LayerServiceUI(s);
+		}
+		return null;
 	}
 	
 	public List<S> getChildren(Long id) throws HibernateException
 	{
 		return dao.getByParent(id);
+	}
+	
+	public Long add(LayerServiceUI ui, SiteModel m) throws Exception
+	{
+		if (m.canWrite(ui.getParent()))
+		{
+			return this.add(ui);
+		}
+		return null;
+	}
+	
+	public S update(LayerServiceUI ui, SiteModel m) throws Exception
+	{
+		if (m.canWrite(ui.getParent()))
+		{
+			return this.update(ui);
+		}
+		return null;
 	}
 	
 	protected void addMetaData(LayerServiceUI ui, List<MetaData> metadata) throws HibernateException
@@ -98,6 +149,10 @@ public abstract class ServiceManager<S extends LayerService, D extends LayerServ
 			}
 		}
 	}
+	
+	public abstract Long add(LayerServiceUI ui) throws Exception;
+	
+	public abstract S update(LayerServiceUI ui) throws Exception;
 	
 	public abstract VerifyUI verify(LayerServiceUI ui) throws MalformedURLException, IOException, DocumentException;
 	

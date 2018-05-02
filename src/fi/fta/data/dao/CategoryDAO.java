@@ -16,9 +16,18 @@ public class CategoryDAO extends CategoryBeanDAO<Category>
 
 	public List<Category> getRoot() throws HibernateException
 	{
-		StringBuffer sb = new StringBuffer("from ").append(this.getEntityName());
+		StringBuilder sb = new StringBuilder("from ").append(this.getEntityName());
 		sb.append(" where parent is null order by position");
 		return new DAOSelectQueryUtil<Category>(this.getCurrentSession(), sb.toString(), Category.class).executeQuery();
+	}
+	
+	public Category getParent(Long id) throws HibernateException
+	{
+		StringBuilder sb = new StringBuilder("SELECT cp.* FROM ").append(this.getTableName()).append(" cp");
+		sb.append(" LEFT JOIN ").append(this.getTableName()).append(" c ON cp.id = c.parent");
+		sb.append(" WHERE c.id = ").append(id);
+		return new DAOSelectUniqueQueryUtil<>(
+			this.getCurrentSession(), sb.toString(), Category.class).executeNativeQuery();
 	}
 	
 }

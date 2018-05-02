@@ -1,21 +1,32 @@
 package fi.fta.model;
 
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
+import java.util.function.BiFunction;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 
+import fi.fta.beans.Category;
+import fi.fta.beans.RightType;
 import fi.fta.beans.User;
+import fi.fta.beans.UserRight;
 import fi.fta.beans.UserRole;
 import fi.fta.beans.ui.UserUI;
 import fi.fta.data.dao.UserDAO;
+import fi.fta.data.managers.CategoryManager;
 import fi.fta.utils.PasswordUtils;
+import fi.fta.utils.Util;
 
 public class SiteModel
 {
+	
+	protected static Logger logger = Logger.getLogger(SiteModel.class);
 	
 	protected static String MODEL_ATTRIBUTE = "fi.fta.model.SiteModel";
 	
@@ -73,6 +84,11 @@ public class SiteModel
 		return this.logged() ? user.getEmail() : "";
 	}
 	
+	public List<UserRight> getUserRights()
+	{
+		return this.logged() ? user.getRights() : Collections.emptyList();
+	}
+	
 	public boolean checkPassword(String password)
 	{
 		return this.logged() &&
@@ -119,6 +135,70 @@ public class SiteModel
 		return url;
 	}
 	
+	public boolean canRead(Long categoryId)
+	{
+		return this.can(categoryId, RightType.r, SiteModel::hasRightForCategory);
+	}
+	
+	public boolean canWrite(Long categoryId)
+	{
+		return this.can(categoryId, RightType.w, SiteModel::hasRightForCategory);
+	}
+	
+	public boolean canReadThis(Long categoryId)
+	{
+		return this.can(categoryId, RightType.r, Util::equalsWithNull);
+	}
+	
+	public boolean canWriteThis(Long categoryId)
+	{
+		return this.can(categoryId, RightType.w, Util::equalsWithNull);
+	}
+	
+	private boolean can(Long categoryId, RightType r, BiFunction<Long, Long, Boolean> check)
+	{
+		if (this.logged() && !Util.isEmptyCollection(user.getRights()))
+		{
+			for (UserRight ur : user.getRights())
+			{
+				if (ur.getRights().contains(r) && check.apply(ur.getCategoryId(), categoryId))
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	
+	private static boolean hasRightForCategory(Long rightCategoryId, Long categoryId)
+	{
+		if (rightCategoryId == null ||
+			categoryId != null && rightCategoryId.equals(categoryId))
+		{
+			return true;
+		}
+		else if (categoryId != null)
+		{
+			try
+			{
+				Category c = CategoryManager.getInstance().getParent(categoryId);
+				while (c != null)
+				{
+					if (rightCategoryId.equals(c.getId()))
+					{
+						return true;
+					}
+					c = c.getParent();
+				}
+			}
+			catch (HibernateException ex)
+			{
+				logger.error("SiteModel.hasRightForCategory(" + rightCategoryId + ", " + categoryId, ex);
+			}
+		}
+		return false;
+	}
 	
 	private static void set(HttpSession session, SiteModel m)
 	{

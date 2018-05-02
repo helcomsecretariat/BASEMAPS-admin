@@ -24,6 +24,11 @@ public class DAOSelectQueryUtil<T> extends DAOQueryUtil<T, List<T>>
 		return this.transaction(this::doQuery);
 	}
 	
+	public List<T> executeNativeQuery() throws HibernateException
+	{
+		return this.transaction(this::doNativeQuery);
+	}
+	
 	@Override
 	@SuppressWarnings("unchecked")
 	public DAOSelectQueryUtil<T> setParameter(String name, Object value, Type type)
@@ -35,6 +40,11 @@ public class DAOSelectQueryUtil<T> extends DAOQueryUtil<T, List<T>>
 	protected List<T> doQuery(Session session, String query) throws HibernateException
 	{
 		return this.setParameters(session.createQuery(query, cls)).getResultList();
+	}
+	
+	protected List<T> doNativeQuery(Session session, String query) throws HibernateException
+	{
+		return this.setParameters(session.createNativeQuery(query, cls)).getResultList();
 	}
 	
 }

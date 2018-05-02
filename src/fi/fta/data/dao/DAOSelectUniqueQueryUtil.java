@@ -19,6 +19,11 @@ public class DAOSelectUniqueQueryUtil<T> extends DAOQueryUtil<T, T>
 		return this.transaction(this::doQuery);
 	}
 	
+	public T executeNativeQuery() throws HibernateException
+	{
+		return this.transaction(this::doNativeQuery);
+	}
+	
 	
 	@Override
 	@SuppressWarnings("unchecked")
@@ -31,6 +36,12 @@ public class DAOSelectUniqueQueryUtil<T> extends DAOQueryUtil<T, T>
 	protected T doQuery(Session session, String query) throws HibernateException
 	{
 		Optional<T> optional = this.setParameters(session.createQuery(query, cls)).uniqueResultOptional();
+		return optional.isPresent() ? optional.get() : null;
+	}
+	
+	protected T doNativeQuery(Session session, String query) throws HibernateException
+	{
+		Optional<T> optional = this.setParameters(session.createNativeQuery(query, cls)).uniqueResultOptional();
 		return optional.isPresent() ? optional.get() : null;
 	}
 	

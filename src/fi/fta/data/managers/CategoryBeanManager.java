@@ -4,9 +4,11 @@ import java.util.List;
 
 import org.hibernate.HibernateException;
 
+import fi.fta.beans.Category;
 import fi.fta.beans.CategoryBean;
 import fi.fta.beans.ui.CategoryBeanUI;
 import fi.fta.data.dao.CategoryBeanDAO;
+import fi.fta.model.SiteModel;
 
 public abstract class CategoryBeanManager<C extends CategoryBean, UI extends CategoryBeanUI, D extends CategoryBeanDAO<C>>
 {
@@ -33,22 +35,18 @@ public abstract class CategoryBeanManager<C extends CategoryBean, UI extends Cat
 		return dao.update(c);
 	}
 	
-	public boolean position(Long id, Integer position) throws HibernateException
-	{
-		return dao.position(id, position);
-	}
+	public abstract Boolean position(Long id, Integer position, SiteModel m) throws HibernateException;
 	
-	public boolean delete(Long id) throws HibernateException
-	{
-		return dao.delete(id) > 0;
-	}
+	public abstract Boolean delete(Long id, SiteModel m) throws HibernateException;
 	
-	public abstract UI getUI(Long id) throws HibernateException;
+	public abstract Category getParent(Long parent) throws HibernateException;
+	
+	public abstract UI getUI(Long id, SiteModel m) throws HibernateException;
 	
 	public abstract List<C> getChildren(Long id) throws HibernateException;
 	
-	public abstract Long add(UI ui) throws Exception;
+	public abstract Long add(UI ui, SiteModel m) throws Exception;
 	
-	public abstract C update(UI ui) throws Exception;
+	public abstract C update(UI ui, SiteModel m) throws Exception;
 	
 }

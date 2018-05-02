@@ -19,6 +19,7 @@ import fi.fta.beans.response.SimpleResult;
 import fi.fta.beans.ui.CategoryBeanUI;
 import fi.fta.data.dao.CategoryBeanDAO;
 import fi.fta.data.managers.CategoryBeanManager;
+import fi.fta.model.SiteModel;
 import fi.fta.utils.Util;
 import fi.fta.validation.ClassStructureAssessor;
 import fi.fta.validation.ValidationMessage;
@@ -45,7 +46,12 @@ public class CategoryBeansController<
 	{
 		try
 		{
-			return SimpleResult.newSuccess(manager.getUI(id));
+			CUI ret = manager.getUI(id, SiteModel.get(request));
+			if (ret == null)
+			{
+				return SimpleResult.noRightsFailure();
+			}
+			return SimpleResult.newSuccess(ret);
 		}
 		catch (Exception ex)
 		{
@@ -67,7 +73,12 @@ public class CategoryBeansController<
 				return SimpleResult.newFailure(
 					ResponseMessage.Code.ERROR_VALIDATION, "Invalid " + ui.getClass().getName(), validations);
 			}
-			return SimpleResult.newSuccess(manager.add(ui));
+			Long ret = manager.add(ui, SiteModel.get(request));
+			if (ret == null)
+			{
+				return SimpleResult.noRightsFailure();
+			}
+			return SimpleResult.newSuccess(ret);
 		}
 		catch (Exception ex)
 		{
@@ -84,13 +95,16 @@ public class CategoryBeansController<
 		try
 		{
 			List<ValidationMessage> validations = ClassStructureAssessor.getInstance().validate(ui);
-			if (validations.isEmpty())
+			if (!validations.isEmpty())
 			{
-				manager.update(ui);
-				return SimpleMessage.newSuccess();
+				return SimpleMessage.newFailure(
+					ResponseMessage.Code.ERROR_VALIDATION, "Invalid " + ui.getClass().getName(), validations);
 			}
-			return SimpleMessage.newFailure(
-				ResponseMessage.Code.ERROR_VALIDATION, "Invalid " + ui.getClass().getName(), validations);
+			if (manager.update(ui, SiteModel.get(request)) == null)
+			{
+				return SimpleMessage.noRightsFailure();
+			}
+			return SimpleMessage.newSuccess();
 		}
 		catch (Exception ex)
 		{
@@ -106,11 +120,11 @@ public class CategoryBeansController<
 	{
 		try
 		{
-			if (id != null)
+			if (id == null || manager.position(id, position, SiteModel.get(request)) != null)
 			{
-				manager.position(id, position);
+				return SimpleMessage.newSuccess();
 			}
-			return SimpleMessage.newSuccess();
+			return SimpleMessage.noRightsFailure();
 		}
 		catch (Exception ex)
 		{
@@ -126,8 +140,11 @@ public class CategoryBeansController<
 	{
 		try
 		{
-			manager.delete(id);
-			return SimpleMessage.newSuccess();
+			if (manager.delete(id, SiteModel.get(request)) != null)
+			{
+				return SimpleMessage.newSuccess();
+			}
+			return SimpleMessage.noRightsFailure();
 		}
 		catch (Exception ex)
 		{
@@ -136,7 +153,6 @@ public class CategoryBeansController<
 		}
 	}
 	
-
 	@RequestMapping(value = "/children/{id}", method = RequestMethod.GET)
 	@ResponseBody
 	public SimpleResult<List<C>> getChildren(
@@ -144,7 +160,11 @@ public class CategoryBeansController<
 	{
 		try
 		{
-			return SimpleResult.newSuccess(manager.getChildren(id));
+			if (SiteModel.get(request).canRead(id))
+			{
+				return SimpleResult.newSuccess(manager.getChildren(id));
+			}
+			return SimpleResult.noRightsFailure();
 		}
 		catch (Exception ex)
 		{

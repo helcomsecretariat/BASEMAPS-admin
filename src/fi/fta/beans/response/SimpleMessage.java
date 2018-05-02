@@ -22,6 +22,11 @@ public class SimpleMessage extends ResponseMessage
 		return SimpleMessage.newInstance(Type.error, code, text, validations);
 	}
 	
+	public static SimpleMessage noRightsFailure()
+	{
+		return SimpleMessage.newInstance(Type.error, Code.NO_RIGHTS, "No rights", null);
+	}
+	
 	public static SimpleMessage newSuccess()
 	{
 		return SimpleMessage.newInstance(Type.success, null, null, null);

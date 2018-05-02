@@ -24,7 +24,7 @@ public class CategoryBeanDAO<T extends CategoryBean> extends SimpleIdTableDAO<T>
 	
 	public boolean position(Long id, Integer position) throws HibernateException
 	{
-		StringBuffer sb = new StringBuffer("update ").append(this.getEntityName());
+		StringBuilder sb = new StringBuilder("update ").append(this.getEntityName());
 		sb.append(" set position = :position where id = :id");
 		return new DAOUpdateQueryUtil(this.getCurrentSession(), sb.toString()).
 			setParameter("position", position, IntegerType.INSTANCE).

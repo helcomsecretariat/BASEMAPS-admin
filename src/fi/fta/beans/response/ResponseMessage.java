@@ -20,7 +20,7 @@ public class ResponseMessage implements Serializable
 	
 	public enum Code
 	{
-		ERROR_GENERAL, ERROR_VALIDATION;
+		ERROR_GENERAL, ERROR_VALIDATION, NO_RIGHTS;
 	}
 	
 	private Type type;

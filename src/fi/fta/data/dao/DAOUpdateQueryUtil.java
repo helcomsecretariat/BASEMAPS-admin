@@ -17,6 +17,11 @@ public class DAOUpdateQueryUtil extends DAOQueryUtil<Object, Integer>
 		return this.transaction(this::doQuery).intValue();
 	}
 	
+	public int executeNativeQuery() throws HibernateException
+	{
+		return this.transaction(this::doNativeQuery).intValue();
+	}
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public DAOUpdateQueryUtil setParameter(String name, Object value, Type type)
@@ -29,6 +34,12 @@ public class DAOUpdateQueryUtil extends DAOQueryUtil<Object, Integer>
 	protected int doQuery(Session session, String query) throws HibernateException
 	{
 		return this.setParameters(session.createQuery(query)).executeUpdate();
+	}
+	
+	@SuppressWarnings("unchecked")
+	protected int doNativeQuery(Session session, String query) throws HibernateException
+	{
+		return this.setParameters(session.createNativeQuery(query)).executeUpdate();
 	}
 	
 }

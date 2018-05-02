@@ -16,6 +16,7 @@ import fi.fta.beans.response.SimpleResult;
 import fi.fta.beans.ui.CategoryUI;
 import fi.fta.beans.ui.TreeBranchUI;
 import fi.fta.data.managers.CategoryManager;
+import fi.fta.model.SiteModel;
 import fi.fta.utils.BeansUtils;
 
 @Controller
@@ -35,7 +36,11 @@ public class CategoriesController
 	{
 		try
 		{
-			return SimpleResult.newSuccess(manager.getRoot());
+			if (SiteModel.get(request).canRead(null))
+			{
+				return SimpleResult.newSuccess(manager.getRoot());
+			}
+			return SimpleResult.noRightsFailure();
 		}
 		catch (Exception ex)
 		{
@@ -51,7 +56,7 @@ public class CategoriesController
 		try
 		{
 			return SimpleResult.newSuccess(
-				BeansUtils.getLayerUIs(null, manager.getRoot()));
+				BeansUtils.getLayerUIs(null, SiteModel.get(request)));
 		}
 		catch (Exception ex)
 		{

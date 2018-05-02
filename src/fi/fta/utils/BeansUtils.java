@@ -22,6 +22,7 @@ import fi.fta.beans.ui.WMSStyleUI;
 import fi.fta.data.managers.CategoryManager;
 import fi.fta.data.managers.WFSManager;
 import fi.fta.data.managers.WMSManager;
+import fi.fta.model.SiteModel;
 import fi.fta.utils.parse.wms.Style;
 
 public class BeansUtils
@@ -95,45 +96,69 @@ public class BeansUtils
 		return ret;
 	}
 	
-	public static List<TreeBranchUI> getLayerUIs(Long parent, Collection<Category> root) throws HibernateException 
+	public static List<TreeBranchUI> getLayerUIs(
+		Long parent, SiteModel m) throws HibernateException 
 	{
-		List<TreeBranchUI> layers = BeansUtils.getLayerUIs(root);
-		List<WMS> wmses = WMSManager.getInstance().getChildren(parent);
-		List<WFS> wfses = WFSManager.getInstance().getChildren(parent);
-		if (!wmses.isEmpty() || !wfses.isEmpty())
+		boolean can = m.canReadThis(parent);
+		List<TreeBranchUI> ret = new ArrayList<>();
+		if (parent == null)
 		{
-			Category c = new Category();
-			if (parent != null)
-			{
-				c = CategoryManager.getInstance().get(parent);
-			}
-			layers.add(new TreeLayerUI(c, wmses, wfses));
+			ret.addAll(BeansUtils.getLayerUIs(
+				CategoryManager.getInstance().getRoot(), m, can));
 		}
-		return layers;
+		else
+		{
+			ret.addAll(BeansUtils.getLayerUIs(
+				CategoryManager.getInstance().getChildren(parent), m, can));
+		}
+		if (can)
+		{
+			List<WMS> wmses = WMSManager.getInstance().getChildren(parent);
+			List<WFS> wfses = WFSManager.getInstance().getChildren(parent);
+			if (!wmses.isEmpty() || !wfses.isEmpty())
+			{
+				Category c = new Category();
+				if (parent != null)
+				{
+					c = CategoryManager.getInstance().get(parent);
+				}
+				ret.add(new TreeLayerUI(c, wmses, wfses));
+			}
+		}
+		return ret;
 	}
 	
-	public static List<TreeBranchUI> getLayerUIs(Collection<Category> root) throws HibernateException 
+	public static List<TreeBranchUI> getLayerUIs(
+		Collection<Category> root, SiteModel m, boolean can) throws HibernateException 
 	{
 		List<TreeBranchUI> layers = new ArrayList<>();
 		for (Category c : root)
 		{
-			List<WMS> wmses = WMSManager.getInstance().getChildren(c.getId());
-			List<WFS> wfses = WFSManager.getInstance().getChildren(c.getId());
-			if (wmses.isEmpty() && wfses.isEmpty())
+			boolean ccan = can || m.canReadThis(c.getId());
+			if (ccan)
 			{
-				TreeCategoryUI ui = new TreeCategoryUI(c);
-				ui.getLayers().addAll(BeansUtils.getLayerUIs(c.getChildren()));
-				layers.add(ui);
-			}
-			else if (c.getChildren().isEmpty())
-			{
-				layers.add(new TreeLayerUI(c, wmses, wfses));
+				List<WMS> wmses = WMSManager.getInstance().getChildren(c.getId());
+				List<WFS> wfses = WFSManager.getInstance().getChildren(c.getId());
+				if (wmses.isEmpty() && wfses.isEmpty())
+				{
+					TreeCategoryUI ui = new TreeCategoryUI(c);
+					ui.getLayers().addAll(BeansUtils.getLayerUIs(c.getChildren(), m, ccan));
+					layers.add(ui);
+				}
+				else if (c.getChildren().isEmpty())
+				{
+					layers.add(new TreeLayerUI(c, wmses, wfses));
+				}
+				else
+				{
+					TreeCategoryLayerUI ui = new TreeCategoryLayerUI(c, wmses, wfses);
+					ui.getLayers().addAll(BeansUtils.getLayerUIs(c.getChildren(), m, ccan));
+					layers.add(ui);
+				}
 			}
 			else
 			{
-				TreeCategoryLayerUI ui = new TreeCategoryLayerUI(c, wmses, wfses);
-				ui.getLayers().addAll(BeansUtils.getLayerUIs(c.getChildren()));
-				layers.add(ui);
+				layers.addAll(BeansUtils.getLayerUIs(c.getChildren(), m, ccan));
 			}
 		}
 		return layers;

@@ -21,6 +21,11 @@ public class SimpleResult<T> extends ItemResult<T>
 	{
 		return SimpleResult.newInstance(Type.error, code, text, validations, null);
 	}
+
+	public static <T> SimpleResult<T> noRightsFailure()
+	{
+		return SimpleResult.newInstance(Type.error, Code.NO_RIGHTS, "No rights", null, null);
+	}
 	
 	public static <T> SimpleResult<T> newSuccess(T item)
 	{

@@ -22,7 +22,7 @@ public class UserDAO extends SimpleIdTableDAO<User>
 	
 	public User login(LoginUI login) throws HibernateException
 	{
-		StringBuffer sb = new StringBuffer("from ").append(this.getEntityName());
+		StringBuilder sb = new StringBuilder("from ").append(this.getEntityName());
 		sb.append(" where email = :email and password = :password");
 		return new DAOSelectUniqueQueryUtil<User>(this.getCurrentSession(), sb.toString(), User.class)
 			.setParameter("email", login.getEmail().trim().toLowerCase(), StringType.INSTANCE)
