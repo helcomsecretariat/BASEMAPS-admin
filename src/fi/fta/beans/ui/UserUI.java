@@ -31,6 +31,12 @@ public class UserUI extends EmailUI implements Named
 	
 	private String url;
 	
+	private String organization;
+	
+	private String phone;
+	
+	private String position;
+	
 	private List<UserRightUI> rights;
 	
 	
@@ -44,6 +50,9 @@ public class UserUI extends EmailUI implements Named
 		//this.setPassword(user.getPassword());
 		this.setRole(user.getRole());
 		//this.setUrl(url);
+		this.setOrganization(user.getOrganization());
+		this.setPhone(user.getPhone());
+		this.setPosition(user.getPosition());
 		this.setRights(new ArrayList<>());
 		for (UserRight ur : user.getRights())
 		{
@@ -81,6 +90,30 @@ public class UserUI extends EmailUI implements Named
 
 	public void setUrl(String url) {
 		this.url = url;
+	}
+
+	public String getOrganization() {
+		return organization;
+	}
+
+	public void setOrganization(String organization) {
+		this.organization = organization;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public String getPosition() {
+		return position;
+	}
+
+	public void setPosition(String position) {
+		this.position = position;
 	}
 
 	public List<UserRightUI> getRights() {

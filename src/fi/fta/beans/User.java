@@ -50,6 +50,12 @@ public class User extends EmailBean implements Named
 	@Column(name = "last_login")
 	protected Date lastLogin;
 	
+	protected String organization;
+	
+	protected String phone;
+	
+	protected String position;
+	
 	@OneToMany(targetEntity=UserRight.class, cascade={CascadeType.ALL}, fetch=FetchType.EAGER)
 	@JoinColumn(name = "user_id", nullable = false, updatable = false, insertable = true)
 	@OrderBy("category_id")
@@ -79,6 +85,9 @@ public class User extends EmailBean implements Named
 			ui.getPassword() != null ? PasswordUtils.encode(ui.getPassword()) : null);
 		this.setName(ui.getName());
 		this.setRole(ui.getRole());
+		this.setOrganization(ui.getOrganization());
+		this.setPhone(ui.getPhone());
+		this.setPosition(ui.getPosition());
 		this.setRights(new ArrayList<>());
 		if (!Util.isEmptyCollection(ui.getRights()))
 		{
@@ -135,6 +144,30 @@ public class User extends EmailBean implements Named
 
 	public void setLastLogin(Date lastLogin) {
 		this.lastLogin = lastLogin;
+	}
+
+	public String getOrganization() {
+		return organization;
+	}
+
+	public void setOrganization(String organization) {
+		this.organization = organization;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public String getPosition() {
+		return position;
+	}
+
+	public void setPosition(String position) {
+		this.position = position;
 	}
 
 	public List<UserRight> getRights() {

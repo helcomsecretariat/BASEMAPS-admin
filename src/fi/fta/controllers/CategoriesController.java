@@ -49,14 +49,29 @@ public class CategoriesController
 		}
 	}
 	
+	@RequestMapping(value = "/readable-tree", method = RequestMethod.GET)
+	@ResponseBody
+	public SimpleResult<List<TreeBranchUI>> getReadableTree(HttpServletRequest request, HttpServletResponse response)
+	{
+		try
+		{
+			return SimpleResult.newSuccess(
+				BeansUtils.getLayerUIs(null, SiteModel.get(request)));
+		}
+		catch (Exception ex)
+		{
+			logger.error("CategoriesController.getReadableTree", ex);
+			return SimpleResult.newFailure(ResponseMessage.Code.ERROR_GENERAL, ex.getMessage());
+		}
+	}
+	
 	@RequestMapping(value = "/tree", method = RequestMethod.GET)
 	@ResponseBody
 	public SimpleResult<List<TreeBranchUI>> getTree(HttpServletRequest request, HttpServletResponse response)
 	{
 		try
 		{
-			return SimpleResult.newSuccess(
-				BeansUtils.getLayerUIs(null, SiteModel.get(request)));
+			return SimpleResult.newSuccess(BeansUtils.getLayerUIs(null, null));
 		}
 		catch (Exception ex)
 		{

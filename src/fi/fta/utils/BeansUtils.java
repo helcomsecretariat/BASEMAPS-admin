@@ -99,7 +99,7 @@ public class BeansUtils
 	public static List<TreeBranchUI> getLayerUIs(
 		Long parent, SiteModel m) throws HibernateException 
 	{
-		boolean can = m.canReadThis(parent);
+		boolean can = m == null || m.canReadThis(parent);
 		List<TreeBranchUI> ret = new ArrayList<>();
 		if (parent == null)
 		{
@@ -134,7 +134,7 @@ public class BeansUtils
 		List<TreeBranchUI> layers = new ArrayList<>();
 		for (Category c : root)
 		{
-			boolean ccan = can || m.canReadThis(c.getId());
+			boolean ccan = can || m == null || m.canReadThis(c.getId());
 			if (ccan)
 			{
 				List<WMS> wmses = WMSManager.getInstance().getChildren(c.getId());
