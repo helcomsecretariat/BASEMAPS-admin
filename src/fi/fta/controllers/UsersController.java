@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import fi.fta.beans.User;
+import fi.fta.beans.UserRight;
 import fi.fta.beans.UserRole;
 import fi.fta.beans.response.ResponseMessage;
 import fi.fta.beans.response.SimpleMessage;
@@ -43,12 +44,19 @@ public class UsersController
 	{
 		try
 		{
-			List<UserUI> uis = new ArrayList<>();
-			for (User u : UserManager.getInstance().getByRole(role))
+			if (SiteModel.get(request).isAdmin())
 			{
-				uis.add(new UserUI(u));
+				List<UserUI> uis = new ArrayList<>();
+				for (User u : UserManager.getInstance().getByRole(role))
+				{
+					uis.add(new UserUI(u));
+				}
+				return SimpleResult.newSuccess(uis);
 			}
-			return SimpleResult.newSuccess(uis);
+			else
+			{
+				return SimpleResult.noRightsFailure();
+			}
 		}
 		catch (Exception ex)
 		{
@@ -70,7 +78,14 @@ public class UsersController
 				return SimpleResult.newFailure(
 					ResponseMessage.Code.ERROR_VALIDATION, "Invalid user", validations);
 			}
-			return SimpleResult.newSuccess(UserManager.getInstance().add(ui));
+			if (SiteModel.get(request).isAdmin())
+			{
+				return SimpleResult.newSuccess(UserManager.getInstance().add(ui));
+			}
+			else
+			{
+				return SimpleResult.noRightsFailure();
+			}
 		}
 		catch (Exception ex)
 		{
@@ -92,8 +107,16 @@ public class UsersController
 				return SimpleMessage.newFailure(
 					ResponseMessage.Code.ERROR_VALIDATION, "Invalid user right", validations);
 			}
-			UserManager.getInstance().add(ui);
-			return SimpleMessage.newSuccess();
+			SiteModel m = SiteModel.get(request);
+			if (m.isAdmin())
+			{
+				m.addRight(ui);
+				return SimpleMessage.newSuccess();
+			}
+			else
+			{
+				return SimpleMessage.noRightsFailure();
+			}
 		}
 		catch (Exception ex)
 		{
@@ -110,14 +133,31 @@ public class UsersController
 		try
 		{
 			List<ValidationMessage> validations = ClassStructureAssessor.getInstance().validate(ui);
-			if (validations.isEmpty() ||
-				(validations.size() == 1 && validations.get(0).getField().getName().equals("password")))
+			if (!validations.isEmpty() &&
+				(validations.size() != 1 || !validations.get(0).getField().getName().equals("password")))
 			{
-				UserManager.getInstance().update(ui);
+				return SimpleMessage.newFailure(
+					ResponseMessage.Code.ERROR_VALIDATION, "Invalid user", validations);
+			}
+			SiteModel m = SiteModel.get(request);
+			if (m.isAdmin() || m.isCurent(ui.getId()))
+			{
+				if (!m.isAdmin())
+				{
+					// user itself cannot update its rights
+					ui.setRights(new ArrayList<>());
+					for (UserRight ur : m.getUserRights())
+					{
+						ui.getRights().add(new UserRightUI(ur));
+					}
+				}
+				m.update(ui);
 				return SimpleMessage.newSuccess();
 			}
-			return SimpleMessage.newFailure(
-				ResponseMessage.Code.ERROR_VALIDATION, "Invalid user", validations);
+			else
+			{
+				return SimpleMessage.noRightsFailure();
+			}
 		}
 		catch (Exception ex)
 		{
@@ -133,8 +173,15 @@ public class UsersController
 	{
 		try
 		{
-			UserManager.getInstance().delete(id);
-			return SimpleMessage.newSuccess();
+			if (SiteModel.get(request).isAdmin())
+			{
+				UserManager.getInstance().delete(id);
+				return SimpleMessage.newSuccess();
+			}
+			else
+			{
+				return SimpleMessage.noRightsFailure();
+			}
 		}
 		catch (Exception ex)
 		{
@@ -165,12 +212,12 @@ public class UsersController
 	{
 		try
 		{
-			SiteModel model = SiteModel.get(request);
-			ChangePasswordValidator validator = new ChangePasswordValidator(model);
+			SiteModel m = SiteModel.get(request);
+			ChangePasswordValidator validator = new ChangePasswordValidator(m);
 			List<ValidationMessage> validations = validator.validate(ui);
 			if (validations.isEmpty())
 			{
-				model.changePassword(ui.getNewPassword());
+				m.changePassword(ui.getNewPassword());
 				return SimpleMessage.newSuccess();
 			}
 			return SimpleMessage.newFailure(

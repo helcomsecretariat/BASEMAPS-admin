@@ -17,9 +17,11 @@ import fi.fta.beans.RightType;
 import fi.fta.beans.User;
 import fi.fta.beans.UserRight;
 import fi.fta.beans.UserRole;
+import fi.fta.beans.ui.UserRightUI;
 import fi.fta.beans.ui.UserUI;
 import fi.fta.data.dao.UserDAO;
 import fi.fta.data.managers.CategoryManager;
+import fi.fta.data.managers.UserManager;
 import fi.fta.utils.PasswordUtils;
 import fi.fta.utils.Util;
 
@@ -58,6 +60,26 @@ public class SiteModel
 		this.user = new UserDAO().update(user);
 	}
 	
+	public User update(UserUI ui) throws HibernateException
+	{
+		User u = UserManager.getInstance().update(ui);
+		if (this.isCurent(u.getId()))
+		{
+			user = u;
+		}
+		return u;
+	}
+	
+	public User addRight(UserRightUI ui)
+	{
+		User u = UserManager.getInstance().add(ui);
+		if (u != null && this.isCurent(u.getId()))
+		{
+			user = u;
+		}
+		return u;
+	}
+	
 	public boolean logged()
 	{
 		return user != null;
@@ -66,6 +88,11 @@ public class SiteModel
 	public boolean isAdmin()
 	{
 		return user != null && user.getRole().equals(UserRole.ADMIN);
+	}
+	
+	public boolean isCurent(Long userId)
+	{
+		return user != null && userId != null && user.getId().equals(userId);
 	}
 	
 	public void logout()

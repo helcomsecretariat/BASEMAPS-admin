@@ -125,9 +125,19 @@ public class UserManager
 		return dao.delete(id) > 0;
 	}
 	
-	public void add(UserRightUI ui) throws HibernateException
+	public User add(UserRightUI ui) throws HibernateException
 	{
-		new UserRightDAO().add(new UserRight(ui));
+		User u = this.get(ui.getUserId());
+		if (u != null)
+		{
+			if (u.getRights() == null)
+			{
+				u.setRights(new ArrayList<>());
+			}
+			u.getRights().add(new UserRight(ui));
+			return dao.update(u);
+		}
+		return null;
 	}
 	
 }
