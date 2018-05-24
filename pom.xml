@@ -46,7 +46,7 @@
                 <symlink.enabled>true</symlink.enabled>
                 <project.file>project-product.properties</project.file>
                 <hibernate.connection.url>jdbc:postgresql://localhost/basemaps</hibernate.connection.url>
-				<hibernate.connection.username>vzmaileruser</hibernate.connection.username>
+				<hibernate.connection.username>basemapsuser</hibernate.connection.username>
 				<hibernate.connection.password>B4semap5</hibernate.connection.password>
             </properties>
         </profile>
