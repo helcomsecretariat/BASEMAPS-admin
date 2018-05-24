@@ -4,9 +4,9 @@
 	<target name="cleanData">
 		<echo message="execute cleanData"/>
 		<delete includeemptydirs="true">
-            <fileset dir="${path.web.static}/basemaps"/>
+            <fileset dir="${path.web.static}"/>
         </delete>
-        <mkdir dir="${path.web.static}/basemaps"/>
+        <mkdir dir="${path.web.static}"/>
 		
     </target>
 	
@@ -25,12 +25,15 @@
     <target name="deployData">
     	<echo message="execute deployData"/>
     	
-        <copy todir="${path.web.static}/basemaps" includeemptydirs="false">
+        <copy todir="${path.web.static}" includeemptydirs="false">
             <fileset dir="WebContent">
                 <exclude name="WEB-INF/**/*.*"/>
                 <exclude name="**/*.jsp"/>
                 <exclude name="**/*.inc"/>
             </fileset>
+        </copy>
+    	<copy todir="${path.web.static}/1.0/js/auto" includeemptydirs="false">
+            <fileset dir="${project.build.warcontent}/1.0/js/auto" />
         </copy>
     </target>
 	
@@ -46,9 +49,9 @@
         <copy todir="${path.scripts}/classes">
         	<fileset dir="${ant.build.directory}/classes"/>
         </copy>
-		<copy todir="${path.scripts}/classes" file="${ant.build.outputDirectory}/WEB-INF/classes/hibernate.cfg.xml" />
+		<copy todir="${path.scripts}/classes" file="${project.build.warcontent}/WEB-INF/classes/hibernate.cfg.xml" />
         <copy todir="${path.scripts}/lib">
-        	<fileset dir="${ant.build.outputDirectory}/WEB-INF/lib"/>
+        	<fileset dir="${project.build.warcontent}/WEB-INF/lib"/>
         </copy>
         <mkdir dir="${path.scripts}/logs"/>
 		
