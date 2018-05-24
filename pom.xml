@@ -22,6 +22,7 @@
             <properties>
             	<symlink.enabled>true</symlink.enabled>
                 <project.file>project-andrius.properties</project.file>
+                <ant.build.file>build-maven</ant.build.file>
                 <hibernate.connection.url>jdbc:postgresql://localhost/basemaps</hibernate.connection.url>
 				<hibernate.connection.username>basemapsuser</hibernate.connection.username>
 				<hibernate.connection.password>B4semap5</hibernate.connection.password>
@@ -33,6 +34,7 @@
             <properties>
             	<symlink.enabled>true</symlink.enabled>
                 <project.file>project-andzej.properties</project.file>
+                <ant.build.file>build-maven</ant.build.file>
                 <hibernate.connection.url>jdbc:postgresql://localhost/basemaps</hibernate.connection.url>
 				<hibernate.connection.username>basemapsuser</hibernate.connection.username>
 				<hibernate.connection.password>B4semap5</hibernate.connection.password>
@@ -45,6 +47,7 @@
             <properties>
                 <symlink.enabled>true</symlink.enabled>
                 <project.file>project-product.properties</project.file>
+                <ant.build.file>build-maven</ant.build.file>
                 <hibernate.connection.url>jdbc:postgresql://localhost/basemaps</hibernate.connection.url>
 				<hibernate.connection.username>basemapsuser</hibernate.connection.username>
 				<hibernate.connection.password>B4semap5</hibernate.connection.password>
@@ -250,12 +253,12 @@
 		        </executions>
 		      </plugin>
 
-            <!-- plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.7</version>
+                <version>1.8</version>
                 <executions>
-                	<!- Symlink deletion ->
+                	<!-- Symlink deletion -->
                     <execution>
                         <id>clean</id>
                         <phase>clean</phase>
@@ -279,7 +282,7 @@
                             <goal>run</goal>
                         </goals>
                     </execution>
-                    <!- Symlink creation ->
+                    <!-- Symlink creation -->
                     <execution>
                         <id>package</id>
                         <phase>package</phase>
@@ -303,10 +306,10 @@
                             <goal>run</goal>
                         </goals>
                     </execution>
-                    <!- Copy project settings file ->
+                    <!-- Copy project settings file -->
                     <execution>
    						<id>write</id>
-						<phase>generate-resources</phase>
+						<phase>write</phase>
 				        <configuration>
 				            <tasks>
 				                <echo>Copy project settings file</echo>
@@ -322,14 +325,14 @@
                     <exportAntProperties>true</exportAntProperties>
                 </configuration>
                 <dependencies>
-                    <!- http://antelope.tigris.org/nonav/docs/manual/bk03.html ->
+                    <!-- http://antelope.tigris.org/nonav/docs/manual/bk03.html -->
                     <dependency>
                         <groupId>org.tigris.antelope</groupId>
                         <artifactId>antelopetasks</artifactId>
                         <version>3.2.10</version>
                     </dependency>
                 </dependencies>
-            </plugin -->
+            </plugin>
 			
 			<plugin>
                 <groupId>org.codehaus.mojo</groupId>
