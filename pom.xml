@@ -381,6 +381,18 @@
                         <type>existing</type>
                         <home>${path.app.deploy}</home>
                     </configuration>
+                    <deployer>
+                        <deployables>
+                            <deployable>
+                                <groupId>${project.groupId}</groupId>
+                                <artifactId>${project.artifactId}</artifactId>
+                                <type>war</type>
+                                <properties>
+                                    <context>/</context>
+                                </properties>
+                            </deployable>
+                         </deployables>
+                    </deployer>
                 </configuration>
             </plugin>
 			
