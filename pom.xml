@@ -385,8 +385,8 @@
                         <type>installed</type>
                         <deployables>
                             <deployable>
-                                <groupId>${project.groupId}</groupId>
-                                <artifactId>${project.artifactId}</artifactId>
+                                <groupId>fta.fi</groupId>
+                                <artifactId>basemaps-admin</artifactId>
                                 <type>war</type>
                                 <properties>
                                     <context>/</context>
