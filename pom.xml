@@ -370,7 +370,7 @@
             <plugin>
                 <groupId>org.codehaus.cargo</groupId>
                 <artifactId>cargo-maven2-plugin</artifactId>
-                <version>1.6.7</version>
+                <version>1.1.2</version>
                 <configuration>
                     <container>
                         <containerId>tomcat9x</containerId>
@@ -385,8 +385,8 @@
                         <type>installed</type>
                         <deployables>
                             <deployable>
-                                <groupId>fta.fi</groupId>
-                                <artifactId>basemaps-admin</artifactId>
+                                <groupId>${project.groupId}</groupId>
+                                <artifactId>${project.artifactId}</artifactId>
                                 <type>war</type>
                                 <properties>
                                     <context>/</context>
