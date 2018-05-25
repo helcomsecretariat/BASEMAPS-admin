@@ -370,7 +370,7 @@
             <plugin>
                 <groupId>org.codehaus.cargo</groupId>
                 <artifactId>cargo-maven2-plugin</artifactId>
-                <version>1.6.5</version>
+                <version>1.6.7</version>
                 <configuration>
                     <container>
                         <containerId>tomcat9x</containerId>
@@ -389,7 +389,7 @@
                                 <artifactId>${project.artifactId}</artifactId>
                                 <type>war</type>
                                 <properties>
-                                    <context>/ROOT</context>
+                                    <context>/</context>
                                 </properties>
                             </deployable>
                          </deployables>
