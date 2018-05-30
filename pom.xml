@@ -20,8 +20,8 @@
         <profile>
             <id>andrius</id>
             <properties>
-            	<symlink.enabled>true</symlink.enabled>
-                <project.file>project-andrius.properties</project.file>
+            	<project.file>project-andrius.properties</project.file>
+                <symlink.enabled>false</symlink.enabled>
                 <ant.build.file>build-maven</ant.build.file>
                 <hibernate.connection.url>jdbc:postgresql://localhost/basemaps</hibernate.connection.url>
 				<hibernate.connection.username>basemapsuser</hibernate.connection.username>
@@ -32,8 +32,8 @@
 		<profile>
             <id>andzej</id>
             <properties>
-            	<symlink.enabled>true</symlink.enabled>
-                <project.file>project-andzej.properties</project.file>
+            	<project.file>project-andzej.properties</project.file>
+            	<symlink.enabled>false</symlink.enabled>
                 <ant.build.file>build-maven</ant.build.file>
                 <hibernate.connection.url>jdbc:postgresql://localhost/basemaps</hibernate.connection.url>
 				<hibernate.connection.username>basemapsuser</hibernate.connection.username>
@@ -45,8 +45,8 @@
         <profile>
             <id>product</id>
             <properties>
-                <symlink.enabled>true</symlink.enabled>
                 <project.file>project-product.properties</project.file>
+                <symlink.enabled>true</symlink.enabled>
                 <ant.build.file>build-maven</ant.build.file>
                 <hibernate.connection.url>jdbc:postgresql://localhost/basemaps</hibernate.connection.url>
 				<hibernate.connection.username>basemapsuser</hibernate.connection.username>
@@ -382,6 +382,7 @@
                         <home>${path.app.deploy}</home>
                     </configuration>
                     <deployer>
+                        <type>installed</type>
                         <deployables>
                             <deployable>
                                 <groupId>${project.groupId}</groupId>
