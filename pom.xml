@@ -383,17 +383,17 @@
                     </configuration>
                     <deployer>
                         <type>installed</type>
-                        <deployables>
-                            <deployable>
-                                <groupId>${project.groupId}</groupId>
-                                <artifactId>${project.artifactId}</artifactId>
-                                <type>war</type>
-                                <properties>
-                                    <context>/</context>
-                                </properties>
-                            </deployable>
-                         </deployables>
                     </deployer>
+                    <deployables>
+					   <deployable>
+					       <groupId>${project.groupId}</groupId>
+					       <artifactId>${project.artifactId}</artifactId>
+					       <type>war</type>
+					       <properties>
+					           <context>/</context>
+					       </properties>
+					   </deployable>
+					</deployables>
                 </configuration>
             </plugin>
 			
