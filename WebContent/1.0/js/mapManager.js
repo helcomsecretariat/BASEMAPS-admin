@@ -2,23 +2,26 @@ define([
 	"dojo/_base/declare",
 	"dojo/dom",
 	"dojo/dom-construct",
+	"dojo/_base/lang",
 	"dojo/dom-style",
 	"dojo/query!css3",
+	"dojo/request",
 	"basemaps/js/layerList",
+	"widgets/scaleWidget",
 	"//openlayers.org/en/v4.4.2/build/ol.js",
 	"dijit/_WidgetBase", 
 	"dijit/_TemplatedMixin",
 	"dojo/text!../templates/mapView.html"
 ], function(
-	declare, dom, domConstruct, domStyle, query,
-	layerList,
+	declare, dom, domConstruct, lang, domStyle, query, request,
+	layerList, scaleWidget,
 	ol,
 	_WidgetBase, _TemplatedMixin, template
 ) {
 	return declare([_WidgetBase, _TemplatedMixin], {
 		templateString: template,
 		baseClass: "mapView",
-		mapa: null,
+		map: null,
 		// Layer list object (required for Identify)
 		layerListObj: null,
 		// store clicked location for displaying popup
@@ -26,19 +29,20 @@ define([
 		// graphic layer for identified point features
 		selectedGraphics: null,
 		currentExtent: null,
-		
+		scaleWidget: null,
 		constructor: function(params){
       
 		},
 		
 		postCreate: function() {
 			var basemapLayer = new ol.layer.Tile({
-				title: 'Basemap TOPO',
+				id: "basemap",
+				title: "Basemap TOPO",
 				source: new ol.source.TileArcGISRest({
 					url: "http://62.236.121.188/arcgis104/rest/services/MADS/Basemap_TOPO/MapServer"
 				})
 			});
-			var map = new ol.Map({
+			this.map = new ol.Map({
 				target: "map",
 				layers: [
 					basemapLayer
@@ -52,115 +56,41 @@ define([
 				})
 			//<BoundingBox CRS="EPSG:3857" maxx="3140215.762959987" maxy="8399737.889636647" minx="2267949.0925025064" miny="7760118.672726451"/>
 			});
-			map.on('singleclick', function(evt) {
-				map.getLayers().forEach(function (lyr) {
-					console.log(lyr);
-					//if (lyr.getProperties().id === "WMS1") {
-					console.log(lyr.getProperties());
-					/*console.log(lyr.getSource().getGetFeatureInfoUrl(
-					  evt.coordinate, viewResolution, 'EPSG:3857',
-					  {'INFO_FORMAT': 'application/json'}
-					));*/
+			this.map.on('singleclick', lang.hitch(this, function(evt) {
+				var viewResolution = this.map.getView().getResolution();
+				var viewProjection = this.map.getView().getProjection();
+				this.map.getLayers().forEach(function (lyr) {
+					//var infoFormat = null;
+					if ((lyr.getVisible()) && (lyr.getProperties().id != "basemap")) {
+						if (lyr.getProperties().identifyFormats.includes("application/json")) {
+							var infoFormat = "application/json";
+							//var infoFormat = "text/xml";
+							var u = lyr.getSource().getGetFeatureInfoUrl(evt.coordinate, viewResolution, viewProjection, {"INFO_FORMAT": infoFormat});
+							request.get(u, {
+								handleAs: "json"
+							}).then(function(data){
+								console.log(JSON.stringify(data));
+							},
+							function(error){
+								console.log(error);
+							});
+						}
+					}
+					
 				});
 				query(".metadataBox").forEach(function(node){
 		              domStyle.set(node, {"display": "none"});
 		            });
-			});
-
+			}));
+			
 			var mapNode = dom.byId("map");
 			domConstruct.place(mapNode, this.domNode, "first");
 			// create layer list
-			var llwidget = new layerList({map: map}).placeAt(this.layerlistContainer);
-        
-        
-        // create popup
-        /*var popup = new Popup({
-          // fill symbol for polygon features
-          fillSymbol: new SimpleFillSymbol(
-                        SimpleFillSymbol.STYLE_SOLID,
-                        new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([255, 0, 0]), 2),
-                        new Color([255, 255, 0, 0.25])
-                      ),
-          // line symbol for line features
-          lineSymbol: new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([255, 0, 0]), 2)
-        }, domConstruct.create("div"));
-        // custom class for popup
-        domClass.add(popup.domNode, "popupStyle");
-        // create map using json config
-        var mapConfig = params.mapConfig;
-        this.mapa = new Map(params.mapNode, {
-          spatialReference: mapConfig.spatialReference,
-          lods: mapConfig.lods,
-          sliderPosition: "top-right",
-          infoWindow: popup
-        });
-
-        var basemapGallery = new BasemapGallery({
-          showArcGISBasemaps: false,
-          map: this.mapa
-        }, "basemapGallery");
-
-
-        var bl1 = new BasemapLayer({
-          url:"http://62.236.121.188/arcgis104/rest/services/MADS/Basemap_BORDERS/MapServer"
-        });
-        var bl2 = new BasemapLayer({
-          url:"http://62.236.121.188/arcgis104/rest/services/MADS/Basemap_TOPO/MapServer"
-        });
-        var basemap1 = new Basemap({
-          layers:[bl1],
-          title:"",
-          thumbnailUrl:"img/BORDERS_basemap.png"
-        });
-        var basemap2 = new Basemap({
-          layers:[bl2],
-          thumbnailUrl:"img/TOPO_basemap.png"
-        });
-        basemapGallery.add(basemap1);
-        basemapGallery.add(basemap2);
-        basemapGallery.startup();
-        var basemapLayer = new ArcGISTiledMapServiceLayer("http://62.236.121.188/arcgis104/rest/services/MADS/Basemap_TOPO/MapServer", {
-          "id": "Basemap"
-        });
-        this.mapa.addLayer(basemapLayer);
-
-        this.selectedGraphics = new GraphicsLayer();
-        this.mapa.addLayer(this.selectedGraphics);
-
-        this.mapa.on("load", lang.hitch(this, function(e) {
-          this.mapa.centerAndZoom(new Point(mapConfig.center.x, mapConfig.center.y, new SpatialReference({ wkid: 3035 })), mapConfig.zoom);
-          this.currentExtent = this.mapa.extent;
-          // draggable popup
-          var handle = this.mapa.infoWindow.domNode.querySelector(".title");
-          var dnd = new Moveable(this.mapa.infoWindow.domNode, {
-              handle: handle
-          });
-          // hide pointer and outerpointer (used depending on where the pointer is shown)
-          dnd.on('FirstMove', lang.hitch(this, function(e) {
-            var arrowNode =  this.mapa.infoWindow.domNode.querySelector(".outerPointer");
-            arrowNode.classList.add("hidden");
-            arrowNode =  this.mapa.infoWindow.domNode.querySelector(".pointer");
-            arrowNode.classList.add("hidden");
-          }.bind(this)));
-
-          // on map click
-          on(this.mapa, "click", lang.hitch(this, function(evt){
-            console.log(this.mapa.extent);
-            // hide layer top group menu
-            query(".layerTopGroupMenu").forEach(function(node){
-              domStyle.set(node, {"display": "none"});
-            });
-            // run identifies
-            this.runIdentifies(evt);
-          }));
-        }));
-        this.mapa.on("extent-change", lang.hitch(this, function (e){
-          if (((e.extent.xmax > 8200000) || (e.extent.xmin < 800000) || (e.extent.ymax > 7300000) || (e.extent.ymin < 1200000)) && (this.currentExtent)) {
-            this.mapa.setExtent(this.currentExtent);
-          }
-          this.currentExtent = e.extent;
-        }));*/
+			var llwidget = new layerList({map: this.map}).placeAt(this.layerlistContainer);
+			this.scaleWidget = new scaleWidget({map: this.map}).placeAt(this.scaleContainer);
+			this.scaleWidget.setScale();
     },
+    
     show: function(open) {
 		domStyle.set(this.domNode, "display", open ? "block" : "none");
 	}/*,

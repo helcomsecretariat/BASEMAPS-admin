@@ -5,6 +5,7 @@ define([
 	"dojo/on", 
 	"dojo/dom",
 	"dojo/dom-construct",
+	"dojo/_base/array", 
 	"dojo/_base/window",
 	"dijit/layout/BorderContainer",
 	"basemaps/js/mapManager",
@@ -14,7 +15,7 @@ define([
 	"dojo/text!../templates/header.html",
 	"dojo/domReady!"
 ], function(
-	declare, lang, request, on, dom, domConstruct, win, 
+	declare, lang, request, on, dom, domConstruct, array, win, 
 	BorderContainer, mapManager, adminViewManager, utils, loginWidget, 
 	headerHTML
 ) {
@@ -71,7 +72,8 @@ define([
 							this.utils.changeText("logoutLink", "Logout (" + response.item.name + ")");
 							this.utils.show("logoutLink", "block");
 							
-							this.switchToAdminView(response.item.role);
+							var writeCategories = this.getUserWriteCategories(response.item.rights);
+							this.switchToAdminView(response.item.role, writeCategories);
 						}
 					}
 				}),
@@ -80,6 +82,16 @@ define([
 					console.log(error);
 				})
 			);
+		},
+		
+		getUserWriteCategories: function(rights) {
+			var categories = [];
+			array.forEach(rights, lang.hitch(this, function(r){
+				if (r.rights.includes("w")) {
+					categories.push(r.categoryId);
+				}
+			}));
+			return categories;
 		},
 		
 		logout: function() {
@@ -96,12 +108,11 @@ define([
 						this.utils.show("mapLink", "none");
 						this.utils.changeText("logoutLink", "Logout");
 						this.utils.show("logoutLink", "none");
-												
-						//this.adminLayerList.destroy(true);
 						
 						if (this.adminView) {
 							this.switchToMapView();
 						}
+						this.adminViewManagerObj.adminLayerList.cleanUp();
 					}
 				}),
 				lang.hitch(this, function(error){
@@ -111,14 +122,17 @@ define([
 			);
 		},
 		
-		switchToAdminView: function(role) {
+		switchToAdminView: function(role, rights) {
 			if (!this.adminView) {
 				this.mM.show(false);
 				if (this.adminViewManagerObj == null) {
-					this.adminViewManagerObj = new adminViewManager({"role": role}).placeAt(dom.byId("mainWindow"));
+					this.adminViewManagerObj = new adminViewManager({"role": role, "rights": rights}).placeAt(dom.byId("mainWindow"));
 				}
 				else {
 					this.adminViewManagerObj.show(true);
+					this.adminViewManagerObj.adminLayerList.setUser(role, rights);
+					this.adminViewManagerObj.showLayerList();
+					this.adminViewManagerObj.adminLayerList.getLayersData();
 				}
 				
 				if (role === "ADMIN") {
@@ -126,7 +140,6 @@ define([
 				}
 				else if (role === "PROVIDER") {
 					this.adminViewManagerObj.showViewButtons(false);
-					this.adminViewManagerObj.showLayerList();
 				} 
 				this.adminView = true;
 			}

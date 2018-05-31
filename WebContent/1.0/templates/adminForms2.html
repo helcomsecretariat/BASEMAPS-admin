@@ -2,16 +2,39 @@
 	<div id="adminFormsHeader" data-dojo-attach-point="adminFormsHeader"></div>
 	<div id="adminFormsBody" data-dojo-attach-point="adminFormsBody">
 		<div id="adminFormMessage"></div>
+		
+		<!-- Add ROOT CATEGORY section -->
+		<div id="addRootCategoryForm" class="formSectionGroup" style="display: none;">
+			<div class="formSectionLabel">Add root category</div>
+			<div class="inputLabelGroup">
+				<span class="textInputLabel">Label:</span>
+				<input id="addRootCategoryLabelInput" class="textInput" type="text" tabindex="2" maxlength="200" placeholder="Required">
+			</div>
+			<div class="inputLabelGroup">
+				<span class="textInputLabel">HELCOM id:</span>
+				<input id="addRootCategoryHelcomIdInput" class="textInput" type="text" tabindex="2" maxlength="200">
+			</div>
+			<div class="inputLabelGroup">
+				<span class="textInputLabel">Metadata URL:</span>
+				<input id="addRootCategoryMetadataUrlInput" class="textInput" type="text" tabindex="2" maxlength="500">
+			</div>
+			<div class="inputLabelGroup">
+				<span class="textInputLabel">Metadata format:</span>
+				<span id="addRootCategoryMetadataFormatSelect" data-dojo-attach-point="addRootCategoryMetadataFormatSelect"></span>
+			</div>
+			<span id="saveRootCategory" class="formLink" data-dojo-attach-point="saveRootCategory">Save</span>
+			<span id="cancelRootCategory" class="formLink" data-dojo-attach-event="onclick:cancelRootCategoryClick">Cancel</span>
+		</div>
+		
 		<div id="categoryForm" class="formContainer" style="display:none;">
 			<div class="scrollableContainer">
-			
 				<!-- Category INFO section -->
 				<div id="categoryInfoForm" class="formSectionGroup">
-					<div class="formSectionLabel">Category info:</div>
+					<div class="formSectionLabel">Info:</div>
 					<div class="inputLabelGroup">
 						<span class="textInputLabel">Label:</span>
 						<span id="categoryLabel" class="textLabel"></span>
-						<input id="categoryLabelInput" class="textInput" type="text" tabindex="2" maxlength="200" style="display: none;">	
+						<input id="categoryLabelInput" class="textInput" type="text" tabindex="2" maxlength="200" style="display: none;" placeholder="Required">	
 						<span id="editCategoryLabel" class="formLink" data-dojo-attach-event="onclick:editCategoryLabelClick">Edit</span>
 						<span id="cancelCategoryLabel" class="formLink" style="display: none;" data-dojo-attach-event="onclick:cancelCategoryLabelClick">Cancel</span>
 						<span id="saveCategoryLabel" class="formLink" style="display: none;" data-dojo-attach-point="saveCategoryLabel">Save</span>
@@ -27,7 +50,7 @@
 					<div id=categoryMetadataSection class="inputLabelGroup">
 						<span class="textInputLabel">Metadata:</span>
 						<span id="categoryMetadataLink" class="textLabel"></span>
-						<input id="categoryMetadataLinkInput" class="textInput" type="text" tabindex="2" maxlength="200" style="display: none;">
+						<input id="categoryMetadataLinkInput" class="textInput" type="text" tabindex="2" maxlength="500" style="display: none;">
 						<span id="editCategoryMetadataLink" class="formLink" data-dojo-attach-event="onclick:editCategoryMetadataLinkClick">Edit</span>
 						<span id="cancelCategoryMetadataLink" class="formLink" style="display: none;" data-dojo-attach-event="onclick:cancelCategoryMetadataLinkClick">Cancel</span>
 						<span id="saveCategoryMetadataLink" class="formLink" style="display: none;" data-dojo-attach-point="saveCategoryMetadataLink">Save</span>
@@ -42,7 +65,7 @@
 						<div class="formSubSectionLabel">Add new metadata</div>
 						<div class="inputLabelGroup">
 							<span class="textInputLabel">URL:</span>
-							<input id="metadataUrlInput" class="textInput" type="text" tabindex="2" maxlength="200">
+							<input id="metadataUrlInput" class="textInput" type="text" tabindex="2" maxlength="500" placeholder="Required">
 						</div>
 						<div class="inputLabelGroup">
 							<span class="textInputLabel">Metadata format:</span>
@@ -62,7 +85,7 @@
 						<div class="formSubSectionLabel">Add new category</div>
 						<div class="inputLabelGroup">
 							<span class="textInputLabel">Label:</span>
-							<input id="addCategoryLabelInput" class="textInput" type="text" tabindex="2" maxlength="200">
+							<input id="addCategoryLabelInput" class="textInput" type="text" tabindex="2" maxlength="200" placeholder="Required">
 						</div>
 						<div class="inputLabelGroup">
 							<span class="textInputLabel">HELCOM id:</span>
@@ -70,7 +93,7 @@
 						</div>
 						<div class="inputLabelGroup">
 							<span class="textInputLabel">Metadata URL:</span>
-							<input id="addCategoryMetadataUrlInput" class="textInput" type="text" tabindex="2" maxlength="200">
+							<input id="addCategoryMetadataUrlInput" class="textInput" type="text" tabindex="2" maxlength="500">
 						</div>
 						<div class="inputLabelGroup">
 							<span class="textInputLabel">Metadata format:</span>
@@ -90,7 +113,7 @@
 						<div class="formSubSectionLabel">Add new WMS layer</div>
 						<div class="inputLabelGroup">
 							<span class="textInputLabel">URL:</span>
-							<input id="wmsUrlInput" class="textInput" type="text" tabindex="2" maxlength="200">
+							<input id="wmsUrlInput" class="textInput" type="text" tabindex="2" maxlength="500" placeholder="Required">
 							<span id="validateWms" class="formLink" data-dojo-attach-event="onclick:validateWmsClick">Validate</span>
 						</div>
 						<div id="wmsLayerNameSelectGroup" class="inputLabelGroup" style="display:none;">
@@ -99,11 +122,11 @@
 						</div>
 						<div id="wmsLayerNameInputGroup" class="inputLabelGroup" style="display:none;">
 							<span class="textInputLabel">WMS layer name:</span>
-							<input id="wmsNameInput" class="textInput" type="text" tabindex="2" maxlength="200">
+							<input id="wmsNameInput" class="textInput" type="text" tabindex="2" maxlength="200" placeholder="Required">
 						</div>
 						<div class="inputLabelGroup">
 							<span class="textInputLabel">Label:</span>
-							<input id="wmsLabelInput" class="textInput" type="text" tabindex="2" maxlength="200">
+							<input id="wmsLabelInput" class="textInput" type="text" tabindex="2" maxlength="200" placeholder="Required">
 						</div>
 						<div class="inputLabelGroup">
 							<span class="textInputLabel">HELCOM id:</span>
@@ -227,26 +250,91 @@
 					</div>
 				</div>
 			</div>
-			<div id="manageCategoryCloseButton" class="formButton" style="margin-top: 10px;" data-dojo-attach-event="onclick:manageCategoryCloseButtonClick">Close</div>
+			<div id="manageLayersCloseButton" class="formButton" style="margin-top: 10px;" data-dojo-attach-event="onclick:cleanAdminForm">Close</div>
 		</div>
 				
-		<!-- <div id="deleteCategoryForm" class="formContainer" style="display:none;">
-			<div>
-				Layer and all sub-layers with data will be permanently deleted. Continue?
+		<!-- Add USER section -->
+		<div id="addUserForm" class="formSectionGroup" style="display: none;">
+			<div class="formSectionLabel">Add user</div>
+			<div class="inputLabelGroup">
+				<span class="textInputLabel">Name:</span>
+				<input id="addUserNameInput" class="textInput" type="text" tabindex="2" maxlength="200" placeholder="Required">
 			</div>
-			<div class="formButtonsGroup"> 
-				<div id="deleteCategoryYesButton" class="formButton" data-dojo-attach-point="deleteCategoryYesButton">Yes</div>
-				<div id="deleteCategoryNoButton" class="formButton" data-dojo-attach-point="deleteCategoryNoButton">No</div>
+			<div class="inputLabelGroup">
+				<span class="textInputLabel">Email:</span>
+				<input id="addUserEmailInput" class="textInput" type="text" tabindex="2" maxlength="200" placeholder="Required">
 			</div>
+			<div class="inputLabelGroup">
+				<span class="textInputLabel">Password:</span>
+				<input id="addUserPasswordInput" class="textInput" type="password" tabindex="2" maxlength="200" placeholder="Required">
+			</div>
+			<div class="inputLabelGroup">
+				<span class="textInputLabel">Repeat password:</span>
+				<input id="addUserPasswordRepeatInput" class="textInput" type="password" tabindex="2" maxlength="200" placeholder="Required">
+			</div>
+			<div class="inputLabelGroup">
+				<span class="textInputLabel">Phone number:</span>
+				<input id="addUserPhoneInput" class="textInput" type="text" tabindex="2" maxlength="200">
+			</div>
+			<div class="inputLabelGroup">
+				<span class="textInputLabel">Organization:</span>
+				<input id="addUserOrganizationInput" class="textInput" type="text" tabindex="2" maxlength="500">
+			</div>
+			<div class="inputLabelGroup">
+				<span class="textInputLabel">Position:</span>
+				<input id="addUserPositionInput" class="textInput" type="text" tabindex="2" maxlength="500">
+			</div>
+			<span id="saveUser" class="formLink" data-dojo-attach-point="saveUser">Save</span>
+			<span id="cancelUser" class="formLink" data-dojo-attach-event="onclick:cancelAddUserClick">Cancel</span>
 		</div>
 		
-		
-		<div id="wmsInfoForm" class="formContainer" style="display:none;">
-			<div id="wmsInfoContainer" class="formInfoContainer" data-dojo-attach-point="wmsInfoContainer"></div>
-			<div class="formButtonsGroup"> 
-				<div id="wmsInfoUpdateButton" class="formButton" data-dojo-attach-point="wmsInfoUpdateButton">Update</div>
-				<div id="wmsInfoCloseButton" class="formButton" data-dojo-attach-point="wmsInfoCloseButton">Close</div>
+		<!-- Update USER section -->
+		<div id="updateUserForm" class="formSectionGroup" style="display: none;">
+			<div class="formSectionLabel">Update user</div>
+			<div class="inputLabelGroup">
+				<span class="textInputLabel">Name:</span>
+				<input id="updateUserNameInput" class="textInput" type="text" tabindex="2" maxlength="200" placeholder="Required">
 			</div>
-		</div>-->
+			<div class="inputLabelGroup">
+				<span class="textInputLabel">Email:</span>
+				<input id="updateUserEmailInput" class="textInput" type="text" tabindex="2" maxlength="200" placeholder="Required">
+			</div>
+			<div class="inputLabelGroup">
+				<span class="textInputLabel">Phone number:</span>
+				<input id="updateUserPhoneInput" class="textInput" type="text" tabindex="2" maxlength="200">
+			</div>
+			<div class="inputLabelGroup">
+				<span class="textInputLabel">Organization:</span>
+				<input id="updateUserOrganizationInput" class="textInput" type="text" tabindex="2" maxlength="500">
+			</div>
+			<div class="inputLabelGroup">
+				<span class="textInputLabel">Position:</span>
+				<input id="updateUserPositionInput" class="textInput" type="text" tabindex="2" maxlength="500">
+			</div>
+			<span id="updateUser" class="formLink" data-dojo-attach-point="updateUser">Save</span>
+			<span id="cancelUpdateUser" class="formLink" data-dojo-attach-event="onclick:cancelUpdateUserClick">Cancel</span>
+		</div>
+		
+		<!-- Category USERS section -->
+		<div id="categoryUsersForm" class="formContainer" style="display:none;">
+			<div class="scrollableContainer">			
+				<!-- Category USERS section -->
+				<div id="categoryUsersListForm" class="formSectionGroup">
+					<div class="formSectionLabel">Category data providers:</div>
+					<div id="addCategoryUser" class="formLink" data-dojo-attach-event="onclick:addCategoryUserClick">Add new</div>
+					<div id="addCategoryUserForm" class="formSubSectionGroup" style="display: none;">
+						<div class="formSubSectionLabel">Add data provider</div>
+						<div class="inputLabelGroup">
+							<span class="textInputLabel">Select user:</span>
+							<span id="addCategoryUserSelect" data-dojo-attach-point="addCategoryUserSelect"></span>
+						</div>
+						<span id="saveCategoryUser" class="formLink" data-dojo-attach-event="onclick:saveAddCategoryUserClick">Save</span>
+						<span id="cancelCategoryUser" class="formLink" data-dojo-attach-event="onclick:cancelAddCategoryUserClick">Cancel</span>
+					</div>
+					<div id="categoryUserListForm" data-dojo-attach-point="categoryUserListForm"></div>
+				</div>				
+			</div>
+			<div id="categoryUsersCloseButton" class="formButton" style="margin-top: 10px;" data-dojo-attach-event="onclick:cleanAdminForm">Close</div>
+		</div>
 	</div>
 </div>

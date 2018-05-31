@@ -65,6 +65,8 @@ define([
 		identify: {},
 		visitedNodesIds: {},
 		formsObj: null,
+		userRole: null,
+		userRights: null,
 		rootLayerId: "layerlist",
 		currentObjId: null,
 		currentWms: null,
@@ -73,15 +75,17 @@ define([
 		treePath: [],
 		constructor: function(params) {
 			this.formsObj = params.forms;
+			this.userRole = params.role;
+			this.userRights = params.rights;
 			this.utils = new utils();
 			this.data = [{ id: this.rootLayerId, leaf: false}];
 		},
     
 		topCategoryButtonClick: function() {
 			this.currentObjId = null;
-			this.formsObj.manageCategoryCloseButtonClick();
-			//this.formsObj.formCleanUp();
-			//this.formsObj.setupAddCategoryForm("Add root layer");
+			this.formsObj.cleanAdminForm();
+			this.utils.show("addRootCategoryForm", "block");
+			this.formsObj.setupMetadataFormatSelector(this.formsObj.addRootCategoryMetadataFormatSelect);
 		},
 		
 		refreshButtonClick: function() {
@@ -89,15 +93,40 @@ define([
 		},
 	
 		postCreate: function() {
+			
 			this.getLayersData();
 			
 			/* --- MANAGE CATEGORY SAVE BUTTONS START --- */
+			
+			// --- save root category
+			on(this.formsObj.saveRootCategory, "click", lang.hitch(this, function() {
+				var catLabel = this.utils.getInputValue("addRootCategoryLabelInput").trim();
+				var catHelcomId = this.utils.getInputValue("addRootCategoryHelcomIdInput").trim();
+				var catMetadataUrl = this.utils.getInputValue("addRootCategoryMetadataUrlInput").trim();
+				if (validate.isText(catLabel)) {
+					var newCategory = {
+						"label": catLabel,
+						"helcomMetadata": catHelcomId,
+						"metaData": []
+					};
+					if (catMetadataUrl.length > 0 ) {
+						newCategory.metaData.push({
+							"format": this.formsObj.metadataFormatSelector.get("value"),
+							"url": catMetadataUrl,
+							"source": "PROVIDED"
+						});
+					}
+					this.saveCategory(newCategory, "ADD_ROOTCATEGORY");
+				}
+				else {
+					this.formsObj.showMessage("Category label is not valid.");
+				}
+			}));
 			
 			// --- save category info
 			on(this.formsObj.saveCategoryLabel, "click", lang.hitch(this, function() {
 				this.formsObj.currentCategory.label = this.utils.getInputValue("categoryLabelInput").trim();
 				this.updateCurrentCategory(null);
-				this.refreshLayerList(this.currentObjId);
 				
 				this.utils.setTextValue("categoryLabel", this.utils.getInputValue("categoryLabelInput").trim());
 				this.formsObj.cleanCategoryLabel();
@@ -106,7 +135,6 @@ define([
 			on(this.formsObj.saveHelcomCatalogueId, "click", lang.hitch(this, function() {
 				this.formsObj.currentCategory.helcomMetadata = this.utils.getInputValue("helcomCatalogueIdInput").trim();
 				this.updateCurrentCategory(null);
-				this.refreshLayerList(this.currentObjId);
 				
 				if (this.utils.getInputValue("helcomCatalogueIdInput").trim().length === 0) {
 					this.utils.setTextValue("helcomCatalogueId", "Not assigned");
@@ -117,25 +145,52 @@ define([
 				this.formsObj.cleanHelcomCatalogueId();
 			}));
 			
+			on(this.formsObj.saveCategoryMetadataLink, "click", lang.hitch(this, function() {
+				var metadataUrl = this.utils.getInputValue("categoryMetadataLinkInput").trim();
+				//if (validate.isUrl(metadataUrl)) {
+				var newMetadata = {
+					"parent": this.currentObjId,
+					"source": "PROVIDED",
+					"format": "UNKNOWN",
+					"url": metadataUrl
+				};
+				this.formsObj.currentCategory.metaData[0] = newMetadata;
+				this.updateCurrentCategory();
+				
+				if (this.utils.getInputValue("categoryMetadataLinkInput").trim().length === 0) {
+					this.utils.setTextValue("categoryMetadataLink", "Not assigned");
+				}
+				else {
+					this.utils.setTextValue("categoryMetadataLink", this.utils.getInputValue("categoryMetadataLinkInput").trim());
+				}
+				
+				this.formsObj.cleanCategoryMetadataLink();
+				//}
+				//else {
+				//	this.formsObj.showMessage("Metadata url is not valid.");
+				//}
+			}));
+			
 			// --- save metadata
 			on(this.formsObj.saveMetadata, "click", lang.hitch(this, function() {
 				var metadataUrl = this.utils.getInputValue("metadataUrlInput").trim();
-				if (validate.isUrl(metadataUrl)) {
-					var newMetadata = {
-						"parent": this.currentObjId,
-						"source": "PROVIDED",
-						"format": this.formsObj.metadataFormatSelector.get("value"),
-						"url": metadataUrl
-					};
-					this.formsObj.currentCategory.metaData.push(newMetadata);
-					this.updateCurrentCategory("NEW_METADATA");
-					this.refreshLayerList(this.currentObjId);
-					
-					this.formsObj.cleanMetadataAddForm();
-				}
-				else {
-					this.formsObj.showMessage("Metadata url is not valid.");
-				}
+				console.log(metadataUrl);
+				//if (validate.isUrl(metadataUrl)) {
+				var newMetadata = {
+					"parent": this.currentObjId,
+					"source": "PROVIDED",
+					"format": this.formsObj.metadataFormatSelector.get("value"),
+					"url": metadataUrl
+				};
+				this.formsObj.currentCategory.metaData.push(newMetadata);
+				this.updateCurrentCategory("NEW_METADATA");
+				//this.refreshLayerList(this.currentObjId);
+				
+				this.formsObj.cleanMetadataAddForm();
+				//}
+				//else {
+				//	this.formsObj.showMessage("Metadata url is not valid.");
+				//}
 			}));
 			
 			// --- save category
@@ -150,14 +205,14 @@ define([
 						"helcomMetadata": catHelcomId,
 						"metaData": []
 					};
-					if ((catMetadataUrl.length > 0 ) && (validate.isUrl(catMetadataUrl))) {
+					if (catMetadataUrl.length > 0 ) {
 						newCategory.metaData.push({
 							"format": this.formsObj.metadataFormatSelector.get("value"),
 							"url": catMetadataUrl,
 							"source": "PROVIDED"
 						});
 					}
-					this.saveCategory(newCategory);
+					this.saveCategory(newCategory, "ADD_SUBCATEGORY");
 				}
 				else {
 					this.formsObj.showMessage("Category label is not valid.");
@@ -220,6 +275,7 @@ define([
 						// TODO: popup box message
 					}
 					else if (response.type == "success") {
+						console.log("get current category", response.item);
 						this.formsObj.currentCategory = response.item;
 					}
 				}),
@@ -253,7 +309,7 @@ define([
 			);
 		},
 		
-		saveCategory: function(data) {
+		saveCategory: function(data, mode) {
 			var url = "sc/categories/add";
 			request.post(url, this.utils.createPostRequestParams(data)).then(
 				lang.hitch(this, function(response) {
@@ -262,18 +318,25 @@ define([
 					}
 					else if (response.type == "success") {
 						this.formsObj.showMessage("Category added.");
-						this.refreshLayerList(this.currentObjId);
 						
-						var categoryForDisplay = {
-							"id": response.item,
-							"label": data.label,
-							"helcomId": data.helcomMetadata
-						};
-						this.formsObj.currentCategoryCategories.unshift(categoryForDisplay);
-						
-						this.formsObj.cleanCategoryAddForm();
-						this.formsObj.cleanCategoryDisplayForm();
-						this.formsObj.displayCategories(this.formsObj.currentCategoryCategories);
+						if (mode == "ADD_SUBCATEGORY") {
+							this.refreshLayerList(this.currentObjId);
+							
+							var categoryForDisplay = {
+								"id": response.item,
+								"label": data.label,
+								"helcomId": data.helcomMetadata
+							};
+							this.formsObj.currentCategoryCategories.unshift(categoryForDisplay);
+							
+							this.formsObj.cleanCategoryAddForm();
+							this.formsObj.cleanCategoryDisplayForm();
+							this.formsObj.displayCategories(this.formsObj.currentCategoryCategories);
+						}
+						else if (mode == "ADD_ROOTCATEGORY") {
+							this.refreshLayerList();
+							this.formsObj.cleanRootCategoryAddForm();
+						}
 					}
 				}),
 				lang.hitch(this, function(error) {
@@ -319,12 +382,12 @@ define([
 		},
 		
 		saveWms: function(data) {
-			//console.log("saveWms", data);
 			var url = "sc/wms/add";
 			request.post(url, this.utils.createPostRequestParams(data)).then(
 				lang.hitch(this, function(response) {
 					this.refreshLayerList(this.currentObjId);
 					if (response.type == "error") {
+						console.log(response);
 						this.formsObj.showMessage("Failed to add WMS.");
 					}
 					else if (response.type == "success") {
@@ -704,8 +767,37 @@ define([
 				);
 		},
 
+		cleanUp: function() {
+			this.formsObj.cleanAdminForm();
+			this.userRole = null;
+			this.userRights = null;
+			this.currentObjId = null;
+			this.currentWms = null;
+			this.currentWmsId = null;
+			this.currentHeader = "";
+			this.treePath = [];
+			this.tree.collapseAll();
+			
+			delete this.store;
+			this.treeModel.destroy();
+			this.tree.destroy();
+			domConstruct.empty(this.adminLayerListTree);
+			this.data = [{ id: this.rootLayerId, leaf: false}];
+		},
+		
+		setUser: function(role, rights) {
+			this.userRole = role;
+			this.userRights = rights;
+			if (role == "ADMIN") {
+				this.utils.show("topCategoryButton", "inline-block");
+			}
+			else {
+				this.utils.show("topCategoryButton", "none");
+			}
+		},
+		
 		destroy: function() {
-
+			
 		},
     
 		getLayersData: function(highlightId) {
@@ -719,6 +811,12 @@ define([
 						// TODO: popup box message
 					}
 					else if (response.type == "success") {
+						if (this.userRole == "ADMIN") {
+							this.utils.show("topCategoryButton", "inline-block");
+						}
+						else {
+							this.utils.show("topCategoryButton", "none");
+						}
 						this.createTree(response.item);
 						if (highlightId != null) {
 							this.getTreePath(highlightId)
@@ -752,27 +850,30 @@ define([
 			}
 		},
 
-		addLayerToDataArray: function(layer, parentLayerId, /*topGroup,*/ last) {
-			//console.log(layer);
-			//var isLeaf = (layer.children.length > 0 ? false : true);
-			//var isLeaf = (layer.name ? true : false);
-			//var isLeaf = !(layer.category);
-			//var isEmpty = (layer.layers.length > 0 ? false : true);
+		addLayerToDataArray: function(layer, parentLayerId, last, editMode, movableForProvider) {
+			
 			var lyr = {
 				id: layer.id.toString(),
 				parent: parentLayerId,
 				name: layer.label,
 				helcomId: layer.helcomMetadata,
-				//topGroup: topGroup,
 				position: layer.position,
 				lastPos: last,
 				type: null,
-				//emptyCategory: null,
+				editMode: editMode,
+				movableForProvider: movableForProvider,
 				wms: null,
 				wfs: null,
 				metadata: layer.metadata,
 				children: layer.layers
 			};
+			var movableChildren = movableForProvider;
+			if (!editMode) {
+				if (this.userRights.includes(layer.id)) {
+					lyr.editMode = true;
+					movableChildren = true;
+				}
+			}
 			
 			if ((layer.wmses) && (layer.wmses[0])) {
 				lyr.wms = layer.wmses[0];
@@ -785,56 +886,34 @@ define([
 			if (layer.layers) {
 				lyr.type = "CATEGORY";
 			}
-			/*else {
-				lyr.leaf = true;
-			}*/
-			/*if (layer.layers) {
-				lyr.leaf = false;
-				if (layer.layers.length == 0) {
-					lyr.emptyCategory = true;
-				}
-				else {
-					lyr.emptyCategory = false;
-				}
-			}
-			else {
-				lyr.leaf = true;
-				lyr.emptyCategory = false;
-			}
-			
-			if (lyr.leaf) {
-				if (layer.wmses[0]) {
-					lyr.wms = layer.wmses[0];
-				}
-				if (layer.wfses[0]) {
-					lyr.wfs = layer.wfses[0];
-				}
-				
-			}*/
-			//lyr.metadata = layer.metadata;
-			
+						
 			this.data.push(lyr);
 			//if (!lyr.leaf) {
 			if (lyr.type == "CATEGORY") {
 				this.dataFiltering.push(lyr);
 				array.forEach(layer.layers, lang.hitch(this, function(l){
 					if (l.position === layer.layers.length) {
-						this.addLayerToDataArray(l, layer.id.toString(), /*false,*/ true);
+						this.addLayerToDataArray(l, layer.id.toString(), true, lyr.editMode, movableChildren);
 					}
 					else {
-						this.addLayerToDataArray(l, layer.id.toString(), /*false,*/ false);
+						this.addLayerToDataArray(l, layer.id.toString(), false, lyr.editMode, movableChildren);
 					}
 				}));
 			}
 		},
 
 		createDataArray: function(input) {
+			var editMode = false;
+			if (this.userRole == "ADMIN") {
+				editMode = true;
+			}
+			
 			array.forEach(input, lang.hitch(this, function(record){
 				if (record.position === input.length) {
-					this.addLayerToDataArray(record, this.rootLayerId, /*true,*/ true);
+					this.addLayerToDataArray(record, this.rootLayerId, /*true,*/ true, editMode, false);
 				}
 				else {
-					this.addLayerToDataArray(record, this.rootLayerId, /*true,*/ false);
+					this.addLayerToDataArray(record, this.rootLayerId, /*true,*/ false, editMode, false);
 				}
 			}));
 		},
@@ -882,35 +961,64 @@ define([
 					var toolsContainer = domConstruct.create("div", { "class": "treeNodeToolsContainer" }, tnode.contentNode, "last");
           
 					if (!tnode.item.lastPos) {
-						var downButton = domConstruct.create("div", { "class": "downButton" }, toolsContainer, "last");
-						new Tooltip({
-							connectId: [downButton],
-							showDelay: 10,
-							position: ["below"],
-							label: "Move down"
-						});
+						if ((that.userRole == "ADMIN") || ((that.userRole == "PROVIDER") && (tnode.item.movableForProvider))) {
+							var downButton = domConstruct.create("div", { "class": "downButton" }, toolsContainer, "last");
+							new Tooltip({
+								connectId: [downButton],
+								showDelay: 10,
+								position: ["below"],
+								label: "Move down"
+							});
 
-						on(downButton, "click", function() {
-							//that.formsObj.formCleanUp();
-							//that.currentObjId = tnode.item.id;
-							that.changeCategoryPosition(tnode.item.position+1);
-						});
+							on(downButton, "click", function() {
+								//that.formsObj.formCleanUp();
+								that.currentObjId = tnode.item.id;
+								that.changeCategoryPosition(tnode.item.position+1);
+							});
+						}
 					}
           
 					if (tnode.item.position > 1) {
-						var upButton = domConstruct.create("div", { "class": "upButton" }, toolsContainer, "last");
-						new Tooltip({
-							connectId: [upButton],
-							showDelay: 10,
-							position: ["below"],
-							label: "Move up"
-						});
+						if ((that.userRole == "ADMIN") || ((that.userRole == "PROVIDER") && (tnode.item.movableForProvider))) {
+							var upButton = domConstruct.create("div", { "class": "upButton" }, toolsContainer, "last");
+							new Tooltip({
+								connectId: [upButton],
+								showDelay: 10,
+								position: ["below"],
+								label: "Move up"
+							});
 
-						on(upButton, "click", function() {
-							//that.formsObj.formCleanUp();
-							//that.currentObjId = tnode.item.id;
-							that.changeCategoryPosition(tnode.item.position-1);
-						});
+							on(upButton, "click", function() {
+								//that.formsObj.formCleanUp();
+								that.currentObjId = tnode.item.id;
+								that.changeCategoryPosition(tnode.item.position-1);
+							});
+						}
+					}
+					
+					if (tnode.item.type == "CATEGORY") {
+						if (that.userRole == "ADMIN") {
+							var userButton = domConstruct.create("div", { "class": "userButton" }, toolsContainer, "last");
+							new Tooltip({
+								connectId: [userButton],
+								showDelay: 10,
+								position: ["below"],
+								label: "Add user"
+							});
+
+							on(userButton, "click", function() {
+								that.formsObj.cleanAdminForm();
+								
+								that.currentObjId = tnode.item.id;
+								that.currentHeader = tnode.item.name + " -> Manage users";
+								
+								if (tnode.item.parent != that.rootLayerId) {
+									that.getLabelsFromRoot(tnode.item.parent);
+								}
+								that.getProviders(tnode.item);
+								that.getCurrentCategory();
+							});
+						}
 					}
 						
 					if (tnode.item.type == "WMS") {
@@ -926,171 +1034,79 @@ define([
 						var labelNodeWidth = 300 - rowNodePadding;
 						domStyle.set(tnode.labelNode, {"width": labelNodeWidth+"px"});
 					}
-					//if (tnode.item.leaf) {
-					//	domConstruct.destroy(tnode.expandoNode);
-						
-						/*var metadataButton = domConstruct.create("div", { "class": "manageMetadataButton" }, toolsContainer, "last");
-						new Tooltip({
-							connectId: [metadataButton],
-							showDelay: 10,
-							position: ["below"],
-							label: "Manage layers metadata"
-						});
-
-						on(metadataButton, "click", function(){
-							console.log(tnode.item);
-							that.formsObj.formCleanUp();
-							that.currentObjId = tnode.item.id;
-							that.currentHeader = tnode.item.name + " -> metadata";
-							if (tnode.item.parent != that.rootLayerId) {
-								that.getLabelsFromRoot(tnode.item.parent);
-							}
-							that.formsObj.setupMetadataForm(that.currentHeader, tnode.item.metadata);
-						});*/
-						
-						/*var wfsButton = domConstruct.create("div", { "class": "manageWfsButton" }, toolsContainer, "last");
-						new Tooltip({
-							connectId: [wfsButton],
-							showDelay: 10,
-							position: ["below"],
-							label: "Manage layers WFS"
-						});
-
-						on(wfsButton, "click", function(){
-							console.log("wfsButton", tnode.item);
-							// TODO
-						});*/
-						
-						/*var wmsButton = domConstruct.create("div", { "class": "manageWmsButton" }, toolsContainer, "last");
-						new Tooltip({
-							connectId: [wmsButton],
-							showDelay: 10,
-							position: ["below"],
-							label: "WMS info"
-						});
-
-						on(wmsButton, "click", function(){
-							//console.log(tnode.item);
-							that.formsObj.formCleanUp();
-							that.currentObjId = tnode.item.id;
-							that.currentWmsId = tnode.item.wms.id;
-							that.currentHeader = tnode.item.name + " -> WMS info";
-							if (tnode.item.parent != that.rootLayerId) {
-								that.getLabelsFromRoot(tnode.item.parent);
-							}
-							that.formsObj.setupWmsInfoForm(that.currentHeader, tnode.item.wms.url, tnode.item.wms.name);
-						});*/
-						
-						/*var removeCategoryButton = domConstruct.create("div", { "class": "removeCategoryButton" }, toolsContainer, "last");
-						new Tooltip({
-							connectId: [removeCategoryButton],
-							showDelay: 10,
-							position: ["below"],
-							label: "Remove layer"
-						});
-
-						on(removeCategoryButton, "click", function(){
-							that.formsObj.formCleanUp();
-							that.currentObjId = tnode.item.id;
-							that.currentHeader = tnode.item.name + " -> Delete layer";
-							if (tnode.item.parent != that.rootLayerId) {
-								that.getLabelsFromRoot(tnode.item.parent);
-							}
-							that.formsObj.setupDeleteCategoryForm(that.currentHeader);
-						});*/
-												
-						/*var editLayerButton = domConstruct.create("div", { "class": "editButton" }, toolsContainer, "last");
-						new Tooltip({
-							connectId: [editLayerButton],
-							showDelay: 10,
-							position: ["below"],
-							label: "Edit layer"
-						});
-
-						on(editLayerButton, "click", function(){
-							console.log("editLayerButton", tnode.item);
-							// TODO
-						});*/
-					//}
-					//else {
-						
-						
-						/*var removeCategoryButton = domConstruct.create("div", { "class": "removeCategoryButton" }, toolsContainer, "last");
-						new Tooltip({
-							connectId: [removeCategoryButton],
-							showDelay: 10,
-							position: ["below"],
-							label: "Remove layer"
-						});
-
-						on(removeCategoryButton, "click", function(){
-							that.formsObj.formCleanUp();
-							that.currentObjId = tnode.item.id;
-							that.currentHeader = tnode.item.name + " -> Delete layer";
-							if (tnode.item.parent != that.rootLayerId) {
-								that.getLabelsFromRoot(tnode.item.parent);
-							}
-							that.formsObj.setupDeleteCategoryForm(that.currentHeader);
-						});
-						
-						var addCategoryButton = domConstruct.create("div", { "class": "addCategoryButton" }, toolsContainer, "last");
-						new Tooltip({
-							connectId: [addCategoryButton],
-							showDelay: 10,
-							position: ["below"],
-							label: "Add layer"
-						});
-
-						on(addCategoryButton, "click", function(){
-							that.formsObj.formCleanUp();
-							that.currentObjId = tnode.item.id;
-							that.currentHeader = tnode.item.name + " -> Add layer";
-							if (tnode.item.parent != that.rootLayerId) {
-								that.getLabelsFromRoot(tnode.item.parent);
-							}
-							that.formsObj.setupCategoryForm("MANAGE_CATEGORY", null, that.currentHeader);
-						});*/
-						
-						//var rowNodePadding = domStyle.get(tnode.rowNode, "padding-left");
-						//var labelNodeWidth = 300 - rowNodePadding;
-						//domStyle.set(tnode.labelNode, {"width": labelNodeWidth+"px"});
-					//}
 					
-					var editCategoryButton = domConstruct.create("div", { "class": "editButton" }, toolsContainer, "last");
-					new Tooltip({
-						connectId: [editCategoryButton],
-						showDelay: 10,
-						position: ["below"],
-						label: "Manage layer"
-					});
+					if (tnode.item.editMode) {
+						var editCategoryButton = domConstruct.create("div", { "class": "editButton" }, toolsContainer, "last");
+						new Tooltip({
+							connectId: [editCategoryButton],
+							showDelay: 10,
+							position: ["below"],
+							label: "View or edit"
+						});
 
-					on(editCategoryButton, "click", function() {
-						
-						that.formsObj.manageCategoryCloseButtonClick();
-						
-						that.currentObjId = tnode.item.id;
-						if (tnode.item.type == "CATEGORY") {
-							that.currentHeader = tnode.item.name + " -> Manage category";
-							that.setupDisplayCategories(tnode.item.children);
-							that.setupDisplayWmses(tnode.item.children);
-						}
-						else if (tnode.item.type == "WMS") {
-							that.currentHeader = tnode.item.name + " -> Manage WMS";
-							console.log("WMS", tnode.item);
-						}
-						else if (tnode.item.type == "WFS") {
-							that.currentHeader = tnode.item.name + " -> Manage WFS";
-						}
-						
-						if (tnode.item.parent != that.rootLayerId) {
-							that.getLabelsFromRoot(tnode.item.parent);
-						}
-												
-						//console.log(tnode.item.children);
-						that.formsObj.setupManageCategoryForm(tnode.item, that.formsObj.currentCategoryCategories, that.formsObj.currentCategoryWmses, that.currentHeader);
-						that.getCurrentCategory();
-					});
-					
+						on(editCategoryButton, "click", function() {
+							console.log("editCategoryButton click");
+							that.formsObj.cleanAdminForm();
+							
+							that.currentObjId = tnode.item.id;
+							if (tnode.item.type == "CATEGORY") {
+								that.currentHeader = tnode.item.name + " -> Manage category";
+								that.setupDisplayCategories(tnode.item.children);
+								that.setupDisplayWmses(tnode.item.children);
+							}
+							else if (tnode.item.type == "WMS") {
+								that.currentHeader = tnode.item.name + " -> Manage WMS";
+								console.log("WMS", tnode.item);
+							}
+							else if (tnode.item.type == "WFS") {
+								that.currentHeader = tnode.item.name + " -> Manage WFS";
+							}
+							
+							if (tnode.item.parent != that.rootLayerId) {
+								that.getLabelsFromRoot(tnode.item.parent);
+							}
+													
+							//console.log(tnode.item.children);
+							that.formsObj.setupManageCategoryForm(tnode.item, that.formsObj.currentCategoryCategories, that.formsObj.currentCategoryWmses, that.currentHeader);
+							that.getCurrentCategory();
+						});
+					}
+					else {
+						var viewCategoryButton = domConstruct.create("div", { "class": "viewButton" }, toolsContainer, "last");
+						new Tooltip({
+							connectId: [viewCategoryButton],
+							showDelay: 10,
+							position: ["below"],
+							label: "View"
+						});
+
+						on(viewCategoryButton, "click", function() {
+							that.formsObj.cleanAdminForm();
+							
+							that.currentObjId = tnode.item.id;
+							if (tnode.item.type == "CATEGORY") {
+								that.currentHeader = tnode.item.name;
+								that.setupDisplayCategories(tnode.item.children);
+								that.setupDisplayWmses(tnode.item.children);
+							}
+							else if (tnode.item.type == "WMS") {
+								that.currentHeader = tnode.item.name + " -> Manage WMS";
+								console.log("WMS", tnode.item);
+							}
+							else if (tnode.item.type == "WFS") {
+								that.currentHeader = tnode.item.name + " -> Manage WFS";
+							}
+							
+							if (tnode.item.parent != that.rootLayerId) {
+								that.getLabelsFromRoot(tnode.item.parent);
+							}
+													
+							//console.log(tnode.item.children);
+							that.formsObj.setupManageCategoryForm(tnode.item, that.formsObj.currentCategoryCategories, that.formsObj.currentCategoryWmses, that.currentHeader);
+							that.getCurrentCategory();
+						});
+					}
+										
 					on(tnode.rowNode, mouse.enter, function(){
 						domStyle.set(toolsContainer, {"display": "block"});
 					});
@@ -1133,6 +1149,26 @@ define([
 					this.formsObj.currentCategoryCategories.push(category);
 				}
 			}));
+		},
+		
+		getProviders: function(layer) {
+			var url = "sc/users/list/PROVIDER";
+			request.get(url, {
+				handleAs: "json"
+			}).then(
+				lang.hitch(this, function(response) {
+					if (response.type == "error") {
+						this.formsObj.showMessage("Failed to retrieve category users.");
+					}
+					else if (response.type == "success") {
+						this.formsObj.setupCategoryUsersForm(layer, this.currentHeader, response.item);
+					}
+				}),
+				lang.hitch(this, function(error) {
+					alert("Something went wrong (on users/list/{role}). Please contact administrator.");
+					console.log(error);
+				})
+			);
 		}
 	});
 });

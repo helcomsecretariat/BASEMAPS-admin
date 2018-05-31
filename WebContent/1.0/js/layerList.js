@@ -7,6 +7,7 @@ define([
   "dojo/dom-style",
   "dojo/request",
   "dojo/_base/array", "dojo/dom-construct",  "dojo/query!css3",
+  "dojox/validate/web",
   "dojo/store/Memory","dijit/tree/ObjectStoreModel", "dijit/Tree", "dijit/form/FilteringSelect",
   "dijit/form/CheckBox", "dijit/Tooltip",
   "widgets/servicePanelWidget",
@@ -24,6 +25,7 @@ define([
   domStyle,
   request,
   array, domConstruct, query,
+  validate,
   Memory, ObjectStoreModel, Tree, FilteringSelect,
   checkBox, Tooltip,
   servicePanelWidget,
@@ -477,11 +479,6 @@ define([
             	that.servicePanel.header = tnode.item.name;
             	that.getLabelsFromRoot(tnode.item.parent);
             	that.servicePanel.setupAndShowServicePanel(tnode.item);
-            	/*query(".metadataBox").forEach(function(node){
-                domStyle.set(node, {"display": "none"});
-              });
-              var pos = dojo.position(metadataButton, true);
-              domStyle.set(metadataMenu, {"top": pos.y	+"px", "left": pos.x+20+"px", "display": "block"});*/
             });
             
             /*if (validURL(tnode.item.metadata)) {
@@ -537,15 +534,18 @@ define([
             on(cb, "change", function(checked) {
               //var visible = layer.visibleLayers;
               if (checked) {
+            	console.log("checked", tnode.item);
                 if (!tnode.item.wmsMapLayer) {
                   if ((tnode.item.wms.url.length > 0) && (tnode.item.wms.name.length > 0)) {
                     tnode.item.wmsMapLayer = new ol.layer.Tile({
                       id: tnode.item.id,
+                      identifyFormats: tnode.item.wms.info.formats,
                       source: new ol.source.TileWMS({
                         url: tnode.item.wms.url,
                         params: {
                           //SERVICENAME: tnode.item.wms.servicename,
                           LAYERS: tnode.item.wms.name,
+                          //TRANSPARENT: "TRUE",
                           //LOGIN: tnode.item.wms.login,
                           //PASSWORD: tnode.item.wms.password,
                           //TILED: false,
@@ -583,9 +583,17 @@ define([
                   domStyle.set(tnode.item.legendContainerDiv, "display", "block");
                 }
                 
-                var view = mapa.getView();
-            	view.fit(ol.proj.transformExtent([2.47842, 53.015, 17.5578, 58.6403], 'EPSG:4326', 'EPSG:3857'));
-            	
+                if (tnode.item.wms.info.boundWest) {
+                	var view = mapa.getView();
+                	view.fit(ol.proj.transformExtent([tnode.item.wms.info.boundWest, tnode.item.wms.info.boundSouth, tnode.item.wms.info.boundEast, tnode.item.wms.info.boundNorth], 'EPSG:4326', 'EPSG:3857'));
+                }
+                if ((typeof tnode.item.wms.info.scaleMax == 'number') || (typeof tnode.item.wms.info.scaleMin == 'number')) {
+                	that.servicePanel.header = tnode.item.name;
+                	that.getLabelsFromRoot(tnode.item.parent);
+                	that.servicePanel.setupAndShowScaleMessage(tnode.item.wms.info.scaleMin, tnode.item.wms.info.scaleMax);
+                }
+                
+                
                 /*if (!tnode.item.wfsMapLayer) {
                   if ((tnode.item.wfs.url.length > 0) && (tnode.item.wfs.layerName.length > 0)) {
 

@@ -25,63 +25,34 @@ define([
 		adminForms: null,
 		adminLayerList: null,
 		adminUsersList: null,
+		userRole: null,
+		userRights: null,
 		
 		constructor: function(params) {
-			console.log(params);
-			
+			this.userRole = params.role;
+			this.userRights = params.rights;
 		},
 		
 		layersButtonClick: function() {
+			this.adminForms.cleanAdminForm();
 			this.showLayerList();
 		},
 		
 		usersButtonClick: function() {
+			this.adminForms.cleanAdminForm();
 			if (this.adminUsersList == null) {
 				this.adminUsersList = new adminUsersList({forms: this.adminForms}).placeAt(this.adminUsersListSection);
 			}
-			//else {
-			//	domStyle.set(this.adminUsersList.domNode, {"display": "block"});
-			//}
 			this.showUsersList();
-			//domStyle.set(this.adminLayerList.domNode, {"display": "none"});
-			//this.adminLayerList.domNode.style("visibility", "hidden");
-			//console.log(this.adminLayerList.domNode);
 		},
 		
 		postCreate: function() {
 			this.adminForms = new adminForms().placeAt(this.adminFormsSection);
-			this.adminLayerList = new adminLayerList({forms: this.adminForms}).placeAt(this.adminLayerListSection);
-			
-			
-			//var llwidget = new layerList({map: map}).placeAt(this.layerlistContainer);
-			/*on(this.collapseAllButton, "click", lang.hitch(this, function(){
-			
-			}));*/
-			//alert("adminView created");
-			//parser.parse();
-			/*console.log(this.tabCont);
-			var tc = new TabContainer({
-		        style: "height: 100%; width: 100%;"
-		    }, this.tabCont);
-			console.log(tc);
-		    var cp1 = new ContentPane({
-		         title: "Food",
-		         content: "We offer amazing food"
-		    });
-		    tc.addChild(cp1);
-
-		    var cp2 = new ContentPane({
-		         title: "Drinks",
-		         content: "We are known for our drinks."
-		    });
-		    tc.addChild(cp2);
-
-		    tc.startup();*/
-			
+			this.adminLayerList = new adminLayerList({forms: this.adminForms, role: this.userRole, rights: this.userRights}).placeAt(this.adminLayerListSection);
 		},
     
 		destroy: function() {
-		
+			
 		},
 		
 		show: function(open) {
@@ -93,13 +64,17 @@ define([
 		},
 		
 		showLayerList: function() {
-			domStyle.set(this.adminUsersList.domNode, {"display": "none"});
-			domStyle.set(this.adminLayerList.domNode, {"display": "block"});
+			if (this.adminUsersList)
+				domStyle.set(this.adminUsersList.domNode, {"display": "none"});
+			if (this.adminLayerList)
+				domStyle.set(this.adminLayerList.domNode, {"display": "block"});
 		},
 		
 		showUsersList: function() {
-			domStyle.set(this.adminLayerList.domNode, {"display": "none"});
-			domStyle.set(this.adminUsersList.domNode, {"display": "block"});
+			if (this.adminLayerList)
+				domStyle.set(this.adminLayerList.domNode, {"display": "none"});
+			if (this.adminUsersList)
+				domStyle.set(this.adminUsersList.domNode, {"display": "block"});
 		}
 	});
 });

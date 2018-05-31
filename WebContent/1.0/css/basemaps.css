@@ -180,6 +180,7 @@ html, body {
 }
 
 #adminUsersListSection {
+	width: 100%;
 	margin-top: 30px;
 	overflow-y: auto;
 	max-height: 80%;
@@ -263,6 +264,14 @@ html, body {
 	background-image: url("../img/edit16.png");
 }
 
+.viewButton {
+	background-image: url("../img/view16.png");
+}
+
+.userButton {
+	background-image: url("../img/user16.png");
+}
+
 .manageWmsButton {
 	background-image: url("../img/wms16.png");
 }
@@ -280,9 +289,40 @@ html, body {
 /* START admin user list section */
 .usersList {
   position: relative;
-  margin-left: 10px;
+  margin-left: 0px;
   max-height: 90%;
   overflow: auto;
+}
+
+.userListSectionLabel {
+	margin-top: 15px;
+	margin-bottom: 10px;
+	font-size: 18px;
+	font-weight: bold;
+	color: #B73C2B;
+}
+
+.userListSectionGroup {
+	border: 1px dashed #cccccc;
+	margin-bottom: 5px;
+	padding: 5px;
+}
+
+.userListLabel {
+	font-size: 16px;
+	font-weight: bold;
+	width: 100px;
+	display: inline-block;
+}
+
+.userListValue {
+	font-size: 16px;
+}
+
+.userButtonLink {
+	cursor: pointer;
+	color: #B73C2B;
+	font-size: 14px;
 }
 /* END admin user list section */
 
@@ -704,6 +744,11 @@ html, body {
     padding : 0;
 }
 
+#servicePanel .dijitTitlePaneContentInner {
+	max-height: 30em;
+	overflow-y: auto;
+}
+
 #servicePanel .dijitTitlePaneTitleFocus {
 	margin-top : 0;
 }
@@ -717,13 +762,13 @@ html, body {
 
 .servicePanelInfoElementLabel {
 	width: 150px;
-	font-size: 16px;
+	font-size: 14px;
 	font-weight: bold;
 	display: table-cell;
 }
 
 .servicePanelInfoElementValue {
-	font-size: 16px;
+	font-size: 14px;
 	display: table-cell;
 }
 
@@ -1120,13 +1165,13 @@ html, body {
 
 #scaleContainer {
   position: absolute;
-  bottom: 10px;
-  right: 90px;
+  bottom: 75px;
+  right: 20px;
 }
 
 .scaleWidget {
   color: #656565;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 /* Legend widget */

@@ -34,14 +34,23 @@ define([
 			this.cleanServicePanel();
 			this.servicePanel.set("title", this.header);
 			this.servicePanel.set("open", true);
-			console.log(info);
 			if (info.type == "WMS") {
 				this.constructWmsInfo(info);
 			}
-			
-			
-			
-			
+			this.utils.show("servicePanel", "block");
+		},
+		setupAndShowScaleMessage: function(min, max) {
+			this.cleanServicePanel();
+			this.servicePanel.set("title", this.header);
+			this.servicePanel.set("open", true);
+			if (typeof min == 'number') {
+				var infoMin = "Minimum display scale for this layer is 1 : " + Math.ceil(min);
+				domConstruct.create("div", {"class": "scaleMessage", "innerHTML": infoMin}, this.infoContainer, "last");
+			}
+			if (typeof max == 'number') {
+				var infoMax = "Maximum display scale for this layer is 1 : " + Math.ceil(max);
+				domConstruct.create("div", {"class": "scaleMessage", "innerHTML": infoMax}, this.infoContainer, "last");
+			}
 			this.utils.show("servicePanel", "block");
 		},
 		constructWmsInfo: function(info) {
@@ -52,11 +61,23 @@ define([
 				else
 					this.buildInfoElement("Host organization", "No information");
 				
+				if (info.wms.info.accessConstraints)
+					this.buildInfoElement("Access constraints", info.wms.info.accessConstraints);
+				
+				if (info.wms.info.fees)
+					this.buildInfoElement("Fees", info.wms.info.fees);
+				
 				if (info.wms.url)
 					this.buildInfoElement("Wms url", info.wms.url);
 				
 				if (info.wms.name)
 					this.buildInfoElement("Wms layer name", info.wms.name);
+				
+				if (info.wms.info.title)
+					this.buildInfoElement("Wms layer title", info.wms.info.title);
+				
+				if (info.wms.info.description)
+					this.buildInfoElement("Wms layer description", info.wms.info.description);
 				
 				if ((info.wms.info.languages) && (info.wms.info.languages.length > 0))
 					this.buildInfoElement("Language support", info.wms.info.languages);

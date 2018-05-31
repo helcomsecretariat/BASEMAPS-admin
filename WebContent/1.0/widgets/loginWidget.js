@@ -68,6 +68,7 @@ define([
 						this.utils.show("screenCover", "none");
 						domConstruct.destroy(this.domNode);
 						
+						// NOT WORKING
 						// emit click event to open admin view
 						on.emit(dom.byId("adminLink"), "click", { cancelable:true, bubbles: true});
 					}

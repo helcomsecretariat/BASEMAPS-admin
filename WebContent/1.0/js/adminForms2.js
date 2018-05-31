@@ -36,6 +36,8 @@ define([
 		currentCategory: null,
 		currentCategoryWmses: [],
 		currentCategoryCategories: [],
+		editMode: false,
+		categoryUserSelector: null,
 		
 		constructor: function(params) {
 			this.utils = new utils();
@@ -78,7 +80,16 @@ define([
 			
 		},
 		
-		manageCategoryCloseButtonClick: function() {
+		cleanAdminForm: function() {
+			
+			this.cleanAddUserForm();
+			this.cleanUpdateUserForm();
+			this.cleanAddCategoryUserForm();
+			this.cleanCategoryUserSelector();
+			this.cleanCategoryUsersDisplayForm();
+			
+			this.cleanRootCategoryAddForm();
+			
 			this.cleanCategoryLabel();
 			this.cleanHelcomCatalogueId();
 			this.cleanCategoryMetadataLink();
@@ -94,14 +105,100 @@ define([
 			
 			this.cleanWmsInfoDisplayForm();
 			
+			this.utils.show("categoryUsersForm", "none");
 			this.utils.show("categoryForm", "none");
 			this.utils.changeText("adminFormsHeader", "");
 			this.utils.changeText("adminFormMessage", "");
 	    	this.utils.show("adminFormMessage", "none");
 		},
 		
+		/* --- MANAGE USER BUTTONS START --- */
+		cancelAddUserClick: function() {
+			this.cleanAddUserForm();
+		},
+		
+		cancelUpdateUserClick: function() {
+			this.cleanUpdateUserForm();
+		},
+		
+		addCategoryUserClick: function() {
+			this.utils.show("addCategoryUserForm", "block");
+			this.utils.show("addCategoryUser", "none");
+			//this.setupMetadataFormatSelector(this.addCategoryMetadataFormatSelect);
+			
+		},
+		
+		cancelAddCategoryUserClick: function() {
+			this.cleanAddCategoryUserForm();
+		},
+		
+		setupCategoryUserSelector: function(providers) {
+			this.categoryUserSelector = new Select({
+				options: providers
+			});
+			this.categoryUserSelector.placeAt(this.addCategoryUserSelect);
+			this.categoryUserSelector.startup();
+		},
+		
+		saveAddCategoryUserClick: function() {
+			console.log(this.currentCategory, this.categoryUserSelector.get("value"));
+			var url = "sc/users/add-right";
+			var data = {
+				"userId": this.categoryUserSelector.get("value"), 
+				"categoryId": this.currentCategory.id, 
+				"rights": ["w", "r"]
+			};
+			request.post(url, this.utils.createPostRequestParams(data)).then(
+				lang.hitch(this, function(response) {
+					if (response.type == "error") {
+						console.log(response);
+						this.showMessage("Failed to add user rights.");
+					}
+					else if (response.type == "success") {
+						this.showMessage("User rights changed.");
+						this.cleanAddCategoryUserForm();
+						this.getProviders();
+					}
+				}),
+				lang.hitch(this, function(error) {
+					this.showMessage("Something went wrong (on users/add-right). Please contact administrator.");
+					console.log(error);
+				})
+			);
+		},
+		
+		getProviders: function() {
+			var url = "sc/users/list/PROVIDER";
+			request.get(url, {
+				handleAs: "json"
+			}).then(
+				lang.hitch(this, function(response) {
+					if (response.type == "error") {
+						this.showMessage("Failed to retrieve category users.");
+					}
+					else if (response.type == "success") {
+						this.cleanCategoryUsersDisplayForm();
+						this.cleanCategoryUserSelector();
+						this.getCategoryUsers(this.currentCategory.id, response.item);
+						//this.formsObj.setupCategoryUsersForm(layer, this.currentHeader, response.item);
+					}
+				}),
+				lang.hitch(this, function(error) {
+					alert("Something went wrong (on users/list/{role}). Please contact administrator.");
+					console.log(error);
+				})
+			);
+		},
+		/* --- MANAGE USER BUTTONS END --- */
+		
+		
 		/* --- MANAGE CATEGORY BUTTONS START --- */
 		
+		// --- root category
+		cancelRootCategoryClick: function() {
+			this.cleanRootCategoryAddForm();
+		},
+				
 		// --- category info
 		editCategoryLabelClick: function() {
 			this.utils.setInputValue("categoryLabelInput", this.utils.getTextValue("categoryLabel").trim());
@@ -198,9 +295,53 @@ define([
 		},
 		/* --- MANAGE CATEGORY BUTTONS END --- */
 		
+		/* --- MANAGE USER CLEAN START--- */
+		cleanAddUserForm: function() {
+			this.utils.clearInput("addUserNameInput");
+			this.utils.clearInput("addUserEmailInput");
+			this.utils.clearInput("addUserPasswordInput");
+			this.utils.clearInput("addUserPasswordRepeatInput");
+			this.utils.clearInput("addUserPhoneInput");
+			this.utils.clearInput("addUserOrganizationInput");
+			this.utils.clearInput("addUserPositionInput");
+			this.utils.show("addUserForm", "none");
+		},
 		
+		cleanUpdateUserForm: function() {
+			this.utils.clearInput("updateUserNameInput");
+			this.utils.clearInput("updateUserEmailInput");
+			this.utils.clearInput("updateUserPhoneInput");
+			this.utils.clearInput("updateUserOrganizationInput");
+			this.utils.clearInput("updateUserPositionInput");
+			this.utils.show("updateUserForm", "none");
+		},
+		
+		cleanAddCategoryUserForm: function() {			
+			this.utils.show("addCategoryUserForm", "none");
+			this.utils.show("addCategoryUser", "inline-block");
+		},
+		
+		cleanCategoryUsersDisplayForm() {
+			domConstruct.empty(this.categoryUserListForm);
+		},
+		
+		cleanCategoryUserSelector: function() {
+			if (this.categoryUserSelector != null) {
+				this.categoryUserSelector.destroy();
+				this.categoryUserSelector = null;
+			}
+		},
+		/* --- MANAGE USER CLEAN END--- */
 						
 		/* --- MANAGE CATEGORY CLEAN START--- */
+		// --- root category
+		cleanRootCategoryAddForm: function() {
+			this.cleanMetadataFormatSelector();
+			this.utils.clearInput("addRootCategoryLabelInput");
+			this.utils.clearInput("addRootCategoryHelcomIdInput");
+			this.utils.clearInput("addRootCategoryMetadataUrlInput");
+			this.utils.show("addRootCategoryForm", "none");
+		},
 		
 		// --- category info		
 		cleanCategoryLabel: function() {
@@ -294,18 +435,19 @@ define([
 				var urlLabel = domConstruct.create("span", { "class": "textInputLabel", "innerHTML": "URL: " }, url, "last");
 				var urlValue = domConstruct.create("a", { "class": "textLabel", "href": record.url, "target": "_blank", "innerHTML": record.url }, url, "last");
 				
-				var button = domConstruct.create("div", {"class": "formDeleteLink", "innerHTML": "Delete"}, buttonContainer, "last");
-				on(button, "click", lang.hitch(this, function() {
-					
-				    if (confirm("Please confirm removing metadata") == true) {
-				    	console.log("one", this.currentCategory.metaData);
-				    	var index = this.currentCategory.metaData.findIndex(x => x.id == record.id);
-						if (index > -1) {
-							this.currentCategory.metaData.splice(index, 1);
-							this.deleteMetadata();
-						}
-				    }
-				}));
+				if (this.editMode) {
+					var button = domConstruct.create("div", {"class": "formDeleteLink", "innerHTML": "Delete"}, buttonContainer, "last");
+					on(button, "click", lang.hitch(this, function() {
+						
+					    if (confirm("Please confirm removing metadata") == true) {
+					    	var index = this.currentCategory.metaData.findIndex(x => x.id == record.id);
+							if (index > -1) {
+								this.currentCategory.metaData.splice(index, 1);
+								this.deleteMetadata();
+							}
+					    }
+					}));
+				}
 			}));
 		},
 		
@@ -325,7 +467,7 @@ define([
 							this.displayMetadata(this.currentCategory.metaData);
 						}
 						else {
-							var con = domConstruct.create("div", {"style": { "margin-bottom": "5px", "margin-top": "5px", "margin-left": "20px"}, "innerHTML": "No metadata assigned for this category"}, this.metadataDisplayForm, "last");
+							var con = domConstruct.create("div", {"style": { "margin-bottom": "5px", "margin-top": "5px", "margin-left": "20px"}, "innerHTML": "No metadata assigned"}, this.metadataDisplayForm, "last");
 						}
 					}
 				}),
@@ -370,14 +512,16 @@ define([
 				var helcomId = domConstruct.create("div", null, content, "last");
 				var helcomIdLabel = domConstruct.create("span", { "class": "textInputLabel", "innerHTML": "HELCOM id: " }, helcomId, "last");
 				var helcomIdValue = domConstruct.create("span", { "class": "textLabel", "innerHTML": category.helcomId }, helcomId, "last");
-								
-				var button = domConstruct.create("div", {"class": "formDeleteLink", "innerHTML": "Delete"}, buttonContainer, "last");
-				on(button, "click", lang.hitch(this, function() {
-					
-				    if (confirm("Please confirm removing category " + category.label + " with all content") == true) {
-				    	this.deleteCategory(category.id);
-				    }
-				}));
+				
+				if (this.editMode) {
+					var button = domConstruct.create("div", {"class": "formDeleteLink", "innerHTML": "Delete"}, buttonContainer, "last");
+					on(button, "click", lang.hitch(this, function() {
+						
+					    if (confirm("Please confirm removing category " + category.label + " with all content") == true) {
+					    	this.deleteCategory(category.id);
+					    }
+					}));
+				}
 			}));
 		},
 		
@@ -427,7 +571,7 @@ define([
 						this.showMessage("WMS is valid.");
 						this.utils.show("wmsLayerNameSelectGroup", "block");
 						
-						this.utils.setInputValue("wmsLabelInput", response.item.organization);
+						//this.utils.setInputValue("wmsLabelInput", response.item.organization);
 						
 						var layerNames = [];
 						array.forEach(response.item.names, lang.hitch(this, function(name){
@@ -485,13 +629,15 @@ define([
 				var urlLabel = domConstruct.create("span", { "class": "textInputLabel", "innerHTML": "URL: " }, url, "last");
 				var urlValue = domConstruct.create("a", { "class": "textLabel", "href": wms.url, "target": "_blank", "innerHTML": wms.url }, url, "last");
 				
-				var button = domConstruct.create("div", {"class": "formDeleteLink", "innerHTML": "Delete"}, buttonContainer, "last");
-				on(button, "click", lang.hitch(this, function() {
-					
-				    if (confirm("Please confirm removing WMS: " + wms.label) == true) {
-				    	this.deleteWms(wms.serviceCatId);
-				    }
-				}));
+				if (this.editMode) {
+					var button = domConstruct.create("div", {"class": "formDeleteLink", "innerHTML": "Delete"}, buttonContainer, "last");
+					on(button, "click", lang.hitch(this, function() {
+						console.log(wms.serviceCatId);
+					    if (confirm("Please confirm removing WMS: " + wms.label) == true) {
+					    	this.deleteWms(wms.serviceCatId);
+					    }
+					}));
+				}
 			}));
 		},
 		
@@ -557,7 +703,102 @@ define([
 			}
 		},
 		
+		setupCategoryUsersForm: function(layer, headerText, users) {
+			this.utils.changeText("adminFormsHeader", headerText);
+			this.getCategoryUsers(layer.id, users);
+			this.utils.show("categoryUsersForm", "block");
+		},
+		
+		getCategoryUsers: function(categoryId, users) {
+			var categoryUsers = [];
+			var providerNames = [];
+			array.forEach(users, lang.hitch(this, function(user) {
+				providerNames.push({"label": user.name, "value": user.id});
+				array.forEach(user.rights, lang.hitch(this, function(right) {
+					if (right.categoryId == categoryId) {
+						categoryUsers.push(user);
+					}
+				}));
+			}));
+			this.displayCategoryUsers(categoryId, categoryUsers);
+			this.setupCategoryUserSelector(providerNames);
+		},
+		
+		displayCategoryUsers: function(categoryId, users) {
+			if (users.length > 0) {
+				array.forEach(users, lang.hitch(this, function(user) {
+					var container = domConstruct.create("div", {"class": "formSubSectionGroup"}, this.categoryUserListForm, "last");
+					var content = domConstruct.create("div", {"style": "display: inline-block; width: 90%"}, container, "last");
+					var buttonContainer = domConstruct.create("div", {"style": "display: inline-block; width: 10%"}, container, "last");
+					
+					var name = domConstruct.create("div", null, content, "last");
+					var nameLabel = domConstruct.create("span", { "class": "textInputLabel", "innerHTML": "Name: " }, name, "last");
+					var nameValue = domConstruct.create("span", { "class": "textLabel", "innerHTML": user.name }, name, "last");
+					
+					var email = domConstruct.create("div", null, content, "last");
+					var emailLabel = domConstruct.create("span", { "class": "textInputLabel", "innerHTML": "Email: " }, email, "last");
+					var emailValue = domConstruct.create("span", { "class": "textLabel", "innerHTML": user.email }, email, "last");
+					
+					var button = domConstruct.create("div", {"class": "formDeleteLink", "innerHTML": "Delete"}, buttonContainer, "last");
+					on(button, "click", lang.hitch(this, function() {
+					    if (confirm("Please confirm removing data provider " + user.name + " from this category") == true) {
+					    	var index = user.rights.findIndex(x => x.categoryId == categoryId);
+							if (index > -1) {
+								user.rights.splice(index, 1);
+								var i = users.findIndex(x => x.id == user.id);
+								if (i > -1) {
+									users.splice(i, 1);
+								}
+							}
+					    	this.updateUser(user, categoryId, users);
+					    }
+					}));
+				}));
+			}
+			else {
+				var con = domConstruct.create("div", {"style": { "margin-bottom": "5px", "margin-top": "5px", "margin-left": "20px"}, "innerHTML": "No data providers assigned to this category"}, this.categoryUserListForm, "last");
+			} 
+			
+		},
+		
+		updateUser: function(user, categoryId, users) {
+			var url = "sc/users/update";
+			request.post(url, this.utils.createPostRequestParams(user)).then(
+				lang.hitch(this, function(response) {
+					if (response.type == "error") {
+						this.showMessage("Failed to update user.");
+					}
+					else if (response.type == "success") {
+						this.cleanCategoryUsersDisplayForm();
+						this.showMessage("User updated.");
+						this.displayCategoryUsers(categoryId, users);
+					}
+				}),
+				lang.hitch(this, function(error) {
+					this.formsObj.showMessage("Something went wrong (on users/update). Please contact administrator.");
+					console.log(error);
+				})
+			);
+		},
+		
 		setupManageCategoryForm: function(layer, categories, wmses, headerText) {
+			this.editMode = layer.editMode; 
+			if (this.editMode) {
+				this.utils.show("editCategoryLabel", "inline-block");
+				this.utils.show("editHelcomCatalogueId", "inline-block");
+				this.utils.show("editCategoryMetadataLink", "inline-block");
+				this.utils.show("addMetadata", "block");
+				this.utils.show("addCategory", "block");
+				this.utils.show("addWms", "block");
+			}
+			else {
+				this.utils.show("editCategoryLabel", "none");
+				this.utils.show("editHelcomCatalogueId", "none");
+				this.utils.show("editCategoryMetadataLink", "none");
+				this.utils.show("addMetadata", "none");
+				this.utils.show("addCategory", "none");
+				this.utils.show("addWms", "none");
+			}
 			
 			//this.formView = view;
 			this.utils.changeText("adminFormsHeader", headerText);
@@ -607,19 +848,17 @@ define([
 					this.displayMetadata(layer.metadata);
 				}
 				else {
-					var con = domConstruct.create("div", {"style": { "margin-bottom": "5px", "margin-top": "5px", "margin-left": "20px"}, "innerHTML": "No metadata assigned for this category"}, this.metadataDisplayForm, "last");
+					var con = domConstruct.create("div", {"style": { "margin-bottom": "5px", "margin-top": "5px", "margin-left": "20px"}, "innerHTML": "No metadata assigned"}, this.metadataDisplayForm, "last");
 				}
 			}
 			
 			if (layer.type == "WMS") {
 				this.utils.show("categoryWmsInfoForm", "block");
-				console.log("WMS", layer);
 				this.getWmsInfo(layer.wms.url, layer.wms.name);
 			}
 			else {
 				this.utils.show("categoryWmsInfoForm", "none");
 			}
-			
 			this.utils.show("categoryForm", "block");
 		},
 		
@@ -870,7 +1109,7 @@ define([
 							this.showMessage("WMS is valid.");
 							this.utils.show("wmsNameSelectForm", "block");
 							
-							this.utils.setInputValue("wmsLabelInput", response.item.organization);
+							//this.utils.setInputValue("wmsLabelInput", response.item.organization);
 							var layerNames = [];
 							array.forEach(response.item.names, lang.hitch(this, function(name){
 								layerNames.push({label: name, value: name});
@@ -914,11 +1153,14 @@ define([
 						this.buildWmsInfoElement("WMS version", response.item.version);
 						this.buildWmsInfoElement("Supported languages", response.item.languages.join(", "));
 						this.buildWmsInfoElement("Organization", response.item.organisation);
+						this.buildWmsInfoElement("Access constraints", response.item.accessConstraints);
+						this.buildWmsInfoElement("Fees", response.item.fees);
 						this.buildWmsInfoElement("Keywords", response.item.keywords.join(", "));
 						this.buildWmsMetadataElement("Metadata", response.item.metadata);
 						this.buildWmsInfoElement("GetFeatureInfo support", response.item.queryable);
 						this.buildWmsInfoElement("GetFeatureInfo response formats", response.item.formats.join(", "));
 						this.buildWmsInfoElement("Supported CRSes", response.item.crs.join(", "));
+						this.buildWmsInfoElement("Bounding box", "East: " + response.item.boundEast + ", North: " + response.item.boundNorth + ", West: " + response.item.boundWest + ", South: " + response.item.boundSouth);
 						this.buildWmsInfoElement("Min display scale", response.item.scaleMin == "NaN" ? "" : response.item.scaleMin);
 						this.buildWmsInfoElement("Max display scale", response.item.scaleMax == "NaN" ? "" : response.item.scaleMax);
 						this.buildWmsStyleElement("Styles", response.item.styles);
