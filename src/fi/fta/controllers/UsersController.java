@@ -213,8 +213,7 @@ public class UsersController
 		try
 		{
 			SiteModel m = SiteModel.get(request);
-			ChangePasswordValidator validator = new ChangePasswordValidator(m);
-			List<ValidationMessage> validations = validator.validate(ui);
+			List<ValidationMessage> validations = new ChangePasswordValidator(m).validate(ui);
 			if (validations.isEmpty())
 			{
 				m.changePassword(ui.getNewPassword());

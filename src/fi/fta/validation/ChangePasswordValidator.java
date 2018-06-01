@@ -33,7 +33,7 @@ public class ChangePasswordValidator extends ClassStructureAssessor
 				{
 					validations.add(ValidationMessage.simple("msg.validation.required", "repeatPassword"));
 				}
-				else if (target.getNewPassword().equals(target.getRepeatPassword()))
+				else if (!target.getNewPassword().equals(target.getRepeatPassword()))
 				{
 					validations.add(ValidationMessage.simple("msg.validation.repeat.password", "repeatPassword"));
 				}
