@@ -92,7 +92,7 @@ define([
 								this.saveUser(newUser);
 							}
 							else {
-								this.formsObj.showMessage("Password not matching or not valid.");
+								this.formsObj.showMessage("Passwords are not matching or not valid.");
 							}
 						}
 						else {
@@ -136,6 +136,19 @@ define([
 					this.formsObj.showMessage("User name is not valid.");
 				}
 			}));
+			
+			on(this.formsObj.changeUserPassword, "click", lang.hitch(this, function() {
+				var userPassword = this.utils.getInputValue("changeUserPasswordInput").trim();
+				var userPasswordRepeat = this.utils.getInputValue("changeUserPasswordRepeatInput").trim();
+				
+				if ((validate.isText(userPassword)) && (userPassword === userPasswordRepeat)) {
+					this.updateUser.password = userPassword;
+					this.updateUserInfo(this.updateUser);
+				}
+				else {
+					this.formsObj.showMessage("Passwords are not matching or not valid.");
+				}
+			}));
 		},
 		
 		updateUserInfo: function(user) {
@@ -147,6 +160,7 @@ define([
 					}
 					else if (response.type == "success") {
 						this.formsObj.cleanUpdateUserForm();
+						this.formsObj.cleanChangeUserPasswordForm();
 						this.cleanUsersList();
 						this.formsObj.showMessage("User updated.");
 						this.listUsers("ADMIN");
@@ -215,9 +229,13 @@ define([
 					this.utils.setInputValue("updateUserOrganizationInput", user.organization);
 					this.utils.setInputValue("updateUserPositionInput", user.position);
 					this.utils.show("updateUserForm", "block");
-					console.log(user);
 				}));
 				
+				on(passwordButton, "click", lang.hitch(this, function() {
+					this.formsObj.cleanAdminForm();
+					this.updateUser = user;
+					this.utils.show("changeUserPasswordForm", "block");
+				}));
 			}));
 			on(newUser, "click", lang.hitch(this, function() {
 				this.formsObj.cleanAdminForm();

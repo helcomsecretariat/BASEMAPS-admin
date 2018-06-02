@@ -84,6 +84,7 @@ define([
 			
 			this.cleanAddUserForm();
 			this.cleanUpdateUserForm();
+			this.cleanChangeUserPasswordForm();
 			this.cleanAddCategoryUserForm();
 			this.cleanCategoryUserSelector();
 			this.cleanCategoryUsersDisplayForm();
@@ -119,6 +120,10 @@ define([
 		
 		cancelUpdateUserClick: function() {
 			this.cleanUpdateUserForm();
+		},
+		
+		cancelChangeUserPassword: function() {
+			this.cleanChangeUserPasswordForm();
 		},
 		
 		addCategoryUserClick: function() {
@@ -314,6 +319,12 @@ define([
 			this.utils.clearInput("updateUserOrganizationInput");
 			this.utils.clearInput("updateUserPositionInput");
 			this.utils.show("updateUserForm", "none");
+		},
+		
+		cleanChangeUserPasswordForm: function() {
+			this.utils.clearInput("changeUserPasswordInput");
+			this.utils.clearInput("changeUserPasswordRepeatInput");
+			this.utils.show("changeUserPasswordForm", "none");
 		},
 		
 		cleanAddCategoryUserForm: function() {			

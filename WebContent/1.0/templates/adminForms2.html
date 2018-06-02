@@ -315,6 +315,21 @@
 			<span id="cancelUpdateUser" class="formLink" data-dojo-attach-event="onclick:cancelUpdateUserClick">Cancel</span>
 		</div>
 		
+		<!-- Change USER password -->
+		<div id="changeUserPasswordForm" class="formSectionGroup" style="display: none;">
+			<div class="formSectionLabel">Change password</div>
+			<div class="inputLabelGroup">
+				<span class="textInputLabel">New password:</span>
+				<input id="changeUserPasswordInput" class="textInput" type="password" tabindex="2" maxlength="200" placeholder="Required">
+			</div>
+			<div class="inputLabelGroup">
+				<span class="textInputLabel">Repeat password:</span>
+				<input id="changeUserPasswordRepeatInput" class="textInput" type="password" tabindex="2" maxlength="200" placeholder="Required">
+			</div>
+			<span id="changeUserPassword" class="formLink" data-dojo-attach-point="changeUserPassword">Save</span>
+			<span id="cancelChangeUserPassword" class="formLink" data-dojo-attach-event="onclick:cancelChangeUserPassword">Cancel</span>
+		</div>
+		
 		<!-- Category USERS section -->
 		<div id="categoryUsersForm" class="formContainer" style="display:none;">
 			<div class="scrollableContainer">			
