@@ -1,11 +1,14 @@
 package fi.fta.utils.parse.wms;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -16,12 +19,18 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import fi.fta.beans.Pair;
+import fi.fta.utils.JsonUtils;
 import fi.fta.utils.Util;
 
 public class WebMapServer
 {
 	
 	public static String DEFAULT_LANGUAGE = "eng";
+	
+	public static final String JSON_FORMAT = "application/json";
+	public static final String GML_FORMAT = "application/vnd.ogc.gml";
+	public static final String XML_FORMAT = "text/xml";
 	
 	
 	private URL url;
@@ -40,7 +49,7 @@ public class WebMapServer
 	
 	public WebMapServer(String url, String defaultLanguage) throws MalformedURLException, IOException, DocumentException
 	{
-		this.url = new URL(WebMapServer.composeUrl(url, defaultLanguage));
+		this.url = new URL(WebMapServer.composeCapabilitiesUrl(url, defaultLanguage));
 		Document doc = new SAXReader().read(this.url);
 		if (doc != null)
 		{
@@ -115,7 +124,7 @@ public class WebMapServer
 	}
 	
 	
-	private static String composeUrl(String url, String language)
+	private static String composeCapabilitiesUrl(String url, String language)
 	{
 		String[] parts = url.split("\\?");
 		String u = parts[0];
@@ -128,6 +137,67 @@ public class WebMapServer
 			params.put("LANGUAGE", Collections.singleton(language));
 		}
 		return u + "?" + Util.composeQuery(params);
+	}
+	
+	public static Pair<Object, String> readFeatureInfo(String url, List<String> formats) throws MalformedURLException, IOException 
+	{
+		String format = WebMapServer.decideFormat(formats);
+		if (url == null || format == null)
+		{
+			return null;
+		}
+		URL u = new URL(WebMapServer.composeFeatureUrl(url, format));
+		BufferedReader in = new BufferedReader(new InputStreamReader(u.openStream()));
+		StringBuilder sb = new StringBuilder();
+		String inputLine;
+        while ((inputLine = in.readLine()) != null)
+        {
+        	sb.append(inputLine).append("\r\n");
+        }
+        in.close();
+        switch (format)
+        {
+        	case WebMapServer.JSON_FORMAT:
+        		return new Pair<>(JsonUtils.toObject(sb.toString(), Object.class), format);
+        	case WebMapServer.GML_FORMAT:
+        	case WebMapServer.XML_FORMAT:
+        	default:
+        		return new Pair<>(sb.toString(), format);
+        }
+	}
+	
+	private static String composeFeatureUrl(String url, String format)
+	{
+		String[] parts = url.split("\\?");
+		String u = parts[0];
+		String q = parts.length > 1 ? parts[1] : "";
+		Map<String, Set<String>> params = Util.mapParameters(q);
+		params.put("SERVICE", Collections.singleton("WMS"));
+		params.put("REQUEST", Collections.singleton("GetFeatureInfo"));
+		params.put("INFO_FORMAT", Collections.singleton(format));
+		return u + "?" + Util.composeQuery(params);
+	}
+	
+	private static String decideFormat(List<String> formats)
+	{
+		if (!Util.isEmptyCollection(formats))
+		{
+			Set<String> fs = new HashSet<>(formats);
+			if (fs.contains(WebMapServer.JSON_FORMAT))
+			{
+				return WebMapServer.JSON_FORMAT;
+			}
+			else if (fs.contains(WebMapServer.GML_FORMAT))
+			{
+				return WebMapServer.GML_FORMAT;
+			}
+			else if (fs.contains(WebMapServer.XML_FORMAT))
+			{
+				return WebMapServer.XML_FORMAT;
+			}
+			return formats.iterator().next();
+		}
+		return null;
 	}
 	
 	private static List<Layer> allChildren(Layer layer)

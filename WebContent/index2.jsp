@@ -11,10 +11,11 @@
 		<!--<link rel="stylesheet" type="text/css" href="widgets/css/widgets.css">-->
 	</tiles:putAttribute>
 	<tiles:putAttribute name="scripts">
+		<script src="https://ajax.googleapis.com/ajax/libs/dojo/1.10.4/dojo/dojo.js" data-dojo-config="async: true"></script>
 		<script src="http://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.6/proj4.js" type="text/javascript"></script>
 		<script src="1.0/js/proj3035.js" type="text/javascript"></script>
 		
-		<script>
+		<script type="text/javascript">
 			var basemapsVersion = "1.0";
 			var package_path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
 			var dojoConfig = {
@@ -31,7 +32,6 @@
 				}]
 			};
 		</script>
-		<script src="//ajax.googleapis.com/ajax/libs/dojo/1.10.4/dojo/dojo.js" data-dojo-config="async: true"></script>
 		<!-- <script>
 			dojo.require("dijit.layout.BorderContainer");
 			dojo.require("dijit.layout.ContentPane");
