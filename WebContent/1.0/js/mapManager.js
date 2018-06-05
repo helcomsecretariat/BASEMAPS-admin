@@ -7,6 +7,7 @@ define([
 	"dojo/query!css3",
 	"dojo/request",
 	"basemaps/js/layerList",
+	"basemaps/js/utils",
 	"widgets/scaleWidget",
 	"//openlayers.org/en/v4.4.2/build/ol.js",
 	"dijit/_WidgetBase", 
@@ -14,7 +15,7 @@ define([
 	"dojo/text!../templates/mapView.html"
 ], function(
 	declare, dom, domConstruct, lang, domStyle, query, request,
-	layerList, scaleWidget,
+	layerList, utils, scaleWidget,
 	ol,
 	_WidgetBase, _TemplatedMixin, template
 ) {
@@ -22,6 +23,7 @@ define([
 		templateString: template,
 		baseClass: "mapView",
 		map: null,
+		utils: null,
 		// Layer list object (required for Identify)
 		layerListObj: null,
 		// store clicked location for displaying popup
@@ -31,7 +33,7 @@ define([
 		currentExtent: null,
 		scaleWidget: null,
 		constructor: function(params){
-      
+			this.utils = new utils();
 		},
 		
 		postCreate: function() {
@@ -59,25 +61,29 @@ define([
 			this.map.on('singleclick', lang.hitch(this, function(evt) {
 				var viewResolution = this.map.getView().getResolution();
 				var viewProjection = this.map.getView().getProjection();
-				this.map.getLayers().forEach(function (lyr) {
+				this.map.getLayers().forEach(lang.hitch(this, function(lyr) {
 					//var infoFormat = null;
 					if ((lyr.getVisible()) && (lyr.getProperties().id != "basemap")) {
-						if (lyr.getProperties().identifyFormats.includes("application/json")) {
+						//if (lyr.getProperties().identifyFormats.includes("application/json")) {
 							var infoFormat = "application/json";
 							//var infoFormat = "text/xml";
-							var u = lyr.getSource().getGetFeatureInfoUrl(evt.coordinate, viewResolution, viewProjection, {"INFO_FORMAT": infoFormat});
-							request.get(u, {
+							//var u = lyr.getSource().getGetFeatureInfoUrl(evt.coordinate, viewResolution, viewProjection, {"INFO_FORMAT": ""});
+							var u = lyr.getSource().getGetFeatureInfoUrl(evt.coordinate, viewResolution, viewProjection, {"INFO_FORMAT": ""});
+							//console.log(u);
+							this.getInfo(lyr.getProperties().wmsId, u);
+							/*request.get(u, {
 								handleAs: "json"
 							}).then(function(data){
-								console.log(JSON.stringify(data));
+								//console.log(JSON.stringify(data));
+								console.log(data);
 							},
 							function(error){
 								console.log(error);
-							});
-						}
+							});*/
+						//}
 					}
 					
-				});
+				}));
 				query(".metadataBox").forEach(function(node){
 		              domStyle.set(node, {"display": "none"});
 		            });
@@ -93,8 +99,31 @@ define([
     
     show: function(open) {
 		domStyle.set(this.domNode, "display", open ? "block" : "none");
-	}/*,
-    addOperationalLayers: function(layers) {
+	},
+	
+	getInfo: function(id, u) {
+		var url = "sc/tools/get-features";
+		var data = {
+			"id": id,
+			"url": u
+		};
+		console.log("request data ", data);
+		request.post(url, this.utils.createPostRequestParams(data)).then(
+			lang.hitch(this, function(response) {
+				if (response.type == "error") {
+					console.log("Identification failed");
+				}
+				else if (response.type == "success") {
+					console.log("Identification ok");
+					console.log(response);
+				}
+			}),
+			lang.hitch(this, function(error) {
+				console.log(error);
+			})
+		);
+	},
+    /*addOperationalLayers: function(layers) {
       on(this.mapa, "layers-add-result", lang.hitch(this, function(e) {
         // create layer list
         var layerlistContainer = dom.byId("layerlistContainer");

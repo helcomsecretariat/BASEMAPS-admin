@@ -240,7 +240,8 @@ define([
 			type: null,
 			wms: null,
 			wfs: null,
-			metadata: layer.metadata
+			metadata: layer.metadata,
+			emptyCategory: false
     	};
     	
     	if ((layer.wmses) && (layer.wmses[0])) {
@@ -253,6 +254,9 @@ define([
 		}
 		if (layer.layers) {
 			lyr.type = "CATEGORY";
+			if (layer.layers.length == 0) {
+				lyr.emptyCategory = true;
+			}
 		}
 		
 		this.data.push(lyr);
@@ -433,6 +437,10 @@ define([
           //}
           // if tree node is a data layer
           
+          if (tnode.item.emptyCategory) {
+        	  domStyle.set(tnode.labelNode, {"color": "#999999"});
+          }
+          
           if (tnode.item.type == "WMS") {
           //if (tnode.item.leaf) {
         	  
@@ -539,6 +547,7 @@ define([
                   if ((tnode.item.wms.url.length > 0) && (tnode.item.wms.name.length > 0)) {
                     tnode.item.wmsMapLayer = new ol.layer.Tile({
                       id: tnode.item.id,
+                      wmsId: tnode.item.wms.id,
                       identifyFormats: tnode.item.wms.info.formats,
                       source: new ol.source.TileWMS({
                         url: tnode.item.wms.url,
