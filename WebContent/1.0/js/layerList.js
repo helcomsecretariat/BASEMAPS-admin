@@ -559,8 +559,8 @@ define([
                           //LOGIN: tnode.item.wms.login,
                           //PASSWORD: tnode.item.wms.password,
                           //TILED: false,
-                          //VERSION: tnode.item.wms.version,
-                          VERSION: "1.3.0",
+                          VERSION: tnode.item.wms.info.version,
+                          //VERSION: "1.3.0",
                           CRS: "EPSG:3857"
                         }
                       })

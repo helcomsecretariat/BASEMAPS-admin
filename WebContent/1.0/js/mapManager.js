@@ -166,23 +166,25 @@ define([
 					console.log("Identification failed");
 				}
 				else if (response.type == "success") {
-					//console.log("Identification ok");
 					console.log("response", response);
-					if ((response.item.features) && (response.item.features.length > 0)) {
-						this.identifyResults.push( {
-							layerName: name,
-							identifyFeature: response.item.features[0]
-						})
-					}
-					if (this.layersCounter == this.mapsLayersCount) {
-						console.log("READY POPUP", this.identifyResults);
-						//this.popupContent.innerHTML = this.identifyResults[0].layerName;
-						if (this.identifyResults.length > 0) {
-							this.setPopupContent(popupCoordinate);
+					if (response.item) {
+						if ((response.item.features) && (response.item.features.length > 0)) {
+							this.identifyResults.push( {
+								layerName: name,
+								identifyFeature: response.item.features[0]
+							})
+						}
+						if (this.layersCounter == this.mapsLayersCount) {
+							console.log("READY POPUP", this.identifyResults);
+							//this.popupContent.innerHTML = this.identifyResults[0].layerName;
+							if (this.identifyResults.length > 0) {
+								this.setPopupContent(popupCoordinate);
+							}
 						}
 					}
-					console.log(this.layersCounter);
-					console.log(this.mapsLayersCount);
+					else {
+						console.log("No identify result for this layer.");
+					}
 				}
 			}),
 			lang.hitch(this, function(error) {
