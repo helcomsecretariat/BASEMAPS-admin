@@ -758,6 +758,7 @@ html, body {
 	border-bottom: 1px solid #cccccc;
 	margin-bottom: 5px;
 	display:table;
+	table-layout: fixed;
 }
 
 .servicePanelInfoElementLabel {
@@ -765,11 +766,13 @@ html, body {
 	font-size: 14px;
 	font-weight: bold;
 	display: table-cell;
+	word-wrap: break-word;
 }
 
 .servicePanelInfoElementValue {
 	font-size: 14px;
 	display: table-cell;
+	word-wrap: break-word;
 }
 
 .servicePanelMetadataBox {

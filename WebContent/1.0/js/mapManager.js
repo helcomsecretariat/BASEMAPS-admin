@@ -108,6 +108,7 @@ define([
 					if ((layers[i].getProperties().id != "basemap") && (layers[i].getVisible())) {
 						var infoFormat = "application/json";
 						var u = layers[i].getSource().getGetFeatureInfoUrl(popupCoordinate, viewResolution, viewProjection, {"INFO_FORMAT": ""});
+						console.log(u);
 						this.getInfo(layers[i].getProperties().wmsId, u, popupCoordinate, layers[i].getProperties().name);
 					}
 					
