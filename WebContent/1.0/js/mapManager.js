@@ -39,12 +39,13 @@ define([
 		mapsLayersCount: null,
 		layersCounter: null,
 		identifyResults: [],
+		highlightLayer: null,
 		constructor: function(params){
 			this.utils = new utils();
 		},
 		
 		postCreate: function() {
-			
+			/* popup */
 			var popupContainer = domConstruct.create("div", {"id": "popup", "class": "ol-popup"}, this.domNode, "last");
 			var popupCloser = domConstruct.create("a", { "class": "ol-popup-closer", "href": "#"}, popupContainer, "last");
 			this.popupContent = domConstruct.create("div", {"id": "popup-content"}, popupContainer, "last");
@@ -59,12 +60,11 @@ define([
 				}
 			});
 			popupCloser.onclick = lang.hitch(this, function() {
-				this.popupHeader.innerHTML = "";
-				domConstruct.empty(this.popupAttrTable);
-				this.popupOverlay.setPosition(undefined);
-				popupCloser.blur();
+				this.cleanHighlight();
 				return false;
 			});
+			/* popup */
+			
 			
 			
 			var basemapLayer = new ol.layer.Tile({
@@ -83,36 +83,68 @@ define([
 				view: new ol.View({
 					projection: 'EPSG:3857',
 					center: [2290596.795329124, 8263216.845732588],
-					zoom: 5//,
+					zoom: 5
 					//extent: ol.proj.transform([57.000000, 20.373333, 60.000000, 28.209038], 'EPSG:4326', 'EPSG:3857')
 					//extent: [2267949.0925025064, 7760118.672726451, 3140215.762959987, 8399737.889636647]
 				})
-			//<BoundingBox CRS="EPSG:3857" maxx="3140215.762959987" maxy="8399737.889636647" minx="2267949.0925025064" miny="7760118.672726451"/>
 			});
+			
+			/* highlight layer */
+			var styles = [
+				new ol.style.Style({
+					stroke: new ol.style.Stroke({
+						color: "rgba(255, 0, 0, 1)",
+						width: 2
+					}),
+					fill: new ol.style.Fill({
+						color: "rgba(255, 255, 0, 0.2)"
+					})
+				}),
+				new ol.style.Style({
+					stroke: new ol.style.Stroke({
+						color: "rgba(255, 0, 0, 1)",
+						width: 2
+					})
+				})
+			];
+			
+			this.highlightLayer = new ol.layer.Vector({
+				id: "highlight",
+				style: styles,
+				zIndex: 99
+			});
+			this.map.addLayer(this.highlightLayer);
+			/* highlight layer */
+			
+			
 			this.map.on('singleclick', lang.hitch(this, function(evt) {
+				this.cleanHighlight();
 				var popupCoordinate = evt.coordinate;
 				var viewResolution = this.map.getView().getResolution();
 				var viewProjection = this.map.getView().getProjection();
-				console.log(this.map.getLayers());
 								
 				var layers = this.map.getLayers().getArray();
 				this.mapsLayersCount = 0;
 				for (var i = layers.length-1; i > 0; i--) {
-					if ((layers[i].getProperties().id != "basemap") && (layers[i].getVisible())) {
+					if ((layers[i].getProperties().id != "basemap") && (layers[i].getProperties().id != "highlight") && (layers[i].getVisible())) {
 						this.mapsLayersCount = this.mapsLayersCount + 1;
 					}
 				}
+				
 				this.layersCounter = 0;
 				this.identifyResults = [];
 				for (var i = layers.length-1; i > 0; i--) {
-					if ((layers[i].getProperties().id != "basemap") && (layers[i].getVisible())) {
+					if ((layers[i].getProperties().id != "basemap") && (layers[i].getProperties().id != "highlight") && (layers[i].getVisible())) {
 						var infoFormat = "application/json";
-						var u = layers[i].getSource().getGetFeatureInfoUrl(popupCoordinate, viewResolution, viewProjection, {"INFO_FORMAT": ""});
+						var u = layers[i].getSource().getGetFeatureInfoUrl(popupCoordinate, viewResolution, viewProjection, {"buffer": 10, "INFO_FORMAT": ""});
 						console.log(u);
 						this.getInfo(layers[i].getProperties().wmsId, u, popupCoordinate, layers[i].getProperties().name);
 					}
-					
 				}
+				
+				
+				
+				
 				/*this.map.getLayers().forEach(lang.hitch(this, function(lyr) {
 					//var infoFormat = null;
 					if ((lyr.getVisible()) && (lyr.getProperties().id != "basemap")) {
@@ -166,19 +198,17 @@ define([
 					console.log("Identification failed");
 				}
 				else if (response.type == "success") {
-					console.log("response", response);
 					if (response.item) {
 						if ((response.item.features) && (response.item.features.length > 0)) {
 							this.identifyResults.push( {
 								layerName: name,
-								identifyFeature: response.item.features[0]
+								identifyFeature: response.item
 							})
 						}
 						if (this.layersCounter == this.mapsLayersCount) {
-							console.log("READY POPUP", this.identifyResults);
-							//this.popupContent.innerHTML = this.identifyResults[0].layerName;
 							if (this.identifyResults.length > 0) {
 								this.setPopupContent(popupCoordinate);
+								this.drawFeature();
 							}
 						}
 					}
@@ -196,9 +226,9 @@ define([
 	setPopupContent: function(popupCoordinate) {
 		domConstruct.empty(this.popupAttrTable);
 		this.popupHeader.innerHTML = this.identifyResults[0].layerName;
-		var featureProperties = this.identifyResults[0].identifyFeature.properties;
-		if (this.identifyResults[0].identifyFeature.properties) {
-			featureProperties = this.identifyResults[0].identifyFeature.properties;
+		var featureProperties = null;
+		if (this.identifyResults[0].identifyFeature.features[0].properties) {
+			featureProperties = this.identifyResults[0].identifyFeature.features[0].properties;
 			for (var property in featureProperties) {
 				if (featureProperties.hasOwnProperty(property)) {
 					var row = domConstruct.create("tr", {}, this.popupAttrTable, "last");
@@ -209,6 +239,36 @@ define([
 		}
 		
 		this.popupOverlay.setPosition(popupCoordinate);
+	},
+	
+	drawFeature: function() {
+		var geojson = null;
+		if (this.identifyResults[0].identifyFeature.crs.properties.name) {
+			if (this.identifyResults[0].identifyFeature.crs.properties.name.includes("3857")) {
+				geojson = new ol.format.GeoJSON()
+			}
+			else {
+				geojson = new ol.format.GeoJSON( {
+					featureProjection: 'EPSG:3857'
+				});
+			}
+		} 
+			
+		if (geojson != null) {
+			var source = new ol.source.Vector({
+				features: geojson.readFeatures(this.identifyResults[0].identifyFeature)
+			});
+			this.highlightLayer.setSource(source);
+		}
+	},
+	
+	cleanHighlight: function() {
+		this.highlightLayer.setSource(null);
+		this.popupHeader.innerHTML = "";
+		domConstruct.empty(this.popupAttrTable);
+		this.highlightLayer.setSource(null);
+		this.popupOverlay.setPosition(undefined);
+		//popupCloser.blur();
 	},
     /*addOperationalLayers: function(layers) {
       on(this.mapa, "layers-add-result", lang.hitch(this, function(e) {

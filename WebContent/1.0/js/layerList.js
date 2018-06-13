@@ -553,11 +553,8 @@ define([
                       source: new ol.source.TileWMS({
                         url: tnode.item.wms.url,
                         params: {
-                          //SERVICENAME: tnode.item.wms.servicename,
                           LAYERS: tnode.item.wms.name,
-                          //TRANSPARENT: "TRUE",
-                          //LOGIN: tnode.item.wms.login,
-                          //PASSWORD: tnode.item.wms.password,
+                          STYLES: tnode.item.wms.styles[0].name,
                           //TILED: false,
                           VERSION: tnode.item.wms.info.version,
                           //VERSION: "1.3.0",
@@ -583,6 +580,11 @@ define([
                     //console.log(tnode.item.wmsMapLayer.getSource().url);
                     mapa.addLayer(tnode.item.wmsMapLayer);
                     domStyle.set(tnode.item.legendContainerDiv, "display", "block");
+                    
+                    if (tnode.item.wms.info.boundWest) {
+                    	var view = mapa.getView();
+                    	view.fit(ol.proj.transformExtent([tnode.item.wms.info.boundWest, tnode.item.wms.info.boundSouth, tnode.item.wms.info.boundEast, tnode.item.wms.info.boundNorth], 'EPSG:4326', 'EPSG:3857'));
+                    }
                   }
                   else {
                     alert("This layer is not available.");
@@ -593,10 +595,6 @@ define([
                   domStyle.set(tnode.item.legendContainerDiv, "display", "block");
                 }
                 
-                if (tnode.item.wms.info.boundWest) {
-                	var view = mapa.getView();
-                	view.fit(ol.proj.transformExtent([tnode.item.wms.info.boundWest, tnode.item.wms.info.boundSouth, tnode.item.wms.info.boundEast, tnode.item.wms.info.boundNorth], 'EPSG:4326', 'EPSG:3857'));
-                }
                 if ((typeof tnode.item.wms.info.scaleMax == "number") || (typeof tnode.item.wms.info.scaleMin == "number")) {
                 	that.servicePanel.header = tnode.item.name;
                 	that.getLabelsFromRoot(tnode.item.parent);
