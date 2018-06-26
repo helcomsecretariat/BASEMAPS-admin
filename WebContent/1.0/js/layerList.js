@@ -554,7 +554,7 @@ define([
                         url: tnode.item.wms.url,
                         params: {
                           LAYERS: tnode.item.wms.name,
-                          STYLES: tnode.item.wms.styles[0].name,
+                          STYLES: (tnode.item.wms.styles[0] ? tnode.item.wms.styles[0].name : ""),
                           //TILED: false,
                           VERSION: tnode.item.wms.info.version,
                           //VERSION: "1.3.0",

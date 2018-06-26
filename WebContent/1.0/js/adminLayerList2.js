@@ -1023,11 +1023,11 @@ define([
 						
 					if (tnode.item.type == "WMS") {
 						domConstruct.destroy(tnode.expandoNode);
-						domStyle.set(tnode.labelNode, {"color": "green"});
+						domStyle.set(tnode.labelNode, {"color": "green", "width": "80%"});
 					}
 					else if (tnode.item.type == "WFS") {
 						domConstruct.destroy(tnode.expandoNode);
-						domStyle.set(tnode.labelNode, {"color": "blue"});
+						domStyle.set(tnode.labelNode, {"color": "blue", "width": "80%"});
 					}
 					else if (tnode.item.type == "CATEGORY") {
 						var rowNodePadding = domStyle.get(tnode.rowNode, "padding-left");

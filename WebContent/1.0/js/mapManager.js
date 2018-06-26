@@ -243,16 +243,19 @@ define([
 	
 	drawFeature: function() {
 		var geojson = null;
-		if (this.identifyResults[0].identifyFeature.crs.properties.name) {
-			if (this.identifyResults[0].identifyFeature.crs.properties.name.includes("3857")) {
-				geojson = new ol.format.GeoJSON()
+		var feature = this.identifyResults[0].identifyFeature;
+		if (feature.crs) {
+			if (feature.crs.properties.name) {
+				if (feature.crs.properties.name.includes("3857")) {
+					geojson = new ol.format.GeoJSON()
+				}
+				else {
+					geojson = new ol.format.GeoJSON( {
+						featureProjection: 'EPSG:3857'
+					});
+				}
 			}
-			else {
-				geojson = new ol.format.GeoJSON( {
-					featureProjection: 'EPSG:3857'
-				});
-			}
-		} 
+		}
 			
 		if (geojson != null) {
 			var source = new ol.source.Vector({
