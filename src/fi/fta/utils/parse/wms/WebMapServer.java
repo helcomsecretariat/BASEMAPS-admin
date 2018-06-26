@@ -3,6 +3,7 @@ package fi.fta.utils.parse.wms;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -29,8 +30,9 @@ public class WebMapServer
 	public static String DEFAULT_LANGUAGE = "eng";
 	
 	public static final String JSON_FORMAT = "application/json";
-	public static final String GML_FORMAT = "application/vnd.ogc.gml";
+	public static final String GEOJSON_FORMAT = "application/geojson";
 	public static final String XML_FORMAT = "text/xml";
+	public static final String GML_FORMAT = "application/vnd.ogc.gml";
 	
 	
 	private URL url;
@@ -158,9 +160,23 @@ public class WebMapServer
         switch (format)
         {
         	case WebMapServer.JSON_FORMAT:
+        	case WebMapServer.GEOJSON_FORMAT:
         		return new Pair<>(JsonUtils.toObject(sb.toString(), Object.class), format);
-        	case WebMapServer.GML_FORMAT:
         	case WebMapServer.XML_FORMAT:
+        		try
+        		{
+        			Document doc = new SAXReader().read(new StringReader(sb.toString()));
+            		if (doc != null &&
+            			FeatureInfoFormatXmlTypeSpecification.isRootElement(doc.getRootElement()))
+            		{
+            			return new Pair<>(new FeatureInfoFormatXmlType(doc.getRootElement()), format);
+            		}
+        		}
+        		catch (DocumentException ex)
+        		{
+					// TODO: handle exception
+				}
+        	case WebMapServer.GML_FORMAT:
         	default:
         		return new Pair<>(sb.toString(), format);
         }
@@ -187,14 +203,19 @@ public class WebMapServer
 			{
 				return WebMapServer.JSON_FORMAT;
 			}
-			else if (fs.contains(WebMapServer.GML_FORMAT))
+			else if (fs.contains(WebMapServer.GEOJSON_FORMAT))
 			{
-				return WebMapServer.GML_FORMAT;
+				return WebMapServer.GEOJSON_FORMAT;
 			}
 			else if (fs.contains(WebMapServer.XML_FORMAT))
 			{
 				return WebMapServer.XML_FORMAT;
 			}
+			else if (fs.contains(WebMapServer.GML_FORMAT))
+			{
+				return WebMapServer.GML_FORMAT;
+			}
+			
 			return formats.iterator().next();
 		}
 		return null;
