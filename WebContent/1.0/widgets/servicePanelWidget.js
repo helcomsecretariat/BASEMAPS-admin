@@ -115,15 +115,15 @@ define([
 			array.forEach(metadata, lang.hitch(this, function(record) {
 				var subcontainer = domConstruct.create("div", {"class": "servicePanelMetadataBox"}, container, "last");
 				
-				var provider = domConstruct.create("div", {"style": "display: table;"}, subcontainer, "last");
+				var provider = domConstruct.create("div", {"style": "display: table; table-layout: fixed; width: 100%;"}, subcontainer, "last");
 				var providerLabel = domConstruct.create("span", { "class": "servicePanelInfoElementLabel", "innerHTML": "Metadata source: " }, provider, "last");
 				var providerValue = domConstruct.create("span", { "class": "servicePanelInfoElementValue", "innerHTML": record.source }, provider, "last");
 				
-				var format = domConstruct.create("div", {"style": "display: table;"}, subcontainer, "last");
+				var format = domConstruct.create("div", {"style": "display: table; table-layout: fixed; width: 100%;"}, subcontainer, "last");
 				var formatLabel = domConstruct.create("span", { "class": "servicePanelInfoElementLabel", "innerHTML": "Metadata format: " }, format, "last");
 				var formatValue = domConstruct.create("span", { "class": "servicePanelInfoElementValue", "innerHTML": record.format }, format, "last");
 				
-				var url = domConstruct.create("div", {"style": "display: table;"}, subcontainer, "last");
+				var url = domConstruct.create("div", {"style": "display: table; table-layout: fixed; width: 100%;"}, subcontainer, "last");
 				var urlLabel = domConstruct.create("span", { "class": "servicePanelInfoElementLabel", "innerHTML": "URL: " }, url, "last");
 				var urlValue = domConstruct.create("a", { "class": "servicePanelInfoElementValue", "href": record.url, "target": "_blank", "innerHTML": record.url }, url, "last");
 			}));

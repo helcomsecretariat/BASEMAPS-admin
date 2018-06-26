@@ -758,6 +758,7 @@ html, body {
 	border-bottom: 1px solid #cccccc;
 	margin-bottom: 5px;
 	display:table;
+	table-layout: fixed;
 }
 
 .servicePanelInfoElementLabel {
@@ -765,11 +766,13 @@ html, body {
 	font-size: 14px;
 	font-weight: bold;
 	display: table-cell;
+	word-wrap: break-word;
 }
 
 .servicePanelInfoElementValue {
 	font-size: 14px;
 	display: table-cell;
+	word-wrap: break-word;
 }
 
 .servicePanelMetadataBox {
@@ -1171,7 +1174,8 @@ html, body {
 
 .scaleWidget {
   color: #656565;
-  font-size: 14px;
+  font-size: 16px;
+  font-weight: bold;
 }
 
 /* Legend widget */
@@ -1296,4 +1300,69 @@ html, body {
 
 .wmsLayerAddButton:hover {
   font-weight: bold;
+}
+
+.ol-popup {
+	position: absolute;
+	background-color: white;
+	-webkit-filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+	filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+	padding: 15px;
+	border-radius: 10px;
+	border: 1px solid #cccccc;
+	bottom: 12px;
+	left: -50px;
+	min-width: 280px;
+}
+.ol-popup:after, .ol-popup:before {
+	top: 100%;
+	border: solid transparent;
+	content: " ";
+	height: 0;
+	width: 0;
+	position: absolute;
+	pointer-events: none;
+}
+.ol-popup:after {
+	border-top-color: white;
+	border-width: 10px;
+	left: 48px;
+	margin-left: -10px;
+}
+.ol-popup:before {
+	border-top-color: #cccccc;
+	border-width: 11px;
+	left: 48px;
+	margin-left: -11px;
+}
+.ol-popup-closer {
+	text-decoration: none;
+	position: absolute;
+	top: 2px;
+	right: 8px;
+}
+.ol-popup-closer:after {
+ 	content: "✖";
+}
+
+.popupTable {
+	font-family: "Istok Web", "Calibri", sans-serif;
+	font-size: 12px;
+	text-align: left;
+}
+
+.popupTableAttr {
+	padding-right: 5px;
+	color: #999;
+}
+
+.popupTableVal {
+	color: #444;
+}
+
+.popupHeaderText {
+	font-family: "Istok Web", "Calibri", sans-serif;
+	font-size: 14px;
+	font-weight: bold;
+	text-align: center;
 }

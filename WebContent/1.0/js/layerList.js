@@ -240,7 +240,8 @@ define([
 			type: null,
 			wms: null,
 			wfs: null,
-			metadata: layer.metadata
+			metadata: layer.metadata,
+			emptyCategory: false
     	};
     	
     	if ((layer.wmses) && (layer.wmses[0])) {
@@ -253,6 +254,9 @@ define([
 		}
 		if (layer.layers) {
 			lyr.type = "CATEGORY";
+			if (layer.layers.length == 0) {
+				lyr.emptyCategory = true;
+			}
 		}
 		
 		this.data.push(lyr);
@@ -326,7 +330,7 @@ define([
       });
 
       // data store for search (doesn't include layers, but just layer groups)
-      var storeFiltering = new Memory({
+      /*var storeFiltering = new Memory({
         data: this.dataFiltering
       });
       var filteringSelect = new FilteringSelect({
@@ -347,7 +351,7 @@ define([
           // clear search field
           dijit.byId("layerSearchInput").set("value", "");
         })
-      }, this.layerSearchInput).startup();
+      }, this.layerSearchInput).startup();*/
 
       this.tree = new Tree({
         model: treeModel,
@@ -432,6 +436,10 @@ define([
 
           //}
           // if tree node is a data layer
+          
+          if (tnode.item.emptyCategory) {
+        	  domStyle.set(tnode.labelNode, {"color": "#999999"});
+          }
           
           if (tnode.item.type == "WMS") {
           //if (tnode.item.leaf) {
@@ -539,18 +547,17 @@ define([
                   if ((tnode.item.wms.url.length > 0) && (tnode.item.wms.name.length > 0)) {
                     tnode.item.wmsMapLayer = new ol.layer.Tile({
                       id: tnode.item.id,
+                      wmsId: tnode.item.wms.id,
+                      name: tnode.item.name,
                       identifyFormats: tnode.item.wms.info.formats,
                       source: new ol.source.TileWMS({
                         url: tnode.item.wms.url,
                         params: {
-                          //SERVICENAME: tnode.item.wms.servicename,
                           LAYERS: tnode.item.wms.name,
-                          //TRANSPARENT: "TRUE",
-                          //LOGIN: tnode.item.wms.login,
-                          //PASSWORD: tnode.item.wms.password,
+                          STYLES: tnode.item.wms.styles[0].name,
                           //TILED: false,
-                          //VERSION: tnode.item.wms.version,
-                          VERSION: "1.3.0",
+                          VERSION: tnode.item.wms.info.version,
+                          //VERSION: "1.3.0",
                           CRS: "EPSG:3857"
                         }
                       })
@@ -573,6 +580,11 @@ define([
                     //console.log(tnode.item.wmsMapLayer.getSource().url);
                     mapa.addLayer(tnode.item.wmsMapLayer);
                     domStyle.set(tnode.item.legendContainerDiv, "display", "block");
+                    
+                    if (tnode.item.wms.info.boundWest) {
+                    	var view = mapa.getView();
+                    	view.fit(ol.proj.transformExtent([tnode.item.wms.info.boundWest, tnode.item.wms.info.boundSouth, tnode.item.wms.info.boundEast, tnode.item.wms.info.boundNorth], 'EPSG:4326', 'EPSG:3857'));
+                    }
                   }
                   else {
                     alert("This layer is not available.");
@@ -583,11 +595,7 @@ define([
                   domStyle.set(tnode.item.legendContainerDiv, "display", "block");
                 }
                 
-                if (tnode.item.wms.info.boundWest) {
-                	var view = mapa.getView();
-                	view.fit(ol.proj.transformExtent([tnode.item.wms.info.boundWest, tnode.item.wms.info.boundSouth, tnode.item.wms.info.boundEast, tnode.item.wms.info.boundNorth], 'EPSG:4326', 'EPSG:3857'));
-                }
-                if ((typeof tnode.item.wms.info.scaleMax == 'number') || (typeof tnode.item.wms.info.scaleMin == 'number')) {
+                if ((typeof tnode.item.wms.info.scaleMax == "number") || (typeof tnode.item.wms.info.scaleMin == "number")) {
                 	that.servicePanel.header = tnode.item.name;
                 	that.getLabelsFromRoot(tnode.item.parent);
                 	that.servicePanel.setupAndShowScaleMessage(tnode.item.wms.info.scaleMin, tnode.item.wms.info.scaleMax);
