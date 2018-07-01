@@ -190,7 +190,7 @@ public class WFSManager extends ServiceManager<WFS, WFSDAO>
 			ret.setNames(new ArrayList<>());
 			Set<String> set = map.keySet();
 			ret.getNames().addAll(set);
-			ret.setOrganization(map.get(set.iterator().next()).getInfo().getProvider());
+			ret.setOrganization(map.get(set.iterator().next()).getInfo().getOrganisation());
 		}
 		return ret;
 	}

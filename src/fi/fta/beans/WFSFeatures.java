@@ -1,8 +1,10 @@
 package fi.fta.beans;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import fi.fta.utils.BeansUtils;
+import fi.fta.utils.Util;
 import fi.fta.utils.parse.wfs.FeatureInfo;
 import fi.fta.utils.parse.wfs.FeatureType;
 import fi.fta.utils.parse.wfs.Specification;
@@ -17,13 +19,47 @@ public class WFSFeatures
 	
 	public WFSFeatures(Specification specification, FeatureInfo features, FeatureType type)
 	{
-		this.metadata = BeansUtils.getMetaData(null);
+		List<String> urls = new ArrayList<>();
+		if (features.getMetadataUrl() != null)
+		{
+			urls.add(features.getMetadataUrl());
+		}
+		if (type.getMetadata() != null)
+		{
+			urls.addAll(type.getMetadata());
+		}
+		this.metadata = BeansUtils.getMetaData(urls, MetaDataSource.WFS);
 		this.info = new WFSInfo();	
 		this.info.setVersion(specification.getVersion());
-		this.info.setProvider(features.getProvider());
-		this.info.setTitle(features.getTitle());
-		this.info.setKeywords(features.getKeywords());
+		this.info.setOrganisation(features.getProvider());
+		this.info.setTitle(type.getTitle());
+		this.info.setKeywords(new ArrayList<>());
+		if (features.getKeywords() != null)
+		{
+			this.info.getKeywords().addAll(features.getKeywords());
+		}
+		if (type.getKeywords() != null)
+		{
+			this.info.getKeywords().addAll(type.getKeywords());
+		}
 		this.info.setFormats(type.getFormats());
+		if (Util.isEmptyCollection(this.info.getFormats()))
+		{
+			this.info.setFormats(features.getFormats());
+		}
+		this.info.setCrs(type.getCrs());
+		this.info.setDescription(type.getDescription());
+		if (Util.isEmptyString(this.info.getDescription()))
+		{
+			this.info.setDescription(features.getDescription());
+		}
+		this.info.setLowerLong(type.getLowerLong());
+		this.info.setLowerLat(type.getLowerLat());
+		this.info.setUpperLong(type.getUpperLong());
+		this.info.setUpperLat(type.getUpperLat());
+		this.info.setLanguages(features.getLanguages());
+		this.info.setFees(features.getFees());
+		this.info.setAccessConstraints(features.getAccessConstraints());
 	}
 
 	public List<MetaData> getMetadata() {

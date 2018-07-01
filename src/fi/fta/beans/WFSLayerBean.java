@@ -1,94 +1,79 @@
 package fi.fta.beans;
 
-import java.io.Serializable;
-import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
-import org.hibernate.annotations.Type;
-
 @MappedSuperclass
-public class WFSLayerBean implements Serializable
+public class WFSLayerBean extends ServiceLayerBean
 {
 	
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -5360395601594329796L;
+	private static final long serialVersionUID = 630424770539931892L;
 	
 	
-	private String version;
+	@Column(name = "lower_long")
+	protected Float lowerLong;
 	
-	private String provider;
+	@Column(name = "lower_lat")
+	protected Float lowerLat;
 	
-	private String title;
+	@Column(name = "upper_long")
+	protected Float upperLong;
 	
-	@Column(columnDefinition="character varying(50)[]")
-	@Type(type="fi.fta.data.dao.PersistentStringListType")
-	private List<String> keywords;
-	
-	@Column(columnDefinition="character varying(50)[]")
-	@Type(type="fi.fta.data.dao.PersistentStringListType")
-	private List<String> formats;
+	@Column(name = "upper_lat")
+	protected Float upperLat;
 	
 	
 	public WFSLayerBean()
 	{}
 	
+	public Float getLowerLong() {
+		return lowerLong;
+	}
+
+	public void setLowerLong(Float lowerLong) {
+		this.lowerLong = lowerLong;
+	}
+
+	public Float getLowerLat() {
+		return lowerLat;
+	}
+
+	public void setLowerLat(Float lowerLat) {
+		this.lowerLat = lowerLat;
+	}
+
+	public Float getUpperLong() {
+		return upperLong;
+	}
+
+	public void setUpperLong(Float upperLong) {
+		this.upperLong = upperLong;
+	}
+
+	public Float getUpperLat() {
+		return upperLat;
+	}
+
+	public void setUpperLat(Float upperLat) {
+		this.upperLat = upperLat;
+	}
+
 	public WFSLayerBean(WFSLayerBean layer)
 	{
 		this();
 		this.copy(layer);
 	}
 	
-	public String getVersion() {
-		return version;
-	}
-
-	public void setVersion(String version) {
-		this.version = version;
-	}
-
-	public String getProvider() {
-		return provider;
-	}
-
-	public void setProvider(String provider) {
-		this.provider = provider;
-	}
-	
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	public List<String> getKeywords() {
-		return keywords;
-	}
-
-	public void setKeywords(List<String> keywords) {
-		this.keywords = keywords;
-	}
-
-	public List<String> getFormats() {
-		return formats;
-	}
-
-	public void setFormats(List<String> formats) {
-		this.formats = formats;
-	}
-
 	public void copy(WFSLayerBean from)
 	{
-		this.setVersion(from.getVersion());
-		this.setProvider(from.getProvider());
-		this.setTitle(from.getTitle());
-		this.setKeywords(from.getKeywords());
-		this.setFormats(from.getFormats());
+		super.copy(from);
+		this.setLowerLong(from.getLowerLong());
+		this.setLowerLat(from.getLowerLat());
+		this.setUpperLong(from.getUpperLong());
+		this.setUpperLat(from.getUpperLat());
 	}
 	
 }

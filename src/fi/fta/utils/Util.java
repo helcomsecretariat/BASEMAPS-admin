@@ -289,4 +289,28 @@ public class Util
 	    return sw.toString();
 	}
 	
+	public static Float getFloat(String source, Float defaultValue)
+	{
+		try
+		{
+			return Util.isEmptyString(source) ? defaultValue : new Float(source);
+		}
+		catch (Exception e)
+		{
+			return defaultValue;
+		}
+	}
+	
+	public static Double getDouble(String source, Double defaultValue)
+	{
+		try
+		{
+			return Util.isEmptyString(source) ? defaultValue : new Double(source);
+		}
+		catch (Exception e)
+		{
+			return defaultValue;
+		}
+	}
+	
 }

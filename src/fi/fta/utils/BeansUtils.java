@@ -8,6 +8,8 @@ import org.hibernate.HibernateException;
 
 import fi.fta.beans.Category;
 import fi.fta.beans.MetaData;
+import fi.fta.beans.MetaDataFormat;
+import fi.fta.beans.MetaDataSource;
 import fi.fta.beans.WFS;
 import fi.fta.beans.WMS;
 import fi.fta.beans.WMSStyle;
@@ -27,6 +29,23 @@ import fi.fta.utils.parse.wms.Style;
 
 public class BeansUtils
 {
+	
+	public static List<MetaData> getMetaData(Collection<String> urls, MetaDataSource source)
+	{
+		List<MetaData> ret = new ArrayList<>();
+		if (!Util.isEmptyCollection(urls))
+		{
+			for (String url : urls)
+			{
+				MetaData md = new MetaData();
+				md.setFormat(MetaDataFormat.UNKNOWN);
+				md.setUrl(url);
+				md.setSource(source);
+				ret.add(md);
+			}
+		}
+		return ret;
+	}
 	
 	public static List<MetaData> getMetaData(Collection<fi.fta.utils.parse.wms.MetaData> collection)
 	{

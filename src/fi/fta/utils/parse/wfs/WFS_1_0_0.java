@@ -10,23 +10,71 @@ public class WFS_1_0_0 implements Specification
 	public String getVersion() {
 		return "1.0.0";
 	}
+	
+	public String getPathProvider() {
+		return "ServiceProvider/ProviderName";
+	}
 
+	public String getServiceIdentification() {
+		return "ServiceIdentification";
+	}
+
+	public String getPathKeywords() {
+		return "Keywords/Keyword";
+	}
+	
+	public String getAbstract() {
+		return "Abstract";
+	}
+	
+	public String getFees() {
+		return "Fees";
+	}
+	
+	public String getAccessConstraints() {
+		return "AccessConstraints";
+	}
+	
+	public String getPathOperation() {
+		return "OperationsMetadata/Operation";
+	}
+	
+	public String getParameter() {
+		return "Parameter";
+	}
+	
+	public String getPathAllowedValue() {
+		return "AllowedValues/Value";
+	}
+	
+	public String getPathExtendedCapabilities() {
+		return "OperationsMetadata/ExtendedCapabilities/ExtendedCapabilities";
+	}
+	
+	public String getSupportedLanguages() {
+		return "SupportedLanguages";
+	}
+
+	public String getPathDefaultLanguage() {
+		return "DefaultLanguage/Language";
+	}
+	
+	public String getSupportedLanguage() {
+		return "SupportedLanguage";
+	}
+	
+	public String getLanguage() {
+		return "Language";
+	}
+	
+	public String getPathExtendedMetadataUrl() {
+		return "MetadataUrl/URL";
+	}
+	
 	public String getPathFeatureType() {
 		return "FeatureTypeList/FeatureType";
 	}
 
-	public String getPathProvider() {
-		return "ServiceProvider/ProviderName";
-	}
-	
-	public String getPathServiceTitle() {
-		return "ServiceIdentification/Title";
-	}
-	
-	public String getPathKeywords() {
-		return "ServiceIdentification/Keywords/Keyword";
-	}
-	
 	public String getName() {
 		return "Name";
 	}
@@ -34,9 +82,33 @@ public class WFS_1_0_0 implements Specification
 	public String getTitle() {
 		return "Title";
 	}
-	
+
 	public String getPathOutputFormat() {
 		return "OutputFormats/Format";
+	}
+	
+	public String getDefaultCrs() {
+		return "DefaultCRS";
+	}
+	
+	public String getOtherCrs() {
+		return "DefaultCRS";
+	}
+	
+	public String getOtherSrs() {
+		return "DefaultSRS";
+	}
+	
+	public String getPathLowerCorner() {
+		return "WGS84BoundingBox/LowerCorner";
+	}
+	
+	public String getPathUpperCorner() {
+		return "WGS84BoundingBox/UpperCorner";
+	}
+	
+	public String getMetadataUrl() {
+		return "MetadataURL";
 	}
 	
 }

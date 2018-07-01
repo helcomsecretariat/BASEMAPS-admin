@@ -2,6 +2,8 @@ package fi.fta.utils.parse.wms;
 
 import org.dom4j.Element;
 
+import fi.fta.utils.Util;
+
 public class WMS_1_3_0 extends WMS_1_1_1
 {
 	
@@ -28,14 +30,7 @@ public class WMS_1_3_0 extends WMS_1_1_1
 	}
 	
 	public Double retrieveScaleMin(Element e) {
-		try
-		{
-			return e!= null ? new Double(e.getText()) : null;
-		}
-		catch (Exception ex)
-		{
-			return null;
-		}
+		return e != null ? Util.getDouble(e.getText(), null) : null;
 	}
 	
 	public String getScaleMax() {
@@ -43,14 +38,7 @@ public class WMS_1_3_0 extends WMS_1_1_1
 	}
 	
 	public Double retrieveScaleMax(Element e) {
-		try
-		{
-			return e != null ? new Double(e.getText()) : null;
-		}
-		catch (Exception ex)
-		{
-			return null;
-		}
+		return e != null ? Util.getDouble(e.getText(), null) : null;
 	}
 	
 	public String getBoundBox() {
@@ -58,47 +46,19 @@ public class WMS_1_3_0 extends WMS_1_1_1
 	}
 	
 	public Double retrieveBoundWest(Element e) {
-		try
-		{
-			return e != null ? new Double(e.elementText("westBoundLongitude")) : null;
-		}
-		catch (Exception ex)
-		{
-			return null;
-		}
+		return e != null ? Util.getDouble(e.elementText("westBoundLongitude"), null) : null;
 	}
 	
 	public Double retrieveBoundEast(Element e) {
-		try
-		{
-			return e != null ? new Double(e.elementText("eastBoundLongitude")) : null;
-		}
-		catch (Exception ex)
-		{
-			return null;
-		}
+		return e != null ? Util.getDouble(e.elementText("eastBoundLongitude"), null) : null;
 	}
 	
 	public Double retrieveBoundSouth(Element e) {
-		try
-		{
-			return e != null ? new Double(e.elementText("southBoundLatitude")) : null;
-		}
-		catch (Exception ex)
-		{
-			return null;
-		}
+		return e != null ? Util.getDouble(e.elementText("southBoundLatitude"), null) : null;
 	}
 	
 	public Double retrieveBoundNorth(Element e) {
-		try
-		{
-			return e != null ? new Double(e.elementText("northBoundLatitude")) : null;
-		}
-		catch (Exception ex)
-		{
-			return null;
-		}
+		return e != null ? Util.getDouble(e.elementText("northBoundLatitude"), null) : null;
 	}
 	
 }

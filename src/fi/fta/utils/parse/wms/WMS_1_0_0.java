@@ -2,6 +2,8 @@ package fi.fta.utils.parse.wms;
 
 import org.dom4j.Element;
 
+import fi.fta.utils.Util;
+
 public class WMS_1_0_0 implements Specification
 {
 	
@@ -78,14 +80,7 @@ public class WMS_1_0_0 implements Specification
 	}
 	
 	public Double retrieveScaleMin(Element e) {
-		try
-		{
-			return e != null ? new Double(e.attributeValue("min")) : null;
-		}
-		catch (Exception ex)
-		{
-			return null;
-		}
+		return e != null ? Util.getDouble(e.attributeValue("min"), null) : null;
 	}
 	
 	public String getScaleMax() {
@@ -93,14 +88,7 @@ public class WMS_1_0_0 implements Specification
 	}
 	
 	public Double retrieveScaleMax(Element e) {
-		try
-		{
-			return e != null ? new Double(e.attributeValue("max")) : null;
-		}
-		catch (Exception ex)
-		{
-			return null;
-		}
+		return e != null ? Util.getDouble(e.attributeValue("max"), null) : null;
 	}
 	
 	public String getDescription() {
@@ -112,47 +100,19 @@ public class WMS_1_0_0 implements Specification
 	}
 	
 	public Double retrieveBoundWest(Element e) {
-		try
-		{
-			return e != null ? new Double(e.attributeValue("minx")) : null;
-		}
-		catch (Exception ex)
-		{
-			return null;
-		}
+		return e != null ? Util.getDouble(e.attributeValue("minx"), null) : null;
 	}
 	
 	public Double retrieveBoundEast(Element e) {
-		try
-		{
-			return e != null ? new Double(e.attributeValue("maxx")) : null;
-		}
-		catch (Exception ex)
-		{
-			return null;
-		}
+		return e != null ? Util.getDouble(e.attributeValue("maxx"), null) : null;
 	}
 	
 	public Double retrieveBoundSouth(Element e) {
-		try
-		{
-			return e != null ? new Double(e.attributeValue("miny")) : null;
-		}
-		catch (Exception ex)
-		{
-			return null;
-		}
+		return e != null ? Util.getDouble(e.attributeValue("miny"), null) : null;
 	}
 	
 	public Double retrieveBoundNorth(Element e) {
-		try
-		{
-			return e != null ? new Double(e.attributeValue("maxy")) : null;
-		}
-		catch (Exception ex)
-		{
-			return null;
-		}
+		return e != null ? Util.getDouble(e.attributeValue("maxy"), null) : null;
 	}
 	
 	public String getOnlineResource() {
