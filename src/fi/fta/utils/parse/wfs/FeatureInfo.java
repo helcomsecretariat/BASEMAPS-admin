@@ -129,6 +129,7 @@ public class FeatureInfo extends XmlBean<FeatureInfoSpecification>
 		description = sd.elementText(specification.getAbstract());
 		fees = sd.elementText(specification.getFees());
 		accessConstraints = sd.elementText(specification.getAccessConstraints());
+		formats = new ArrayList<>();
 		Element op = null;
 		for (Element o : XmlBean.elements(root, specification.getPathOperation()))
 		{
@@ -145,7 +146,6 @@ public class FeatureInfo extends XmlBean<FeatureInfoSpecification>
 				Element e = (Element)o;
 				if (e.attributeValue("name") == "outputFormat")
 				{
-					formats = new ArrayList<>();
 					for (Element f : XmlBean.elements(e, specification.getPathAllowedValue()))
 					{
 						formats.add(f.getText());
@@ -154,13 +154,13 @@ public class FeatureInfo extends XmlBean<FeatureInfoSpecification>
 				}
 			}
 		}
+		languages = new ArrayList<>();
 		Element ec = XmlBean.element(root, specification.getPathExtendedCapabilities());
 		if (ec != null)
 		{
 			Element sl = ec.element(specification.getSupportedLanguages());
 			if (sl != null)
 			{
-				languages = new ArrayList<>();
 				String dl = XmlBean.elementText(sl, specification.getPathDefaultLanguage());
 				if (!Util.isEmptyString(dl))
 				{

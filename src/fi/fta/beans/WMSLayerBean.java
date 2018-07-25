@@ -109,7 +109,6 @@ public class WMSLayerBean extends ServiceLayerBean
 		this.setBoundEast(from.getBoundEast());
 		this.setBoundSouth(from.getBoundSouth());
 		this.setBoundNorth(from.getBoundNorth());
-		this.setLanguages(from.getLanguages());
 	}
 	
 }

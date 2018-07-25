@@ -146,6 +146,7 @@ public class ServiceLayerBean implements Serializable
 		this.setFormats(from.getFormats());
 		this.setCrs(from.getCrs());
 		this.setDescription(from.getDescription());
+		this.setLanguages(from.getLanguages());
 		this.setFees(from.getFees());
 		this.setAccessConstraints(from.getAccessConstraints());
 	}
