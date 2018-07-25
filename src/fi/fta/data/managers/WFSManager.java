@@ -25,6 +25,7 @@ import fi.fta.beans.ui.LayerServiceUI;
 import fi.fta.beans.ui.VerifyUI;
 import fi.fta.cache.TimeBasedCache;
 import fi.fta.data.dao.WFSDAO;
+import fi.fta.data.dao.WFSInfoDAO;
 import fi.fta.utils.DateAndTimeUtils;
 import fi.fta.utils.Util;
 import fi.fta.utils.parse.wfs.FeatureType;
@@ -74,11 +75,12 @@ public class WFSManager extends ServiceManager<WFS, WFSDAO>
 		WFS wfs = new WFS(ui);
 		try
 		{
-			WFSFeatures s = this.getFeatures(wfs);
-			if (s != null)
+			WFSFeatures f = this.getFeatures(wfs);
+			if (f != null)
 			{
-				wfs.setInfo(s.getInfo());
-				super.addMetaData(ui, s.getMetadata());
+				wfs.setInfo(new WFSInfo());
+				wfs.getInfo().copy(f.getInfo());
+				super.addMetaData(ui, f.getMetadata());
 			}
 		}
 		catch (NullPointerException ex)
@@ -95,7 +97,7 @@ public class WFSManager extends ServiceManager<WFS, WFSDAO>
 	public WFS update(LayerServiceUI ui) throws Exception
 	{
 		WFS wfs = super.update(new WFS(ui));
-		//wfs.setInfo(new WFSInfoDAO().get(ui.getId()));
+		wfs.setInfo(new WFSInfoDAO().get(ui.getId()));
 		try
 		{
 			this.updateInfo(wfs);

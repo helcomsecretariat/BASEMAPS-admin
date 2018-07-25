@@ -1,8 +1,11 @@
 package fi.fta.beans;
 
+import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.Transient;
+import javax.persistence.FetchType;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 
 import fi.fta.beans.ui.LayerServiceUI;
 
@@ -17,9 +20,8 @@ public class WFS extends LayerService
 	 */
 	private static final long serialVersionUID = 8813064476364353015L;
 	
-	//@OneToOne(targetEntity=WFSInfo.class, cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.REMOVE}, fetch=FetchType.EAGER)
-	//@PrimaryKeyJoinColumn
-	@Transient
+	@OneToOne(targetEntity=WFSInfo.class, cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.REMOVE}, fetch=FetchType.EAGER)
+	@PrimaryKeyJoinColumn
 	protected WFSInfo info;
 	
 	

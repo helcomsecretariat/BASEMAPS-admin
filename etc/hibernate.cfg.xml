@@ -34,7 +34,7 @@
   <mapping class="fi.fta.beans.WMSInfo"/>
   <mapping class="fi.fta.beans.WMSStyle"/>
   <mapping class="fi.fta.beans.WFS"/>
- 
+  <mapping class="fi.fta.beans.WFSInfo"/>
   
  </session-factory>
 </hibernate-configuration>

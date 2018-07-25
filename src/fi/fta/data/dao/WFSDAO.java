@@ -19,7 +19,7 @@ public class WFSDAO extends LayerServiceDAO<WFS>
 		if (ent.getInfo() != null)
 		{
 			ent.getInfo().setParent(ret.getId());
-			//ret.setInfo(new WMSInfoDAO().add(ent.getInfo()));
+			ret.setInfo(new WFSInfoDAO().add(ent.getInfo()));
 		}
 		return ret;
 	}
@@ -33,11 +33,11 @@ public class WFSDAO extends LayerServiceDAO<WFS>
 			if (ent.getInfo().getParent() == null)
 			{
 				ent.getInfo().setParent(ent.getId());
-				//ent.setInfo(new WMSInfoDAO().add(ent.getInfo()));
+				ent.setInfo(new WFSInfoDAO().add(ent.getInfo()));
 			}
 			else
 			{
-				//ent.setInfo(new WMSInfoDAO().update(ent.getInfo()));
+				ent.setInfo(new WFSInfoDAO().update(ent.getInfo()));
 			}
 		}
 		return ret;
