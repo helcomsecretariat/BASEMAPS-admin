@@ -430,6 +430,18 @@ html, body {
 	display: table-cell;
 }
 
+.deleteObjectLink {
+	cursor: pointer;
+	color: #B73C2B;
+	margin-left: 20px;
+	font-size: 14px;
+	text-align: right;
+}
+
+.deleteObjectLink:hover {
+	color: #800000;
+}
+
 .formLink {
 	cursor: pointer;
 	color: #B73C2B;
@@ -441,14 +453,15 @@ html, body {
 	color: #800000;
 }
 
-.formDeleteLink {
+.formEditDeleteLink {
 	cursor: pointer;
 	color: #B73C2B;
 	font-size: 14px;
-	float: right;
+	text-align: right;
+	padding-right: 10px;
 }
 
-.formDeleteLink:hover {
+.formEditDeleteLink:hover {
 	color: #800000;
 }
 

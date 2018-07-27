@@ -87,8 +87,8 @@ define([
 		getUserWriteCategories: function(rights) {
 			var categories = [];
 			array.forEach(rights, lang.hitch(this, function(r){
-				if (r.rights.includes("w")) {
-					categories.push(r.categoryId);
+				if ((r.rights.includes("w")) && (r.categoryId)) {
+					categories.push(r.categoryId.toString());
 				}
 			}));
 			return categories;

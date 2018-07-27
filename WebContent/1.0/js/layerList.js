@@ -563,21 +563,23 @@ define([
                       })
                     });
                     /*tnode.item.wmsMapLayer = new ol.layer.Image({
-                      source: new ol.source.ImageWMS({
-                        url: tnode.item.wms.url,
-                        params: {
-                          SERVICENAME: tnode.item.wms.servicename,
-                          LAYERS: tnode.item.wms.layerName,
-                          LOGIN: tnode.item.wms.login,
-                          PASSWORD: tnode.item.wms.password//,
-                          //TILED: false,
-                          //VERSION: tnode.item.wms.version,
-                          //SRS: "EPSG:3857"
-                        },
-                        ratio: 1
-                      })
-                    });*/
-                    //console.log(tnode.item.wmsMapLayer.getSource().url);
+                        id: tnode.item.id,
+                        wmsId: tnode.item.wms.id,
+                        name: tnode.item.name,
+                        identifyFormats: tnode.item.wms.info.formats,
+                        source: new ol.source.ImageWMS({
+                          url: tnode.item.wms.url,
+                          params: {
+                            LAYERS: tnode.item.wms.name,
+                            STYLES: (tnode.item.wms.styles[0] ? tnode.item.wms.styles[0].name : ""),
+                            //TILED: false,
+                            VERSION: tnode.item.wms.info.version,
+                            //VERSION: "1.3.0",
+                            CRS: "EPSG:3857"
+                          }
+                        })
+                      });*/
+
                     mapa.addLayer(tnode.item.wmsMapLayer);
                     domStyle.set(tnode.item.legendContainerDiv, "display", "block");
                     

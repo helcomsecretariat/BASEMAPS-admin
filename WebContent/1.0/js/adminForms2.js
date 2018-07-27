@@ -33,6 +33,7 @@ define([
 		wmsNameSelector: null,
 		wmsUpdate: false,
 		metadataFormatSelector: null,
+		currentObjId: null,
 		currentCategory: null,
 		currentCategoryWmses: [],
 		currentCategoryCategories: [],
@@ -198,6 +199,12 @@ define([
 		
 		
 		/* --- MANAGE CATEGORY BUTTONS START --- */
+		
+		deleteObjectClick: function() {
+			if (confirm("Please confirm removing: " + this.currentCategory.label + " and all it's content.") == true) {
+				this.deleteObject(this.currentObjId);
+		    }
+		},
 		
 		// --- root category
 		cancelRootCategoryClick: function() {
@@ -447,7 +454,7 @@ define([
 				var urlValue = domConstruct.create("a", { "class": "textLabel", "href": record.url, "target": "_blank", "innerHTML": record.url }, url, "last");
 				
 				if (this.editMode) {
-					var button = domConstruct.create("div", {"class": "formDeleteLink", "innerHTML": "Delete"}, buttonContainer, "last");
+					var button = domConstruct.create("div", {"class": "formEditDeleteLink", "innerHTML": "Delete"}, buttonContainer, "last");
 					on(button, "click", lang.hitch(this, function() {
 						
 					    if (confirm("Please confirm removing metadata") == true) {
@@ -510,30 +517,41 @@ define([
 		},
 		
 		// --- category categories
-		displayCategories: function(categories) {
-			array.forEach(categories, lang.hitch(this, function(category) {
-				var container = domConstruct.create("div", {"class": "formSubSectionGroup"}, this.categoryDisplayForm, "last");
-				var content = domConstruct.create("div", {"style": "display: inline-block; width: 90%"}, container, "last");
-				var buttonContainer = domConstruct.create("div", {"style": "display: inline-block; width: 10%"}, container, "last");
-				
-				var label = domConstruct.create("div", null, content, "last");
-				var labelLabel = domConstruct.create("span", { "class": "textInputLabel", "innerHTML": "Label: " }, label, "last");
-				var labelValue = domConstruct.create("span", { "class": "textLabel", "innerHTML": category.label }, label, "last");
-				
-				var helcomId = domConstruct.create("div", null, content, "last");
-				var helcomIdLabel = domConstruct.create("span", { "class": "textInputLabel", "innerHTML": "HELCOM id: " }, helcomId, "last");
-				var helcomIdValue = domConstruct.create("span", { "class": "textLabel", "innerHTML": category.helcomId }, helcomId, "last");
-				
-				if (this.editMode) {
-					var button = domConstruct.create("div", {"class": "formDeleteLink", "innerHTML": "Delete"}, buttonContainer, "last");
-					on(button, "click", lang.hitch(this, function() {
+		//displayCategories: function(categories) {
+		displayCategories: function() {
+			if (this.currentCategoryCategories.length > 0) {
+				array.forEach(this.currentCategoryCategories, lang.hitch(this, function(category) {
+					var container = domConstruct.create("div", {"class": "formSubSectionGroup"}, this.categoryDisplayForm, "last");
+					var content = domConstruct.create("div", {"style": "display: inline-block; width: 90%"}, container, "last");
+					var buttonContainer = domConstruct.create("div", {"style": "display: inline-block; width: 10%"}, container, "last");
+					
+					var label = domConstruct.create("div", null, content, "last");
+					var labelLabel = domConstruct.create("span", { "class": "textInputLabel", "innerHTML": "Label: " }, label, "last");
+					var labelValue = domConstruct.create("span", { "class": "textLabel", "innerHTML": category.label }, label, "last");
+					
+					var helcomId = domConstruct.create("div", null, content, "last");
+					var helcomIdLabel = domConstruct.create("span", { "class": "textInputLabel", "innerHTML": "HELCOM id: " }, helcomId, "last");
+					var helcomIdValue = domConstruct.create("span", { "class": "textLabel", "innerHTML": category.helcomId }, helcomId, "last");
+					
+					if (this.editMode) {
+						var editButton = domConstruct.create("div", {"class": "formEditDeleteLink", "innerHTML": "Edit"}, buttonContainer, "last");
+						on(editButton, "click", lang.hitch(this, function() {
+							this.setupManageEditForm(category);
+						}));
 						
-					    if (confirm("Please confirm removing category " + category.label + " with all content") == true) {
-					    	this.deleteCategory(category.id);
-					    }
-					}));
-				}
-			}));
+						var deleteButton = domConstruct.create("div", {"class": "formEditDeleteLink", "innerHTML": "Delete"}, buttonContainer, "last");
+						on(deleteButton, "click", lang.hitch(this, function() {
+							
+						    if (confirm("Please confirm removing category " + category.label + " with all content") == true) {
+						    	this.deleteCategory(category.id);
+						    }
+						}));
+					}
+				}));
+			}
+			else {
+				var con = domConstruct.create("div", {"style": { "margin-bottom": "5px", "margin-top": "5px", "margin-left": "20px"}, "innerHTML": "No sub-categories in this category"}, this.categoryDisplayForm, "last");
+			}
 		},
 		
 		deleteCategory: function(id) {
@@ -551,7 +569,7 @@ define([
 						if (index > -1) {
 							this.currentCategoryCategories.splice(index, 1);
 							this.cleanCategoryDisplayForm();
-							this.displayCategories(this.currentCategoryCategories);
+							this.displayCategories();
 						}
 					}
 				}),
@@ -622,34 +640,46 @@ define([
 			this.wmsValidationPassed = false;
 		},
 				
-		displayWmses: function(wmses) {
-			array.forEach(wmses, lang.hitch(this, function(wms) {
-				var container = domConstruct.create("div", {"class": "formSubSectionGroup"}, this.wmsDisplayForm, "last");
-				var content = domConstruct.create("div", {"style": "display: inline-block; width: 90%"}, container, "last");
-				var buttonContainer = domConstruct.create("div", {"style": "display: inline-block; width: 10%"}, container, "last");
+		displayWmses: function() {
+			if (this.currentCategoryWmses.length > 0) {
 				
-				var label = domConstruct.create("div", null, content, "last");
-				var labelLabel = domConstruct.create("span", { "class": "textInputLabel", "innerHTML": "Label: " }, label, "last");
-				var labelValue = domConstruct.create("span", { "class": "textLabel", "innerHTML": wms.label }, label, "last");
-				
-				var name = domConstruct.create("div", null, content, "last");
-				var nameLabel = domConstruct.create("span", { "class": "textInputLabel", "innerHTML": "Name: " }, name, "last");
-				var nameValue = domConstruct.create("span", { "class": "textLabel", "innerHTML": wms.name }, name, "last");
-				
-				var url = domConstruct.create("div", null, content, "last");
-				var urlLabel = domConstruct.create("span", { "class": "textInputLabel", "innerHTML": "URL: " }, url, "last");
-				var urlValue = domConstruct.create("a", { "class": "textLabel", "href": wms.url, "target": "_blank", "innerHTML": wms.url }, url, "last");
-				
-				if (this.editMode) {
-					var button = domConstruct.create("div", {"class": "formDeleteLink", "innerHTML": "Delete"}, buttonContainer, "last");
-					on(button, "click", lang.hitch(this, function() {
-						console.log(wms.serviceCatId);
-					    if (confirm("Please confirm removing WMS: " + wms.label) == true) {
-					    	this.deleteWms(wms.serviceCatId);
-					    }
-					}));
-				}
-			}));
+				array.forEach(this.currentCategoryWmses, lang.hitch(this, function(wms) {
+					
+					var container = domConstruct.create("div", {"class": "formSubSectionGroup"}, this.wmsDisplayForm, "last");
+					var content = domConstruct.create("div", {"style": "display: inline-block; width: 90%"}, container, "last");
+					var buttonContainer = domConstruct.create("div", {"style": "display: inline-block; width: 10%"}, container, "last");
+					
+					var label = domConstruct.create("div", null, content, "last");
+					var labelLabel = domConstruct.create("span", { "class": "textInputLabel", "innerHTML": "Label: " }, label, "last");
+					var labelValue = domConstruct.create("span", { "class": "textLabel", "innerHTML": wms.label }, label, "last");
+					
+					var name = domConstruct.create("div", null, content, "last");
+					var nameLabel = domConstruct.create("span", { "class": "textInputLabel", "innerHTML": "WMS layer name: " }, name, "last");
+					var nameValue = domConstruct.create("span", { "class": "textLabel", "innerHTML": wms.wms.name }, name, "last");
+					
+					var url = domConstruct.create("div", null, content, "last");
+					var urlLabel = domConstruct.create("span", { "class": "textInputLabel", "innerHTML": "WMS URL: " }, url, "last");
+					var urlValue = domConstruct.create("a", { "class": "textLabel", "href": wms.wms.url, "target": "_blank", "innerHTML": wms.wms.url }, url, "last");
+					
+					if (this.editMode) {
+						var editButton = domConstruct.create("div", {"class": "formEditDeleteLink", "innerHTML": "Edit"}, buttonContainer, "last");
+						on(editButton, "click", lang.hitch(this, function() {
+							this.setupManageEditForm(wms);
+						}));
+						
+						var deleteButton = domConstruct.create("div", {"class": "formEditDeleteLink", "innerHTML": "Delete"}, buttonContainer, "last");
+						on(deleteButton, "click", lang.hitch(this, function() {
+							console.log(wms.id);
+						    if (confirm("Please confirm removing WMS: " + wms.label) == true) {
+						    	this.deleteWms(wms.id);
+						    }
+						}));
+					}
+				}));
+			}
+			else {
+				var con = domConstruct.create("div", {"style": { "margin-bottom": "5px", "margin-top": "5px", "margin-left": "20px"}, "innerHTML": "No WMSes in this category"}, this.wmsDisplayForm, "last");
+			}
 		},
 		
 		deleteWms: function(id) {
@@ -664,7 +694,7 @@ define([
 					}
 					else if (response.type == "success") {
 						this.showMessage("WMS deleted.");
-						var index = this.currentCategoryWmses.findIndex(x => x.serviceCatId == id);
+						var index = this.currentCategoryWmses.findIndex(x => x.id == id);
 						if (index > -1) {
 							this.currentCategoryWmses.splice(index, 1);
 							this.cleanWmsDisplayForm();
@@ -678,11 +708,37 @@ define([
 				})
 			);
 		},
+		
+		deleteObject: function(id) {
+			console.log(id);
+			var url = "sc/categories/delete/" + id;
+			request.del(url, {
+				handleAs: "json"
+			}).then(
+				lang.hitch(this, function(response){
+					if (response.type == "error") {
+						this.showMessage("Failed to delete.");
+					}
+					else if (response.type == "success") {
+						this.showMessage("Deleted.");
+						this.cleanAdminForm();
+						this.currentObjId = null;
+						this.currentCategory = null;
+						this.currentCategoryWmses = [];
+						this.currentCategoryCategories = [];
+					}
+				}),
+				lang.hitch(this, function(error){
+					this.showMessage("Something went wrong (on categories/delete/{id}). Please contact administrator.");
+					console.log(error);
+				})
+			);
+		},
 		/* --- MANAGE CATEGORY UTILS END --- */
 		
 		
 		
-		addWmsLinkClick: function() {
+		/*addWmsLinkClick: function() {
 			if (!this.addingWmsWithCategory) {
 				this.utils.show("addCategoryWmsForm", "block");
 				this.addingWmsWithCategory = true;
@@ -712,7 +768,7 @@ define([
 				this.utils.show("addCategoryMetadataForm", "none");
 				this.addingMetadataWithCategory = false;
 			}
-		},
+		},*/
 		
 		setupCategoryUsersForm: function(layer, headerText, users) {
 			this.utils.changeText("adminFormsHeader", headerText);
@@ -750,7 +806,7 @@ define([
 					var emailLabel = domConstruct.create("span", { "class": "textInputLabel", "innerHTML": "Email: " }, email, "last");
 					var emailValue = domConstruct.create("span", { "class": "textLabel", "innerHTML": user.email }, email, "last");
 					
-					var button = domConstruct.create("div", {"class": "formDeleteLink", "innerHTML": "Delete"}, buttonContainer, "last");
+					var button = domConstruct.create("div", {"class": "formEditDeleteLink", "innerHTML": "Delete"}, buttonContainer, "last");
 					on(button, "click", lang.hitch(this, function() {
 					    if (confirm("Please confirm removing data provider " + user.name + " from this category") == true) {
 					    	var index = user.rights.findIndex(x => x.categoryId == categoryId);
@@ -792,7 +848,123 @@ define([
 			);
 		},
 		
-		setupManageCategoryForm: function(layer, categories, wmses, headerText) {
+		getCurrentCategory: function() {
+			var url = "sc/categories/get/"+this.currentObjId;
+			request.get(url, {
+				handleAs: "json"
+			}).then(
+				lang.hitch(this, function(response) {
+					if (response.type == "error") {
+						// TODO: popup box message
+					}
+					else if (response.type == "success") {
+						this.currentCategory = response.item;
+					}
+				}),
+				lang.hitch(this, function(error) {
+					alert("Something went wrong (on categories/get/{id}). Please contact administrator.");
+					console.log(error);
+				})
+			);
+		},
+		
+		setupAndDisplayCategories: function(layers) {
+			this.currentCategoryCategories = [];
+			array.forEach(layers, lang.hitch(this, function(layer) {
+				if (layer.layers) {
+					this.currentCategoryCategories.push(layer);
+				}
+			}));
+			this.displayCategories();
+		},
+		
+		setupAndDisplayWmses: function(layers) {
+			this.currentCategoryWmses = [];
+			array.forEach(layers, lang.hitch(this, function(layer) {
+				if (layer.wms != null) {
+					this.currentCategoryWmses.push(layer);
+				}
+			}));
+			this.displayWmses();
+		},
+		
+		setupManageEditForm: function(layer) {
+			this.cleanAdminForm();
+			this.currentObjId = layer.id;
+			this.getCurrentCategory();
+			
+			this.editMode = layer.editMode; 
+			if (this.editMode) {
+				this.utils.show("editCategoryLabel", "inline-block");
+				this.utils.show("editHelcomCatalogueId", "inline-block");
+				this.utils.show("editCategoryMetadataLink", "inline-block");
+				this.utils.show("addMetadata", "block");
+				this.utils.show("addCategory", "block");
+				this.utils.show("addWms", "block");
+				this.utils.show("deleteObject", "block");
+			}
+			else {
+				this.utils.show("editCategoryLabel", "none");
+				this.utils.show("editHelcomCatalogueId", "none");
+				this.utils.show("editCategoryMetadataLink", "none");
+				this.utils.show("addMetadata", "none");
+				this.utils.show("addCategory", "none");
+				this.utils.show("addWms", "none");
+				this.utils.show("deleteObject", "none");
+			}
+			
+			this.utils.changeText("adminFormsHeader", layer.header);
+			
+			this.utils.setTextValue("categoryLabel", layer.name);
+			
+			if ((layer.helcomId) && (layer.helcomId.length > 0)) {
+				this.utils.setTextValue("helcomCatalogueId", layer.helcomId);
+			}
+			else {
+				this.utils.setTextValue("helcomCatalogueId", "Not assigned");
+			}
+			
+			if (layer.type == "CATEGORY") {
+				this.utils.show("categoryMetadataSection", "block");
+				this.utils.show("categoryCategoriesForm", "block");
+				this.utils.show("categoryWmsForm", "block");
+				this.utils.show("categoryMetadataForm", "none");
+				this.utils.show("categoryWmsInfoForm", "none");
+				this.utils.setTextValue("deleteObject", "Delete this category and all it's content");
+				
+				if ((layer.metadata) && (layer.metadata.length > 0)) {
+					this.utils.setTextValue("categoryMetadataLink", layer.metadata[0].url);
+				}
+				else {
+					this.utils.setTextValue("categoryMetadataLink", "Not assigned");
+				}
+				
+				this.setupAndDisplayCategories(layer.layers);
+				this.setupAndDisplayWmses(layer.layers);
+				
+			}
+			else if (layer.type == "WMS") {
+				this.utils.show("categoryMetadataSection", "none");
+				this.utils.show("categoryCategoriesForm", "none");
+				this.utils.show("categoryWmsForm", "none");
+				this.utils.show("categoryMetadataForm", "block");
+				this.utils.show("categoryWmsInfoForm", "block");
+				this.utils.setTextValue("deleteObject", "Delete this WMS");
+				
+				if ((layer.metadata) && (layer.metadata.length > 0)) {
+					this.displayMetadata(layer.metadata);
+				}
+				else {
+					var con = domConstruct.create("div", {"style": { "margin-bottom": "5px", "margin-top": "5px", "margin-left": "20px"}, "innerHTML": "No metadata assigned"}, this.metadataDisplayForm, "last");
+				}
+				
+				this.getWmsInfo(layer.wms.url, layer.wms.name);
+			}
+			
+			this.utils.show("categoryForm", "block");
+		},
+		
+		/*setupManageCategoryForm: function(layer, categories, wmses, headerText) {
 			this.editMode = layer.editMode; 
 			if (this.editMode) {
 				this.utils.show("editCategoryLabel", "inline-block");
@@ -814,7 +986,6 @@ define([
 			//this.formView = view;
 			this.utils.changeText("adminFormsHeader", headerText);
 			
-			/* --- CATEGORY INFO SECTION START --- */
 			this.utils.setTextValue("categoryLabel", layer.name);
 			
 			if ((layer.helcomId) && (layer.helcomId.length > 0)) {
@@ -871,9 +1042,9 @@ define([
 				this.utils.show("categoryWmsInfoForm", "none");
 			}
 			this.utils.show("categoryForm", "block");
-		},
+		},*/
 		
-		setupDeleteCategoryForm: function(headerText) {
+		/*setupDeleteCategoryForm: function(headerText) {
 			this.formView = "DELETE_CATEGORY";
 			this.utils.changeText("adminFormsHeader", headerText);
 			this.utils.show("deleteCategoryForm", "block");
@@ -891,9 +1062,9 @@ define([
 			this.utils.changeText("adminFormsHeader", headerText);
 			this.utils.show("metadataForm", "block");
 			this.showMetadata(metadata);
-		},
+		},*/
 		
-		formCleanUp: function() {
+		/*formCleanUp: function() {
 			this.utils.changeText("adminFormsHeader", "");
 			this.utils.changeText("adminFormMessage", "");
 	    	this.utils.show("adminFormMessage", "none");
@@ -904,14 +1075,12 @@ define([
 			} else if (this.formView === "WMS_INFO") {
 				domConstruct.empty(this.wmsInfoContainer);
 				this.utils.show("wmsInfoForm", "none");
-			} /*else if (this.formView === "METADATA") {
-				this.hideMetadataForm();
-			}*/
+			}
 	    	this.formView = null;
 	    	this.action = null;
-		},
+		},*/
 		
-		getCategoryInputValue: function() {
+		/*getCategoryInputValue: function() {
 			return this.utils.getInputValue("categoryInput");
 		},
 		
@@ -941,7 +1110,7 @@ define([
 		
 		getMetadataUrlInputValue: function() {
 			return this.utils.getInputValue("metadataUrlInput");
-		},
+		},*/
 		
 		/*getWfsUrlInputValue: function() {
 			return this.utils.getInputValue("adminFormAddWfsUrlInput");
@@ -952,16 +1121,16 @@ define([
 		},*/
 		
 		/* Hide category main function */
-		hideCategoryForm: function() {
+		/*hideCategoryForm: function() {
 			this.hideAddCategoryForm();
 			this.hideWmsSection();
 			this.hideMetadataSection();
 			
 			this.utils.show("categoryForm", "none");
-		},
+		},*/
 		
 		/* Category section functions*/
-		setupAddCategoryForm: function(leaf, emptyCategory, label, helcomId) {
+		/*setupAddCategoryForm: function(leaf, emptyCategory, label, helcomId) {
 			this.setCategoryInputValue(label);
 			if (!leaf) {
 				this.utils.show("helcomCatalogueIdLabelForm", "none");
@@ -990,10 +1159,10 @@ define([
 			this.utils.show("updateCategoryButton", "none");
 			this.utils.show("addDataCategoryButton", "none");
 			this.utils.show("addDataForCategoryForm", "none");
-		},
+		},*/
 		
 		/* WMS section functions */
-		setupWmsDisplayForm: function(wms) {
+		/*setupWmsDisplayForm: function(wms) {
 			this.utils.changeText("wmsFormMessage", "WMS added to this layer:");
 			this.utils.changeText("wmsDisplayUrl", wms.url);
 			this.utils.changeText("wmsDisplayName", wms.name);
@@ -1020,9 +1189,9 @@ define([
 				this.utils.show("updateWmsButton", "block");
 				this.utils.show("wmsDisplayForm", "block");
 			}
-		},
+		},*/
 		
-		hideWmsNameAndLabelSelector: function() {
+		/*hideWmsNameAndLabelSelector: function() {
 			if (this.wmsNameSelector != null) {
 				this.wmsNameSelector.destroy();
 				this.wmsNameSelector = null;
@@ -1039,10 +1208,10 @@ define([
 			this.utils.changeText("wmsDisplayUrl", "");
 			this.utils.changeText("wmsDisplayName", "");
 			this.utils.show("wmsDisplayForm", "none");
-		},
+		},*/
 		
 		/* Metadata section functions */
-		setupMetadataDisplayForm: function(metadata) {
+		/*setupMetadataDisplayForm: function(metadata) {
 			this.utils.changeText("metadataFormMessage", "Metadata added to this layer:");
 			this.utils.show("metadataDisplayForm", "block");
 			this.showMetadata(metadata);
@@ -1073,7 +1242,7 @@ define([
 		hideDisplayMetadataForm: function() {
 			domConstruct.empty(this.metadataDisplayForm);
 			this.utils.show("metadataDisplayForm", "none");
-		},
+		},*/
 		
 		/*hideMetadataForm: function() {
 			domConstruct.empty(this.metadataContainer);
@@ -1087,7 +1256,7 @@ define([
 			var u = this.utils;
 			u.changeText("adminFormMessage", text);
 	    	u.show("adminFormMessage", "block");
-	    	setTimeout(function(){ 
+	    	setTimeout(function() { 
 	    		u.changeText("adminFormMessage", "");
 	    		u.show("adminFormMessage", "none");
 	    	}, 10000);
@@ -1097,7 +1266,7 @@ define([
 			this.utils.show("adminFormMessage", "none");
 		},
 		
-		validateWmsLinkClick: function() {
+		/*validateWmsLinkClick: function() {
 			this.hideWmsNameAndLabelSelector();
 			var wmsUrl = this.getWmsUrlInputValue();
 			if (validate.isUrl(wmsUrl)) {
@@ -1143,7 +1312,7 @@ define([
 			else {
 				this.showMessage("Url is not valid.");
 			}
-		},
+		},*/
 		
 		getWmsInfo: function(wmsUrl, wmsName) {
 			var url = "sc/wms/info";
@@ -1157,7 +1326,6 @@ define([
 						this.showMessage("WMS did not pass validation. Can't get WMS info.");
 					}
 					else if (response.type == "success") {
-						console.log(response);
 						this.buildWmsInfoElement("WMS service URL", wmsUrl);
 						this.buildWmsInfoElement("Layer name", wmsName);
 						this.buildWmsInfoElement("Layer title", response.item.title);
