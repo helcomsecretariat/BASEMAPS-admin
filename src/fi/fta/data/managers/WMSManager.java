@@ -207,7 +207,10 @@ public class WMSManager extends ServiceManager<WMS, WMSDAO>
 			ret.setNames(new ArrayList<>());
 			Set<String> set = map.keySet();
 			ret.getNames().addAll(set);
-			ret.setOrganization(map.get(set.iterator().next()).getInfo().getOrganisation());
+			if (!set.isEmpty())
+			{
+				ret.setOrganization(map.get(set.iterator().next()).getInfo().getOrganisation());
+			}
 		}
 		return ret;
 	}

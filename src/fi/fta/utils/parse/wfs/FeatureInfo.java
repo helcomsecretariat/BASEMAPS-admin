@@ -133,7 +133,7 @@ public class FeatureInfo extends XmlBean<FeatureInfoSpecification>
 		Element op = null;
 		for (Element o : XmlBean.elements(root, specification.getPathOperation()))
 		{
-			if (o.attributeValue("name") == "GetFeature")
+			if (Util.equalsWithNull(specification.getFeatureOperationName(), o.attributeValue("name")))
 			{
 				op = o;
 				break;
@@ -144,7 +144,7 @@ public class FeatureInfo extends XmlBean<FeatureInfoSpecification>
 			for (Object o : op.elements(specification.getParameter()))
 			{
 				Element e = (Element)o;
-				if (e.attributeValue("name") == "outputFormat")
+				if (Util.equalsWithNull(specification.getFeatureOutputFormat(), e.attributeValue("name")))
 				{
 					for (Element f : XmlBean.elements(e, specification.getPathAllowedValue()))
 					{

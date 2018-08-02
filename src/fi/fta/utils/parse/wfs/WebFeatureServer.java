@@ -132,6 +132,10 @@ public class WebFeatureServer
 		{
 			params.put("LANGUAGE", Collections.singleton(language));
 		}
+		if (!params.containsKey("VERSION"))
+		{
+			params.put("VERSION", Collections.singleton(new WFS_2_0_0().getVersion()));
+		}
 		return u + "?" + Util.composeQuery(params);
 	}
 	

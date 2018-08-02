@@ -19,5 +19,7 @@ public interface FeatureInfoSpecification
 	public String getAbstract();
 	public String getFees();
 	public String getAccessConstraints();
+	public String getFeatureOperationName();
+	public String getFeatureOutputFormat();
 	
 }

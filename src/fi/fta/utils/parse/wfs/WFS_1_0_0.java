@@ -16,7 +16,7 @@ public class WFS_1_0_0 implements Specification
 	}
 
 	public String getServiceIdentification() {
-		return "ServiceIdentification";
+		return "Service";
 	}
 
 	public String getPathKeywords() {
@@ -37,6 +37,14 @@ public class WFS_1_0_0 implements Specification
 	
 	public String getPathOperation() {
 		return "OperationsMetadata/Operation";
+	}
+	
+	public String getFeatureOperationName() {
+		return "GetFeature";
+	}
+	
+	public String getFeatureOutputFormat() {
+		return "outputFormat";
 	}
 	
 	public String getParameter() {
@@ -92,11 +100,11 @@ public class WFS_1_0_0 implements Specification
 	}
 	
 	public String getOtherCrs() {
-		return "DefaultCRS";
+		return "OtherCRS";
 	}
 	
 	public String getOtherSrs() {
-		return "DefaultSRS";
+		return "SRS";
 	}
 	
 	public String getPathLowerCorner() {

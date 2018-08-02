@@ -3,6 +3,7 @@ package fi.fta.utils.parse;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.dom4j.Element;
@@ -46,23 +47,21 @@ public class XmlBean<T> implements XmlParse<T>
 	
 	public static List<Element> elements(Element root, String path)
 	{
-		Element el = null;
-		List<String> names = Arrays.asList(path.split("/"));
-		Iterator<String> it = names.iterator();
-		while (it.hasNext())
-		{
-			el = root.element(it.next());
-			if (el != null)
-			{
-				root = el;
-			}
-		}
 		List<Element> ret = new ArrayList<>();
-		if (el != null && el.getParent() != null)
+		LinkedList<String> names = new LinkedList<>(Arrays.asList(path.split("/")));
+		String name = names.removeFirst();
+		if (names.isEmpty())
 		{
-			for (Object o : el.getParent().elements(el.getName()))
+			for (Object o : root.elements(name))
 			{
 				ret.add((Element)o);
+			}
+		}
+		else
+		{
+			for (Object o : root.elements(name))
+			{
+				ret.addAll(XmlBean.elements((Element)o, String.join("/", names)));
 			}
 		}
 		return ret;
