@@ -47,13 +47,14 @@ public class MetaData extends IdBean implements UrlFacade
 		this.setDescription(ui.getDescription());
 	}
 	
-	public MetaData(fi.fta.utils.parse.wms.MetaData md)
+	public MetaData(fi.fta.utils.parse.MetaData md, MetaDataSource source)
 	{
 		super();
 		this.setFormat(MetaDataFormat.fromString(md.getFormat()));
 		this.setUrl(md.getUrl());
-		this.setSource(MetaDataSource.WMS);
+		this.setSource(source);
 	}
+	
 	
 	public Long getParent() {
 		return parent;

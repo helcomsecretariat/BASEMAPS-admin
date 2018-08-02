@@ -2,36 +2,14 @@ package fi.fta.utils.parse.wms;
 
 import org.dom4j.Element;
 
-import fi.fta.beans.UrlFacade;
-import fi.fta.utils.parse.XmlBean;
+import fi.fta.utils.parse.MetaDataSpecification;
 
-public class MetaData extends XmlBean<MetaDataSpecification> implements UrlFacade
+public class MetaData extends fi.fta.utils.parse.MetaData
 {
-	
-	private String format;
-	
-	private String url;
-	
 	
 	public MetaData(Element root, MetaDataSpecification specification)
 	{
 		super(root, specification);
-	}
-
-	public String getFormat() {
-		return format;
-	}
-
-	public void setFormat(String format) {
-		this.format = format;
-	}
-
-	public String getUrl() {
-		return url;
-	}
-
-	public void setUrl(String url) {
-		this.url = url;
 	}
 	
 	public void fromElement(Element root, MetaDataSpecification specification)

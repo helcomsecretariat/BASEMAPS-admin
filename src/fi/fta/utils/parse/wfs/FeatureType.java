@@ -33,7 +33,7 @@ public class FeatureType extends XmlBean<FeatureTypeSpecification> implements Na
 	
 	private Float upperLat;
 
-	private List<String> metadata;
+	private List<MetaData> metadata;
 	
 	
 	public FeatureType(Element root, FeatureTypeSpecification specification)
@@ -122,11 +122,11 @@ public class FeatureType extends XmlBean<FeatureTypeSpecification> implements Na
 		this.upperLat = upperLat;
 	}
 
-	public List<String> getMetadata() {
+	public List<MetaData> getMetadata() {
 		return metadata;
 	}
 
-	public void setMetadata(List<String> metadata) {
+	public void setMetadata(List<MetaData> metadata) {
 		this.metadata = metadata;
 	}
 
@@ -193,10 +193,10 @@ public class FeatureType extends XmlBean<FeatureTypeSpecification> implements Na
 			}
 		}
 		metadata = new ArrayList<>();
-		Element md = root.element(specification.getMetadataUrl());
+		Element md = root.element(specification.getMetaDataURL());
 		if (md != null)
 		{
-			metadata.add(md.attributeValue("href"));
+			metadata.add(new MetaData(md, specification));
 		}
 	}
 	

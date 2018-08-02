@@ -2,6 +2,8 @@ package fi.fta.utils.parse.wms;
 
 import org.dom4j.Element;
 
+import fi.fta.utils.parse.MetaDataSpecification;
+
 public interface LayerSpecification extends MetaDataSpecification, StyleSpecification
 {
 	

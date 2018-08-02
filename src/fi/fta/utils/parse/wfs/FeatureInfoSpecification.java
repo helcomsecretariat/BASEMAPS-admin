@@ -1,6 +1,8 @@
 package fi.fta.utils.parse.wfs;
 
-public interface FeatureInfoSpecification
+import fi.fta.utils.parse.MetaDataSpecification;
+
+public interface FeatureInfoSpecification extends MetaDataSpecification
 {
 	
 	public String getPathProvider();
@@ -16,6 +18,7 @@ public interface FeatureInfoSpecification
 	public String getSupportedLanguage();
 	public String getLanguage();
 	public String getPathExtendedMetadataUrl();
+	public String getPathExtendedMetadataMediaType();
 	public String getAbstract();
 	public String getFees();
 	public String getAccessConstraints();

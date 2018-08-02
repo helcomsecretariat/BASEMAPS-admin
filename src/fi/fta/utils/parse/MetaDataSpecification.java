@@ -1,6 +1,4 @@
-package fi.fta.utils.parse.wms;
-
-import fi.fta.utils.parse.OnlineResourceSpecification;
+package fi.fta.utils.parse;
 
 public interface MetaDataSpecification extends OnlineResourceSpecification
 {

@@ -79,6 +79,10 @@ public class WFS_1_0_0 implements Specification
 		return "MetadataUrl/URL";
 	}
 	
+	public String getPathExtendedMetadataMediaType() {
+		return "MetadataUrl/MediaType";
+	}
+	
 	public String getPathFeatureType() {
 		return "FeatureTypeList/FeatureType";
 	}
@@ -115,8 +119,20 @@ public class WFS_1_0_0 implements Specification
 		return "WGS84BoundingBox/UpperCorner";
 	}
 	
-	public String getMetadataUrl() {
+	public String getOnlineResource() {
+		return "OnlineResource";
+	}
+	
+	public String getHref() {
+		return "href";
+	}
+	
+	public String getMetaDataURL() {
 		return "MetadataURL";
+	}
+	
+	public String getMetaDataFormat() {
+		return "format";
 	}
 	
 }

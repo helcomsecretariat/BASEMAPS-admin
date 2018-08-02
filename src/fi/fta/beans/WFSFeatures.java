@@ -1,7 +1,9 @@
 package fi.fta.beans;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import fi.fta.utils.BeansUtils;
 import fi.fta.utils.Util;
@@ -19,16 +21,25 @@ public class WFSFeatures
 	
 	public WFSFeatures(Specification specification, FeatureInfo features, FeatureType type)
 	{
-		List<String> urls = new ArrayList<>();
+		List<fi.fta.utils.parse.wfs.MetaData> mds = new ArrayList<>();
+		Set<String> urls = new HashSet<>();
 		if (features.getMetadataUrl() != null)
 		{
-			urls.add(features.getMetadataUrl());
+			mds.add(features.getMetadataUrl());
+			urls.add(features.getMetadataUrl().getUrl());
 		}
 		if (type.getMetadata() != null)
 		{
-			urls.addAll(type.getMetadata());
+			for (fi.fta.utils.parse.wfs.MetaData md : type.getMetadata())
+			{
+				if (!urls.contains(md.getUrl()))
+				{
+					mds.add(md);
+					urls.add(md.getUrl());
+				}
+			}
 		}
-		this.metadata = BeansUtils.getMetaData(urls, MetaDataSource.WFS);
+		this.metadata = BeansUtils.getMetaData(mds, MetaDataSource.WFS);
 		this.info = new WFSInfo();	
 		this.info.setVersion(specification.getVersion());
 		this.info.setOrganisation(features.getProvider());

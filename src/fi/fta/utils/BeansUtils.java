@@ -30,7 +30,7 @@ import fi.fta.utils.parse.wms.Style;
 public class BeansUtils
 {
 	
-	public static List<MetaData> getMetaData(Collection<String> urls, MetaDataSource source)
+	public static List<MetaData> getMetaDataFromUrls(Collection<String> urls, MetaDataSource source)
 	{
 		List<MetaData> ret = new ArrayList<>();
 		if (!Util.isEmptyCollection(urls))
@@ -47,14 +47,15 @@ public class BeansUtils
 		return ret;
 	}
 	
-	public static List<MetaData> getMetaData(Collection<fi.fta.utils.parse.wms.MetaData> collection)
+	public static List<MetaData> getMetaData(
+		Collection<? extends fi.fta.utils.parse.MetaData> collection, MetaDataSource source)
 	{
 		List<MetaData> ret = new ArrayList<>();
 		if (!Util.isEmptyCollection(collection))
 		{
-			for (fi.fta.utils.parse.wms.MetaData mdu : collection)
+			for (fi.fta.utils.parse.MetaData mdu : collection)
 			{
-				ret.add(new MetaData(mdu));
+				ret.add(new MetaData(mdu, source));
 			}
 		}
 		return ret;

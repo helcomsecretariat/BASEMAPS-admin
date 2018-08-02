@@ -28,7 +28,7 @@ public class FeatureInfo extends XmlBean<FeatureInfoSpecification>
 
 	private List<String> languages;
 	
-	private String metadataUrl;
+	private MetaData metadataUrl;
 	
 	
 	public FeatureInfo(Element root, FeatureInfoSpecification specification)
@@ -100,11 +100,11 @@ public class FeatureInfo extends XmlBean<FeatureInfoSpecification>
 		this.languages = languages;
 	}
 
-	public String getMetadataUrl() {
+	public MetaData getMetadataUrl() {
 		return metadataUrl;
 	}
 
-	public void setMetadataUrl(String metadataUrl) {
+	public void setMetadataUrl(MetaData metadataUrl) {
 		this.metadataUrl = metadataUrl;
 	}
 
@@ -155,8 +155,7 @@ public class FeatureInfo extends XmlBean<FeatureInfoSpecification>
 			}
 		}
 		languages = new ArrayList<>();
-		Element ec = XmlBean.element(root, specification.getPathExtendedCapabilities());
-		if (ec != null)
+		for (Element ec : XmlBean.elements(root, specification.getPathExtendedCapabilities()))
 		{
 			Element sl = ec.element(specification.getSupportedLanguages());
 			if (sl != null)
@@ -171,13 +170,17 @@ public class FeatureInfo extends XmlBean<FeatureInfoSpecification>
 					languages.add(((Element)l).elementText(specification.getLanguage()));
 				}
 			}
-			String md = XmlBean.elementText(ec, specification.getPathExtendedMetadataUrl());
-			if (!Util.isEmptyString(md))
+			Element md = XmlBean.element(ec, specification.getPathExtendedMetadataUrl());
+			if (md != null)
 			{
-				metadataUrl = md;
+				metadataUrl = new MetaData(md, specification);
+				Element mt = XmlBean.element(ec, specification.getPathExtendedMetadataMediaType());
+				if (mt != null && !Util.isEmptyString(mt.getStringValue()))
+				{
+					metadataUrl.setFormat(mt.getStringValue());
+				}
 			}
 		}
-			
 	}
 	
 }

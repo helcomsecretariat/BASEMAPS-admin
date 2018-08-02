@@ -21,7 +21,7 @@ public class WMSLayer
 	
 	public WMSLayer(Specification specification, FeatureInfo features, Layer l)
 	{
-		this.metadata = BeansUtils.getMetaData(l.getMetadata());
+		this.metadata = BeansUtils.getMetaData(l.getMetadata(), MetaDataSource.WMS);
 		this.info = new WMSInfo();	
 		this.info.setVersion(specification.getVersion());
 		this.info.setOrganisation(features.getOrganisation());
