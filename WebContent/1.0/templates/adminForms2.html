@@ -9,14 +9,17 @@
 			<div class="inputLabelGroup">
 				<span class="textInputLabel">Label:</span>
 				<input id="addRootCategoryLabelInput" class="textInput" type="text" tabindex="2" maxlength="200" placeholder="Required">
+				<div class="inputDescriptionRequired">Label will appear in the layer list</div>
 			</div>
 			<div class="inputLabelGroup">
 				<span class="textInputLabel">HELCOM id:</span>
 				<input id="addRootCategoryHelcomIdInput" class="textInput" type="text" tabindex="2" maxlength="200">
+				<div class="inputDescriptionNotRequired">Filled in only by HELCOM.</div>
 			</div>
 			<div class="inputLabelGroup">
 				<span class="textInputLabel">Metadata URL:</span>
 				<input id="addRootCategoryMetadataUrlInput" class="textInput" type="text" tabindex="2" maxlength="500">
+				<div class="inputDescriptionNotRequired">Input any valid metadata URL pointing to metadata web page (HTML), XML or plain text content that describes this category.</div>
 			</div>
 			<div class="inputLabelGroup">
 				<span class="textInputLabel">Metadata format:</span>
@@ -39,6 +42,7 @@
 						<span id="editCategoryLabel" class="formLink" data-dojo-attach-event="onclick:editCategoryLabelClick">Edit</span>
 						<span id="cancelCategoryLabel" class="formLink" style="display: none;" data-dojo-attach-event="onclick:cancelCategoryLabelClick">Cancel</span>
 						<span id="saveCategoryLabel" class="formLink" style="display: none;" data-dojo-attach-point="saveCategoryLabel">Save</span>
+						<div id="categoryLabelDescription" class="inputDescriptionRequired" style="display: none;">Label will appear in the layer list</div>
 					</div>
 					<div class="inputLabelGroup">
 						<span class="textInputLabel">HELCOM id:</span>
@@ -47,6 +51,7 @@
 						<span id="editHelcomCatalogueId" class="formLink" data-dojo-attach-event="onclick:editHelcomCatalogueIdClick">Edit</span>
 						<span id="cancelHelcomCatalogueId" class="formLink" style="display: none;" data-dojo-attach-event="onclick:cancelHelcomCatalogueIdClick">Cancel</span>
 						<span id="saveHelcomCatalogueId" class="formLink" style="display: none;" data-dojo-attach-point="saveHelcomCatalogueId">Save</span>
+						<div id="helcomCatalogueIdDescription" class="inputDescriptionNotRequired" style="display: none;">Filled in only by HELCOM.</div>
 					</div>
 					<div id=categoryMetadataSection class="inputLabelGroup">
 						<span class="textInputLabel">Metadata:</span>
@@ -55,6 +60,7 @@
 						<span id="editCategoryMetadataLink" class="formLink" data-dojo-attach-event="onclick:editCategoryMetadataLinkClick">Edit</span>
 						<span id="cancelCategoryMetadataLink" class="formLink" style="display: none;" data-dojo-attach-event="onclick:cancelCategoryMetadataLinkClick">Cancel</span>
 						<span id="saveCategoryMetadataLink" class="formLink" style="display: none;" data-dojo-attach-point="saveCategoryMetadataLink">Save</span>
+						<div id="categoryMetadataLinkDescription" class="inputDescriptionNotRequired" style="display: none;">Input any valid metadata URL pointing to metadata web page (HTML), XML or plain text content that describes this category.</div>
 					</div>
 				</div>
 				
@@ -67,6 +73,7 @@
 						<div class="inputLabelGroup">
 							<span class="textInputLabel">URL:</span>
 							<input id="metadataUrlInput" class="textInput" type="text" tabindex="2" maxlength="500" placeholder="Required">
+							<div class="inputDescriptionRequired">Input any valid metadata URL pointing to metadata web page (HTML), XML or plain text content that describes this layer.</div>
 						</div>
 						<div class="inputLabelGroup">
 							<span class="textInputLabel">Metadata format:</span>
@@ -87,14 +94,17 @@
 						<div class="inputLabelGroup">
 							<span class="textInputLabel">Label:</span>
 							<input id="addCategoryLabelInput" class="textInput" type="text" tabindex="2" maxlength="200" placeholder="Required">
+							<div class="inputDescriptionRequired">Label will appear in the layer list</div>
 						</div>
 						<div class="inputLabelGroup">
 							<span class="textInputLabel">HELCOM id:</span>
 							<input id="addCategoryHelcomIdInput" class="textInput" type="text" tabindex="2" maxlength="200">
+							<div class="inputDescriptionNotRequired">Filled in only by HELCOM.</div>
 						</div>
 						<div class="inputLabelGroup">
 							<span class="textInputLabel">Metadata URL:</span>
 							<input id="addCategoryMetadataUrlInput" class="textInput" type="text" tabindex="2" maxlength="500">
+							<div class="inputDescriptionNotRequired">Input any valid metadata URL pointing to metadata web page (HTML), XML or plain text content that describes this category.</div>
 						</div>
 						<div class="inputLabelGroup">
 							<span class="textInputLabel">Metadata format:</span>
@@ -116,22 +126,29 @@
 							<span class="textInputLabel">URL:</span>
 							<input id="wmsUrlInput" class="textInput" type="text" tabindex="2" maxlength="500" placeholder="Required">
 							<span id="validateWms" class="formLink" data-dojo-attach-event="onclick:validateWmsClick">Validate</span>
+							<div class="inputDescriptionRequired">Input valid WMS servise URL. Examples:</div>
+							<div class="inputDescriptionRequired">http://www.myserver.com/arcgis/services/maps/MapServer/WMSServer</div>
+							<div class="inputDescriptionRequired">https://www.myserver.com/service?SERVICENAME=name&LOGIN=login&PASSWORD=password</div>
 						</div>
 						<div id="wmsLayerNameSelectGroup" class="inputLabelGroup" style="display:none;">
 							<span class="textInputLabel">WMS layer name:</span>
 							<span id="wmsNameSelect" data-dojo-attach-point="wmsNameSelect"></span>
+							<div class="inputDescriptionRequired">Choose layer (layer names have been extracted from WMS GetCapabilities).</div>
 						</div>
 						<div id="wmsLayerNameInputGroup" class="inputLabelGroup" style="display:none;">
 							<span class="textInputLabel">WMS layer name:</span>
 							<input id="wmsNameInput" class="textInput" type="text" tabindex="2" maxlength="200" placeholder="Required">
+							<div class="inputDescriptionRequired">Input WMS GetCapabilities layer name. </div>
 						</div>
 						<div class="inputLabelGroup">
 							<span class="textInputLabel">Label:</span>
 							<input id="wmsLabelInput" class="textInput" type="text" tabindex="2" maxlength="200" placeholder="Required">
+							<div class="inputDescriptionRequired">Label will appear in the layer list. It can be WMS layer's title from the WMS GetCapabilities or other label describing this layer.</div>
 						</div>
 						<div class="inputLabelGroup">
 							<span class="textInputLabel">HELCOM id:</span>
 							<input id="wmsHelcomIdInput" class="textInput" type="text" tabindex="2" maxlength="200">
+							<div class="inputDescriptionNotRequired">Filled in only by HELCOM.</div>
 						</div>
 						<span id="saveWms" class="formLink" data-dojo-attach-point="saveWms">Save</span>
 						<span id="cancelWms" class="formLink" data-dojo-attach-event="onclick:cancelWmsClick">Cancel</span>
@@ -139,13 +156,59 @@
 					<div id="wmsDisplayForm" data-dojo-attach-point="wmsDisplayForm"></div>
 				</div>
 				
+				<!-- Category WFS section -->
+				<div id="categoryWfsForm" class="formSectionGroup">
+					<div class="formSectionLabel">WFS layers:</div>
+					<div id="addWfs" class="formLink" data-dojo-attach-event="onclick:addWfsClick">Add new</div>
+					<div id="addWfsForm" class="formSubSectionGroup" style="display: none;">
+						<div class="formSubSectionLabel">Add new WFS layer</div>
+						<div class="inputLabelGroup">
+							<span class="textInputLabel">URL:</span>
+							<input id="wfsUrlInput" class="textInput" type="text" tabindex="2" maxlength="500" placeholder="Required">
+							<span id="validateWfs" class="formLink" data-dojo-attach-event="onclick:validateWfsClick">Validate</span>
+							<div class="inputDescriptionRequired">Input valid WFS servise URL. Examples:</div>
+							<div class="inputDescriptionRequired">http://www.myserver.com/arcgis/services/download/service</div>
+							<div class="inputDescriptionRequired">https://www.myserver.com/service</div>
+						</div>
+						<div id="wfsLayerNameSelectGroup" class="inputLabelGroup" style="display:none;">
+							<span class="textInputLabel">WFS layer name:</span>
+							<span id="wfsNameSelect" data-dojo-attach-point="wfsNameSelect"></span>
+							<div class="inputDescriptionRequired">Choose layer (layer FeatureType names have been extracted from WFS GetCapabilities).</div>
+						</div>
+						<div id="wfsLayerNameInputGroup" class="inputLabelGroup" style="display:none;">
+							<span class="textInputLabel">WFS layer name:</span>
+							<input id="wfsNameInput" class="textInput" type="text" tabindex="2" maxlength="200" placeholder="Required">
+							<div class="inputDescriptionRequired">Input WFS GetCapabilities FeatureType name. </div>
+						</div>
+						<div class="inputLabelGroup">
+							<span class="textInputLabel">Label:</span>
+							<input id="wfsLabelInput" class="textInput" type="text" tabindex="2" maxlength="200" placeholder="Required">
+							<div class="inputDescriptionRequired">Label will appear in the layer list. It can be WFS FeatureType's title from the WFS GetCapabilities or other label describing this layer.</div>
+						</div>
+						<div class="inputLabelGroup">
+							<span class="textInputLabel">HELCOM id:</span>
+							<input id="wfsHelcomIdInput" class="textInput" type="text" tabindex="2" maxlength="200">
+							<div class="inputDescriptionNotRequired">Filled in only by HELCOM.</div>
+						</div>
+						<span id="saveWfs" class="formLink" data-dojo-attach-point="saveWfs">Save</span>
+						<span id="cancelWfs" class="formLink" data-dojo-attach-event="onclick:cancelWfsClick">Cancel</span>
+					</div>
+					<div id="wfsDisplayForm" data-dojo-attach-point="wfsDisplayForm"></div>
+				</div>
+				
 				<!-- Category WMS INFO section -->
 				<div id="categoryWmsInfoForm" class="formSectionGroup">
 					<div class="formSectionLabel">WMS GetCapabilities info </div>
 					<div id="wmsDisplayInfoForm" data-dojo-attach-point="wmsDisplayInfoForm"></div>
 				</div>
+				
+				<!-- Category WFS INFO section -->
+				<div id="categoryWfsInfoForm" class="formSectionGroup">
+					<div class="formSectionLabel">WFS GetCapabilities info </div>
+					<div id="wfsDisplayInfoForm" data-dojo-attach-point="wfsDisplayInfoForm"></div>
+				</div>
 								
-				<div id="addDataForCategoryForm" style="display:none;">
+				<!-- <div id="addDataForCategoryForm" style="display:none;">
 					<div id="metadataSection" class="formSectionGroup">
 						<div class="formSectionLabel">Metadata:</div>
 						<div id="metadataFormMessage" class="formSectionMessage">No metadata added to this layer (Add WMS, WFS first. Metadata will be added automatically if any present in WMS and WFS.)</div>
@@ -171,7 +234,7 @@
 						<div class="formNoDataMessage">No downloadable resource added to this layer</div>
 						<div id="addDownloadableResourceButton" class="formButton" style="margin-left: 20px;" data-dojo-attach-point="addDownloadableResourceButton">Add</div>
 					</div>
-				</div>
+				</div>-->
 			</div>
 			<div id="manageLayersCloseButton" class="formButton" style="margin-top: 10px;" data-dojo-attach-event="onclick:cleanAdminForm">Close</div>
 		</div>

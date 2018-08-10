@@ -32,10 +32,14 @@ define([
 		wmsValidationPassed: false,
 		wmsNameSelector: null,
 		wmsUpdate: false,
+		wfsValidationPassed: false,
+		wfsNameSelector: null,
+		wfsUpdate: false,
 		metadataFormatSelector: null,
 		currentObjId: null,
 		currentCategory: null,
 		currentCategoryWmses: [],
+		currentCategoryWfses: [],
 		currentCategoryCategories: [],
 		editMode: false,
 		categoryUserSelector: null,
@@ -104,8 +108,11 @@ define([
 			
 			this.cleanWmsDisplayForm();
 			this.cleanWmsAddForm();
-			
 			this.cleanWmsInfoDisplayForm();
+			
+			this.cleanWfsDisplayForm();
+			this.cleanWfsAddForm();
+			this.cleanWfsInfoDisplayForm();
 			
 			this.utils.show("categoryUsersForm", "none");
 			this.utils.show("categoryForm", "none");
@@ -216,6 +223,7 @@ define([
 			this.utils.setInputValue("categoryLabelInput", this.utils.getTextValue("categoryLabel").trim());
 			this.utils.show("categoryLabel", "none");
 			this.utils.show("categoryLabelInput", "inline-block");
+			this.utils.show("categoryLabelDescription", "block");
 			this.utils.show("editCategoryLabel", "none");
 			this.utils.show("cancelCategoryLabel", "inline-block");
 			this.utils.show("saveCategoryLabel", "inline-block");
@@ -235,6 +243,7 @@ define([
 			
 			this.utils.show("helcomCatalogueId", "none");
 			this.utils.show("helcomCatalogueIdInput", "inline-block");
+			this.utils.show("helcomCatalogueIdDescription", "block");
 			this.utils.show("editHelcomCatalogueId", "none");
 			this.utils.show("cancelHelcomCatalogueId", "inline-block");
 			this.utils.show("saveHelcomCatalogueId", "inline-block");
@@ -254,6 +263,7 @@ define([
 			
 			this.utils.show("categoryMetadataLink", "none");
 			this.utils.show("categoryMetadataLinkInput", "inline-block");
+			this.utils.show("categoryMetadataLinkDescription", "block");
 			this.utils.show("editCategoryMetadataLink", "none");
 			this.utils.show("cancelCategoryMetadataLink", "inline-block");
 			this.utils.show("saveCategoryMetadataLink", "inline-block");
@@ -303,6 +313,28 @@ define([
 			}
 			else {
 				this.showMessage("Wms url is not valid.");
+			}
+		},
+		
+		// --- category wfs
+		addWfsClick: function() {
+			this.utils.show("addWfsForm", "block");
+			this.utils.show("addWfs", "none");
+		},
+		
+		cancelWfsClick: function() {
+			this.cleanWfsAddForm();
+		},
+		
+		validateWfsClick: function() {
+			this.cleanWfsNameAndLabelForms();
+			var wfsUrl = this.utils.getInputValue("wfsUrlInput").trim();
+			if (validate.isUrl(wfsUrl)) {
+				this.validateWfs(wfsUrl);
+				//console.log("validate wfs");
+			}
+			else {
+				this.showMessage("Wfs url is not valid.");
 			}
 		},
 		/* --- MANAGE CATEGORY BUTTONS END --- */
@@ -365,6 +397,7 @@ define([
 		cleanCategoryLabel: function() {
 			this.utils.show("categoryLabel", "inline-block");
 			this.utils.show("categoryLabelInput", "none");
+			this.utils.show("categoryLabelDescription", "none");
 			this.utils.show("editCategoryLabel", "inline-block");
 			this.utils.show("cancelCategoryLabel", "none");
 			this.utils.show("saveCategoryLabel", "none");
@@ -373,6 +406,7 @@ define([
 		cleanHelcomCatalogueId: function() {
 			this.utils.show("helcomCatalogueId", "inline-block");
 			this.utils.show("helcomCatalogueIdInput", "none");
+			this.utils.show("helcomCatalogueIdDescription", "none");
 			this.utils.show("editHelcomCatalogueId", "inline-block");
 			this.utils.show("cancelHelcomCatalogueId", "none");
 			this.utils.show("saveHelcomCatalogueId", "none");
@@ -381,6 +415,7 @@ define([
 		cleanCategoryMetadataLink: function() {
 			this.utils.show("categoryMetadataLink", "inline-block");
 			this.utils.show("categoryMetadataLinkInput", "none");
+			this.utils.show("categoryMetadataLinkDescription", "none");
 			this.utils.show("editCategoryMetadataLink", "inline-block");
 			this.utils.show("cancelCategoryMetadataLink", "none");
 			this.utils.show("saveCategoryMetadataLink", "none");
@@ -427,6 +462,23 @@ define([
 		
 		cleanWmsInfoDisplayForm: function() {
 			domConstruct.empty(this.wmsDisplayInfoForm);
+		},
+		
+		// --- category wfs
+		cleanWfsDisplayForm: function() {
+			domConstruct.empty(this.wfsDisplayForm);
+		},
+		
+		cleanWfsAddForm: function() {
+			this.cleanWfsNameAndLabelForms();
+			this.utils.clearInput("wfsUrlInput");
+			this.utils.show("addWfsForm", "none");
+			this.utils.show("addWfs", "inline-block");
+			
+		},
+		
+		cleanWfsInfoDisplayForm: function() {
+			domConstruct.empty(this.wfsDisplayInfoForm);
 		},
 		/* --- MANAGE CATEGORY CLEAN END--- */
 		
@@ -709,6 +761,135 @@ define([
 			);
 		},
 		
+		// --- category wfs
+		validateWfs: function(wfsUrl) {
+			var url = "sc/wfs/verify";
+			var data = {
+				"url": wfsUrl
+			};
+			request.post(url, this.utils.createPostRequestParams(data)).then(
+				lang.hitch(this, function(response){
+					console.log(response);
+					//this.hideWmsNameAndLabelSelector();
+					if (response.type == "error") {
+						this.wfsValidationPassed = false;
+						this.showMessage("WFS did not pass validation.");
+						this.utils.show("wfsLayerNameInputGroup", "block");
+					}
+					else if (response.type == "success") {
+						this.wfsValidationPassed = true;
+						this.showMessage("WFS is valid.");
+						this.utils.show("wfsLayerNameSelectGroup", "block");
+						
+						//this.utils.setInputValue("wmsLabelInput", response.item.organization);
+						
+						var layerNames = [];
+						array.forEach(response.item.names, lang.hitch(this, function(name){
+							layerNames.push({label: name, value: name});
+						}));
+						this.setupWfsNameSelector(layerNames);
+						
+					}
+					//this.utils.show("wmsLabelForm", "block");
+					//this.action = null;
+				}),
+				lang.hitch(this, function(error){
+					this.action = null;
+					this.showMessage("Something went wrong (on wfs/verify). Please contact administrator.");
+				})
+			);
+		},
+		
+		setupWfsNameSelector: function(names) {
+			this.wfsNameSelector = new Select({
+				options: names
+			});
+			this.wfsNameSelector.placeAt(this.wfsNameSelect);
+			this.wfsNameSelector.startup();
+		},
+		
+		cleanWfsNameAndLabelForms: function() {
+			if (this.wfsNameSelector != null) {
+				this.wfsNameSelector.destroy();
+				this.wfsNameSelector = null;
+			}
+			this.utils.show("wfsLayerNameSelectGroup", "none");
+			this.utils.clearInput("wfsNameInput");
+			this.utils.show("wfsLayerNameInputGroup", "none");
+			this.utils.clearInput("wfsLabelInput");
+			this.utils.clearInput("wfsHelcomIdInput");
+			this.wfsValidationPassed = false;
+		},
+				
+		displayWfses: function() {
+			if (this.currentCategoryWfses.length > 0) {
+				
+				array.forEach(this.currentCategoryWfses, lang.hitch(this, function(wfs) {
+					
+					var container = domConstruct.create("div", {"class": "formSubSectionGroup"}, this.wfsDisplayForm, "last");
+					var content = domConstruct.create("div", {"style": "display: inline-block; width: 90%"}, container, "last");
+					var buttonContainer = domConstruct.create("div", {"style": "display: inline-block; width: 10%"}, container, "last");
+					
+					var label = domConstruct.create("div", null, content, "last");
+					var labelLabel = domConstruct.create("span", { "class": "textInputLabel", "innerHTML": "Label: " }, label, "last");
+					var labelValue = domConstruct.create("span", { "class": "textLabel", "innerHTML": wfs.label }, label, "last");
+					
+					var name = domConstruct.create("div", null, content, "last");
+					var nameLabel = domConstruct.create("span", { "class": "textInputLabel", "innerHTML": "WFS layer name: " }, name, "last");
+					var nameValue = domConstruct.create("span", { "class": "textLabel", "innerHTML": wfs.wfs.name }, name, "last");
+					
+					var url = domConstruct.create("div", null, content, "last");
+					var urlLabel = domConstruct.create("span", { "class": "textInputLabel", "innerHTML": "WFS URL: " }, url, "last");
+					var urlValue = domConstruct.create("a", { "class": "textLabel", "href": wfs.wfs.url, "target": "_blank", "innerHTML": wfs.wfs.url }, url, "last");
+					
+					if (this.editMode) {
+						var editButton = domConstruct.create("div", {"class": "formEditDeleteLink", "innerHTML": "Edit"}, buttonContainer, "last");
+						on(editButton, "click", lang.hitch(this, function() {
+							this.setupManageEditForm(wfs);
+						}));
+						
+						var deleteButton = domConstruct.create("div", {"class": "formEditDeleteLink", "innerHTML": "Delete"}, buttonContainer, "last");
+						on(deleteButton, "click", lang.hitch(this, function() {
+							console.log(wfs.id);
+						    if (confirm("Please confirm removing WFS: " + wfs.label) == true) {
+						    	this.deleteWfs(wfs.id);
+						    }
+						}));
+					}
+				}));
+			}
+			else {
+				var con = domConstruct.create("div", {"style": { "margin-bottom": "5px", "margin-top": "5px", "margin-left": "20px"}, "innerHTML": "No WFSes in this category"}, this.wfsDisplayForm, "last");
+			}
+		},
+		
+		deleteWfs: function(id) {
+			var url = "sc/categories/delete/" + id;
+			//this.getTreePath(this.store.get(this.currentObjId).parent);
+			request.del(url, {
+				handleAs: "json"
+			}).then(
+				lang.hitch(this, function(response){
+					if (response.type == "error") {
+						this.showMessage("Failed to delete WFS.");
+					}
+					else if (response.type == "success") {
+						this.showMessage("WFS deleted.");
+						var index = this.currentCategoryWfses.findIndex(x => x.id == id);
+						if (index > -1) {
+							this.currentCategoryWfses.splice(index, 1);
+							this.cleanWfsDisplayForm();
+							this.displayWfses(this.currentCategoryWfses);
+						}
+					}
+				}),
+				lang.hitch(this, function(error){
+					this.showMessage("Something went wrong (on categories/delete/{id}). Please contact administrator.");
+					console.log(error);
+				})
+			);
+		},
+		
 		deleteObject: function(id) {
 			console.log(id);
 			var url = "sc/categories/delete/" + id;
@@ -888,6 +1069,16 @@ define([
 			this.displayWmses();
 		},
 		
+		setupAndDisplayWfses: function(layers) {
+			this.currentCategoryWfses = [];
+			array.forEach(layers, lang.hitch(this, function(layer) {
+				if (layer.wfs != null) {
+					this.currentCategoryWfses.push(layer);
+				}
+			}));
+			this.displayWfses();
+		},
+		
 		setupManageEditForm: function(layer) {
 			this.cleanAdminForm();
 			this.currentObjId = layer.id;
@@ -901,6 +1092,7 @@ define([
 				this.utils.show("addMetadata", "block");
 				this.utils.show("addCategory", "block");
 				this.utils.show("addWms", "block");
+				this.utils.show("addWfs", "block");
 				this.utils.show("deleteObject", "block");
 			}
 			else {
@@ -910,6 +1102,7 @@ define([
 				this.utils.show("addMetadata", "none");
 				this.utils.show("addCategory", "none");
 				this.utils.show("addWms", "none");
+				this.utils.show("addWfs", "none");
 				this.utils.show("deleteObject", "none");
 			}
 			
@@ -928,8 +1121,10 @@ define([
 				this.utils.show("categoryMetadataSection", "block");
 				this.utils.show("categoryCategoriesForm", "block");
 				this.utils.show("categoryWmsForm", "block");
+				this.utils.show("categoryWfsForm", "block");
 				this.utils.show("categoryMetadataForm", "none");
 				this.utils.show("categoryWmsInfoForm", "none");
+				this.utils.show("categoryWfsInfoForm", "none");
 				this.utils.setTextValue("deleteObject", "Delete this category and all it's content");
 				
 				if ((layer.metadata) && (layer.metadata.length > 0)) {
@@ -941,12 +1136,15 @@ define([
 				
 				this.setupAndDisplayCategories(layer.layers);
 				this.setupAndDisplayWmses(layer.layers);
+				this.setupAndDisplayWfses(layer.layers);
 				
 			}
 			else if (layer.type == "WMS") {
 				this.utils.show("categoryMetadataSection", "none");
 				this.utils.show("categoryCategoriesForm", "none");
 				this.utils.show("categoryWmsForm", "none");
+				this.utils.show("categoryWfsForm", "none");
+				this.utils.show("categoryWfsInfoForm", "none");
 				this.utils.show("categoryMetadataForm", "block");
 				this.utils.show("categoryWmsInfoForm", "block");
 				this.utils.setTextValue("deleteObject", "Delete this WMS");
@@ -959,6 +1157,25 @@ define([
 				}
 				
 				this.getWmsInfo(layer.wms.url, layer.wms.name);
+			}
+			else if (layer.type == "WFS") {
+				this.utils.show("categoryMetadataSection", "none");
+				this.utils.show("categoryCategoriesForm", "none");
+				this.utils.show("categoryWmsForm", "none");
+				this.utils.show("categoryWfsForm", "none");
+				this.utils.show("categoryWmsInfoForm", "none");
+				this.utils.show("categoryMetadataForm", "block");
+				this.utils.show("categoryWfsInfoForm", "block");
+				this.utils.setTextValue("deleteObject", "Delete this WFS");
+				
+				if ((layer.metadata) && (layer.metadata.length > 0)) {
+					this.displayMetadata(layer.metadata);
+				}
+				else {
+					var con = domConstruct.create("div", {"style": { "margin-bottom": "5px", "margin-top": "5px", "margin-left": "20px"}, "innerHTML": "No metadata assigned"}, this.metadataDisplayForm, "last");
+				}
+				
+				this.getWfsInfo(layer.wfs.url, layer.wfs.name);
 			}
 			
 			this.utils.show("categoryForm", "block");
@@ -1314,6 +1531,7 @@ define([
 			}
 		},*/
 		
+		// -- wms info form
 		getWmsInfo: function(wmsUrl, wmsName) {
 			var url = "sc/wms/info";
 			var data = {
@@ -1326,6 +1544,7 @@ define([
 						this.showMessage("WMS did not pass validation. Can't get WMS info.");
 					}
 					else if (response.type == "success") {
+						console.log("wms info", response);
 						this.buildWmsInfoElement("WMS service URL", wmsUrl);
 						this.buildWmsInfoElement("Layer name", wmsName);
 						this.buildWmsInfoElement("Layer title", response.item.title);
@@ -1352,15 +1571,15 @@ define([
 		},
 		
 		buildWmsInfoElement: function(label, value) {
-			var infoContainer = domConstruct.create("div", {"class": "wmsInfoElementContainer"}, this.wmsDisplayInfoForm, "last");
-			var infoLabel = domConstruct.create("div", { "class": "wmsInfoElementLabel", "innerHTML": label+":" }, infoContainer, "last");
-			var infoValue = domConstruct.create("div", { "class": "wmsInfoElementValue", "innerHTML": value }, infoContainer, "last");
+			var infoContainer = domConstruct.create("div", {"class": "serviceInfoElementContainer"}, this.wmsDisplayInfoForm, "last");
+			var infoLabel = domConstruct.create("div", { "class": "serviceInfoElementLabel", "innerHTML": label+":" }, infoContainer, "last");
+			var infoValue = domConstruct.create("div", { "class": "serviceInfoElementValue", "innerHTML": value }, infoContainer, "last");
 		},
 		
 		buildWmsMetadataElement: function(label, value) {
-			var infoContainer = domConstruct.create("div", {"class": "wmsInfoElementContainer"}, this.wmsDisplayInfoForm, "last");
-			var infoLabel = domConstruct.create("div", { "class": "wmsInfoElementLabel", "innerHTML": label+":" }, infoContainer, "last");
-			var infoValue = domConstruct.create("div", { "class": "wmsInfoElementValue"}, infoContainer, "last");
+			var infoContainer = domConstruct.create("div", {"class": "serviceInfoElementContainer"}, this.wmsDisplayInfoForm, "last");
+			var infoLabel = domConstruct.create("div", { "class": "serviceInfoElementLabel", "innerHTML": label+":" }, infoContainer, "last");
+			var infoValue = domConstruct.create("div", { "class": "serviceInfoElementValue"}, infoContainer, "last");
 			
 			array.forEach(value, lang.hitch(this, function(record){
 				var metadataContainer = domConstruct.create("div", {"style": { "margin-bottom": "5px" }}, infoValue, "last");
@@ -1370,15 +1589,68 @@ define([
 		},
 		
 		buildWmsStyleElement: function(label, value) {
-			var infoContainer = domConstruct.create("div", {"class": "wmsInfoElementContainer"}, this.wmsDisplayInfoForm, "last");
-			var infoLabel = domConstruct.create("div", { "class": "wmsInfoElementLabel", "innerHTML": label+":" }, infoContainer, "last");
-			var infoValue = domConstruct.create("div", { "class": "wmsInfoElementValue"}, infoContainer, "last");
+			var infoContainer = domConstruct.create("div", {"class": "serviceInfoElementContainer"}, this.wmsDisplayInfoForm, "last");
+			var infoLabel = domConstruct.create("div", { "class": "serviceInfoElementLabel", "innerHTML": label+":" }, infoContainer, "last");
+			var infoValue = domConstruct.create("div", { "class": "serviceInfoElementValue"}, infoContainer, "last");
 			
 			array.forEach(value, lang.hitch(this, function(record){
 				var styleContainer = domConstruct.create("div", {"style": { "margin-bottom": "5px" }}, infoValue, "last");
 				var styleName = domConstruct.create("div", { "style": { "font-size": "14px", "font-weight": "bold" }, "innerHTML": "Name: " + record.name }, styleContainer, "last");
 				var styleURL = domConstruct.create("div", { "innerHTML": record.urls[0] }, styleContainer, "last");
 				var styleImage = domConstruct.create("img", { "src": record.urls[0] }, styleContainer, "last");
+			}));
+		},
+		
+		// -- wfs info form
+		getWfsInfo: function(wfsUrl, wfsName) {
+			var url = "sc/wfs/info";
+			var data = {
+				"url": wfsUrl,
+				"name": wfsName
+			};
+			request.post(url, this.utils.createPostRequestParams(data)).then(
+				lang.hitch(this, function(response){
+					if (response.type == "error") {
+						this.showMessage("WFS did not pass validation. Can't get WFS info.");
+					}
+					else if (response.type == "success") {
+						console.log("wfs info", response);
+						this.buildWfsInfoElement("WFS service URL", wfsUrl);
+						this.buildWfsInfoElement("Layer name", wfsName);
+						this.buildWfsInfoElement("Layer title", response.item.title);
+						this.buildWfsInfoElement("WFS version", response.item.version);
+						this.buildWfsInfoElement("Supported languages", response.item.languages.join(", "));
+						this.buildWfsInfoElement("Organization", response.item.organisation);
+						this.buildWfsInfoElement("Access constraints", response.item.accessConstraints);
+						this.buildWfsInfoElement("Fees", response.item.fees);
+						this.buildWfsInfoElement("Keywords", response.item.keywords.join(", "));
+						this.buildWfsMetadataElement("Metadata", response.item.metadata);
+						this.buildWfsInfoElement("Response formats", response.item.formats.join(", "));
+						this.buildWfsInfoElement("Supported CRSes", response.item.crs.join(", "));
+						this.buildWfsInfoElement("Bounding box", "East: " + response.item.upperLong + ", North: " + response.item.upperLat + ", West: " + response.item.lowerLong + ", South: " + response.item.lowerLat);
+					}
+				}),
+				lang.hitch(this, function(error){
+					this.showMessage("Something went wrong (on wms/info). Please contact administrator.");
+				})
+			);
+		},
+		
+		buildWfsInfoElement: function(label, value) {
+			var infoContainer = domConstruct.create("div", {"class": "serviceInfoElementContainer"}, this.wfsDisplayInfoForm, "last");
+			var infoLabel = domConstruct.create("div", { "class": "serviceInfoElementLabel", "innerHTML": label+":" }, infoContainer, "last");
+			var infoValue = domConstruct.create("div", { "class": "serviceInfoElementValue", "innerHTML": value }, infoContainer, "last");
+		},
+		
+		buildWfsMetadataElement: function(label, value) {
+			var infoContainer = domConstruct.create("div", {"class": "serviceInfoElementContainer"}, this.wmsDisplayInfoForm, "last");
+			var infoLabel = domConstruct.create("div", { "class": "serviceInfoElementLabel", "innerHTML": label+":" }, infoContainer, "last");
+			var infoValue = domConstruct.create("div", { "class": "serviceInfoElementValue"}, infoContainer, "last");
+			
+			array.forEach(value, lang.hitch(this, function(record){
+				var metadataContainer = domConstruct.create("div", {"style": { "margin-bottom": "5px" }}, infoValue, "last");
+				var metadataLabel = domConstruct.create("div", { "style": { "font-size": "14px", "font-weight": "bold" }, "innerHTML": record.format }, metadataContainer, "last");
+				var metadataURL = domConstruct.create("div", { "innerHTML": record.url }, metadataContainer, "last");
 			}));
 		}
 	});

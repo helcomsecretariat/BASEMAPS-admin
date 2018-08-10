@@ -241,6 +241,33 @@ define([
 					this.formsObj.showMessage("Wms layer name or label is not valid.");
 				}
 			}));
+			
+			// --- save wms
+			on(this.formsObj.saveWfs, "click", lang.hitch(this, function() {
+				var wfsUrl = this.utils.getInputValue("wfsUrlInput").trim();
+				var wfsName = null;
+				if (this.formsObj.wfsValidationPassed) {
+					wfsName = this.formsObj.wfsNameSelector.get("value");
+				}
+				else {
+					wfsName = this.utils.getInputValue("wfsNameInput").trim();
+				}
+				var wfsLabel = this.utils.getInputValue("wfsLabelInput").trim();
+				var wfsHemcomId = this.utils.getInputValue("wfsHelcomIdInput").trim();
+				if ((validate.isText(wfsName)) && (validate.isText(wfsLabel))) {
+					var newWfs = {
+						"parent": this.formsObj.currentObjId,
+						"label": wfsLabel,
+						"helcomId": wfsHemcomId,
+						"wfsUrl": wfsUrl,
+						"wfsName": wfsName
+					};
+					this.saveCategoryForService(newWfs, "NEW_WFS");
+				}
+				else {
+					this.formsObj.showMessage("Wfs layer name or label is not valid.");
+				}
+			}));
 			/* --- MANAGE CATEGORY SAVE BUTTONS END --- */
 		},
     
@@ -347,6 +374,15 @@ define([
 							};
 							this.saveWms(newWms);
 						}
+						else if (mode === "NEW_WFS") {
+							var newWfs = {
+									"parent": response.item,
+									"name": values.wfsName,
+									"url": values.wfsUrl,
+									"label": values.label
+								};
+								this.saveWfs(newWfs);
+							}
 					}
 				}),
 				lang.hitch(this, function(error) {
@@ -361,7 +397,6 @@ define([
 			var url = "sc/wms/add";
 			request.post(url, this.utils.createPostRequestParams(data)).then(
 				lang.hitch(this, function(response) {
-					this.refreshLayerList(this.formsObj.currentObjId);
 					if (response.type == "error") {
 						console.log(response);
 						this.formsObj.showMessage("Failed to add WMS.");
@@ -369,22 +404,33 @@ define([
 					else if (response.type == "success") {
 						this.formsObj.showMessage("WMS added.");
 						this.refreshLayerList(this.formsObj.currentObjId);
-						/*var wmsForDisplay = {
-							"serviceCatId": data.parent,
-							"name": data.name,
-							"url": data.url,
-							"label": data.label
-						};
-						this.formsObj.currentCategoryWmses.unshift(wmsForDisplay);
-						
-						this.formsObj.cleanWmsAddForm();
-						this.formsObj.cleanWmsDisplayForm();
-						this.formsObj.displayWmses(this.formsObj.currentCategoryWmses);*/
 					}
 				}),
 				lang.hitch(this, function(error) {
 					this.refreshLayerList();
 					this.formsObj.showMessage("Something went wrong (on wms/add). Please contact administrator.");
+					console.log(error);
+				})
+			);
+		},
+		
+		saveWfs: function(data) {
+			var url = "sc/wfs/add";
+			console.log(data);
+			request.post(url, this.utils.createPostRequestParams(data)).then(
+				lang.hitch(this, function(response) {
+					if (response.type == "error") {
+						console.log(response);
+						this.formsObj.showMessage("Failed to add WFS.");
+					}
+					else if (response.type == "success") {
+						this.formsObj.showMessage("WFS added.");
+						this.refreshLayerList(this.formsObj.currentObjId);
+					}
+				}),
+				lang.hitch(this, function(error) {
+					this.refreshLayerList();
+					this.formsObj.showMessage("Something went wrong (on wfs/add). Please contact administrator.");
 					console.log(error);
 				})
 			);

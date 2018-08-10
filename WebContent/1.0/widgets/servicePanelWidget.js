@@ -37,6 +37,10 @@ define([
 			if (info.type == "WMS") {
 				this.constructWmsInfo(info);
 			}
+			else if (info.type == "WFS") {
+				this.constructWfsInfo(info);
+				console.log(info);
+			}
 			this.utils.show("servicePanel", "block");
 		},
 		setupAndShowScaleMessage: function(min, max) {
@@ -45,12 +49,29 @@ define([
 			this.servicePanel.set("open", true);
 			if (typeof min == 'number') {
 				var infoMin = "Minimum display scale for this layer is 1 : " + Math.ceil(min);
-				domConstruct.create("div", {"class": "scaleMessage", "innerHTML": infoMin}, this.infoContainer, "last");
+				domConstruct.create("div", {/*"class": "scaleMessage", */"innerHTML": infoMin}, this.infoContainer, "last");
 			}
 			if (typeof max == 'number') {
 				var infoMax = "Maximum display scale for this layer is 1 : " + Math.ceil(max);
-				domConstruct.create("div", {"class": "scaleMessage", "innerHTML": infoMax}, this.infoContainer, "last");
+				domConstruct.create("div", {/*"class": "scaleMessage", */"innerHTML": infoMax}, this.infoContainer, "last");
 			}
+			this.utils.show("servicePanel", "block");
+		},
+		setupAndShowWfsDownload: function(info) {
+			console.log("check wfs");
+			this.cleanServicePanel();
+			this.servicePanel.set("title", this.header);
+			this.servicePanel.set("open", true);
+			
+			domConstruct.create("div", {"innerHTML": "Get features of this WFS layer"}, this.infoContainer, "last");
+			
+			var url = info.wfs.url + "?service=wfs&version=" + info.wfs.info.version + "&request=GetFeature&typeNames=" + info.wfs.name;
+			domConstruct.create("a", { "class": "formLink", "href": url, "target": "_blank", "innerHTML": "Download" }, this.infoContainer, "last");
+			/*var button = domConstruct.create("div", {"class": "formLink", "innerHTML": "Download"}, this.infoContainer, "last");
+			on(button, "click", lang.hitch(this, function() {
+				var url = info.wfs.url + "?service=wfs&version=" + info.wfs.info.version + "&request=GetFeature&typeNames=" + info.wfs.name;
+			    console.log("download", url);
+			}));*/
 			this.utils.show("servicePanel", "block");
 		},
 		constructWmsInfo: function(info) {
@@ -99,6 +120,43 @@ define([
 				else
 					this.buildInfoElement("Min display scale", "No min display scale limit or information about it is not provided");
 				
+				if ((info.metadata.length) && (info.metadata.length > 0))
+					this.buildMetadataContainer(info.metadata);
+				else
+					this.buildInfoElement("Metadata", "No metadata provided");
+			}
+		},
+		constructWfsInfo: function(info) {
+			if (info.type) {
+				this.buildInfoElement("Service type", info.type);
+				if (info.wfs.info.organisation)
+					this.buildInfoElement("Host organization", info.wfs.info.organisation);
+				else
+					this.buildInfoElement("Host organization", "No information");
+				
+				if (info.wfs.info.accessConstraints)
+					this.buildInfoElement("Access constraints", info.wfs.info.accessConstraints);
+				
+				if (info.wfs.info.fees)
+					this.buildInfoElement("Fees", info.wfs.info.fees);
+				
+				if (info.wfs.url)
+					this.buildInfoElement("Wfs url", info.wfs.url);
+				
+				if (info.wfs.name)
+					this.buildInfoElement("Wfs layer name", info.wfs.name);
+				
+				if (info.wfs.info.title)
+					this.buildInfoElement("Wfs layer title", info.wfs.info.title);
+				
+				if (info.wfs.info.description)
+					this.buildInfoElement("Wfs layer description", info.wfs.info.description);
+				
+				if ((info.wfs.info.languages) && (info.wfs.info.languages.length > 0))
+					this.buildInfoElement("Language support", info.wfs.info.languages);
+				else
+					this.buildInfoElement("Language support", "No information");
+								
 				if ((info.metadata.length) && (info.metadata.length > 0))
 					this.buildMetadataContainer(info.metadata);
 				else

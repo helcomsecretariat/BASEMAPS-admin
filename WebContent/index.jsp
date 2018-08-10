@@ -54,7 +54,7 @@
 		<div id="map"></div>
 		<!-- <div id="mainWindow" data-dojo-type="dijit.layout.BorderContainer" data-dojo-props="design:'headline', gutters:false">
 			<div id="header" data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'top'">
-				<a id="logocontainer" href="http://helcom.fi" target="_blank"></a>
+				<div id="logocontainer"></div>
 				<a id="titlecontainer" href=".">Baltic LINes</a>
 				<div id="linkscontainer">
 					<a class="headerLink" id="logoutLink" href="#">Logout</a>

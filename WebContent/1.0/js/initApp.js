@@ -132,7 +132,7 @@ define([
 					this.adminViewManagerObj.show(true);
 					this.adminViewManagerObj.adminLayerList.setUser(role, rights);
 					this.adminViewManagerObj.showLayerList();
-					this.adminViewManagerObj.adminLayerList.getLayersData();
+					this.adminViewManagerObj.adminLayerList.refreshLayerList();
 				}
 				
 				if (role === "ADMIN") {

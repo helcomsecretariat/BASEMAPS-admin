@@ -28,13 +28,36 @@ html, body {
 	height: 60px;
 }
 
-#logocontainer {
+#basemapslogocontainer {
 	background-image: url("../img/BASAMAPSLogo240x60_WhiteCharactersAndIcon.png");
 	background-repeat: no-repeat;
 	background-position: center;
 	width: 240px;
 	height: 60px;
 	float: left;
+	text-decoration: none;
+	cursor: pointer;
+	display: block;
+}
+#helcomlogocontainer {
+	background-image: url("../img/HELCOM_logo_white_h40.png");
+	background-repeat: no-repeat;
+	background-position: center;
+	width: 200px;
+	height: 60px;
+	float: right;
+	text-decoration: none;
+	cursor: pointer;
+	display: block;
+}
+#balticlineslogocontainer {
+	background-image: url("../img/IBSR_logo_EUflag_horizontalA_invert_2400px.png");
+	background-repeat: no-repeat;
+	background-position: center;
+	width: 221px;
+	height: 60px;
+	margin-left: 60px;
+	float: right;
 	text-decoration: none;
 	cursor: pointer;
 	display: block;
@@ -397,6 +420,20 @@ html, body {
 	display: inline-block;
 }
 
+.inputDescriptionRequired {
+	font-size: 11px;
+	margin-top: 2px;
+	color: #B73C2B;
+	margin-left: 155px;
+}
+
+.inputDescriptionNotRequired {
+	font-size: 11px;
+	margin-top: 2px;
+	color: #444;
+	margin-left: 155px;
+}
+
 .textInput {
 	width: 50%;
 	border: 1px solid #800000;
@@ -410,7 +447,7 @@ html, body {
 	font-size: 16px;
 }
 
-.wmsInfoElementContainer {
+/*.wmsInfoElementContainer {
 	width: 98%;
 	border-bottom: 1px solid #cccccc;
 	margin-bottom: 5px;
@@ -428,7 +465,7 @@ html, body {
 .wmsInfoElementValue {
 	font-size: 16px;
 	display: table-cell;
-}
+}*/
 
 .deleteObjectLink {
 	cursor: pointer;
@@ -436,6 +473,7 @@ html, body {
 	margin-left: 20px;
 	font-size: 14px;
 	text-align: right;
+	margin-right: 20px;
 }
 
 .deleteObjectLink:hover {
@@ -507,7 +545,7 @@ html, body {
 	overflow-y: auto;
 }
 
-.wmsInfoElementContainer {
+.serviceInfoElementContainer {
 	width: 98%;
 	border-bottom: 1px solid #cccccc;
 	margin-bottom: 5px;
@@ -515,14 +553,14 @@ html, body {
 	display:table;
 }
 
-.wmsInfoElementLabel {
+.serviceInfoElementLabel {
 	width: 150px;
 	font-size: 16px;
 	font-weight: bold;
 	display:table-cell;
 }
 
-.wmsInfoElementValue {
+.serviceInfoElementValue {
 	font-size: 16px;
 	display: table-cell;
 }
@@ -1056,6 +1094,27 @@ html, body {
   width: 16px;
   height: 16px;
   display: inline-block;
+  cursor: pointer;
+}
+
+.wmsGreenIcon {
+  background-image: url("../img/wms_green_icon.png");
+  background-repeat: no-repeat;
+  background-position: left;
+  width: 29px;
+  height: 16px;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.wfsBlueIcon {
+  background-image: url("../img/wfs_blue_icon.png");
+  background-repeat: no-repeat;
+  background-position: left;
+  width: 29px;
+  height: 16px;
+  display: inline-block;
+  cursor: pointer;
 }
 
 .topGroupButton {
