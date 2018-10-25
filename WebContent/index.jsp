@@ -8,6 +8,7 @@
 		<link rel="stylesheet" href="//openlayers.org/en/v4.4.2/css/ol.css" type="text/css">
 		<link rel="stylesheet" type="text/css" href="//ajax.googleapis.com/ajax/libs/dojo/1.10.4/dijit/themes/claro/claro.css">
 		<link rel="stylesheet" type="text/css" href="1.0/css/basemaps.css">
+		<script src="https://unpkg.com/@esri/arcgis-to-geojson-utils"></script>
 		<!--<link rel="stylesheet" type="text/css" href="widgets/css/widgets.css">-->
 	</tiles:putAttribute>
 	<tiles:putAttribute name="scripts">

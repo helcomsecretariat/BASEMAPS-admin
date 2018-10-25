@@ -135,6 +135,8 @@ define([
 					this.adminViewManagerObj.adminLayerList.refreshLayerList();
 				}
 				
+				this.utils.show("servicePanel", "none");
+				
 				if (role === "ADMIN") {
 					this.adminViewManagerObj.showViewButtons(true);
 				}

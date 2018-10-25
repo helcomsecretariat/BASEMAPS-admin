@@ -208,7 +208,7 @@ define([
 		/* --- MANAGE CATEGORY BUTTONS START --- */
 		
 		deleteObjectClick: function() {
-			if (confirm("Please confirm removing: " + this.currentCategory.label + " and all it's content.") == true) {
+			if (confirm("Please confirm removing: " + this.currentCategory.label + " with all content.") == true) {
 				this.deleteObject(this.currentObjId);
 		    }
 		},
@@ -1125,7 +1125,7 @@ define([
 				this.utils.show("categoryMetadataForm", "none");
 				this.utils.show("categoryWmsInfoForm", "none");
 				this.utils.show("categoryWfsInfoForm", "none");
-				this.utils.setTextValue("deleteObject", "Delete this category and all it's content");
+				this.utils.setTextValue("deleteObject", "Delete this category with all content");
 				
 				if ((layer.metadata) && (layer.metadata.length > 0)) {
 					this.utils.setTextValue("categoryMetadataLink", layer.metadata[0].url);

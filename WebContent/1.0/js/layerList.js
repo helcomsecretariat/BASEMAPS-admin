@@ -2,6 +2,7 @@ define([
 	"dojo/_base/declare",
 	"dojo/_base/lang", "dojo/_base/fx", 
 	"dojo/_base/window",
+	"dojo",
 	"dojo/on",
 	"dojo/dom",
 	"dojo/dom-style",
@@ -11,6 +12,7 @@ define([
 	"dojo/store/Memory","dijit/tree/ObjectStoreModel", "dijit/Tree", "dijit/form/FilteringSelect",
 	"dijit/form/CheckBox", "dijit/Tooltip",
 	"widgets/servicePanelWidget",
+	"basemaps/js/utils",
 	"//openlayers.org/en/v4.4.2/build/ol.js",
 	"dijit/_WidgetBase", "dijit/_TemplatedMixin",
 	"dojo/text!../templates/layerlistWidget.html"
@@ -18,6 +20,7 @@ define([
 	declare,
 	lang, baseFx, 
 	win,
+	dojo,
 	on,
 	dom,
 	domStyle,
@@ -27,30 +30,42 @@ define([
 	Memory, ObjectStoreModel, Tree, FilteringSelect,
 	checkBox, Tooltip,
 	servicePanelWidget,
+	utils,
 	ol,
 	_WidgetBase, _TemplatedMixin, template
 ){
 	return declare([_WidgetBase, _TemplatedMixin], {
 		templateString: template,
 		baseClass: "layerlistWidget",
+		utils: null,
 		map: null,
+		layerListMode: "INPUT",
 		tree: null,
+		mspWmsUrl: "http://62.236.121.188/arcgis104/services/PBS126/MspOutputData/MapServer/WMSServer",
+		mspTree: null,
 		store: null,
-		data: [{ id: 'layerlist', leaf: false}],
-		dataFiltering: [{ id: 'layerlist', leaf: false}],
+		mspStore: null,
+		data: [{id: 'layerlist', leaf: false}],
+		mspData: [{id: 'msplayerlist', checked: true}],
+		mspArcgisLayers: null,
+		mspAllParentsChecked: false,
+		dataFiltering: [{id: 'msplayerlist', leaf: false}],
 		legendInfo: {},
 		metadataIDS: {},
 		identify: {},
 		visitedNodesIds: {},
 		rootLayerId: "layerlist",
+		rootMspLayerId: "msplayerlist",
 		servicePanel: null,
 		constructor: function(params) {
 			this.map = params.map;
+			this.utils = new utils();
 		},
 
 		postCreate: function() {
 			this.servicePanel = new servicePanelWidget();
 			this.getLayersData();
+			this.getMspLayersData();
     	
 			on(this.collapseLayerList, "click", lang.hitch(this, function() {
 				var llcnode = dom.byId("layerlistContainer");
@@ -142,6 +157,301 @@ define([
 					}
 				}
 			}));
+			
+			// on MSP intput data button click
+			on(this.inputDataView, "click", lang.hitch(this, function() {
+				dojo.removeClass(this.inputDataView, "layerListViewButton");
+				dojo.addClass(this.inputDataView, "layerListViewButtonActive");
+				dojo.removeClass(this.outputDataView, "layerListViewButtonActive");
+				dojo.addClass(this.outputDataView, "layerListViewButton");
+				this.utils.show("layerListSection", "block");
+				this.utils.show("mspLayerListSection", "none");
+				this.layerListMode = "INPUT";
+			}));
+			
+			// on MSP output data button click
+			on(this.outputDataView, "click", lang.hitch(this, function() {
+				dojo.removeClass(this.outputDataView, "layerListViewButton");
+				dojo.addClass(this.outputDataView, "layerListViewButtonActive");
+				dojo.removeClass(this.inputDataView, "layerListViewButtonActive");
+				dojo.addClass(this.inputDataView, "layerListViewButton");
+				this.utils.show("layerListSection", "none");
+				this.utils.show("mspLayerListSection", "block");
+				this.layerListMode = "OUTPUT";
+			}));
+		},
+		
+		getMspLayersData: function() {
+			var mspArcgisUrl = "http://62.236.121.188/arcgis104/rest/services/PBS126/MspOutputData/MapServer?f=pjson";
+			fetch(mspArcgisUrl).then(
+					lang.hitch(this, function(response) {
+						return response.text();
+					})
+				).then(
+					lang.hitch(this, function(text) {
+						var arcgisJson = JSON.parse(text);
+						this.mspArcgisLayers = arcgisJson.layers;
+					})
+				);
+			
+			var mspGetCapabilitiesParser = new ol.format.WMSCapabilities();
+			var mspGetCapabilitiesUrl = this.mspWmsUrl + "?request=GetCapabilities&service=WMS";
+			fetch(mspGetCapabilitiesUrl).then(
+				lang.hitch(this, function(response) {
+					return response.text();
+				})
+			).then(
+				lang.hitch(this, function(text) {
+					var result = mspGetCapabilitiesParser.read(text);
+					this.createMspTree(result.Capability.Layer);
+				})
+			);
+		},
+		
+		addLayerToMspDataArray: function(layer, parentLayerId) {
+			var lyr = {
+				id: layer.Title.replace(/\s+/g, ''),
+				parent: parentLayerId,
+				checked: false,
+				name: layer.Title,
+				wmsName: null,
+				legend: null
+			};
+    	
+			if (layer.Name) {
+				lyr.wmsName = layer.Name;
+				lyr.checked = true;
+			}
+			
+			if (layer.Style) {
+				lyr.legend = layer.Style[0].LegendURL[0].OnlineResource;
+			}
+			
+			
+			this.mspData.push(lyr);
+			
+			if (layer.Layer) {
+				array.forEach(layer.Layer, lang.hitch(this, function(l) {
+					this.addLayerToMspDataArray(l, lyr.id);
+				}));
+			}
+		},
+		
+		createMspDataArray: function(input) {
+			array.forEach(input.Layer, lang.hitch(this, function(layer) {
+				this.addLayerToMspDataArray(layer, this.rootMspLayerId);
+				//console.log(layer);
+			}));
+		},
+		
+		mspParentChecked: function(item) {
+			var p = this.mspStore.query({id: item.parent});
+			if (p[0].checked) {
+				if (p[0].parent) {
+					this.mspParentChecked(p[0])
+				}
+				else {
+					this.mspAllParentsChecked = true;
+				}
+			}
+		},
+		
+		mspChildrenChecked: function(item) {
+			var c = this.mspStore.getChildren(item);
+			if (c.length > 0) {
+				array.forEach(c, lang.hitch(this, function(object) {
+					if (object.checked) {
+						if (object.wmsMapLayer) {
+							object.wmsMapLayer.setVisible(true);
+						}
+						this.mspChildrenChecked(object);
+					}
+				}));
+			}
+			
+		},
+		
+		mspChildrenUnchecked: function(item) {
+			var c = this.mspStore.getChildren(item);
+			if (c.length > 0) {
+				array.forEach(c, lang.hitch(this, function(object) {
+					if (object.checked) {
+						if (object.wmsMapLayer) {
+							object.wmsMapLayer.setVisible(false);
+						}
+						this.mspChildrenUnchecked(object);
+					}
+				}));
+			}
+			
+		},
+		
+		createMspTree: function(input) {
+			var mapa = this.map;
+			var that = this;
+			
+			this.createMspDataArray(input);
+			
+			var mspTreeStore = new Memory({
+				data: this.mspData,
+				getChildren: function(object){
+					return this.query({parent: object.id});
+				}
+			});
+			this.mspStore = mspTreeStore;
+
+			var mspTreeModel = new ObjectStoreModel({
+				store: mspTreeStore,
+				query: {id: 'msplayerlist'}
+			});
+
+			this.mspTree = new Tree({
+				model: mspTreeModel,
+				showRoot: false,
+				autoExpand: true,
+				getIconClass:function(item, opened) {
+				
+				},
+				getNodeFromItem: function (id) {
+					return this._itemNodesMap[ id ][0];
+				},
+
+				_createTreeNode: function(args) {
+					var tnode = new dijit._TreeNode(args);
+					tnode.labelNode.innerHTML = args.label;
+
+					
+					//var infoButton = null;
+					//if ((tnode.item.type == "WMS") || (tnode.item.type == "WFS")){
+					/*if (tnode.item.type == "WMS") {
+						infoButton = domConstruct.create("div", { "class": "wmsGreenIcon" }, tnode.contentNode, "last");
+					}
+					else if (tnode.item.type == "WFS") {
+						infoButton = domConstruct.create("div", { "class": "wfsBlueIcon" }, tnode.contentNode, "last");
+					}
+					
+					on(infoButton, "click", function() {
+						that.servicePanel.header = tnode.item.name;
+						that.getLabelsFromRoot(tnode.item.parent);
+						that.servicePanel.setupAndShowServicePanel(tnode.item);
+					});*/
+					
+					var cb = new dijit.form.CheckBox();
+					cb.placeAt(tnode.contentNode, "first");
+					
+					// set sublayers label width depending on sublayer level in the tree
+					var rowNodePadding = domStyle.get(tnode.rowNode, "padding-left");
+					var labelNodeWidth = 225 - rowNodePadding;
+					domStyle.set(tnode.labelNode, {"width": labelNodeWidth+"px"});
+					
+					// create WMS legend node
+					if (tnode.item.legend) {
+						tnode.item.legendContainerDiv = domConstruct.create("div", { "class": "legendContainerDiv" }, tnode.rowNode, "last");
+						var image = domConstruct.create('img', {
+							"src": tnode.item.legend
+						}, tnode.item.legendContainerDiv);
+					}
+					
+					if (tnode.item.wmsName) {
+						domConstruct.destroy(tnode.expandoNode);
+						domStyle.set(tnode.rowNode, {"padding-left": rowNodePadding+20+"px"});
+						cb.set("checked", true);
+						tnode.item.wmsMapLayer = new ol.layer.Tile({
+							id: tnode.item.id,
+							mspName: tnode.item.name,
+							source: new ol.source.TileWMS({
+								url: that.mspWmsUrl,
+								params: {
+									LAYERS: tnode.item.wmsName
+								}
+							})
+						});
+						tnode.item.wmsMapLayer.setVisible(false);
+						mapa.addLayer(tnode.item.wmsMapLayer);
+						
+						var showLegendButton = domConstruct.create("div", { "class": "metadataButtonActive" }, tnode.contentNode, "last");
+						var hideLegendButton = domConstruct.create("div", { "class": "metadataButtonActive" }, tnode.contentNode, "last" );
+						domStyle.set(hideLegendButton, "display", "none");
+						on(showLegendButton, "click", function(){
+							domStyle.set(tnode.item.legendContainerDiv, "display", "block");
+							domStyle.set(hideLegendButton, "display", "inline-block");
+							domStyle.set(showLegendButton, "display", "none");
+						});
+						on(hideLegendButton, "click", function(){
+							domStyle.set(tnode.item.legendContainerDiv, "display", "none");
+							domStyle.set(hideLegendButton, "display", "none");
+							domStyle.set(showLegendButton, "display", "inline-block");
+						});
+					}
+											
+					// on sublayer check box click
+					on(cb, "change", function(checked) {
+						that.mspAllParentsChecked = false;
+						if (checked) {
+							tnode.item.checked = true;
+							that.mspParentChecked(tnode.item);
+							
+							if (tnode.item.wmsName) {
+								if (that.mspAllParentsChecked) {
+									tnode.item.wmsMapLayer.setVisible(true);
+								}								
+								//domStyle.set(tnode.item.legendContainerDiv, "display", "block");
+							}
+							else {
+								if (that.mspAllParentsChecked) {
+									that.mspChildrenChecked(tnode.item);
+								}
+							}
+							
+							// set tree path nodes style on select
+							/*array.forEach(tnode.tree.path, lang.hitch(this, function(object, i) {
+								if (i>0) {
+									var n = tnode.tree.getNodeFromItem(object.id);
+									domStyle.set(n.rowNode, {
+										"background-color": "#A5C0DE"
+									});
+									if (visitedNodesIds.hasOwnProperty(object.id)) {
+										visitedNodesIds[object.id] = visitedNodesIds[object.id] + 1;
+									}
+									else {
+										visitedNodesIds[object.id] = 1;
+									}
+								}
+							}));*/
+						}
+						else {
+							tnode.item.checked = false;
+							if (tnode.item.wmsName) {
+								tnode.item.wmsMapLayer.setVisible(false);
+								domStyle.set(tnode.item.legendContainerDiv, "display", "none");
+							}
+							else {
+								that.mspChildrenUnchecked(tnode.item);
+							}
+            
+							/*array.forEach(tnode.tree.path, lang.hitch(this, function(object, i) {
+								if (i>0) {
+									var n = tnode.tree.getNodeFromItem(object.id);
+									if (visitedNodesIds[object.id] == 1) {
+										delete visitedNodesIds[object.id];
+										domStyle.set(n.rowNode, {
+											"background-color": ""
+										});
+									}
+									else if (visitedNodesIds[object.id] > 1) {
+										visitedNodesIds[object.id] = visitedNodesIds[object.id] - 1;
+									}
+								}
+							}));*/
+						}
+					});
+					tnode.checkBox = cb;
+					//}
+					return tnode;
+				}
+			});
+			this.mspTree.placeAt(this.mspLayerListTree);
+			this.mspTree.startup();
 		},
     
 		getLayersData: function() {
@@ -229,7 +539,10 @@ define([
 				data: this.data,
 				getChildren: function(object){
 					return this.query({parent: object.id});
-				}
+				}/*,
+				getParent: function(object){
+					return this.query({id: object.parent});
+				}*/
 			});
 			this.store = treeStore;
 

@@ -1011,6 +1011,37 @@ html, body {
   cursor:pointer;
 }*/
 
+.layerListViewButton {
+	display: inline-block;
+	border: 1px solid #800000;
+	background-color: #B73C2B;
+	cursor: pointer;
+	width: 140px;
+	height: 27px;
+	line-height: 27px;
+	color: white;
+	text-align: center;
+	margin: 10px 10px;
+}
+
+.layerListViewButton:hover {
+	font-weight: bold;
+}
+
+.layerListViewButtonActive {
+	display: inline-block;
+	border: 2px solid #800000;
+	background-color: #B73C2B;
+	cursor: pointer;
+	width: 138px;
+	height: 27px;
+	line-height: 27px;
+	color: white;
+	font-weight: bold;
+	text-align: center;
+	margin: 10px 10px;
+}
+
 #layerListSection {
   top: 80px;
   left: 10px;
@@ -1046,6 +1077,17 @@ html, body {
 
 #collapseAllButton {
 
+}
+
+#mspLayerListSection {
+  top: 80px;
+  left: 10px;
+  position: absolute;
+  height: 85%;
+  width: 320px;
+  font-size: 14px;
+  padding: 5px 0px;
+  display: none;
 }
 
 .claro .dijitTreeRowSelected {
@@ -1191,6 +1233,7 @@ html, body {
 
 .legendContainerDiv {
   display: none;
+  padding-left: 20px;
 }
 
 .legendRow {
@@ -1423,6 +1466,39 @@ html, body {
 	text-align: left;
 }
 
+.headerInfoContainer {
+    width: 100%;
+    text-align: center;
+    font-size: 14px;
+    margin-bottom: 5px;
+    margin-top: 10px;
+}
+
+#headerInfoPrev {
+	float: left;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+#headerInfoPrev:hover {
+	color: #d9dde0;
+}
+
+.headerInfoMiddle {
+	display: inline-block;
+	margin: 0 auto;
+}
+
+#headerInfoNext {
+	float: right;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+#headerInfoNext:hover {
+	color: #d9dde0;
+}
+
 .popupTableAttr {
 	padding-right: 5px;
 	color: #999;
@@ -1437,4 +1513,5 @@ html, body {
 	font-size: 14px;
 	font-weight: bold;
 	text-align: center;
+	margin-bottom: 5px;
 }

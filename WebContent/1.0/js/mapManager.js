@@ -6,15 +6,18 @@ define([
 	"dojo/dom-style",
 	"dojo/query!css3",
 	"dojo/request",
+	"dojo/_base/array",
+	"dojo/on",
 	"basemaps/js/layerList",
 	"basemaps/js/utils",
 	"widgets/scaleWidget",
 	"//openlayers.org/en/v4.4.2/build/ol.js",
 	"dijit/_WidgetBase", 
 	"dijit/_TemplatedMixin",
-	"dojo/text!../templates/mapView.html"
+	"dojo/text!../templates/mapView.html"//,
+	//"https://unpkg.com/@esri/arcgis-to-geojson-utils@1.3.0/dist/arcgis-to-geojson.js"
 ], function(
-	declare, dom, domConstruct, lang, domStyle, query, request,
+	declare, dom, domConstruct, lang, domStyle, query, request, array, on,
 	layerList, utils, scaleWidget,
 	ol,
 	_WidgetBase, _TemplatedMixin, template
@@ -35,11 +38,14 @@ define([
 		popupOverlay: null,
 		popupContent: null,
 		popupHeader: null,
+		headerInfoContainer: null,
 		popupAttrTable: null,
 		mapsLayersCount: null,
 		layersCounter: null,
 		identifyResults: [],
 		highlightLayer: null,
+		mspIdentifyResults: [],
+		mspIdentifyNr: null,
 		constructor: function(params){
 			this.utils = new utils();
 		},
@@ -49,6 +55,7 @@ define([
 			var popupContainer = domConstruct.create("div", {"id": "popup", "class": "ol-popup"}, this.domNode, "last");
 			var popupCloser = domConstruct.create("a", { "class": "ol-popup-closer", "href": "#"}, popupContainer, "last");
 			this.popupContent = domConstruct.create("div", {"id": "popup-content"}, popupContainer, "last");
+			this.headerInfoContainer = domConstruct.create("div", {"class": "headerInfoContainer"}, this.popupContent, "last");
 			this.popupHeader = domConstruct.create("div", {"class": "popupHeaderText"}, this.popupContent, "last");
 			this.popupAttrTable = domConstruct.create("table", {"class": "popupTable"}, this.popupContent, "last");
 			
@@ -74,10 +81,25 @@ define([
 					url: "http://62.236.121.188/arcgis104/rest/services/MADS/Basemap_TOPO/MapServer"
 				})
 			});
+			
+			/*var arcgisLayer = new ol.layer.Image({
+		          source: new ol.source.ImageArcGISRest({
+		              url: "http://62.236.121.188/arcgis104/rest/services/PBS126/MspOutputData/MapServer"
+		            })
+		          });*/
+			/*var mspwms = new ol.layer.Tile({
+				source: new ol.source.TileWMS({
+					url: "http://62.236.121.188/arcgis104/services/PBS126/MspOutputData/MapServer/WMSServer",
+					params: {
+						LAYERS: "PositiveSeaUse",
+						CRS: "EPSG:3857"
+					}
+				})
+			});*/
 			this.map = new ol.Map({
 				target: "map",
 				layers: [
-					basemapLayer
+					basemapLayer//, mspwms//, arcgisLayer
 				],
 				overlays: [this.popupOverlay],
 				view: new ol.View({
@@ -118,64 +140,89 @@ define([
 			
 			
 			this.map.on('singleclick', lang.hitch(this, function(evt) {
-				this.cleanHighlight();
-				var popupCoordinate = evt.coordinate;
-				var viewResolution = this.map.getView().getResolution();
-				var viewProjection = this.map.getView().getProjection();
-								
-				var layers = this.map.getLayers().getArray();
-				this.mapsLayersCount = 0;
-				for (var i = layers.length-1; i > 0; i--) {
-					if ((layers[i].getProperties().id != "basemap") && (layers[i].getProperties().id != "highlight") && (layers[i].getVisible())) {
-						this.mapsLayersCount = this.mapsLayersCount + 1;
+				if (this.layerListObj.layerListMode == "OUTPUT") {
+					var mspServerUrl = "http://62.236.121.188/arcgis104/rest/services/PBS126/MspOutputData/MapServer/identify?f=pjson&geometryType=esriGeometryPoint&tolerance=6&imageDisplay=1920%2C+647%2C+96&returnGeometry=true&layers=all:";
+					//var mspServerUrl = "http://62.236.121.188/arcgis104/rest/services/PBS126/MspOutputData/MapServer/identify?f=pjson&geometryType=esriGeometryPoint&tolerance=6&imageDisplay=1920%2C+647%2C+96&returnGeometry=true&layers=all:2,14&geometry=";
+					var mspLayersIds = [];
+					var mapLayers = this.map.getLayers().getArray();
+					for (var i = 0; i < mapLayers.length; i++) {
+						// get only visible MSP layers
+						if ((mapLayers[i].getProperties().mspName) && (mapLayers[i].getVisible())) {
+							// find arcgis layer id for identification
+							var r = this.layerListObj.mspArcgisLayers.filter(obj => {
+								return obj.name === mapLayers[i].getProperties().mspName
+							})
+							mspServerUrl += r[0].id + ","
+						}
 					}
+					mspServerUrl = mspServerUrl.slice(0, -1) + "&geometry=";
+					
+					var mspPopupCoordinate = evt.coordinate;
+					var clickLonLat = ol.proj.transform(mspPopupCoordinate, 'EPSG:3857', 'EPSG:4326');
+					mspServerUrl += clickLonLat + "&mapExtent=";
+					
+					var mapExtent = ol.proj.transformExtent(this.map.getView().calculateExtent(), 'EPSG:3857', 'EPSG:4326');
+					mspServerUrl += mapExtent;
+					
+					this.mspIdentifyResults = [];
+					this.mspIdentifyNr = null;
+					this.cleanHighlight();
+					
+					fetch(mspServerUrl).then(
+						lang.hitch(this, function(response) {
+							return response.text();
+						})
+					).then(
+						lang.hitch(this, function(text) {
+							var arcgisJson = JSON.parse(text);
+							array.forEach(arcgisJson.results, lang.hitch(this, function(arcgisResult) {
+								var gjson = ArcgisToGeojsonUtils.arcgisToGeoJSON(arcgisResult);
+								gjson.layerName = arcgisResult.layerName;
+								this.mspIdentifyResults.push(gjson);
+							}));
+							if (this.mspIdentifyResults.length > 0) {
+								this.mspIdentifyNr = 0;
+								this.setMspPopupContent(mspPopupCoordinate);
+							}
+							
+						})
+					);
 				}
-				
-				this.layersCounter = 0;
-				this.identifyResults = [];
-				for (var i = layers.length-1; i > 0; i--) {
-					if ((layers[i].getProperties().id != "basemap") && (layers[i].getProperties().id != "highlight") && (layers[i].getVisible())) {
-						var infoFormat = "application/json";
-						var u = layers[i].getSource().getGetFeatureInfoUrl(popupCoordinate, viewResolution, viewProjection, {"buffer": 10, "INFO_FORMAT": ""});
-						console.log(u);
-						this.getInfo(layers[i].getProperties().wmsId, u, popupCoordinate, layers[i].getProperties().name);
+				else if (this.layerListObj.layerListMode == "INPUT") {
+					this.cleanHighlight();
+					var popupCoordinate = evt.coordinate;
+					var viewResolution = this.map.getView().getResolution();
+					var viewProjection = this.map.getView().getProjection();
+									
+					var layers = this.map.getLayers().getArray();
+					this.mapsLayersCount = 0;
+					for (var i = layers.length-1; i > 0; i--) {
+						if ((layers[i].getProperties().id != "basemap") && (layers[i].getProperties().id != "highlight") && (!("mspName" in layers[i].getProperties())) && (layers[i].getVisible())) {
+							this.mapsLayersCount = this.mapsLayersCount + 1;
+						}
 					}
-				}
-				
-				
-				
-				
-				/*this.map.getLayers().forEach(lang.hitch(this, function(lyr) {
-					//var infoFormat = null;
-					if ((lyr.getVisible()) && (lyr.getProperties().id != "basemap")) {
-						//if (lyr.getProperties().identifyFormats.includes("application/json")) {
+					
+					this.layersCounter = 0;
+					this.identifyResults = [];
+					for (var i = layers.length-1; i > 0; i--) {
+						if ((layers[i].getProperties().id != "basemap") && (layers[i].getProperties().id != "highlight") && (!("mspName" in layers[i].getProperties())) && (layers[i].getVisible())) {
 							var infoFormat = "application/json";
-							//var infoFormat = "text/xml";
-							//var u = lyr.getSource().getGetFeatureInfoUrl(evt.coordinate, viewResolution, viewProjection, {"INFO_FORMAT": ""});
-							var u = lyr.getSource().getGetFeatureInfoUrl(evt.coordinate, viewResolution, viewProjection, {"INFO_FORMAT": ""});
-							//console.log(u);
-							this.getInfo(lyr.getProperties().wmsId, u, popupCoordinate);
-							//request.get(u, {
-							//	handleAs: "json"
-							//}).then(function(data){
-								//console.log(JSON.stringify(data));
-								//console.log(data);
-							//},
-							//function(error){
-							//	console.log(error);
-							//});
-						//}
+							var u = layers[i].getSource().getGetFeatureInfoUrl(popupCoordinate, viewResolution, viewProjection, {"buffer": 10, "INFO_FORMAT": ""});
+							console.log(u);
+							this.getInfo(layers[i].getProperties().wmsId, u, popupCoordinate, layers[i].getProperties().name);
+						}
 					}
-				}));*/
-				query(".metadataBox").forEach(function(node){
-					domStyle.set(node, {"display": "none"});
-				});
+					
+					query(".metadataBox").forEach(function(node){
+						domStyle.set(node, {"display": "none"});
+					});
+				}
 			}));
 			
 			var mapNode = dom.byId("map");
 			domConstruct.place(mapNode, this.domNode, "first");
 			// create layer list
-			var llwidget = new layerList({map: this.map}).placeAt(this.layerlistContainer);
+			this.layerListObj = new layerList({map: this.map}).placeAt(this.layerlistContainer);
 			this.scaleWidget = new scaleWidget({map: this.map}).placeAt(this.scaleContainer);
 			this.scaleWidget.setScale();
     },
@@ -195,7 +242,7 @@ define([
 			lang.hitch(this, function(response) {
 				this.layersCounter = this.layersCounter + 1;
 				if (response.type == "error") {
-					console.log("Identification failed");
+					console.log("Identification failed", response);
 				}
 				else if (response.type == "success") {
 					if (response.item) {
@@ -265,9 +312,66 @@ define([
 		}
 	},
 	
+	setMspPopupContent: function(popupCoordinate) {
+		this.cleanHighlight();
+		this.drawMspFeature();
+		
+		this.popupHeader.innerHTML = this.mspIdentifyResults[this.mspIdentifyNr].layerName;
+		var nr = this.mspIdentifyNr + 1;
+		if (this.mspIdentifyNr > 0) {
+			var headerObjPrev = domConstruct.create("div", {"innerHTML": "<< Prev", "id": "headerInfoPrev"}, this.headerInfoContainer, "last");
+			on(headerObjPrev, "click", lang.hitch(this, function() {
+				this.mspIdentifyNr -= 1;
+				if (this.mspIdentifyNr >= 0) {
+					this.setMspPopupContent(popupCoordinate);
+				}
+			}));
+		}
+		
+		var headerObjInfo = domConstruct.create("div", {"innerHTML": "object " + nr + " of " + this.mspIdentifyResults.length, "class": "headerInfoMiddle"}, this.headerInfoContainer, "last");
+		
+		if (this.mspIdentifyNr < this.mspIdentifyResults.length-1) {
+			var headerObjNext = domConstruct.create("div", {"innerHTML": "Next >>", "id": "headerInfoNext"}, this.headerInfoContainer, "last");
+			on(headerObjNext, "click", lang.hitch(this, function() {
+				this.mspIdentifyNr += 1;
+				if (this.mspIdentifyNr <= this.mspIdentifyResults.length-1) {
+					this.setMspPopupContent(popupCoordinate);
+				}
+			}));
+		}
+		
+		
+		var featureProperties = null;
+		if (this.mspIdentifyResults[this.mspIdentifyNr].properties) {
+			featureProperties = this.mspIdentifyResults[this.mspIdentifyNr].properties;
+			for (var property in featureProperties) {
+				if (featureProperties.hasOwnProperty(property)) {
+					var row = domConstruct.create("tr", {}, this.popupAttrTable, "last");
+					var attr = domConstruct.create("td", {"innerHTML": property + ":", "class": "popupTableAttr"}, row, "last");
+					var val = domConstruct.create("td", {"innerHTML": featureProperties[property], "class": "popupTableVal"}, row, "last");
+				}
+			}
+		}
+		
+		this.popupOverlay.setPosition(popupCoordinate);
+		
+		
+	},
+	
+	drawMspFeature: function() {
+		var gjson = new ol.format.GeoJSON( {
+			featureProjection: 'EPSG:3857'
+		});
+		var s = new ol.source.Vector({
+			features: gjson.readFeatures(this.mspIdentifyResults[this.mspIdentifyNr])
+		});
+		this.highlightLayer.setSource(s);
+	},
+	
 	cleanHighlight: function() {
 		this.highlightLayer.setSource(null);
 		this.popupHeader.innerHTML = "";
+		domConstruct.empty(this.headerInfoContainer);
 		domConstruct.empty(this.popupAttrTable);
 		this.highlightLayer.setSource(null);
 		this.popupOverlay.setPosition(undefined);
