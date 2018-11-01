@@ -38,7 +38,6 @@ define([
 		popupOverlay: null,
 		popupContent: null,
 		popupHeader: null,
-		headerInfoContainer: null,
 		popupAttrTable: null,
 		mapsLayersCount: null,
 		layersCounter: null,
@@ -46,6 +45,7 @@ define([
 		highlightLayer: null,
 		mspIdentifyResults: [],
 		mspIdentifyNr: null,
+		mspExcludeProperties: ["OBJECTID", "Shape", "Plan Id", "symbol", "Shape_Length", "Shape_Area"],
 		constructor: function(params){
 			this.utils = new utils();
 		},
@@ -55,7 +55,6 @@ define([
 			var popupContainer = domConstruct.create("div", {"id": "popup", "class": "ol-popup"}, this.domNode, "last");
 			var popupCloser = domConstruct.create("a", { "class": "ol-popup-closer", "href": "#"}, popupContainer, "last");
 			this.popupContent = domConstruct.create("div", {"id": "popup-content"}, popupContainer, "last");
-			this.headerInfoContainer = domConstruct.create("div", {"class": "headerInfoContainer"}, this.popupContent, "last");
 			this.popupHeader = domConstruct.create("div", {"class": "popupHeaderText"}, this.popupContent, "last");
 			this.popupAttrTable = domConstruct.create("table", {"class": "popupTable"}, this.popupContent, "last");
 			
@@ -78,7 +77,7 @@ define([
 				id: "basemap",
 				title: "Basemap TOPO",
 				source: new ol.source.TileArcGISRest({
-					url: "http://62.236.121.188/arcgis104/rest/services/MADS/Basemap_TOPO/MapServer"
+					url: "http://maps.helcom.fi/arcgis/rest/services/MADS/Basemap_TOPO/MapServer"
 				})
 			});
 			
@@ -141,7 +140,7 @@ define([
 			
 			this.map.on('singleclick', lang.hitch(this, function(evt) {
 				if (this.layerListObj.layerListMode == "OUTPUT") {
-					var mspServerUrl = "http://62.236.121.188/arcgis104/rest/services/PBS126/MspOutputData/MapServer/identify?f=pjson&geometryType=esriGeometryPoint&tolerance=6&imageDisplay=1920%2C+647%2C+96&returnGeometry=true&layers=all:";
+					var mspServerUrl = "http://maps.helcom.fi/arcgis/rest/services/PBS126/MspOutputData/MapServer/identify?f=pjson&geometryType=esriGeometryPoint&tolerance=6&imageDisplay=1920%2C+647%2C+96&returnGeometry=true&layers=all:";
 					//var mspServerUrl = "http://62.236.121.188/arcgis104/rest/services/PBS126/MspOutputData/MapServer/identify?f=pjson&geometryType=esriGeometryPoint&tolerance=6&imageDisplay=1920%2C+647%2C+96&returnGeometry=true&layers=all:2,14&geometry=";
 					var mspLayersIds = [];
 					var mapLayers = this.map.getLayers().getArray();
@@ -168,12 +167,14 @@ define([
 					this.mspIdentifyNr = null;
 					this.cleanHighlight();
 					
+					domStyle.set(dojo.byId("loadingCover"), {"display": "block"});
 					fetch(mspServerUrl).then(
 						lang.hitch(this, function(response) {
 							return response.text();
 						})
 					).then(
 						lang.hitch(this, function(text) {
+							domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
 							var arcgisJson = JSON.parse(text);
 							array.forEach(arcgisJson.results, lang.hitch(this, function(arcgisResult) {
 								var gjson = ArcgisToGeojsonUtils.arcgisToGeoJSON(arcgisResult);
@@ -313,13 +314,13 @@ define([
 	},
 	
 	setMspPopupContent: function(popupCoordinate) {
-		this.cleanHighlight();
-		this.drawMspFeature();
-		
-		this.popupHeader.innerHTML = this.mspIdentifyResults[this.mspIdentifyNr].layerName;
+		//this.cleanHighlight();
+		this.layerListObj.servicePanel.cleanServicePanel();
+		var objectInfoContainer = domConstruct.create("div", {"class": "headerInfoContainer"}, this.layerListObj.servicePanel.infoContainer, "last");		
+		//this.popupHeader.innerHTML = this.mspIdentifyResults[this.mspIdentifyNr].layerName;
 		var nr = this.mspIdentifyNr + 1;
 		if (this.mspIdentifyNr > 0) {
-			var headerObjPrev = domConstruct.create("div", {"innerHTML": "<< Prev", "id": "headerInfoPrev"}, this.headerInfoContainer, "last");
+			var headerObjPrev = domConstruct.create("div", {"innerHTML": "<< Prev", "id": "headerInfoPrev"}, objectInfoContainer, "last");
 			on(headerObjPrev, "click", lang.hitch(this, function() {
 				this.mspIdentifyNr -= 1;
 				if (this.mspIdentifyNr >= 0) {
@@ -328,10 +329,10 @@ define([
 			}));
 		}
 		
-		var headerObjInfo = domConstruct.create("div", {"innerHTML": "object " + nr + " of " + this.mspIdentifyResults.length, "class": "headerInfoMiddle"}, this.headerInfoContainer, "last");
+		var headerObjInfo = domConstruct.create("div", {"innerHTML": "object " + nr + " of " + this.mspIdentifyResults.length, "class": "headerInfoMiddle"}, objectInfoContainer, "last");
 		
 		if (this.mspIdentifyNr < this.mspIdentifyResults.length-1) {
-			var headerObjNext = domConstruct.create("div", {"innerHTML": "Next >>", "id": "headerInfoNext"}, this.headerInfoContainer, "last");
+			var headerObjNext = domConstruct.create("div", {"innerHTML": "Next >>", "id": "headerInfoNext"}, objectInfoContainer, "last");
 			on(headerObjNext, "click", lang.hitch(this, function() {
 				this.mspIdentifyNr += 1;
 				if (this.mspIdentifyNr <= this.mspIdentifyResults.length-1) {
@@ -344,18 +345,28 @@ define([
 		var featureProperties = null;
 		if (this.mspIdentifyResults[this.mspIdentifyNr].properties) {
 			featureProperties = this.mspIdentifyResults[this.mspIdentifyNr].properties;
+			var displayProperties = {};
 			for (var property in featureProperties) {
 				if (featureProperties.hasOwnProperty(property)) {
-					var row = domConstruct.create("tr", {}, this.popupAttrTable, "last");
-					var attr = domConstruct.create("td", {"innerHTML": property + ":", "class": "popupTableAttr"}, row, "last");
-					var val = domConstruct.create("td", {"innerHTML": featureProperties[property], "class": "popupTableVal"}, row, "last");
+					if (!(this.mspExcludeProperties.includes(property))) {
+						if (featureProperties[property] == "Null") {
+							displayProperties[property] = "";
+						}
+						else {
+							displayProperties[property] = featureProperties[property];
+						}
+					}
 				}
 			}
 		}
+		this.drawMspFeature();
+		this.layerListObj.servicePanel.header = this.mspIdentifyResults[this.mspIdentifyNr].layerName;
+		this.layerListObj.servicePanel.setupAndShowPopup(displayProperties);
 		
-		this.popupOverlay.setPosition(popupCoordinate);
-		
-		
+		on(this.layerListObj.servicePanel.closeButton, "click", lang.hitch(this, function() {
+			this.cleanHighlight();
+		}));
+		//this.popupOverlay.setPosition(popupCoordinate);
 	},
 	
 	drawMspFeature: function() {
@@ -371,7 +382,6 @@ define([
 	cleanHighlight: function() {
 		this.highlightLayer.setSource(null);
 		this.popupHeader.innerHTML = "";
-		domConstruct.empty(this.headerInfoContainer);
 		domConstruct.empty(this.popupAttrTable);
 		this.highlightLayer.setSource(null);
 		this.popupOverlay.setPosition(undefined);

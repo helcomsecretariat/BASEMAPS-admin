@@ -41,7 +41,7 @@ define([
 		map: null,
 		layerListMode: "INPUT",
 		tree: null,
-		mspWmsUrl: "http://62.236.121.188/arcgis104/services/PBS126/MspOutputData/MapServer/WMSServer",
+		mspWmsUrl: "http://maps.helcom.fi/arcgis/services/PBS126/MspOutputData/MapServer/WMSServer",
 		mspTree: null,
 		store: null,
 		mspStore: null,
@@ -49,6 +49,8 @@ define([
 		mspData: [{id: 'msplayerlist', checked: true}],
 		mspArcgisLayers: null,
 		mspAllParentsChecked: false,
+		mspGetCapabilitiesFetched: false,
+		mspArcgisRestFetched: false,
 		dataFiltering: [{id: 'msplayerlist', leaf: false}],
 		legendInfo: {},
 		metadataIDS: {},
@@ -182,13 +184,19 @@ define([
 		},
 		
 		getMspLayersData: function() {
-			var mspArcgisUrl = "http://62.236.121.188/arcgis104/rest/services/PBS126/MspOutputData/MapServer?f=pjson";
+			var mspArcgisUrl = "http://maps.helcom.fi/arcgis/rest/services/PBS126/MspOutputData/MapServer?f=pjson";
+			//var mspArcgisUrl = "https://hc-gis02:6443/arcgis/rest/services/PBS126/MspOutputData/MapServer?f=pjson";
 			fetch(mspArcgisUrl).then(
 					lang.hitch(this, function(response) {
 						return response.text();
 					})
 				).then(
 					lang.hitch(this, function(text) {
+						this.mspArcgisRestFetched = true;
+						console.log("WMS fetched");
+						if (this.mspGetCapabilitiesFetched) {
+							domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
+						}
 						var arcgisJson = JSON.parse(text);
 						this.mspArcgisLayers = arcgisJson.layers;
 					})
@@ -202,6 +210,11 @@ define([
 				})
 			).then(
 				lang.hitch(this, function(text) {
+					this.mspGetCapabilitiesFetched = true;
+					console.log("REST fetched");
+					if (this.mspArcgisRestFetched) {
+						domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
+					}
 					var result = mspGetCapabilitiesParser.read(text);
 					this.createMspTree(result.Capability.Layer);
 				})

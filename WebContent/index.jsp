@@ -50,6 +50,7 @@
 	</tiles:putAttribute>
 	<tiles:putAttribute name="content">
 		<div id="screenCover"></div>
+		<div id="loadingCover"></div>
 		<div id="startupBox"></div>
 		<div id="mainWindow"></div>
 		<div id="map"></div>

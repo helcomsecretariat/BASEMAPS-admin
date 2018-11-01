@@ -13,14 +13,15 @@ define([
 		servicePanel: null,
 		header: "",
 		infoContainer: null,
+		closeButton: null,
 		constructor: function() {
 			this.utils = new utils();
 			this.servicePanel = new TitlePane({ id: "servicePanel", class: "servicePanelWidget"});
 			domConstruct.place(this.servicePanel.domNode, "mainWindow");
 			this.servicePanel.startup();
 		    
-			var closeButton = domConstruct.create("div", { "class": "servicePanelWidgetCloseButton" }, this.servicePanel.focusNode, "last");
-		    on(closeButton, "click", lang.hitch(this, function() {
+			this.closeButton = domConstruct.create("div", { "class": "servicePanelWidgetCloseButton" }, this.servicePanel.focusNode, "last");
+		    on(this.closeButton, "click", lang.hitch(this, function() {
 				this.cleanServicePanel();
 				this.utils.show("servicePanel", "none");
 			}));
@@ -29,6 +30,13 @@ define([
 		},
 		cleanServicePanel: function() {
 			domConstruct.empty(this.infoContainer);
+		},
+		setupAndShowPopup: function(info) {
+			//this.cleanServicePanel();
+			this.servicePanel.set("title", this.header);
+			this.servicePanel.set("open", true);
+			this.constructPopupInfo(info);
+			this.utils.show("servicePanel", "block");
 		},
 		setupAndShowServicePanel: function(info) {
 			this.cleanServicePanel();
@@ -161,6 +169,13 @@ define([
 					this.buildMetadataContainer(info.metadata);
 				else
 					this.buildInfoElement("Metadata", "No metadata provided");
+			}
+		},
+		constructPopupInfo: function(info) {
+			for (var property in info) {
+				if (info.hasOwnProperty(property)) {
+					this.buildInfoElement(property, info[property]);
+				}
 			}
 		},
 		buildInfoElement: function(label, value) {
