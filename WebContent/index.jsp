@@ -8,12 +8,13 @@
 		<link rel="stylesheet" href="//openlayers.org/en/v4.4.2/css/ol.css" type="text/css">
 		<link rel="stylesheet" type="text/css" href="//ajax.googleapis.com/ajax/libs/dojo/1.10.4/dijit/themes/claro/claro.css">
 		<link rel="stylesheet" type="text/css" href="1.0/css/basemaps.css">
-		<script src="https://unpkg.com/@esri/arcgis-to-geojson-utils"></script>
-		<!--<link rel="stylesheet" type="text/css" href="widgets/css/widgets.css">-->
+		<!--<script src="https://unpkg.com/@esri/arcgis-to-geojson-utils"></script>
+		<link rel="stylesheet" type="text/css" href="widgets/css/widgets.css">-->
 	</tiles:putAttribute>
 	<tiles:putAttribute name="scripts">
-		<script src="http://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.6/proj4.js" type="text/javascript"></script>
-		<script src="1.0/js/proj3035.js" type="text/javascript"></script>
+		<!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.6/proj4.js" type="text/javascript"></script>
+		<script src="1.0/js/proj3035.js" type="text/javascript"></script>-->
+		<script src="1.0/js/arcgis-to-geojson.js" type="text/javascript"></script>
 		
 		<script>
 			var basemapsVersion = "1.0";

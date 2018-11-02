@@ -168,7 +168,39 @@ define([
 					this.cleanHighlight();
 					
 					domStyle.set(dojo.byId("loadingCover"), {"display": "block"});
-					fetch(mspServerUrl).then(
+					var url = "sc/tools/get-data";
+					var data = {
+						"url": mspServerUrl,
+						"format": "json"
+					};
+					request.post(url, this.utils.createPostRequestParams(data)).then(
+						lang.hitch(this, function(response) {
+							this.layersCounter = this.layersCounter + 1;
+							if (response.type == "error") {
+								console.log("Identifying MSP REST failed", response);
+								domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
+							}
+							else if (response.type == "success") {
+								if (response.item) {
+									array.forEach(response.item.results, lang.hitch(this, function(arcgisResult) {
+										var gjson = ArcgisToGeojsonUtils.arcgisToGeoJSON(arcgisResult);
+										gjson.layerName = arcgisResult.layerName;
+										this.mspIdentifyResults.push(gjson);
+									}));
+									if (this.mspIdentifyResults.length > 0) {
+										this.mspIdentifyNr = 0;
+										this.setMspPopupContent(mspPopupCoordinate);
+									}
+								}
+								domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
+							}
+						}),
+						lang.hitch(this, function(error) {
+							console.log(error);
+						})
+					);
+					
+					/*fetch(mspServerUrl).then(
 						lang.hitch(this, function(response) {
 							return response.text();
 						})
@@ -187,7 +219,7 @@ define([
 							}
 							
 						})
-					);
+					);*/
 				}
 				else if (this.layerListObj.layerListMode == "INPUT") {
 					this.cleanHighlight();
@@ -238,7 +270,7 @@ define([
 			"id": id,
 			"url": u
 		};
-		//console.log("request data ", data);
+		console.log("request data ", data);
 		request.post(url, this.utils.createPostRequestParams(data)).then(
 			lang.hitch(this, function(response) {
 				this.layersCounter = this.layersCounter + 1;

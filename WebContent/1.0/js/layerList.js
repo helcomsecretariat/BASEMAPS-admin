@@ -184,9 +184,37 @@ define([
 		},
 		
 		getMspLayersData: function() {
-			var mspArcgisUrl = "http://maps.helcom.fi/arcgis/rest/services/PBS126/MspOutputData/MapServer?f=pjson";
+			//var mspArcgisUrl = "http://maps.helcom.fi/arcgis/rest/services/PBS126/MspOutputData/MapServer?f=pjson";
 			//var mspArcgisUrl = "https://hc-gis02:6443/arcgis/rest/services/PBS126/MspOutputData/MapServer?f=pjson";
-			fetch(mspArcgisUrl).then(
+			
+			var serviceUrl = "sc/tools/get-data";
+			var servicedata = {
+				"url": "http://maps.helcom.fi/arcgis/rest/services/PBS126/MspOutputData/MapServer?f=pjson",
+				"format": "json"
+			};
+			request.post(serviceUrl, this.utils.createPostRequestParams(servicedata)).then(
+				lang.hitch(this, function(response) {
+					this.layersCounter = this.layersCounter + 1;
+					if (response.type == "error") {
+						console.log("Reading MSP REST failed", response);
+					}
+					else if (response.type == "success") {
+						if (response.item) {
+							this.mspArcgisRestFetched = true;
+							console.log("REST fetched");
+							if (this.mspGetCapabilitiesFetched) {
+								domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
+							}
+							this.mspArcgisLayers = response.item.layers;
+						}
+					}
+				}),
+				lang.hitch(this, function(error) {
+					console.log(error);
+				})
+			);
+			
+			/*fetch(mspArcgisUrl).then(
 					lang.hitch(this, function(response) {
 						return response.text();
 					})
@@ -200,25 +228,53 @@ define([
 						var arcgisJson = JSON.parse(text);
 						this.mspArcgisLayers = arcgisJson.layers;
 					})
-				);
+				);*/
 			
 			var mspGetCapabilitiesParser = new ol.format.WMSCapabilities();
 			var mspGetCapabilitiesUrl = this.mspWmsUrl + "?request=GetCapabilities&service=WMS";
-			fetch(mspGetCapabilitiesUrl).then(
+			
+			servicedata = {
+				"url": mspGetCapabilitiesUrl,
+				"format": "xml"
+			};
+			request.post(serviceUrl, this.utils.createPostRequestParams(servicedata)).then(
+				lang.hitch(this, function(response) {
+					this.layersCounter = this.layersCounter + 1;
+					if (response.type == "error") {
+						console.log("Reading MSP REST failed", response);
+					}
+					else if (response.type == "success") {
+						if (response.item) {
+							this.mspGetCapabilitiesFetched = true;
+							console.log("WMS fetched");
+							if (this.mspArcgisRestFetched) {
+								domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
+							}
+							var result = mspGetCapabilitiesParser.read(response.item);
+							this.createMspTree(result.Capability.Layer);
+						}
+					}
+				}),
+				lang.hitch(this, function(error) {
+					console.log(error);
+				})
+			);
+			
+			/*fetch(mspGetCapabilitiesUrl).then(
 				lang.hitch(this, function(response) {
 					return response.text();
 				})
 			).then(
 				lang.hitch(this, function(text) {
 					this.mspGetCapabilitiesFetched = true;
-					console.log("REST fetched");
+					console.log("WMS fetched");
 					if (this.mspArcgisRestFetched) {
 						domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
 					}
 					var result = mspGetCapabilitiesParser.read(text);
 					this.createMspTree(result.Capability.Layer);
 				})
-			);
+			);*/
 		},
 		
 		addLayerToMspDataArray: function(layer, parentLayerId) {
@@ -379,6 +435,9 @@ define([
 								}
 							})
 						});
+						/*tnode.item.wmsMapLayer.on('rendercomplete', function(event) {
+							console.log("loaded", tnode.item.name);
+						});*/
 						tnode.item.wmsMapLayer.setVisible(false);
 						mapa.addLayer(tnode.item.wmsMapLayer);
 						

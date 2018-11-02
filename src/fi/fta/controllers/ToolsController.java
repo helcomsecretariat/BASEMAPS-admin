@@ -15,7 +15,9 @@ import fi.fta.beans.WMS;
 import fi.fta.beans.response.ResponseMessage;
 import fi.fta.beans.response.SimpleResult;
 import fi.fta.beans.ui.IdentifiableUrlUI;
+import fi.fta.beans.ui.UrlFormatUI;
 import fi.fta.data.managers.WMSManager;
+import fi.fta.utils.ArcGISServer;
 import fi.fta.utils.parse.wms.WebMapServer;
 
 @Controller
@@ -44,4 +46,20 @@ public class ToolsController
 		}
 	}
 	
+	@RequestMapping(value = "/get-data", method = {RequestMethod.POST, RequestMethod.GET})
+	@ResponseBody
+	public SimpleResult<Object> getData(
+		@RequestBody UrlFormatUI ui, HttpServletRequest request, HttpServletResponse response)
+	{
+		try
+		{
+			Pair<Object, String> p = ArcGISServer.getInfo(ui.getUrl(), ui.getFormat());
+			return SimpleResult.newSuccess(p != null ? p.getFirst() : null);
+		}
+		catch (Exception ex)
+		{
+			logger.error("ToolsController.getData", ex);
+			return SimpleResult.newFailure(ResponseMessage.Code.ERROR_GENERAL, ex.getMessage());
+		}
+	}
 }
