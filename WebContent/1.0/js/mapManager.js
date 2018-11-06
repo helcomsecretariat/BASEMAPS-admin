@@ -77,7 +77,7 @@ define([
 				id: "basemap",
 				title: "Basemap TOPO",
 				source: new ol.source.TileArcGISRest({
-					url: "http://maps.helcom.fi/arcgis/rest/services/MADS/Basemap_TOPO/MapServer"
+					url: "https://maps.helcom.fi/arcgis/rest/services/MADS/Basemap_TOPO/MapServer"
 				})
 			});
 			
@@ -140,7 +140,7 @@ define([
 			
 			this.map.on('singleclick', lang.hitch(this, function(evt) {
 				if (this.layerListObj.layerListMode == "OUTPUT") {
-					var mspServerUrl = "http://maps.helcom.fi/arcgis/rest/services/PBS126/MspOutputData/MapServer/identify?f=pjson&geometryType=esriGeometryPoint&tolerance=6&imageDisplay=1920%2C+647%2C+96&returnGeometry=true&layers=all:";
+					var mspServerUrl = "https://maps.helcom.fi/arcgis/rest/services/PBS126/MspOutputData/MapServer/identify?f=pjson&geometryType=esriGeometryPoint&tolerance=3&imageDisplay=1920%2C+647%2C+96&returnGeometry=true&layers=all:";
 					//var mspServerUrl = "http://62.236.121.188/arcgis104/rest/services/PBS126/MspOutputData/MapServer/identify?f=pjson&geometryType=esriGeometryPoint&tolerance=6&imageDisplay=1920%2C+647%2C+96&returnGeometry=true&layers=all:2,14&geometry=";
 					var mspLayersIds = [];
 					var mapLayers = this.map.getLayers().getArray();

@@ -41,7 +41,7 @@ define([
 		map: null,
 		layerListMode: "INPUT",
 		tree: null,
-		mspWmsUrl: "http://maps.helcom.fi/arcgis/services/PBS126/MspOutputData/MapServer/WMSServer",
+		mspWmsUrl: "https://maps.helcom.fi/arcgis/services/PBS126/MspOutputData/MapServer/WMSServer",
 		mspTree: null,
 		store: null,
 		mspStore: null,
@@ -189,7 +189,7 @@ define([
 			
 			var serviceUrl = "sc/tools/get-data";
 			var servicedata = {
-				"url": "http://maps.helcom.fi/arcgis/rest/services/PBS126/MspOutputData/MapServer?f=pjson",
+				"url": "https://maps.helcom.fi/arcgis/rest/services/PBS126/MspOutputData/MapServer?f=pjson",
 				"format": "json"
 			};
 			request.post(serviceUrl, this.utils.createPostRequestParams(servicedata)).then(
@@ -197,6 +197,7 @@ define([
 					this.layersCounter = this.layersCounter + 1;
 					if (response.type == "error") {
 						console.log("Reading MSP REST failed", response);
+						domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
 					}
 					else if (response.type == "success") {
 						if (response.item) {
@@ -211,6 +212,7 @@ define([
 				}),
 				lang.hitch(this, function(error) {
 					console.log(error);
+					domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
 				})
 			);
 			
@@ -241,7 +243,8 @@ define([
 				lang.hitch(this, function(response) {
 					this.layersCounter = this.layersCounter + 1;
 					if (response.type == "error") {
-						console.log("Reading MSP REST failed", response);
+						console.log("Reading WMS failed", response);
+						domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
 					}
 					else if (response.type == "success") {
 						if (response.item) {
@@ -257,6 +260,7 @@ define([
 				}),
 				lang.hitch(this, function(error) {
 					console.log(error);
+					domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
 				})
 			);
 			
@@ -377,7 +381,7 @@ define([
 			this.mspTree = new Tree({
 				model: mspTreeModel,
 				showRoot: false,
-				autoExpand: true,
+				//autoExpand: true,
 				getIconClass:function(item, opened) {
 				
 				},
@@ -388,7 +392,8 @@ define([
 				_createTreeNode: function(args) {
 					var tnode = new dijit._TreeNode(args);
 					tnode.labelNode.innerHTML = args.label;
-
+					
+					domConstruct.destroy(tnode.expandoNode);
 					
 					//var infoButton = null;
 					//if ((tnode.item.type == "WMS") || (tnode.item.type == "WFS")){
@@ -422,7 +427,6 @@ define([
 					}
 					
 					if (tnode.item.wmsName) {
-						domConstruct.destroy(tnode.expandoNode);
 						domStyle.set(tnode.rowNode, {"padding-left": rowNodePadding+20+"px"});
 						cb.set("checked", true);
 						tnode.item.wmsMapLayer = new ol.layer.Tile({
@@ -441,7 +445,7 @@ define([
 						tnode.item.wmsMapLayer.setVisible(false);
 						mapa.addLayer(tnode.item.wmsMapLayer);
 						
-						var showLegendButton = domConstruct.create("div", { "class": "metadataButtonActive" }, tnode.contentNode, "last");
+						/*var showLegendButton = domConstruct.create("div", { "class": "metadataButtonActive" }, tnode.contentNode, "last");
 						var hideLegendButton = domConstruct.create("div", { "class": "metadataButtonActive" }, tnode.contentNode, "last" );
 						domStyle.set(hideLegendButton, "display", "none");
 						on(showLegendButton, "click", function(){
@@ -453,7 +457,11 @@ define([
 							domStyle.set(tnode.item.legendContainerDiv, "display", "none");
 							domStyle.set(hideLegendButton, "display", "none");
 							domStyle.set(showLegendButton, "display", "inline-block");
-						});
+						});*/
+					}
+					
+					if (tnode.item.parent == that.rootMspLayerId) {
+						cb.set("checked", true);
 					}
 											
 					// on sublayer check box click
@@ -467,12 +475,16 @@ define([
 								if (that.mspAllParentsChecked) {
 									tnode.item.wmsMapLayer.setVisible(true);
 								}								
-								//domStyle.set(tnode.item.legendContainerDiv, "display", "block");
+								domStyle.set(tnode.item.legendContainerDiv, "display", "block");
 							}
 							else {
 								if (that.mspAllParentsChecked) {
 									that.mspChildrenChecked(tnode.item);
 								}
+								//var nodes = that.theTree.getNodesByItem(item.id);
+			                    if(!tnode.isExpanded) {
+			                    	that.mspTree._expandNode(tnode);
+			                    }
 							}
 							
 							// set tree path nodes style on select
@@ -499,6 +511,9 @@ define([
 							}
 							else {
 								that.mspChildrenUnchecked(tnode.item);
+								if(tnode.isExpanded) {
+			                    	that.mspTree._collapseNode(tnode);
+			                    }
 							}
             
 							/*array.forEach(tnode.tree.path, lang.hitch(this, function(object, i) {
@@ -524,6 +539,14 @@ define([
 			});
 			this.mspTree.placeAt(this.mspLayerListTree);
 			this.mspTree.startup();
+			/*this.mspTree.onLoadDeferred.then(lang.hitch(this, function() {
+				array.forEach(this.mpsTreePaths, lang.hitch(this, function(node) {
+					this.mspTree._expandNode(node);
+				}));
+				
+				console.log(this.mpsTreePaths);
+				//this.mspTree.set('paths', this.mpsTreePaths );	
+			}));*/
 		},
     
 		getLayersData: function() {
