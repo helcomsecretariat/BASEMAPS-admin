@@ -5,14 +5,14 @@
 	<tiles:putAttribute name="title">BASEMAPS - Baltic LINes</tiles:putAttribute>
 	<tiles:putAttribute name="links">
 		<!--<link rel="stylesheet" href="https://js.arcgis.com/3.20/esri/css/esri.css">-->
-		<link rel="stylesheet" href="//openlayers.org/en/v4.4.2/css/ol.css" type="text/css">
-		<link rel="stylesheet" type="text/css" href="//ajax.googleapis.com/ajax/libs/dojo/1.10.4/dijit/themes/claro/claro.css">
+		<link rel="stylesheet" href="1.0/css/ol.css" type="text/css">
+		<link rel="stylesheet" type="text/css" href="1.0/css/claro.css">
 		<link rel="stylesheet" type="text/css" href="1.0/css/basemaps.css">
 		<!--<link rel="stylesheet" type="text/css" href="widgets/css/widgets.css">-->
 	</tiles:putAttribute>
 	<tiles:putAttribute name="scripts">
-		<script src="https://ajax.googleapis.com/ajax/libs/dojo/1.10.4/dojo/dojo.js" data-dojo-config="async: true"></script>
-		<script src="http://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.6/proj4.js" type="text/javascript"></script>
+		<script src="1.0/js/dojo.js" data-dojo-config="async: true"></script>
+		<script src="1.0/js/proj4.js" type="text/javascript"></script>
 		<script src="1.0/js/proj3035.js" type="text/javascript"></script>
 		
 		<script type="text/javascript">

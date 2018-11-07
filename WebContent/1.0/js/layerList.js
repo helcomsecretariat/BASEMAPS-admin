@@ -13,7 +13,7 @@ define([
 	"dijit/form/CheckBox", "dijit/Tooltip",
 	"widgets/servicePanelWidget",
 	"basemaps/js/utils",
-	"//openlayers.org/en/v4.4.2/build/ol.js",
+	"basemaps/js/ol",
 	"dijit/_WidgetBase", "dijit/_TemplatedMixin",
 	"dojo/text!../templates/layerlistWidget.html"
 ], function(
@@ -428,7 +428,12 @@ define([
 					
 					if (tnode.item.wmsName) {
 						domStyle.set(tnode.rowNode, {"padding-left": rowNodePadding+20+"px"});
-						cb.set("checked", true);
+						
+						if (tnode.item.parent != "PlannedSeaUse") {
+							
+							// Check Sea Use By Sector layers on
+							cb.set("checked", true);
+						}
 						tnode.item.wmsMapLayer = new ol.layer.Tile({
 							id: tnode.item.id,
 							mspName: tnode.item.name,

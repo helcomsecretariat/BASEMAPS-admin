@@ -8,7 +8,7 @@ define([
   "dojo/store/Memory","dijit/tree/ObjectStoreModel", "dijit/Tree", "dijit/form/FilteringSelect",
   "dijit/form/CheckBox", "dijit/Tooltip",
   //"dojox/validate/regexp",
-  "//openlayers.org/en/v4.4.2/build/ol.js",
+  "basemaps/js/ol",
   //"esri/request", "esri/tasks/IdentifyTask", "esri/tasks/IdentifyParameters",
   //"dijit/form/HorizontalSlider", "dijit/form/HorizontalRule", "dijit/form/HorizontalRuleLabels",
   "dijit/_WidgetBase", "dijit/_TemplatedMixin",

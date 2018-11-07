@@ -11,7 +11,7 @@ define([
 	"basemaps/js/layerList",
 	"basemaps/js/utils",
 	"widgets/scaleWidget",
-	"//openlayers.org/en/v4.4.2/build/ol.js",
+	"basemaps/js/ol",
 	"dijit/_WidgetBase", 
 	"dijit/_TemplatedMixin",
 	"dojo/text!../templates/mapView.html"//,
