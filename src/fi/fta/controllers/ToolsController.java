@@ -20,6 +20,12 @@ import fi.fta.data.managers.WMSManager;
 import fi.fta.utils.ArcGISServer;
 import fi.fta.utils.parse.wms.WebMapServer;
 
+/**
+ * Controller for different data transformations or data enhancements
+ * 
+ * @author andrysta
+ *
+ */
 @Controller
 @RequestMapping("/tools")
 public class ToolsController
@@ -27,6 +33,15 @@ public class ToolsController
 	
 	private static Logger logger = Logger.getLogger(ToolsController.class);
 	
+	/**
+	 * Retrieves features of remote WMS taking ID of WMS already in a database and URL constructed in the fron-end.
+	 * The response depends which available format does the linked WMS have written to database, usually it is XML.
+	 * 
+	 * @param ui ID and URL input
+	 * @param request http request
+	 * @param response http response
+	 * @return wrapper of object where structure depends of available WMS format
+	 */
 	@RequestMapping(value = "/get-features", method = {RequestMethod.POST, RequestMethod.GET})
 	@ResponseBody
 	public SimpleResult<Object> getFeatures(
@@ -46,6 +61,14 @@ public class ToolsController
 		}
 	}
 	
+	/**
+	 * Retrieves some JSON or XML structured data from ArcGIS server.
+	 * 
+	 * @param ui URL of available ArcGIS service
+	 * @param request http request
+	 * @param response http response
+	 * @return wrapped object data from a remote server
+	 */
 	@RequestMapping(value = "/get-data", method = {RequestMethod.POST, RequestMethod.GET})
 	@ResponseBody
 	public SimpleResult<Object> getData(
@@ -62,4 +85,5 @@ public class ToolsController
 			return SimpleResult.newFailure(ResponseMessage.Code.ERROR_GENERAL, ex.getMessage());
 		}
 	}
+	
 }

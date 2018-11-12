@@ -19,6 +19,12 @@ import org.dom4j.io.SAXReader;
 import fi.fta.utils.Util;
 import fi.fta.utils.parse.XmlBean;
 
+/**
+ * Main parse helper extracting WFS from it's remote source.
+ * 
+ * @author andrysta
+ *
+ */
 public class WebFeatureServer
 {
 	
@@ -59,6 +65,11 @@ public class WebFeatureServer
 		}
 	}
 	
+	/**
+	 * Get WFS version (specification) from XML element.
+	 * 
+	 * @param root XML element
+	 */
 	private void decideSpecification(Element root)
 	{
 		List<Specification> specifications = Arrays.asList(
@@ -82,7 +93,12 @@ public class WebFeatureServer
 	public void setUrl(URL url) {
 		this.url = url;
 	}
-
+	
+	/**
+	 * Get the service version.
+	 * 
+	 * @return specification object
+	 */
 	public Specification getSpecification() {
 		return specification;
 	}
@@ -103,6 +119,11 @@ public class WebFeatureServer
 		this.featureInfo = featureInfo;
 	}
 	
+	/**
+	 * Get feature types which has names.
+	 * 
+	 * @return list of feature type objects
+	 */
 	public List<FeatureType> getNamedFeatureTypes()
 	{
 		List<FeatureType> ret = new ArrayList<>();
@@ -119,7 +140,13 @@ public class WebFeatureServer
 		return ret;
 	}
 	
-	
+	/**
+	 * Apply required or default parameters to the URL query.
+	 * 
+	 * @param url URL to apply query
+	 * @param language language parameter
+	 * @return constructed full URL
+	 */
 	private static String composeUrl(String url, String language)
 	{
 		String[] parts = url.split("\\?");

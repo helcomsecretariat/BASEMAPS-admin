@@ -9,6 +9,12 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.Date;
 
+/**
+ * Manager for creating and deleting text files
+ * 
+ * @author andrysta
+ *
+ */
 public abstract class FileManager
 {
 	
@@ -22,6 +28,7 @@ public abstract class FileManager
 	protected Charset charset;
 	
 	protected String contentName;
+	
 	
 	public FileManager(String path)
 	{

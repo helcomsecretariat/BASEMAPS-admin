@@ -22,6 +22,14 @@ import fi.fta.model.SiteModel;
 import fi.fta.utils.BeansUtils;
 import fi.fta.utils.CollectionsUtils;
 
+/**
+ * Super manager for operations on different services.
+ * 
+ * @author andrysta
+ *
+ * @param <S> service data object
+ * @param <D> data acces object
+ */
 public abstract class ServiceManager<S extends LayerService, D extends LayerServiceDAO<S>> extends CategoryBeanManager<S, LayerServiceUI, D>
 {
 	
@@ -95,6 +103,14 @@ public abstract class ServiceManager<S extends LayerService, D extends LayerServ
 		return null;
 	}
 	
+	/**
+	 * Helper method adding metadata to services.
+	 * Actually, metadata is added to categories that are parents of particular service.
+	 * 
+	 * @param ui wrapper of service object where actually only service parent field is used
+	 * @param metadata list of metadata objects
+	 * @throws HibernateException database exception
+	 */
 	protected void addMetaData(LayerServiceUI ui, List<MetaData> metadata) throws HibernateException
 	{
 		if (!metadata.isEmpty())
@@ -121,6 +137,14 @@ public abstract class ServiceManager<S extends LayerService, D extends LayerServ
 		}
 	}
 	
+	/**
+	 * Helper method updating metadata objects in particular service.
+	 * Since metadata is attached to categories only, the parent category of the service is used.
+	 * 
+	 * @param service service object, where only parent field is used
+	 * @param metadata list of updated metadata objects
+	 * @throws HibernateException database exception
+	 */
 	protected void updateMetaData(S service, List<MetaData> metadata) throws HibernateException
 	{
 		Category c = CategoryManager.getInstance().get(service.getParent());
@@ -150,14 +174,55 @@ public abstract class ServiceManager<S extends LayerService, D extends LayerServ
 		}
 	}
 	
+	/**
+	 * Add service to database from service wrapper object from user input.
+	 * 
+	 * @param ui JSON wrapper of service object
+	 * @return database ID for service
+	 * @throws Exception exception
+	 */
 	public abstract Long add(LayerServiceUI ui) throws Exception;
 	
+	/**
+	 * Update existing service in the database from service wrapper object.
+	 * 
+	 * @param ui JSON wrapper of service object
+	 * @return service object
+	 * @throws Exception exception
+	 */
 	public abstract S update(LayerServiceUI ui) throws Exception;
 	
+	/**
+	 * Verify remote service which is not in the database yet.
+	 * The service later is available for inserting into BASEMAPS database.
+	 * 
+	 * @param ui JSON wrapper of service object, however only name and/or URL fields is used
+	 * @return JSON wrapper for verify object which consists of available names and organization (service owner).
+	 * @throws MalformedURLException remote exception
+	 * @throws IOException input exception
+	 * @throws DocumentException XML exception
+	 */
 	public abstract VerifyUI verify(LayerServiceUI ui) throws MalformedURLException, IOException, DocumentException;
 	
+	/**
+	 * Extracts information from the remote valid service taking service name and URL.
+	 * The service is not added to BASEMAPS database yet.
+	 * 
+	 * @param ui JSON wrapper of service object, however only name and/or URL fields is used
+	 * @param <SUI> JSON wrapper object
+	 * @return JSON wrapper of service object
+	 * @throws MalformedURLException remote exception
+	 * @throws IOException input exception
+	 * @throws DocumentException XML exception
+	 */
 	public abstract <SUI extends Serializable> SUI info(LayerServiceUI ui) throws MalformedURLException, IOException, DocumentException;
 	
+	/**
+	 * Schedules update of service from remote source. The service must be already in a database.
+	 * Update is only scheduled if meets provided conditions for particular service.
+	 * 
+	 * @param id database ID of service for update
+	 */
 	public abstract void scheduleUpdateInfo(Long id);
 	
 }

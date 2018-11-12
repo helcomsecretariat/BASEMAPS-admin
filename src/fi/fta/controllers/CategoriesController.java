@@ -19,6 +19,12 @@ import fi.fta.data.managers.CategoryManager;
 import fi.fta.model.SiteModel;
 import fi.fta.utils.BeansUtils;
 
+/**
+ * Controller for strictly for categories only available operations.
+ * 
+ * @author andrysta
+ *
+ */
 @Controller
 @RequestMapping("/categories")
 public class CategoriesController
@@ -30,6 +36,13 @@ public class CategoriesController
 		super(CategoryManager.getInstance());
 	}
 	
+	/**
+	 * Request method for retrieving all root categories when the user has rights.
+	 * 
+	 * @param request http request
+	 * @param response http response
+	 * @return list of root categories in wrapper objects
+	 */
 	@RequestMapping(value = "/root", method = RequestMethod.GET)
 	@ResponseBody
 	public SimpleResult<List<Category>> getRoot(HttpServletRequest request, HttpServletResponse response)
@@ -49,6 +62,13 @@ public class CategoriesController
 		}
 	}
 	
+	/**
+	 * Current user specific tree of categories. The tree will be restricted to those categories only, where user has rights to read.
+	 * 
+	 * @param request http request
+	 * @param response http response
+	 * @return list of categories wrapped in objects for JSON
+	 */
 	@RequestMapping(value = "/readable-tree", method = RequestMethod.GET)
 	@ResponseBody
 	public SimpleResult<List<TreeBranchUI>> getReadableTree(HttpServletRequest request, HttpServletResponse response)
@@ -65,6 +85,13 @@ public class CategoriesController
 		}
 	}
 	
+	/**
+	 * Main method for retrieving full tree of categories.
+	 * 
+	 * @param request http request
+	 * @param response http response
+	 * @return list of all categories and subcategories wrapped in objects for JSON
+	 */
 	@RequestMapping(value = "/tree", method = RequestMethod.GET)
 	@ResponseBody
 	public SimpleResult<List<TreeBranchUI>> getTree(HttpServletRequest request, HttpServletResponse response)

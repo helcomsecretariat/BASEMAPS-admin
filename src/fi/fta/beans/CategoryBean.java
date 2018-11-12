@@ -9,6 +9,7 @@ import javax.persistence.TemporalType;
 
 import fi.fta.beans.ui.CategoryBeanUI;
 
+
 @MappedSuperclass
 public class CategoryBean extends IdBean
 {
@@ -18,13 +19,21 @@ public class CategoryBean extends IdBean
 	 */
 	private static final long serialVersionUID = 2794539619136248979L;
 	
-	
+	/**
+	 * Queue position in the list of siblings of parent category
+	 */
 	protected Integer position;
 	
+	/**
+	 * Create time
+	 */
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(insertable=false, updatable=false)
 	protected Date created;
 	
+	/**
+	 * Last update time
+	 */
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(insertable=false)
 	protected Date updated;

@@ -15,6 +15,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import fi.fta.beans.Pair;
 
+/**
+ * File attachment manager for managing files in some root directory.
+ * 
+ * @author andrysta
+ *
+ */
 public class AttachementManager
 {
 	

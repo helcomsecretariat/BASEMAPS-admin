@@ -15,7 +15,7 @@ public class RigthTypeConverter implements AttributeConverter<Set<RightType>, St
 	@Override
 	public String convertToDatabaseColumn(Set<RightType> attribute)
 	{
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		if (attribute != null && !attribute.isEmpty())
 		{
 			for (RightType rt : attribute)

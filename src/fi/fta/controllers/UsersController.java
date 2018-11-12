@@ -30,6 +30,13 @@ import fi.fta.validation.ChangePasswordValidator;
 import fi.fta.validation.ClassStructureAssessor;
 import fi.fta.validation.ValidationMessage;
 
+/**
+ * Controller for user management operations, some are related to administrator actions,
+ * others might be used for particular user.
+ * 
+ * @author andrysta
+ *
+ */
 @Controller
 @RequestMapping("/users")
 public class UsersController
@@ -37,6 +44,14 @@ public class UsersController
 	
 	private static Logger logger = Logger.getLogger(UsersController.class);
 	
+	/**
+	 * List all user with a requested role. Available for ADMIN users only.
+	 * 
+	 * @param role user role, like administrator or data provider
+	 * @param request http request
+	 * @param response http response
+	 * @return list of wrapped user objects
+	 */
 	@RequestMapping(value = "/list/{role}", method = RequestMethod.GET)
 	@ResponseBody
 	public SimpleResult<List<UserUI>> list(
@@ -65,6 +80,14 @@ public class UsersController
 		}
 	}
 	
+	/**
+	 * Add newly created user to the database. Available for ADMIN users only.
+	 * 
+	 * @param ui newly created user
+	 * @param request http request
+	 * @param response http response
+	 * @return user ID in the database
+	 */
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	@ResponseBody
 	public SimpleResult<Long> add(
@@ -94,6 +117,14 @@ public class UsersController
 		}
 	}
 	
+	/**
+	 * Add right for user. Available for ADMIN users only.
+	 * 
+	 * @param ui user right
+	 * @param request http request
+	 * @param response http response
+	 * @return success or error message
+	 */
 	@RequestMapping(value = "/add-right", method = RequestMethod.POST)
 	@ResponseBody
 	public SimpleMessage addRight(
@@ -125,6 +156,16 @@ public class UsersController
 		}
 	}
 	
+	/**
+	 * Update user from front-end (user input). Current user can update information about himself/herself,
+	 * however cannot alter any rights.
+	 * Only ADMIN users can update rights of current user or other users.
+	 * 
+	 * @param ui user object from user input
+	 * @param request http request
+	 * @param response http response
+	 * @return success or error message
+	 */
 	@RequestMapping(value = "/update", method = RequestMethod.POST)
 	@ResponseBody
 	public SimpleMessage update(
@@ -166,6 +207,14 @@ public class UsersController
 		}
 	}
 	
+	/**
+	 * Delete user from database. Available only for ADMIN users.
+	 * 
+	 * @param id user ID in the database
+	 * @param request http request
+	 * @param response http response
+	 * @return success or error message
+	 */
 	@RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
 	@ResponseBody
 	public SimpleMessage delete(
@@ -190,6 +239,13 @@ public class UsersController
 		}
 	}
 	
+	/**
+	 * Retrieves information of user, currently logged in the session.
+	 * 
+	 * @param request http request
+	 * @param response http response
+	 * @return wrapper of user object
+	 */
 	@RequestMapping(value = "/current", method = RequestMethod.GET)
 	@ResponseBody
 	public SimpleResult<UserUI> current(HttpServletRequest request, HttpServletResponse response)
@@ -205,6 +261,14 @@ public class UsersController
 		}
 	}
 	
+	/**
+	 * Inputs and saves new password for the current user.
+	 * 
+	 * @param ui object wrapper for changing password containing new and old passwords
+	 * @param request http request
+	 * @param response http response
+	 * @return success or error message
+	 */
 	@RequestMapping(value = "/change-password", method = RequestMethod.POST)
 	@ResponseBody
 	public SimpleMessage changePassword(
@@ -229,6 +293,16 @@ public class UsersController
 		}
 	}
 	
+	/**
+	 * Reminds password for email that is in database and belongs to a user.
+	 * <p>
+	 * Not finished yet. It should send email with a link, where the user could enter new password for his/her account.
+	 * 
+	 * @param ui email wrapper
+	 * @param request http request
+	 * @param response http response
+	 * @return success or error message
+	 */
 	@RequestMapping(value = "/remind", method = RequestMethod.POST)
 	@ResponseBody
 	public SimpleMessage remind(

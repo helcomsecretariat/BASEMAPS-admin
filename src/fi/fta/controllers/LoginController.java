@@ -21,12 +21,27 @@ import fi.fta.model.SiteModel;
 import fi.fta.validation.LoginValidator;
 import fi.fta.validation.ValidationMessage;
 
+/**
+ * Controller for user operations. See the request mapping paths for each method.
+ * 
+ * @author andrysta
+ *
+ */
 @Controller
 public class LoginController
 {
 	
 	private static Logger logger = Logger.getLogger(LoginController.class);
 	
+	/**
+	 * Takes email and password, validates with database and returns user if validation is successful.
+	 * Returns errors or empty user otherwise.
+	 * 
+	 * @param ui Holds user email and password
+	 * @param request http request
+	 * @param response http response
+	 * @return Wrapper of user object. Returns logged in user or empty fields otherwise
+	 */
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	@ResponseBody
 	public SimpleResult<UserUI> login(
@@ -55,6 +70,13 @@ public class LoginController
 		}
 	}
 	
+	/**
+	 * Removes current user from session.
+	 * 
+	 * @param request http request
+	 * @param response http response
+	 * @return success or error messsage
+	 */
 	@RequestMapping(value = "/logout", method = RequestMethod.POST)
 	@ResponseBody
 	public SimpleMessage logout(HttpServletRequest request, HttpServletResponse response)

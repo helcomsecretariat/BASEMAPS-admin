@@ -7,6 +7,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+/**
+ * Properties files reader
+ * 
+ * @author andrysta
+ *
+ */
 public class PropertiesManager
 {
 

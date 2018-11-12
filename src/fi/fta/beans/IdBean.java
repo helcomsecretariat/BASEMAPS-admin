@@ -10,6 +10,12 @@ import javax.persistence.SequenceGenerator;
 
 import fi.fta.utils.Util;
 
+/**
+ * 
+ * @author andrysta
+ *
+ * It is a superclass for all identifiable classes and contains id field of the class.
+ */
 @MappedSuperclass
 public class IdBean implements Identifiable<Long>, Serializable
 {
@@ -19,6 +25,9 @@ public class IdBean implements Identifiable<Long>, Serializable
 	 */
 	private static final long serialVersionUID = -6025731030275364618L;
 	
+	/**
+	 * Identification field
+	 */
 	@Id
 	@SequenceGenerator(name="ID_GENERATOR", sequenceName="idgen", allocationSize=1)
 	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="ID_GENERATOR")

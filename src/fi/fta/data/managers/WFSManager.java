@@ -31,10 +31,23 @@ import fi.fta.utils.Util;
 import fi.fta.utils.parse.wfs.FeatureType;
 import fi.fta.utils.parse.wfs.WebFeatureServer;
 
+/**
+ * WFS data manager
+ * 
+ * @author andrysta
+ *
+ */
 public class WFSManager extends ServiceManager<WFS, WFSDAO>
 {
 	
+	/**
+	 * Time in milliseconds to keep WFS in application cache.
+	 */
 	private static long WFS_CACHE_TIME = 10 * 60 * 1000;
+	
+	/**
+	 * Threshold in days when WFS need info update.
+	 */
 	private static long WFS_INFO_UPDATE_THRESHOLD = 183;
 	
 	protected static Logger logger = Logger.getLogger(WFSManager.class);
@@ -113,6 +126,15 @@ public class WFSManager extends ServiceManager<WFS, WFSDAO>
 		return wfs;
 	}
 	
+	/**
+	 * Update info part of WFS.
+	 * 
+	 * @param wfs database WFS object where info part needs to be updated from remote features.
+	 * @throws HibernateException database exception
+	 * @throws MalformedURLException remote exception
+	 * @throws IOException input exception
+	 * @throws DocumentException XML exception
+	 */
 	public void updateInfo(WFS wfs) throws HibernateException, MalformedURLException, IOException, DocumentException	
 	{
 		try
@@ -137,6 +159,15 @@ public class WFSManager extends ServiceManager<WFS, WFSDAO>
 		}
 	}
 	
+	/**
+	 * Get WFS feature map from remote service if not cached. Get map from cache if cached.
+	 * 
+	 * @param url service URL
+	 * @return map of WFS features
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 * @throws DocumentException
+	 */
 	private Map<String, WFSFeatures> getFromCache(String url) throws MalformedURLException, IOException, DocumentException
 	{
 		cacheLock.lock();
@@ -164,11 +195,30 @@ public class WFSManager extends ServiceManager<WFS, WFSDAO>
 		}
 	}
 	
+	/**
+	 * Get features of particular WFS by object.
+	 * 
+	 * @param wfs name and URL object wrapper
+	 * @return features object
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 * @throws DocumentException
+	 */
 	private <T extends Named & UrlFacade> WFSFeatures getFeatures(T wfs) throws MalformedURLException, IOException, DocumentException
 	{
 		return this.getFeatures(wfs.getUrl(), wfs.getName());
 	}
 	
+	/**
+	 * Get features of particular WFS by name.
+	 * 
+	 * @param url WFS URL
+	 * @param name WFS name
+	 * @return features object
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 * @throws DocumentException
+	 */
 	private WFSFeatures getFeatures(String url, String name) throws MalformedURLException, IOException, DocumentException
 	{
 		if (!Util.isEmptyString(url) && !Util.isEmptyString(name))
@@ -223,6 +273,9 @@ public class WFSManager extends ServiceManager<WFS, WFSDAO>
 		t.start();
 	}
 	
+	/**
+	 * Clear manager cache
+	 */
 	public void clear()
 	{
 		cacheLock.lock();
@@ -236,7 +289,12 @@ public class WFSManager extends ServiceManager<WFS, WFSDAO>
 		}
 	}
 	
-	
+	/**
+	 * Check if WFS needs to update info. Is info updated before WMS info update threshold.
+	 * 
+	 * @param info WFS info object
+	 * @return true if info needs to be updated
+	 */
 	private static boolean needUpdate(WFSInfo info)
 	{
 		return info == null || info.getUpdated().before(

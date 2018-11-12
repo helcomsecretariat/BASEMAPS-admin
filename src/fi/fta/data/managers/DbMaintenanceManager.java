@@ -10,7 +10,12 @@ import fi.fta.beans.Pair;
 import fi.fta.data.dao.SimpleDAO;
 import fi.fta.utils.HibernateUtil;
 
-
+/**
+ * Database maintenance manager for executing optimizing queries
+ * 
+ * @author andrysta
+ *
+ */
 public class DbMaintenanceManager
 {
 	

@@ -33,10 +33,23 @@ import fi.fta.utils.Util;
 import fi.fta.utils.parse.wms.Layer;
 import fi.fta.utils.parse.wms.WebMapServer;
 
+/**
+ * WMS data manager
+ * 
+ * @author andrysta
+ *
+ */
 public class WMSManager extends ServiceManager<WMS, WMSDAO>
 {
 	
+	/**
+	 * Time in milliseconds to keep WMS in application cache.
+	 */
 	private static long WMS_CACHE_TIME = 10 * 60 * 1000;
+	
+	/**
+	 * Threshold in days when WMS need info update.
+	 */
 	private static long WMS_INFO_UPDATE_THRESHOLD = 183;
 	
 	protected static Logger logger = Logger.getLogger(WMSManager.class);
@@ -120,6 +133,15 @@ public class WMSManager extends ServiceManager<WMS, WMSDAO>
 		return wms;
 	}
 	
+	/**
+	 * Update info part of WMS.
+	 * 
+	 * @param wms database WMS object where info part needs to be updated from the particular layer of remote service.
+	 * @throws HibernateException database exception
+	 * @throws MalformedURLException remote exception
+	 * @throws IOException input exception
+	 * @throws DocumentException XML exception
+	 */
 	public void updateInfo(WMS wms) throws HibernateException, MalformedURLException, IOException, DocumentException	
 	{
 		try
@@ -153,6 +175,15 @@ public class WMSManager extends ServiceManager<WMS, WMSDAO>
 		}
 	}
 	
+	/**
+	 * Get WMS layers map from remote service if not cached. Get map from cache if cached.
+	 * 
+	 * @param url service URL
+	 * @return map of WMS layers
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 * @throws DocumentException
+	 */
 	private Map<String, WMSLayer> getFromCache(String url) throws MalformedURLException, IOException, DocumentException
 	{
 		cacheLock.lock();
@@ -180,11 +211,30 @@ public class WMSManager extends ServiceManager<WMS, WMSDAO>
 		}
 	}
 	
+	/**
+	 * Get layer of particular WMS by object
+	 * 
+	 * @param wms name and URL object wrapper
+	 * @return WMS layer object
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 * @throws DocumentException
+	 */
 	private <T extends Named & UrlFacade> WMSLayer getLayer(T wms) throws MalformedURLException, IOException, DocumentException
 	{
 		return this.getLayer(wms.getUrl(), wms.getName());
 	}
 	
+	/**
+	 * Get layer of particular WMS by name.
+	 * 
+	 * @param url WMS URL
+	 * @param name WMS layer name
+	 * @return WMS layer object
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 * @throws DocumentException
+	 */
 	private WMSLayer getLayer(String url, String name) throws MalformedURLException, IOException, DocumentException
 	{
 		if (!Util.isEmptyString(url) && !Util.isEmptyString(name))
@@ -241,6 +291,9 @@ public class WMSManager extends ServiceManager<WMS, WMSDAO>
 		t.start();
 	}
 	
+	/**
+	 * Clear manager cache
+	 */
 	public void clear()
 	{
 		cacheLock.lock();
@@ -254,6 +307,12 @@ public class WMSManager extends ServiceManager<WMS, WMSDAO>
 		}
 	}
 	
+	/**
+	 * Check if WMS needs to update info. Is info updated before WFS info update threshold.
+	 * 
+	 * @param info WMS info object
+	 * @return true if info needs to be updated
+	 */
 	private static boolean needUpdate(WMSInfo info)
 	{
 		return info == null || info.getUpdated().before(

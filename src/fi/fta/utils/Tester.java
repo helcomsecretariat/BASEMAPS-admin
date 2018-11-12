@@ -6,7 +6,7 @@ public class Tester
 {
 	
 	/**
-	 * @param args
+	 * @param args any arguments
 	 */
 	public static void main(String[] args)
 	{

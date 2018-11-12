@@ -15,6 +15,12 @@ import fi.fta.data.dao.MetaDataDAO;
 import fi.fta.model.SiteModel;
 import fi.fta.utils.Util;
 
+/**
+ * Manager of category objects
+ * 
+ * @author andrysta
+ *
+ */
 public class CategoryManager extends CategoryBeanManager<Category, CategoryUI, CategoryDAO>
 {
 	
@@ -40,6 +46,12 @@ public class CategoryManager extends CategoryBeanManager<Category, CategoryUI, C
 		super(new CategoryDAO());
 	}
 	
+	/**
+	 * Get root categories
+	 * 
+	 * @return list of category objects
+	 * @throws HibernateException database exception
+	 */
 	public List<Category> getRoot() throws HibernateException
 	{
 		return dao.getRoot();

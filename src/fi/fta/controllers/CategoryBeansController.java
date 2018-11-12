@@ -24,6 +24,19 @@ import fi.fta.utils.Util;
 import fi.fta.validation.ClassStructureAssessor;
 import fi.fta.validation.ValidationMessage;
 
+
+/**
+ * Controller for categories and services common operations.
+ * <p>
+ * Usually operation is restricted to the rights of currently logged user.
+ * 
+ * @author andrysta
+ *
+ * @param <C> wrapper for database data
+ * @param <CUI> wrapper for JSON data
+ * @param <CM> data manager
+ */
+
 public class CategoryBeansController<
 	C extends CategoryBean, CUI extends CategoryBeanUI,
 	CM extends CategoryBeanManager<C, CUI, ? extends CategoryBeanDAO<C>>>
@@ -31,7 +44,9 @@ public class CategoryBeansController<
 	
 	protected static Logger logger = Logger.getLogger(CategoryBeansController.class);
 	
-	
+	/**
+	 * Data manager for business logic actions
+	 */
 	protected CM manager;
 	
 	public CategoryBeansController(CM manager)
@@ -39,6 +54,14 @@ public class CategoryBeansController<
 		this.manager = manager;
 	}
 	
+	/**
+	 * Retrieves wrapper object by ID to front-end if the user has rights.
+	 * 
+	 * @param id Identification of object
+	 * @param request http request
+	 * @param response http response
+	 * @return Wrapper of category related bean
+	 */
 	@RequestMapping(value = "/get/{id}", method = RequestMethod.GET)
 	@ResponseBody
 	public SimpleResult<CUI> get(
@@ -60,6 +83,14 @@ public class CategoryBeansController<
 		}
 	}
 	
+	/**
+	 * Add new category related object from front-end (user input) if the user has rights.
+	 * 
+	 * @param ui Wrapper of category related bean
+	 * @param request http request
+	 * @param response http response
+	 * @return Database ID of newly added object
+	 */
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	@ResponseBody
 	public SimpleResult<Long> add(
@@ -87,6 +118,14 @@ public class CategoryBeansController<
 		}
 	}
 	
+	/**
+	 * Updates category related object from user input if the user has rights.
+	 * 
+	 * @param ui Wrapper of category related bean
+	 * @param request http request
+	 * @param response http response
+	 * @return success or error message
+	 */
 	@RequestMapping(value = "/update", method = RequestMethod.POST)
 	@ResponseBody
 	public SimpleMessage update(
@@ -113,6 +152,15 @@ public class CategoryBeansController<
 		}
 	}
 	
+	/**
+	 * Changes queue position of identified category related object in a parent category if the user has rights.
+	 * 
+	 * @param id database ID of category related object, which position is changing
+	 * @param position a new position in parent category
+	 * @param request http request
+	 * @param response http response
+	 * @return success or error message
+	 */
 	@RequestMapping(value = "/position/{id}/{position}", method = RequestMethod.POST)
 	@ResponseBody
 	public SimpleMessage position(
@@ -133,6 +181,14 @@ public class CategoryBeansController<
 		}
 	}
 	
+	/**
+	 * Erase category related object from the database by ID if the user has rights.
+	 * 
+	 * @param id database ID of category related object
+	 * @param request http request
+	 * @param response http response
+	 * @return success or error message
+	 */
 	@RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
 	@ResponseBody
 	public SimpleMessage delete(
@@ -153,6 +209,14 @@ public class CategoryBeansController<
 		}
 	}
 	
+	/**
+	 * Retrieves the list of all children in identified category related object if the user has rights.
+	 * 
+	 * @param id database ID of category related object
+	 * @param request http request
+	 * @param response http response
+	 * @return a list of children in respective category wrapped in database wrappers
+	 */
 	@RequestMapping(value = "/children/{id}", method = RequestMethod.GET)
 	@ResponseBody
 	public SimpleResult<List<C>> getChildren(

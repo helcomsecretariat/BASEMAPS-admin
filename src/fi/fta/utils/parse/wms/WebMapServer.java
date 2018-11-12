@@ -24,6 +24,12 @@ import fi.fta.beans.Pair;
 import fi.fta.utils.JsonUtils;
 import fi.fta.utils.Util;
 
+/**
+ * Main parse helper extracting WMS from it's remote source.
+ * 
+ * @author andrysta
+ *
+ */
 public class WebMapServer
 {
 	
@@ -65,6 +71,11 @@ public class WebMapServer
 		}
 	}
 	
+	/**
+	 * Get WMS version (specification) from XML element.
+	 * 
+	 * @param root XML element
+	 */
 	private void decideSpecification(Element root)
 	{
 		List<Specification> specifications = Arrays.asList(
@@ -88,7 +99,12 @@ public class WebMapServer
 	public void setUrl(URL url) {
 		this.url = url;
 	}
-
+	
+	/**
+	 * Get the service version.
+	 * 
+	 * @return specification object
+	 */
 	public Specification getSpecification() {
 		return specification;
 	}
@@ -109,6 +125,11 @@ public class WebMapServer
 		this.featureInfo = featureInfo;
 	}
 	
+	/**
+	 * Get service layers which has names.
+	 * 
+	 * @return list of layers
+	 */
 	public List<Layer> getNamedLayers()
 	{
 		List<Layer> ret = new ArrayList<>();
@@ -125,7 +146,13 @@ public class WebMapServer
 		return ret;
 	}
 	
-	
+	/**
+	 * Apply required or default parameters to a query of specific capabilities URL of WMS.
+	 * 
+	 * @param url URL to apply query
+	 * @param language language parameter
+	 * @return constructed full URL
+	 */
 	private static String composeCapabilitiesUrl(String url, String language)
 	{
 		String[] parts = url.split("\\?");
@@ -141,6 +168,15 @@ public class WebMapServer
 		return u + "?" + Util.composeQuery(params);
 	}
 	
+	/**
+	 * Get WMS feature info from remote server.
+	 * 
+	 * @param url service URL
+	 * @param formats available formats
+	 * @return content object and format
+	 * @throws MalformedURLException remote exception
+	 * @throws IOException input exception
+	 */
 	public static Pair<Object, String> readFeatureInfo(String url, List<String> formats) throws MalformedURLException, IOException 
 	{
 		String format = WebMapServer.decideFormat(formats);
@@ -182,6 +218,13 @@ public class WebMapServer
         }
 	}
 	
+	/**
+	 * Apply required or default parameters to a query of specific feature URL of WMS.
+	 * 
+	 * @param url URL to apply query
+	 * @param format info format
+	 * @return constructed full URL
+	 */
 	private static String composeFeatureUrl(String url, String format)
 	{
 		String[] parts = url.split("\\?");
@@ -194,6 +237,12 @@ public class WebMapServer
 		return u + "?" + Util.composeQuery(params);
 	}
 	
+	/**
+	 * Choose on format from a list of available formats.
+	 * 
+	 * @param formats available formats
+	 * @return the chosen format
+	 */
 	private static String decideFormat(List<String> formats)
 	{
 		if (!Util.isEmptyCollection(formats))
@@ -221,6 +270,12 @@ public class WebMapServer
 		return null;
 	}
 	
+	/**
+	 * Recursively list all children layers of one layer.
+	 * 
+	 * @param layer parent layer
+	 * @return list of all children layers
+	 */
 	private static List<Layer> allChildren(Layer layer)
 	{
 		List<Layer> ret = new ArrayList<>();
