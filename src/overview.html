@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>BASEMAPS overview</title>
+</head>
+<body>
+<p>BASEMAPS web application manages different geographical services provided by source URL.</p>
+<p>The application is written in Java 1.8, is running on Tomcat (9.0) or any other similar servlet container server. 
+Database of Postgres 9.6 is required and BASEMAPS is using Hibernate to connect to the database.</p>
+<p>The main interaction and data exchange is done by http requests and responses and available methods can 
+be found in controllers package ({@link fi.fta.controllers}). The application uses two kinds of beans (object wrappers):
+database or model beans, and user interface beans (JSON), most of them have their alternatives in both packages and 
+the fields might slightly differ. Usually they can be converted between one kind to another by constructors and 
+do not need special tools. Data beans are managed by data managers ({@link fi.fta.data.managers}), where business logics is applied and also saved 
+or updated to database by data access objects ({@link fi.fta.data.dao}). User interface wrappers are used for exposig data to application 
+users.</p>
+<p>After users provide a new data service, the application parses it from remote source and saves to the database. The application 
+requires separate parse helper for each kind of service ({@link fi.fta.utils.parse}, {@link fi.fta.utils.parse.wms}, {@link fi.fta.utils.parse.wfs}), helpers use version specifications 
+to get the correct data from remote service. In order to extract more data from the service, the description 
+of new fields must be added to all specifications.</p>
+</body>
+</html>
