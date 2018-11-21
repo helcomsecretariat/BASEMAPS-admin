@@ -35,6 +35,8 @@
   <mapping class="fi.fta.beans.WMSStyle"/>
   <mapping class="fi.fta.beans.WFS"/>
   <mapping class="fi.fta.beans.WFSInfo"/>
+  <mapping class="fi.fta.beans.ArcGISService"/>
+  <mapping class="fi.fta.beans.DownloadableService"/>
   
  </session-factory>
 </hibernate-configuration>

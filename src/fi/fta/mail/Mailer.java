@@ -13,6 +13,7 @@ import javax.mail.internet.AddressException;
 
 import fi.fta.beans.MailSettingsFacade;
 import fi.fta.beans.MailType;
+import fi.fta.utils.ProjectProperties;
 import fi.fta.utils.Util;
 
 
@@ -33,13 +34,13 @@ public class Mailer
 	{
 		Properties p = new Properties();
 		p.put("mail.transport.protocol", "smtp");
-		p.put("mail.host", s.getSmtp());
-		p.put("mail.smtp.host", s.getSmtp());
-		p.put("mail.smtp.localhost", s.getSmtp());
-		if (s.getPort() != null)
+		p.put("mail.host", s.getSmtpServer());
+		p.put("mail.smtp.host", s.getSmtpServer());
+		p.put("mail.smtp.localhost", s.getSmtpServer());
+		if (s.getSmtpPort() != null)
 		{
-			p.put("mail.port", s.getPort());
-			p.put("mail.smtp.port", s.getPort());
+			p.put("mail.port", s.getSmtpPort());
+			p.put("mail.smtp.port", s.getSmtpPort());
 		}
 		
 		if (!Util.isEmptyString(s.getSmtpUser()))
@@ -63,13 +64,18 @@ public class Mailer
 		if (instances == null)
 			instances = new HashMap<String, Map<Integer, Mailer>>();
 		
-		if (instances.get(s.getSmtp()) == null)
-			instances.put(s.getSmtp(), new HashMap<Integer, Mailer>());
+		if (instances.get(s.getSmtpServer()) == null)
+			instances.put(s.getSmtpServer(), new HashMap<Integer, Mailer>());
 		
-		if (instances.get(s.getSmtp()).get(s.getPort()) == null)
-			instances.get(s.getSmtp()).put(s.getPort(), new Mailer(s));
+		if (instances.get(s.getSmtpServer()).get(s.getSmtpPort()) == null)
+			instances.get(s.getSmtpServer()).put(s.getSmtpPort(), new Mailer(s));
 		
-		return instances.get(s.getSmtp()).get(s.getPort());
+		return instances.get(s.getSmtpServer()).get(s.getSmtpPort());
+	}
+	
+	public static Mailer getInstance()
+	{
+		return Mailer.get(ProjectProperties.getInstance());
 	}
 	
 	protected boolean started()
@@ -84,44 +90,56 @@ public class Mailer
 	}
 	
 	public void queue(
-		Short priority, MailType type,
-		String to, String subject, String text, String from, String replyTo,
-		List<BodyPart> multiparts)
+		MailType type, Short priority,
+		String to, String subject, String text, String from, String replyTo, List<BodyPart> multiparts)
 	{
 		try
 		{
-			this.queue.put(
-				priority, new MailMessage(type.getContentType(), to, subject, text, from, replyTo, multiparts));
+			this.queue.put(priority, new MailMessage(
+				type.getContentType(), priority,
+				to, subject, text, from, replyTo, multiparts));
 		}
 		catch (AddressException ex)
 		{
 			ex.printStackTrace();
 		}
-		
 		if (!this.started())
+		{
 			this.start();
+		}
 	}
 	
 	public void queue(
-		Short priority, MailType type,
-		List<String> to, String subject, String text, String from, String replyTo,
-		List<BodyPart> multiparts)
+		MailType type, Short priority, 
+		List<String> to, String subject, String text, String from, String replyTo, List<BodyPart> multiparts)
 	{
 		for (String t : to)
 		{
 			try
 			{
-				this.queue.put(
-					priority, new MailMessage(type.getContentType(), t, subject, text, from, replyTo, multiparts));
+				this.queue.put(priority, new MailMessage(
+					type.getContentType(), priority,
+					t, subject, text, from, replyTo, multiparts));
 			}
 			catch (AddressException ex)
 			{
 				ex.printStackTrace();
 			}
-			
 			if (!this.started())
+			{
 				this.start();
+			}
 		}
+	}
+	
+	public void queueHtml(Short priority, String to, String subject, String text, String from)
+	{
+		this.queue(MailType.HTML, priority, to, subject, text, from, null, null);
+	}
+	
+	public void queueHtml(String to, String subject, String text, String from)
+	{
+		this.queueHtml(MailMessage.NORMAL_PRIORITY, to, subject, text, from);
 	}
 	
 	public void finishQueue()

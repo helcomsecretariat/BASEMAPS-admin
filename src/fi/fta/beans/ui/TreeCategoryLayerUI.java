@@ -3,11 +3,9 @@ package fi.fta.beans.ui;
 import java.util.List;
 
 import fi.fta.beans.Category;
-import fi.fta.beans.WFS;
-import fi.fta.beans.WMS;
-import fi.fta.utils.BeansUtils;
+import fi.fta.utils.ServiceCollections;
 
-public class TreeCategoryLayerUI extends TreeCategoryUI
+public class TreeCategoryLayerUI extends TreeCategoryUI implements TreeLayerUIFacade
 {
 	
 	
@@ -16,19 +14,21 @@ public class TreeCategoryLayerUI extends TreeCategoryUI
 	 */
 	private static final long serialVersionUID = 4459992364697738292L;
 	
+	
 	private List<TreeWMSLayerUI> wmses;
 	
 	private List<TreeWFSLayerUI> wfses;
+	
+	private List<TreeServiceUI> others;
 	
 	
 	public TreeCategoryLayerUI()
 	{}
 	
-	public TreeCategoryLayerUI(Category c, List<WMS> wmses, List<WFS> wfses)
+	public TreeCategoryLayerUI(Category c, ServiceCollections services)
 	{
 		super(c);
-		this.setWmses(BeansUtils.getTreeWMSUIs(wmses));
-		this.setWfses(BeansUtils.getTreeWFSUIs(wfses));
+		services.to(this);
 	}
 	
 	public List<TreeWMSLayerUI> getWmses() {
@@ -45,6 +45,14 @@ public class TreeCategoryLayerUI extends TreeCategoryUI
 
 	public void setWfses(List<TreeWFSLayerUI> wfses) {
 		this.wfses = wfses;
+	}
+
+	public List<TreeServiceUI> getOthers() {
+		return others;
+	}
+
+	public void setOthers(List<TreeServiceUI> others) {
+		this.others = others;
 	}
 	
 }

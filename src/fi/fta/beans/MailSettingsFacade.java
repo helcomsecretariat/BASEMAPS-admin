@@ -4,8 +4,8 @@ package fi.fta.beans;
 public interface MailSettingsFacade
 {
 	
-	public String getSmtp();
-	public Integer getPort();
+	public String getSmtpServer();
+	public Integer getSmtpPort();
 	public String getSmtpUser();
 	public String getSmtpPassword();
 	

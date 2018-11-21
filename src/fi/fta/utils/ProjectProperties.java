@@ -3,8 +3,10 @@ package fi.fta.utils;
 import java.io.InputStream;
 import java.util.Properties;
 
+import fi.fta.beans.MailSettingsFacade;
 
-public class ProjectProperties
+
+public class ProjectProperties implements MailSettingsFacade
 {
 	
 	protected String pathTemplates;
@@ -15,10 +17,10 @@ public class ProjectProperties
 	protected String projectName;
 	protected String projectURL;
 	
-	protected String SMTPServer;
-	protected Integer SMTPPort;
-	protected String SMTPUser;
-	protected String SMTPPassword;
+	protected String smtpServer;
+	protected Integer smtpPort;
+	protected String smtpUser;
+	protected String smtpPassword;
 	
 	
 	protected static ProjectProperties instance;
@@ -56,10 +58,10 @@ public class ProjectProperties
 	        projectName = props.getProperty("project.name");
 	        projectURL = props.getProperty("project.url");
 	        
-			SMTPServer = props.getProperty("smtp.server");
-			SMTPPort = Integer.valueOf(props.getProperty("smtp.port"));
-			SMTPUser = props.getProperty("smtp.user");
-			SMTPPassword = props.getProperty("smtp.password");
+			smtpServer = props.getProperty("smtp.server");
+			smtpPort = Integer.valueOf(props.getProperty("smtp.port"));
+			smtpUser = props.getProperty("smtp.user");
+			smtpPassword = props.getProperty("smtp.password");
 			
 		}
 		catch (Exception ex)
@@ -98,22 +100,22 @@ public class ProjectProperties
 		return ind > 0 ? projectURL.substring(0, ind) : projectURL;
 	}
 	
-	public String getSMTPServer() {
-		return SMTPServer;
+	public String getSmtpServer() {
+		return smtpServer;
 	}
 	
-	public Integer getSMTPPort() {
-		return SMTPPort;
+	public Integer getSmtpPort() {
+		return smtpPort;
 	}
 	
-	public String getSMTPUser()
+	public String getSmtpUser()
 	{
-		return SMTPUser;
+		return smtpUser;
 	}
 	
-	public String getSMTPPassword()
+	public String getSmtpPassword()
 	{
-		return SMTPPassword;
+		return smtpPassword;
 	}
 	
 }

@@ -5,6 +5,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import fi.fta.utils.JsonUtils;
+import fi.fta.utils.ResourceUtils;
 
 public class SystemMessagesSource
 {
@@ -29,9 +30,9 @@ public class SystemMessagesSource
 	private MessageObject getMessageObject()
 	{
 		MessagesBundle mb = new MessagesBundle(messageFilter);
-		mb.setBasename("fi.fta.messages.messages");
+		mb.setBasename(ResourceUtils.MESSAGES_RESOURCE);
 		MessageObject mo = new MessageObject();
-	    mo.setEn(mb.getBundleContent("fi.fta.messages.messages", Locale.ENGLISH));
+	    mo.setEn(mb.getBundleContent(ResourceUtils.MESSAGES_RESOURCE, Locale.ENGLISH));
 	    return mo;
 	}
 	

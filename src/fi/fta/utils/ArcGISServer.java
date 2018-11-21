@@ -3,18 +3,12 @@ package fi.fta.utils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.dom4j.Document;
 import org.dom4j.DocumentException;
-import org.dom4j.io.SAXReader;
 
 import fi.fta.beans.Pair;
-import fi.fta.utils.parse.wms.FeatureInfoFormatXmlType;
-import fi.fta.utils.parse.wms.FeatureInfoFormatXmlTypeSpecification;
-import fi.fta.utils.parse.wms.WebMapServer;
 
 public class ArcGISServer
 {

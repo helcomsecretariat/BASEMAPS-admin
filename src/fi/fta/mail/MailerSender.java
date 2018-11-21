@@ -5,7 +5,6 @@ import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.mail.Address;
 import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -19,6 +18,7 @@ import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 
 import fi.fta.beans.MailSettingsFacade;
+import fi.fta.beans.MailType;
 import fi.fta.utils.Util;
 
 
@@ -104,11 +104,22 @@ public class MailerSender implements Runnable
 	
 	protected synchronized boolean send(MailMessage mail)
 	{
-		MimeMessage msg = new MimeMessage(this.session);
 		try
 		{
+			MimeMessage msg = new MimeMessage(this.session);
+			msg.setFrom(mail.getFrom());
+			if (mail.getReplyTo() != null)
+			{
+				msg.setReplyTo(new InternetAddress[] { mail.getReplyTo() });
+			}
+			//else
+			//	msg.setReplyTo(new InternetAddress[] { mail.getFrom() });
 			msg.setSubject(MimeUtility.encodeText(mail.getSubject(), mail.getEncoding(), null));
-			msg.addHeader("Precedence", "bulk");
+			if (mail.getPriority() != null)
+			{
+				msg.addHeader("Precedence", mail.getPriority().equals(MailMessage.LAST_PRIORITY) ? "bulk" : "first-class");
+				msg.addHeader("X-Priority", mail.getPriority().toString());
+			}
 			String unsubscribe = MailerSender.getUnsubscribe(mail.getText());
 			if (!Util.isEmptyString(unsubscribe))
 			{
@@ -116,66 +127,56 @@ public class MailerSender implements Runnable
 				msg.addHeader("List-Unsubscribe", unsubscribe);
 			}
 			
-			MimeMultipart mp = new MimeMultipart();
-			mp.setSubType("related");
-			
-			MimeBodyPart bp = new MimeBodyPart();
-			bp.setContent(mail.getText(), mail.getContentType() + "; charset=" + mail.getEncoding());
-			mp.addBodyPart(bp);
+			MimeMultipart root = new MimeMultipart("related");
+			MimeBodyPart cp = new MimeBodyPart();
+			cp.setContent(mail.getText(), mail.getContentType() + "; charset=" + mail.getEncoding());
+			if (mail.getContentType().equals(MailType.HTML.getContentType()))
+			{
+				root.setSubType("alternative");
+				String content = Util.stripHTMLTag(mail.getText(), "head", "style");
+				content = Util.stripHTML(content, "a");
+				content = content.replaceAll("(?si)<\\s*a[^>]*href\\s*=\\s*\"https:\\/\\/([^\"]+)\"[^>]*>([^<]*)</\\s*a\\s*>", "$2:\r\nhttps://$1");
+				content = Util.stripHTML(content);
+				content = content.replaceAll("	", "").replaceAll("&#173;.", ".").replaceAll("&nbsp;", " ").replaceAll("(?s)[\r\n]+", "\r\n");
+				
+				MimeBodyPart ctp = new MimeBodyPart();
+				ctp.setContent(content, MailType.PLAIN.getContentType() + "; charset=" + mail.getEncoding());
+				ctp.setHeader("Content-Transfer-Encoding", "base64");
+				root.addBodyPart(ctp);
+			}
+			root.addBodyPart(cp);
 			
 			if (mail.getMultiparts() != null)
 			{
+				MimeMultipart text = root;
+				MimeBodyPart textPart = new MimeBodyPart();
+				textPart.setContent(text);
+				root = new MimeMultipart("mixed");
+				root.addBodyPart(textPart);
 				for (BodyPart mbp : mail.getMultiparts())
-					mp.addBodyPart(mbp);
+				{
+					root.addBodyPart(mbp);
+				}
 			}
-			
-			msg.setContent(mp);
+			msg.setContent(root);
 			msg.setSentDate(Calendar.getInstance().getTime());
+			msg.setRecipient(Message.RecipientType.TO, mail.getTo());
 			
-			msg.setFrom(mail.getFrom());
-			if (mail.getReplyTo() != null)
-				msg.setReplyTo(new InternetAddress[] { mail.getReplyTo() });
-			//else
-			//	msg.setReplyTo(new InternetAddress[] { mail.getFrom() });
-			
-			try
+			if (transport == null)
 			{
-				msg.setRecipient(Message.RecipientType.TO, mail.getTo());
-				
-				if (transport == null)
-				{
-					Transport.send(msg);
-				}
-				else
-				{
-					if (!transport.isConnected())
-					{
-						transport.connect(settings.getSmtp(), settings.getPort(), settings.getSmtpUser(), settings.getSmtpPassword());
-					}
-					transport.sendMessage(msg, msg.getAllRecipients());
-				}
-				
-				System.out.println("Message \"" + msg.getSubject() + "\" to " + mail.getTo() + " sent successfully");
-				return true;
+				Transport.send(msg);
 			}
-			catch (Exception ex)
+			else
 			{
-				System.out.println("Exception was raised while sending mail.");
-				System.out.println("\tReason: " + ex.getMessage());
-				Address[] addresses = msg.getAllRecipients();
-				if (addresses != null)
+				if (!transport.isConnected())
 				{
-					System.out.print("\tRecipients: ");
-					for (int i = 0; i < addresses.length; ++i)
-						System.out.print(addresses[i] + "; ");
-					System.out.println();
+					transport.connect(settings.getSmtpServer(), settings.getSmtpPort(), settings.getSmtpUser(), settings.getSmtpPassword());
 				}
-				else
-					System.out.println("none");
-				System.out.println("\tSubject: " + msg.getSubject());
-			
-				ex.printStackTrace(System.out);
+				transport.sendMessage(msg, msg.getAllRecipients());
 			}
+			
+			System.out.println("Message \"" + msg.getSubject() + "\" to " + mail.getTo() + " sent successfully");
+			return true;
 		}
 		catch (MessagingException ex)
 		{
@@ -187,7 +188,12 @@ public class MailerSender implements Runnable
 			System.out.println("Unsupported encoding:");
 			ex.printStackTrace();
 		}
-		
+		catch (Exception ex)
+		{
+			System.out.println("Exception was raised while sending mail.");
+			System.out.println("\tReason: " + ex.getMessage());
+			ex.printStackTrace(System.out);
+		}
 		return false;
 	}
 	

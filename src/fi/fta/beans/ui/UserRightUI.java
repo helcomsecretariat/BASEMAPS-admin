@@ -3,6 +3,8 @@ package fi.fta.beans.ui;
 
 import java.util.Set;
 
+import org.hibernate.validator.constraints.NotBlank;
+
 import fi.fta.beans.RightType;
 import fi.fta.beans.UserRight;
 
@@ -15,6 +17,7 @@ public class UserRightUI extends IdUI
 	private static final long serialVersionUID = -1123671666598350212L;
 	
 	
+	@NotBlank(message = "msg.validation.required")
 	private Long userId;
 	
 	private Long categoryId;

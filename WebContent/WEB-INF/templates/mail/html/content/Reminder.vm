@@ -1,0 +1,2 @@
+Hi $user.getName(),
+change you password $user.getPassword().

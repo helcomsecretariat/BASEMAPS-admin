@@ -26,6 +26,7 @@ import fi.fta.beans.ui.UserRightUI;
 import fi.fta.beans.ui.UserUI;
 import fi.fta.data.managers.UserManager;
 import fi.fta.model.SiteModel;
+import fi.fta.utils.MailUtils;
 import fi.fta.validation.ChangePasswordValidator;
 import fi.fta.validation.ClassStructureAssessor;
 import fi.fta.validation.ValidationMessage;
@@ -317,7 +318,8 @@ public class UsersController
 				if (u != null)
 				{
 					// TODO: do the remind
-					
+					// generate reminder token and send a link
+					MailUtils.remind(u);
 				}
 				return SimpleMessage.newSuccess();
 			}

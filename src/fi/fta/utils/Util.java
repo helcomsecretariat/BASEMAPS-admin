@@ -313,4 +313,89 @@ public class Util
 		}
 	}
 	
+	public static boolean containsHTML(String content)
+	{
+		return content != null && content.replaceAll("[\r\n]", "").matches(".*<[^>]*>.*");
+	}
+	
+	public static boolean containsHTML(String content, String tags)
+	{
+		return content != null && content.replaceAll("[\r\n]", "").toLowerCase().matches(".*<\\s*(" + tags.toLowerCase() + ")(\\s+[^>]*>|>).*");
+	}
+	
+	public static boolean startsWithHTML(String content, String tags)
+	{
+		return content != null && content.replaceAll("[\r\n]", "").toLowerCase().trim().matches("<\\s*(" + tags.toLowerCase() + ")(\\s+[^>]*>|>).*");
+	}
+	
+	public static String wrapHTML(String content, String wrapper)
+	{
+		return wrapper.replaceFirst("><", new StringBuffer(">").append(content).append("<").toString());
+	}
+	
+	public static String stripHTML(String content)
+	{
+		return Util.stripHTMLWithReplacement(content, "");
+	}
+	
+	public static String stripHTML(String content, String allowedTags)
+	{
+		if (content != null)
+		{
+			if (Util.isEmptyString(allowedTags))
+			{
+				return Util.stripHTML(content);
+			}
+			else
+			{
+				String exp = "(?i)<(?!\\s*(/?\\s*(" + allowedTags + "|" + allowedTags.toUpperCase() + ")[^a-zA-Z]))[^>]*>";
+				return content.replaceAll(exp, "");
+			}
+		}
+		return content;
+	}
+	
+	public static String stripMajorHTML(String content)
+	{
+		return Util.stripHTML(content, "div|br|b|i|ul|ol|li|strong");
+	}
+	
+	public static String stripHTMLWithReplacement(String content, String replacement)
+	{
+		return content != null ? content.replaceAll("<[^>]*>", replacement) : "";
+	}
+	
+	public static String stripHTMLTag(String content, String ... tags)
+	{
+		if (content != null && tags != null)
+		{
+			for (String tag : tags)
+			{
+				if (tag != null)
+				{
+					content = content.replaceAll("(?s)<\\s*" + tag + "[^>]*>.*</?\\s*" + tag + "\\s*>", "");
+				}
+			}
+		}
+		return content;
+	}
+	
+	public static String stripUTF16(String source)
+	{
+		if (!Util.isEmptyString(source))
+		{
+			StringBuffer b = new StringBuffer();
+			for (int i = 0; i < source.length(); i++)
+			{
+				char c = source.charAt(i);
+				if (!Character.isHighSurrogate(c) && !Character.isLowSurrogate(c))
+				{
+					b.append(c);
+				}
+			}
+			return b.toString();
+		}
+		return source;
+	}
+	
 }

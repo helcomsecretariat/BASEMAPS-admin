@@ -15,6 +15,21 @@ import fi.fta.beans.UrlFacade;
 public class CollectionsUtils
 {
 	
+	public static boolean isEmptyAll(Collection<?> ... collections)
+	{
+		if (collections != null)
+		{
+			for (Collection<?> c : collections)
+			{
+				if (!c.isEmpty())
+				{
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	
 	public static <T1, T2, P extends Pair<T1, T2>> List<T1> listFirst(Collection<P> pairs)
 	{
 		ArrayList<T1> ret = new ArrayList<T1>();

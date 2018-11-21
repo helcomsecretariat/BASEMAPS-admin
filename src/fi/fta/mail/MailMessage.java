@@ -12,9 +12,16 @@ import fi.fta.utils.Util;
 public class MailMessage
 {
 	
+	public static final short FIRST_PRIORITY = 1;
+	public static final short NORMAL_PRIORITY = 3;
+	public static final short LAST_PRIORITY = 4;
+	
+	
 	protected String contentType;
 	
 	protected String encoding;
+	
+	protected Short priority;
 	
 	protected InternetAddress to;
 	
@@ -29,12 +36,12 @@ public class MailMessage
 	protected List<BodyPart> multiparts;
 	
 	
-	public MailMessage(String contentType, String encoding,
-		String to, String subject, String text, String from, String replyTo,
-		List<BodyPart> multiparts) throws AddressException
+	public MailMessage(String contentType, String encoding, Short priority,
+		String to, String subject, String text, String from, String replyTo, List<BodyPart> multiparts) throws AddressException
 	{
 		this.contentType = contentType;
 		this.setEncoding(encoding);
+		this.setPriority(priority);
 		this.setTo(to);
 		this.subject = subject == null ? "" : subject;
 		this.text = text;
@@ -43,12 +50,12 @@ public class MailMessage
 		this.multiparts = multiparts;
 	}
 	
-	public MailMessage(String contentType,
-		String to, String subject, String text, String from, String replyTo,
-		List<BodyPart> multiparts) throws AddressException
+	public MailMessage(String contentType, Short priority,
+		String to, String subject, String text, String from, String replyTo, List<BodyPart> multiparts) throws AddressException
 	{
 		this.contentType = contentType;
 		this.encoding = Encoding.DEFAULT_ENCODING;
+		this.setPriority(priority);
 		this.setTo(to);
 		this.subject = subject == null ? "" : subject;
 		this.text = text;
@@ -80,6 +87,16 @@ public class MailMessage
 			this.encoding = encoding;
 	}
 	
+	public Short getPriority()
+	{
+		return priority;
+	}
+
+	public void setPriority(Short priority)
+	{
+		this.priority = priority != null ? priority : MailMessage.NORMAL_PRIORITY;
+	}
+
 	public InternetAddress getTo()
 	{
 		return to;

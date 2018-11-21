@@ -35,16 +35,6 @@ public class MailTemplate extends VelocityTemplate
 		return (String)this.get("content");
 	}
 	
-	public void setCode(String code)
-	{
-		this.set("code", code);
-	}
-	
-	public String getCode()
-	{
-		return (String)this.get("code");
-	}
-	
 	public void setDate()
 	{
 		this.setDate(Calendar.getInstance().getTime());
@@ -104,16 +94,6 @@ public class MailTemplate extends VelocityTemplate
 	public String getEmail()
 	{
 		return (String)this.get("email");
-	}
-	
-	public void setNn(Boolean nn)
-	{
-		this.set("nn", nn);
-	}
-	
-	public Boolean getNn()
-	{
-		return (Boolean)this.get("nn");
 	}
 	
 }

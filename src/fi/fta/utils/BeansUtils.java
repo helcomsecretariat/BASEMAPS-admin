@@ -10,6 +10,7 @@ import fi.fta.beans.Category;
 import fi.fta.beans.MetaData;
 import fi.fta.beans.MetaDataFormat;
 import fi.fta.beans.MetaDataSource;
+import fi.fta.beans.TypedLayerService;
 import fi.fta.beans.WFS;
 import fi.fta.beans.WMS;
 import fi.fta.beans.WMSStyle;
@@ -18,12 +19,11 @@ import fi.fta.beans.ui.TreeBranchUI;
 import fi.fta.beans.ui.TreeCategoryLayerUI;
 import fi.fta.beans.ui.TreeCategoryUI;
 import fi.fta.beans.ui.TreeLayerUI;
+import fi.fta.beans.ui.TreeServiceUI;
 import fi.fta.beans.ui.TreeWFSLayerUI;
 import fi.fta.beans.ui.TreeWMSLayerUI;
 import fi.fta.beans.ui.WMSStyleUI;
 import fi.fta.data.managers.CategoryManager;
-import fi.fta.data.managers.WFSManager;
-import fi.fta.data.managers.WMSManager;
 import fi.fta.model.SiteModel;
 import fi.fta.utils.parse.wms.Style;
 
@@ -133,16 +133,15 @@ public class BeansUtils
 		}
 		if (can)
 		{
-			List<WMS> wmses = WMSManager.getInstance().getChildren(parent);
-			List<WFS> wfses = WFSManager.getInstance().getChildren(parent);
-			if (!wmses.isEmpty() || !wfses.isEmpty())
+			ServiceCollections services = new ServiceCollections(parent);
+			if (!services.isEmpty())
 			{
 				Category c = new Category();
 				if (parent != null)
 				{
 					c = CategoryManager.getInstance().get(parent);
 				}
-				ret.add(new TreeLayerUI(c, wmses, wfses));
+				ret.add(new TreeLayerUI(c, services));
 			}
 		}
 		return ret;
@@ -157,9 +156,8 @@ public class BeansUtils
 			boolean ccan = can || m == null || m.canReadThis(c.getId());
 			if (ccan)
 			{
-				List<WMS> wmses = WMSManager.getInstance().getChildren(c.getId());
-				List<WFS> wfses = WFSManager.getInstance().getChildren(c.getId());
-				if (wmses.isEmpty() && wfses.isEmpty())
+				ServiceCollections services = new ServiceCollections(c.getId());
+				if (services.isEmpty())
 				{
 					TreeCategoryUI ui = new TreeCategoryUI(c);
 					ui.getLayers().addAll(BeansUtils.getLayerUIs(c.getChildren(), m, ccan));
@@ -167,11 +165,11 @@ public class BeansUtils
 				}
 				else if (c.getChildren().isEmpty())
 				{
-					layers.add(new TreeLayerUI(c, wmses, wfses));
+					layers.add(new TreeLayerUI(c, services));
 				}
 				else
 				{
-					TreeCategoryLayerUI ui = new TreeCategoryLayerUI(c, wmses, wfses);
+					TreeCategoryLayerUI ui = new TreeCategoryLayerUI(c, services);
 					ui.getLayers().addAll(BeansUtils.getLayerUIs(c.getChildren(), m, ccan));
 					layers.add(ui);
 				}
@@ -182,6 +180,19 @@ public class BeansUtils
 			}
 		}
 		return layers;
+	}
+	
+	public static List<TreeServiceUI> getTreeServiceUIs(Collection<TypedLayerService> services)
+	{
+		List<TreeServiceUI> ret = new ArrayList<>();
+		if (!Util.isEmptyCollection(services))
+		{
+			for (TypedLayerService s : services)
+			{
+				ret.add(new TreeServiceUI(s));
+			}
+		}
+		return ret;
 	}
 	
 	public static List<TreeWMSLayerUI> getTreeWMSUIs(Collection<WMS> wmses)

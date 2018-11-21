@@ -1,5 +1,7 @@
 package fi.fta.beans.ui;
 
+import org.hibernate.validator.constraints.NotBlank;
+
 import fi.fta.beans.LayerService;
 import fi.fta.beans.Named;
 import fi.fta.beans.UrlFacade;
@@ -15,6 +17,7 @@ public class LayerServiceUI extends CategoryBeanUI implements Named, UrlFacade
 
 	protected String name;
 	
+	@NotBlank(message = "msg.validation.required")
 	protected String url;
 	
 	
