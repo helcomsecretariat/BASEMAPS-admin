@@ -17,6 +17,8 @@ public class ProjectProperties implements MailSettingsFacade
 	protected String projectName;
 	protected String projectURL;
 	
+	protected String azureKey;
+	
 	protected String smtpServer;
 	protected Integer smtpPort;
 	protected String smtpUser;
@@ -57,6 +59,8 @@ public class ProjectProperties implements MailSettingsFacade
 			
 	        projectName = props.getProperty("project.name");
 	        projectURL = props.getProperty("project.url");
+	        
+	        azureKey = props.getProperty("azure.key");
 	        
 			smtpServer = props.getProperty("smtp.server");
 			smtpPort = Integer.valueOf(props.getProperty("smtp.port"));
@@ -100,6 +104,10 @@ public class ProjectProperties implements MailSettingsFacade
 		return ind > 0 ? projectURL.substring(0, ind) : projectURL;
 	}
 	
+	public String getAzureKey() {
+		return azureKey;
+	}
+
 	public String getSmtpServer() {
 		return smtpServer;
 	}

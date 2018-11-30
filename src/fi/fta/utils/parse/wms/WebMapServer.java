@@ -22,6 +22,8 @@ import org.dom4j.io.SAXReader;
 
 import fi.fta.beans.Pair;
 import fi.fta.utils.JsonUtils;
+import fi.fta.utils.Languages;
+import fi.fta.utils.MimeFormat;
 import fi.fta.utils.Util;
 
 /**
@@ -30,16 +32,8 @@ import fi.fta.utils.Util;
  * @author andrysta
  *
  */
-public class WebMapServer
+public class WebMapServer implements Languages
 {
-	
-	public static String DEFAULT_LANGUAGE = "eng";
-	
-	public static final String JSON_FORMAT = "application/json";
-	public static final String GEOJSON_FORMAT = "application/geojson";
-	public static final String XML_FORMAT = "text/xml";
-	public static final String GML_FORMAT = "application/vnd.ogc.gml";
-	
 	
 	private URL url;
 	
@@ -52,7 +46,7 @@ public class WebMapServer
 	
 	public WebMapServer(String url) throws MalformedURLException, IOException, DocumentException
 	{
-		this(url, WebMapServer.DEFAULT_LANGUAGE);
+		this(url, WebMapServer.DEFAULT_ISO_639_2);
 	}
 	
 	public WebMapServer(String url, String defaultLanguage) throws MalformedURLException, IOException, DocumentException
@@ -193,12 +187,12 @@ public class WebMapServer
         	sb.append(inputLine).append("\r\n");
         }
         in.close();
-        switch (format)
+        switch (MimeFormat.get(format))
         {
-        	case WebMapServer.JSON_FORMAT:
-        	case WebMapServer.GEOJSON_FORMAT:
+        	case JSON:
+        	case GEOJSON:
         		return new Pair<>(JsonUtils.toObject(sb.toString(), Object.class), format);
-        	case WebMapServer.XML_FORMAT:
+        	case XML:
         		try
         		{
         			Document doc = new SAXReader().read(new StringReader(sb.toString()));
@@ -212,7 +206,7 @@ public class WebMapServer
         		{
 					// TODO: handle exception
 				}
-        	case WebMapServer.GML_FORMAT:
+        	case GML:
         	default:
         		return new Pair<>(sb.toString(), format);
         }
@@ -248,21 +242,21 @@ public class WebMapServer
 		if (!Util.isEmptyCollection(formats))
 		{
 			Set<String> fs = new HashSet<>(formats);
-			if (fs.contains(WebMapServer.JSON_FORMAT))
+			if (fs.contains(MimeFormat.JSON.getType()))
 			{
-				return WebMapServer.JSON_FORMAT;
+				return MimeFormat.JSON.getType();
 			}
-			else if (fs.contains(WebMapServer.GEOJSON_FORMAT))
+			else if (fs.contains(MimeFormat.GEOJSON.getType()))
 			{
-				return WebMapServer.GEOJSON_FORMAT;
+				return MimeFormat.GEOJSON.getType();
 			}
-			else if (fs.contains(WebMapServer.XML_FORMAT))
+			else if (fs.contains(MimeFormat.XML.getType()))
 			{
-				return WebMapServer.XML_FORMAT;
+				return MimeFormat.XML.getType();
 			}
-			else if (fs.contains(WebMapServer.GML_FORMAT))
+			else if (fs.contains(MimeFormat.GML.getType()))
 			{
-				return WebMapServer.GML_FORMAT;
+				return MimeFormat.GML.getType();
 			}
 			
 			return formats.iterator().next();

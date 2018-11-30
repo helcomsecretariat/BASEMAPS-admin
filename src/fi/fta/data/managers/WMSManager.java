@@ -93,6 +93,7 @@ public class WMSManager extends ServiceManager<WMS, WMSDAO>
 			WMSLayer l = this.getLayer(ui);
 			if (l != null)
 			{
+				TranslateManager.getInstance().translate(l.getInfo());
 				wms.setInfo(new WMSInfo());
 				wms.getInfo().copy(l.getInfo());
 				wms.getInfo().setStyles(new HashSet<>());
@@ -150,6 +151,7 @@ public class WMSManager extends ServiceManager<WMS, WMSDAO>
 			WMSLayer layer = this.getLayer(wms);
 			if (layer != null && layer.getInfo() != null)
 			{
+				TranslateManager.getInstance().translate(layer.getInfo());
 				if (wms.getInfo() == null)
 				{
 					wms.setInfo(new WMSInfo());
@@ -269,6 +271,7 @@ public class WMSManager extends ServiceManager<WMS, WMSDAO>
 	public WMSLayerUI info(LayerServiceUI ui) throws MalformedURLException, IOException, DocumentException
 	{
 		WMSLayer l = this.getLayer(ui);
+		TranslateManager.getInstance().translate(l.getInfo());
 		return l != null ? new WMSLayerUI(l) : new WMSLayerUI();
 	}
 	

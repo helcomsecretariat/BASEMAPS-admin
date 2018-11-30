@@ -91,6 +91,7 @@ public class WFSManager extends ServiceManager<WFS, WFSDAO>
 			WFSFeatures f = this.getFeatures(wfs);
 			if (f != null)
 			{
+				TranslateManager.getInstance().translate(f.getInfo());
 				wfs.setInfo(new WFSInfo());
 				wfs.getInfo().copy(f.getInfo());
 				super.addMetaData(ui, f.getMetadata());
@@ -143,6 +144,7 @@ public class WFSManager extends ServiceManager<WFS, WFSDAO>
 			WFSFeatures features = this.getFeatures(wfs);
 			if (features != null)
 			{
+				TranslateManager.getInstance().translate(features.getInfo());
 				if (wfs.getInfo() == null)
 				{
 					wfs.setInfo(new WFSInfo());
@@ -251,6 +253,7 @@ public class WFSManager extends ServiceManager<WFS, WFSDAO>
 	public WFSLayerBean info(LayerServiceUI ui) throws MalformedURLException, IOException, DocumentException
 	{
 		WFSFeatures f = this.getFeatures(ui);
+		TranslateManager.getInstance().translate(f.getInfo());
 		return f != null ? new WFSLayerBean(f.getInfo()) : new WFSLayerBean();
 	}
 	

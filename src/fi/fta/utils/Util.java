@@ -128,7 +128,7 @@ public class Util
 		{
 			if (values == null || values.isEmpty())
 				return "";
-			StringBuffer b = new StringBuffer();
+			StringBuilder b = new StringBuilder();
 			boolean first = true;
 			for (T v : values)
 			{
@@ -170,7 +170,7 @@ public class Util
 		return (array == null || array.length == 0);
 	}
 	
-	public static boolean isEmptyStringBuffer(StringBuffer str)
+	public static boolean isEmptyStringBuilder(StringBuilder str)
 	{
 		return (str == null || str.length() == 0 || str.toString().trim().length() == 0);
 	}
@@ -197,8 +197,8 @@ public class Util
 		else if (o instanceof Map)
 			return ((Map<?,?>)o).isEmpty();
 		
-		else if (o instanceof StringBuffer)
-			return ((StringBuffer)o).length() == 0 || ((StringBuffer)o).toString().trim().length() == 0;
+		else if (o instanceof StringBuilder)
+			return ((StringBuilder)o).length() == 0 || ((StringBuilder)o).toString().trim().length() == 0;
 		
 		return false;
 	}
@@ -269,7 +269,7 @@ public class Util
 	
 	public static String composeQuery(Map<String, Set<String>> parameters, String ... skip)
 	{
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		Set<String> toSkip = new HashSet<String>();
 		if (skip != null)
 			Collections.addAll(toSkip, skip);
@@ -330,7 +330,7 @@ public class Util
 	
 	public static String wrapHTML(String content, String wrapper)
 	{
-		return wrapper.replaceFirst("><", new StringBuffer(">").append(content).append("<").toString());
+		return wrapper.replaceFirst("><", new StringBuilder(">").append(content).append("<").toString());
 	}
 	
 	public static String stripHTML(String content)
@@ -384,7 +384,7 @@ public class Util
 	{
 		if (!Util.isEmptyString(source))
 		{
-			StringBuffer b = new StringBuffer();
+			StringBuilder b = new StringBuilder();
 			for (int i = 0; i < source.length(); i++)
 			{
 				char c = source.charAt(i);

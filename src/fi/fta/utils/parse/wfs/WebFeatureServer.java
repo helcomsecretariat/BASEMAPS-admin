@@ -16,6 +16,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import fi.fta.utils.Languages;
 import fi.fta.utils.Util;
 import fi.fta.utils.parse.XmlBean;
 
@@ -25,11 +26,8 @@ import fi.fta.utils.parse.XmlBean;
  * @author andrysta
  *
  */
-public class WebFeatureServer
+public class WebFeatureServer implements Languages
 {
-	
-	public static String DEFAULT_LANGUAGE = "eng";
-	
 	
 	private URL url;
 	
@@ -42,7 +40,7 @@ public class WebFeatureServer
 	
 	public WebFeatureServer(String url) throws MalformedURLException, IOException, DocumentException
 	{
-		this(url, WebFeatureServer.DEFAULT_LANGUAGE);
+		this(url, WebFeatureServer.DEFAULT_ISO_639_2);
 	}
 	
 	public WebFeatureServer(String url, String defaultLanguage) throws MalformedURLException, IOException, DocumentException

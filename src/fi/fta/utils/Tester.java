@@ -22,7 +22,7 @@ public class Tester
 //			System.out.println(dao.isIncluded(new Long(66), "aaa") == null);
 //			System.out.println(dao.isIncluded(new Long(66), "bbb") == null);
 //			HibernateUtil.close();
-
+			
 			Pattern p = Pattern.compile("[a-zA-Z\\u0105\\u010d]*");
 			System.out.println(p.matcher("\u0105aaas\u010dadasd").matches());
 			

@@ -24,15 +24,15 @@ public class ServiceLayerBean implements Serializable
 	
 	private String title;
 	
-	@Column(columnDefinition="character varying(50)[]")
+	@Column(columnDefinition="character varying(200)[]")
 	@Type(type="fi.fta.data.dao.PersistentStringListType")
 	private List<String> keywords;
 	
-	@Column(columnDefinition="character varying(20)[]")
+	@Column(columnDefinition="character varying(100)[]")
 	@Type(type="fi.fta.data.dao.PersistentStringListType")
 	private List<String> formats;
 	
-	@Column(columnDefinition="character varying(20)[]")
+	@Column(columnDefinition="character varying(50)[]")
 	@Type(type="fi.fta.data.dao.PersistentStringListType")
 	private List<String> crs;
 	
@@ -46,6 +46,22 @@ public class ServiceLayerBean implements Serializable
 	
 	@Column(name = "access_constraints")
 	private String accessConstraints;
+	
+	@Column(name = "title_en")
+	private String titleEn;
+	
+	@Column(name = "keywords_en", columnDefinition="character varying(200)[]")
+	@Type(type="fi.fta.data.dao.PersistentStringListType")
+	private List<String> keywordsEn;
+	
+	@Column(name = "description_en")
+	private String descriptionEn;
+	
+	@Column(name = "fees_en")
+	private String feesEn;
+	
+	@Column(name = "access_constraints_en")
+	private String accessConstraintsEn;
 	
 	
 	public ServiceLayerBean()
@@ -137,6 +153,46 @@ public class ServiceLayerBean implements Serializable
 		this.accessConstraints = accessConstraints;
 	}
 
+	public String getTitleEn() {
+		return titleEn;
+	}
+
+	public void setTitleEn(String titleEn) {
+		this.titleEn = titleEn;
+	}
+
+	public List<String> getKeywordsEn() {
+		return keywordsEn;
+	}
+
+	public void setKeywordsEn(List<String> keywordsEn) {
+		this.keywordsEn = keywordsEn;
+	}
+
+	public String getDescriptionEn() {
+		return descriptionEn;
+	}
+
+	public void setDescriptionEn(String descriptionEn) {
+		this.descriptionEn = descriptionEn;
+	}
+
+	public String getFeesEn() {
+		return feesEn;
+	}
+
+	public void setFeesEn(String feesEn) {
+		this.feesEn = feesEn;
+	}
+
+	public String getAccessConstraintsEn() {
+		return accessConstraintsEn;
+	}
+
+	public void setAccessConstraintsEn(String accessConstraintsEn) {
+		this.accessConstraintsEn = accessConstraintsEn;
+	}
+
 	public void copy(ServiceLayerBean from)
 	{
 		this.setVersion(from.getVersion());
@@ -149,6 +205,11 @@ public class ServiceLayerBean implements Serializable
 		this.setLanguages(from.getLanguages());
 		this.setFees(from.getFees());
 		this.setAccessConstraints(from.getAccessConstraints());
+		this.setTitleEn(from.getTitleEn());
+		this.setKeywordsEn(from.getKeywordsEn());
+		this.setDescriptionEn(from.getDescriptionEn());
+		this.setFeesEn(from.getFeesEn());
+		this.setAccessConstraintsEn(from.getAccessConstraintsEn());
 	}
 	
 }
