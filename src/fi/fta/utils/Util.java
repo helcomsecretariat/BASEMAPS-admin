@@ -155,6 +155,11 @@ public class Util
 		return !(n == null || n instanceof Double || n instanceof Float || n.longValue() < 0);
 	}
 	
+	public static boolean isPositive(Number n)
+	{
+		return !(n == null || n.floatValue() <= 0.0);
+	}
+	
 	public static boolean isEmptyCollection(Collection<?> c)
 	{
 		return (c == null || c.isEmpty());

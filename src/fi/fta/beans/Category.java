@@ -14,6 +14,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import fi.fta.beans.ui.CategoryUI;
@@ -61,6 +64,7 @@ public class Category extends CategoryBean
 	 */
 	@OneToMany(mappedBy = "parent", targetEntity=Category.class, cascade={CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.REMOVE}, fetch=FetchType.EAGER)
 	@OrderBy("position")
+	@Fetch(value = FetchMode.SUBSELECT)
 	protected List<Category> children;
 	
 	/**

@@ -85,6 +85,11 @@ public abstract class ServiceManager<S extends LayerService, D extends LayerServ
 		return dao.getByParent(id);
 	}
 	
+	public int countChildren(Long id) throws HibernateException
+	{
+		return dao.countByParent(id);
+	}
+	
 	public Long add(LayerServiceUI ui, SiteModel m) throws Exception
 	{
 		if (m.canWrite(ui.getParent()))

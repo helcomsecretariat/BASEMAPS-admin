@@ -660,7 +660,7 @@
 			<version>${xmlbeans.version}</version>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
+		<!-- dependency>
 			<groupId>org.apache.xmlbeans</groupId>
 			<artifactId>xmlbeans-xmlpublic</artifactId>
 			<exclusions>
@@ -699,7 +699,7 @@
 			</exclusions>		
 			<version>${xmlbeans.version}</version>
 			<scope>compile</scope>
-		</dependency>
+		</dependency -->
 		
 		<!-- Jackson -->
 		<dependency>
@@ -858,6 +858,14 @@
 			<scope>compile</scope>
 		</dependency>
 		
+		<!-- dependency used for XLSX file format -->
+		<dependency>
+		    <groupId>org.apache.poi</groupId>
+		    <artifactId>poi-ooxml</artifactId>
+		    <version>${poi.version}</version>
+		    <scope>compile</scope>
+		</dependency>
+		
 		<!-- PostgreSQL -->
 		<dependency>
 			<groupId>org.postgresql</groupId>
@@ -901,7 +909,7 @@
 		    <version>${hibernate-validator.version}</version>
 			<scope>compile</scope>
 		</dependency>
-
+		
 		<!-- Manual added -->
 		<!-- https://mvnrepository.com/artifact/org.geotools/gt-wms -->
 		<!-- dependency>
@@ -947,10 +955,11 @@
 		<dom4j.version>1.6.1</dom4j.version>
 		<validation-api.version>2.0.1.Final</validation-api.version>
 		<jaxb-api.version>2.3.0</jaxb-api.version>
-		<xmlbeans.version>2.6.0</xmlbeans.version>
+		<xmlbeans.version>3.0.2</xmlbeans.version>
 		<jackson.version>2.9.2</jackson.version>
 		<spring.version>4.3.12.RELEASE</spring.version>
 		<tiles.version>3.0.8</tiles.version>
+		<poi.version>4.0.1</poi.version>
 		
 		<postgresql.version>9.4.1212</postgresql.version>
 		<hibernate.jpa.version>1.0.0.Final</hibernate.jpa.version>

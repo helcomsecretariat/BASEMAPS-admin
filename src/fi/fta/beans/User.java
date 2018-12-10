@@ -17,6 +17,9 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import fi.fta.beans.ui.UserRightUI;
 import fi.fta.beans.ui.UserUI;
 import fi.fta.utils.PasswordUtils;
@@ -59,6 +62,7 @@ public class User extends EmailBean implements Named
 	@OneToMany(targetEntity=UserRight.class, cascade={CascadeType.ALL}, fetch=FetchType.EAGER)
 	@JoinColumn(name = "user_id", nullable = false, updatable = false, insertable = true)
 	@OrderBy("category_id")
+	@Fetch(value = FetchMode.SUBSELECT)
 	private List<UserRight> rights;
 	
 	

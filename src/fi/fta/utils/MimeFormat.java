@@ -6,7 +6,9 @@ public enum MimeFormat
 	JSON("application/json"),
 	GEOJSON("application/geojson"),
 	XML("text/xml"),
-	GML("application/vnd.ogc.gml");
+	GML("application/vnd.ogc.gml"),
+	XLXS("application/vnd.ms-excel"),
+	HTML("text/html");
 	
 	
 	private String type;

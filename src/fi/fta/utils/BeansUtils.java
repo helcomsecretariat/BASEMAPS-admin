@@ -2,6 +2,7 @@ package fi.fta.utils;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.hibernate.HibernateException;
@@ -14,6 +15,8 @@ import fi.fta.beans.TypedLayerService;
 import fi.fta.beans.WFS;
 import fi.fta.beans.WMS;
 import fi.fta.beans.WMSStyle;
+import fi.fta.beans.ui.CategoryCountsUI;
+import fi.fta.beans.ui.CategorySummaryUI;
 import fi.fta.beans.ui.MetaDataUI;
 import fi.fta.beans.ui.TreeBranchUI;
 import fi.fta.beans.ui.TreeCategoryLayerUI;
@@ -24,6 +27,9 @@ import fi.fta.beans.ui.TreeWFSLayerUI;
 import fi.fta.beans.ui.TreeWMSLayerUI;
 import fi.fta.beans.ui.WMSStyleUI;
 import fi.fta.data.managers.CategoryManager;
+import fi.fta.data.managers.SimpleUrlServiceManager;
+import fi.fta.data.managers.WFSManager;
+import fi.fta.data.managers.WMSManager;
 import fi.fta.model.SiteModel;
 import fi.fta.utils.parse.wms.Style;
 
@@ -217,6 +223,51 @@ public class BeansUtils
 			{
 				ret.add(new TreeWFSLayerUI(wfs));
 			}
+		}
+		return ret;
+	}
+	
+	public static List<CategorySummaryUI> getSummary(Long id) throws HibernateException
+	{
+		List<CategorySummaryUI> summaries = new ArrayList<>();
+		if (id == null)
+		{
+			summaries.addAll(BeansUtils.getSummary(CategoryManager.getInstance().getRoot()));
+		}
+		else
+		{
+			Category c = CategoryManager.getInstance().get(id);
+			if (c != null)
+			{
+				summaries.addAll(BeansUtils.getSummary(Collections.singletonList(c)));
+			}
+		}
+		return summaries;
+	}
+	
+	public static List<CategorySummaryUI> getSummary(List<Category> categories) throws HibernateException
+	{
+		List<CategorySummaryUI> ret = new ArrayList<>();
+		for (Category c : categories)
+		{
+			CategorySummaryUI ui = new CategorySummaryUI(c);
+			CategoryCountsUI cui = new CategoryCountsUI();
+			cui.setWmses(WMSManager.getInstance().countChildren(c.getId()));
+			cui.setWfses(WFSManager.getInstance().countChildren(c.getId()));
+			cui.setArcgises(
+				SimpleUrlServiceManager.getArcGISInstance().countChildren(c.getId()));
+			cui.setDownloadables(
+				SimpleUrlServiceManager.getDownloadableInstance().countChildren(c.getId()));
+			if (!Util.isEmptyCollection(c.getChildren()))
+			{
+				ui.setChildren(BeansUtils.getSummary(c.getChildren()));
+				for (CategorySummaryUI csui : ui.getChildren())
+				{
+					cui.sum(csui.getCounts());
+				}	
+			}
+			ui.setCounts(cui);
+			ret.add(ui);
 		}
 		return ret;
 	}
