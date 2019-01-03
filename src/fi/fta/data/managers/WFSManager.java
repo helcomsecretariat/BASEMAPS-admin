@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import org.dom4j.DocumentException;
 import org.hibernate.HibernateException;
 
+import fi.fta.beans.LayerServiceType;
 import fi.fta.beans.MetaDataSource;
 import fi.fta.beans.Named;
 import fi.fta.beans.UrlFacade;
@@ -77,7 +78,7 @@ public class WFSManager extends ServiceManager<WFS, WFSDAO>
 	
 	protected WFSManager()
 	{
-		super(new WFSDAO(), MetaDataSource.WFS);
+		super(new WFSDAO(), LayerServiceType.WFS, MetaDataSource.WFS);
 		this.cacheLock = new ReentrantLock();
 		this.cache = new TimeBasedCache<>(WFSManager.WFS_CACHE_TIME);
 		this.updateInfoLock = new ReentrantLock();
@@ -105,7 +106,12 @@ public class WFSManager extends ServiceManager<WFS, WFSDAO>
 		{
 			logger.error("WFSManager.add parse", ex);
 		}
-		return super.add(wfs);
+		Long id = super.add(wfs);
+		if (id != null)
+		{
+			this.incChildren(wfs.getParent());
+		}
+		return id;
 	}
 	
 	public WFS update(LayerServiceUI ui) throws Exception
@@ -281,6 +287,7 @@ public class WFSManager extends ServiceManager<WFS, WFSDAO>
 	 */
 	public void clear()
 	{
+		super.clear();
 		cacheLock.lock();
 		try
 		{

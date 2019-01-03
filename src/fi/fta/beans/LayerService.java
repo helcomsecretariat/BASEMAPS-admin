@@ -12,7 +12,7 @@ import fi.fta.beans.ui.LayerServiceUI;
 @Table(name="services")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "type")
-public class LayerService extends CategoryBean implements Named, UrlFacade
+public class LayerService extends CategoryBean implements Named, UrlFacade, Child
 {
 	
 	/**

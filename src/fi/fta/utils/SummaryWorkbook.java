@@ -1,7 +1,9 @@
 package fi.fta.utils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
@@ -13,7 +15,7 @@ import org.hibernate.HibernateException;
 
 import fi.fta.beans.Category;
 import fi.fta.beans.ui.CategoryCountsUI;
-import fi.fta.beans.ui.CategorySummaryUI;
+import fi.fta.data.managers.CategoryBeanManager;
 import fi.fta.data.managers.CategoryManager;
 import fi.fta.data.managers.SimpleUrlServiceManager;
 import fi.fta.data.managers.WFSManager;
@@ -23,7 +25,20 @@ public class SummaryWorkbook
 {
 	
 	private static String [] columns = {
-		"ID", "Name", "WMS", "WFS", "ARCGis", "Downloadables"};
+		"ID", "Name", "WMS", "WFS", "ArcGis", "Downloadables"};
+	private static CategoryBeanManager<?, ?, ?>[] managers = {
+		WMSManager.getInstance(),
+		WFSManager.getInstance(),
+		SimpleUrlServiceManager.getArcGISInstance(),
+		SimpleUrlServiceManager.getDownloadableInstance()
+	};
+	private static List<Function<CategoryCountsUI, Integer>> counters = new ArrayList<>();
+	static {
+		counters.add((cui)->{return cui.getWmses();});
+		counters.add((cui)->{return cui.getWfses();});
+		counters.add((cui)->{return cui.getArcgises();});
+		counters.add((cui)->{return cui.getDownloadables();});
+	};
 	
 	
 	private Workbook workbook;
@@ -54,66 +69,103 @@ public class SummaryWorkbook
 	{
 		if (id == null)
 		{
-			this.set("", CategoryManager.getInstance().getRoot(), depth);
+			if (depth == null || depth.intValue() == 0)
+			{
+				this.set("", CategoryManager.getInstance().getRoot());
+			}
+			else if (depth.intValue() > 0)
+			{
+				this.setDown("", CategoryManager.getInstance().getRoot(), depth);
+			}
+			else
+			{
+				this.setUp("", CategoryManager.getInstance().getYoungest(), depth);
+			}
 		}
 		else
 		{
 			Category c = CategoryManager.getInstance().get(id);
-			if (c != null)
+			if (depth == null || depth.intValue() == 0)
 			{
-				this.set("", Collections.singletonList(c), depth);
+				this.set("", Collections.singletonList(c));
+			}
+			else if (depth.intValue() > 0)
+			{
+				this.setDown("", Collections.singletonList(c), depth);
+			}
+			else
+			{
+				this.setUp("", BeansUtils.getYoungest(c), depth);
 			}
 		}
 	}
 	
-	private void set(String prefix, List<Category> categories, Integer depth) throws HibernateException
+	private void set(String prefix, List<Category> categories) throws HibernateException
 	{
 		for (Category c : categories)
 		{
+			String name = (Util.isEmptyString(prefix) ? "" : (prefix + " > ")) + c.getLabel();
 			if (Util.isEmptyCollection(c.getChildren()))
 			{
-				Row row = sheet.createRow(index++);
-				row.createCell(0).setCellValue(c.getId());
-				row.createCell(1).setCellValue(
-					(Util.isEmptyString(prefix) ? "" : (prefix + " > ")) + c.getLabel());
-				row.createCell(2).setCellValue(
-					WMSManager.getInstance().countChildren(c.getId()));
-				row.createCell(3).setCellValue(
-					WFSManager.getInstance().countChildren(c.getId()));
-				row.createCell(4).setCellValue(
-					SimpleUrlServiceManager.getArcGISInstance().countChildren(c.getId()));
-				row.createCell(5).setCellValue(
-					SimpleUrlServiceManager.getDownloadableInstance().countChildren(c.getId()));
-			}
-			else if (depth != null && (depth.intValue() == 1 || depth.intValue() == -1))
-			{
-				CategoryCountsUI counts = new CategoryCountsUI();
-				for (CategorySummaryUI ui : BeansUtils.getSummary(c.getChildren()))
-				{
-					counts.sum(ui.getCounts());
-				}
-				Row row = sheet.createRow(index++);
-				row.createCell(0).setCellValue(c.getId());
-				row.createCell(1).setCellValue(
-					(Util.isEmptyString(prefix) ? "" : (prefix + " > ")) + c.getLabel());
-				row.createCell(2).setCellValue(counts.getWmses());
-				row.createCell(3).setCellValue(counts.getWfses());
-				row.createCell(4).setCellValue(counts.getArcgises());
-				row.createCell(5).setCellValue(counts.getDownloadables());
+				this.createRow(name, c);
 			}
 			else
 			{
-				Integer d = depth != null ?
-					new Integer(depth.intValue() > 0 ? depth-1 : depth+1) : null;
-				if (Util.isEmptyString(prefix))
-				{
-					this.set(c.getLabel(), c.getChildren(), d);
-				}
-				else
-				{
-					this.set(prefix + " > " + c.getLabel(), c.getChildren(), d);
-				}
+				this.set(name, c.getChildren());
 			}
+		}
+	}
+	
+	private void setDown(String prefix, List<Category> categories, int depth)
+	{
+		for (Category c : categories)
+		{
+			String name = (Util.isEmptyString(prefix) ? "" : (prefix + " > ")) + c.getLabel();
+			if (Util.isEmptyCollection(c.getChildren()))
+			{
+				this.createRow(name, c);
+			}
+			else if (depth == 1)
+			{
+				CategoryCountsUI counts = new CategoryCountsUI();
+				BeansUtils.getSummary(c.getChildren()).forEach(
+					(csui)->{counts.sum(csui.getCounts());});
+				this.createRow(name, c.getId(), counts);
+			}
+			else
+			{
+				
+				this.setDown(name, c.getChildren(), depth-1);
+			}
+		}
+	}
+	
+	private void setUp(String prefix, List<Category> categories, int depth)
+	{
+		this.set(prefix, BeansUtils.getParents(categories, depth));
+	}
+	
+	private void createRow(String name, Category c) throws HibernateException
+	{
+		Row row = sheet.createRow(index++);
+		row.createCell(0).setCellValue(c.getId());
+		row.createCell(1).setCellValue(name);
+		for (int i = 0; i < managers.length; i++)
+		{
+			row.createCell(i+2).setCellValue(
+				managers[i].countChildren(c.getId()));
+		}
+	}
+	
+	private void createRow(String name, Long id, CategoryCountsUI ui)
+	{
+		Row row = sheet.createRow(index++);
+		row.createCell(0).setCellValue(id);
+		row.createCell(1).setCellValue(name);
+		for (int i = 0; i < counters.size(); i++)
+		{
+			row.createCell(i+2).setCellValue(
+				counters.get(i).apply(ui));
 		}
 	}
 	

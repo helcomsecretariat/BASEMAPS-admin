@@ -2,6 +2,13 @@ package fi.fta.beans.ui;
 
 import java.io.Serializable;
 
+import org.hibernate.HibernateException;
+
+import fi.fta.beans.Category;
+import fi.fta.data.managers.SimpleUrlServiceManager;
+import fi.fta.data.managers.WFSManager;
+import fi.fta.data.managers.WMSManager;
+
 public class CategoryCountsUI implements Serializable
 {
 
@@ -26,6 +33,14 @@ public class CategoryCountsUI implements Serializable
 		this.wfses = 0;
 		this.arcgises = 0;
 		this.downloadables = 0;
+	}
+	
+	public CategoryCountsUI(Category c) throws HibernateException
+	{
+		this.wmses = WMSManager.getInstance().countChildren(c.getId());
+		this.wfses = WFSManager.getInstance().countChildren(c.getId());
+		this.arcgises = SimpleUrlServiceManager.getArcGISInstance().countChildren(c.getId());
+		this.downloadables = SimpleUrlServiceManager.getDownloadableInstance().countChildren(c.getId());
 	}
 	
 	public CategoryCountsUI sum(CategoryCountsUI ui)

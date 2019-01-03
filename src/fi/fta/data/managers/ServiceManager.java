@@ -11,6 +11,7 @@ import org.hibernate.HibernateException;
 
 import fi.fta.beans.Category;
 import fi.fta.beans.LayerService;
+import fi.fta.beans.LayerServiceType;
 import fi.fta.beans.MetaData;
 import fi.fta.beans.MetaDataSource;
 import fi.fta.beans.ui.LayerServiceUI;
@@ -33,11 +34,14 @@ import fi.fta.utils.CollectionsUtils;
 public abstract class ServiceManager<S extends LayerService, D extends LayerServiceDAO<S>> extends CategoryBeanManager<S, LayerServiceUI, D>
 {
 	
+	private LayerServiceType type;
+	
 	private MetaDataSource source;
 	
-	public ServiceManager(D dao, MetaDataSource source)
+	public ServiceManager(D dao, LayerServiceType type, MetaDataSource source)
 	{
 		super(dao);
+		this.type = type;
 		this.source = source;
 	}
 	
@@ -56,7 +60,14 @@ public abstract class ServiceManager<S extends LayerService, D extends LayerServ
 		Category c = this.getParent(id);
 		if (m.canWrite(c != null ? c.getId() : null))
 		{
-			return dao.delete(id) > 0;
+			S s = this.get(id);
+			boolean deleted = dao.delete(id) > 0;
+			if (deleted)
+			{
+				CategoryBeanActionManager.getInstance().delete(type, s, c, m);
+				this.decChildren(c.getParent() != null ? c.getParent().getId() : null);
+			}
+			return deleted;
 		}
 		return null;
 	}
@@ -80,21 +91,17 @@ public abstract class ServiceManager<S extends LayerService, D extends LayerServ
 		return null;
 	}
 	
-	public List<S> getChildren(Long id) throws HibernateException
-	{
-		return dao.getByParent(id);
-	}
-	
-	public int countChildren(Long id) throws HibernateException
-	{
-		return dao.countByParent(id);
-	}
-	
 	public Long add(LayerServiceUI ui, SiteModel m) throws Exception
 	{
 		if (m.canWrite(ui.getParent()))
 		{
-			return this.add(ui);
+			Long id = this.add(ui);
+			if (id != null)
+			{
+				CategoryBeanActionManager.getInstance().add(type, ui, m);
+				this.incChildren(ui.getParent());
+			}
+			return id;
 		}
 		return null;
 	}
@@ -103,6 +110,7 @@ public abstract class ServiceManager<S extends LayerService, D extends LayerServ
 	{
 		if (m.canWrite(ui.getParent()))
 		{
+			CategoryBeanActionManager.getInstance().update(type, ui, m);
 			return this.update(ui);
 		}
 		return null;

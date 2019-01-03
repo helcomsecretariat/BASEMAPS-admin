@@ -2,11 +2,13 @@ package fi.fta.data.managers;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 
 import fi.fta.beans.Category;
 import fi.fta.beans.CategoryBean;
 import fi.fta.beans.ui.CategoryBeanUI;
+import fi.fta.cache.TimeBasedCache;
 import fi.fta.data.dao.CategoryBeanDAO;
 import fi.fta.model.SiteModel;
 
@@ -24,11 +26,63 @@ import fi.fta.model.SiteModel;
 public abstract class CategoryBeanManager<C extends CategoryBean, UI extends CategoryBeanUI, D extends CategoryBeanDAO<C>>
 {
 	
+	/**
+	 * Time in milliseconds to keep count of children in application cache.
+	 */
+	private static long CHILDREN_COUNT_CACHE_TIME = 10 * 60 * 1000;
+	
+	protected static Logger logger = Logger.getLogger(CategoryBeanManager.class);
+	
+	
 	protected D dao;
+	
+	protected TimeBasedCache<Long, Integer> children;
+	
 	
 	public CategoryBeanManager(D dao)
 	{
 		this.dao = dao;
+		this.children = new TimeBasedCache<>(CategoryBeanManager.CHILDREN_COUNT_CACHE_TIME);
+	}
+	
+	/**
+	 * Increase count of children.
+	 * 
+	 * @param parent database ID of parent category
+	 * @throws HibernateException database exception database exception
+	 */
+	protected void incChildren(Long parent)
+	{
+		if (children.contains(parent))
+		{
+			Integer count = children.getElementWithoutExtendingExpireTime(parent);
+			if (count != null)
+			{
+				children.put(parent, new Integer(count + 1));
+			}
+		}
+	}
+	
+	/**
+	 * Decrease count of children.
+	 * 
+	 * @param parent database ID of parent category
+	 * @throws HibernateException database exception database exception
+	 */
+	protected void decChildren(Long parent)
+	{
+		if (children.contains(parent))
+		{
+			Integer count = children.getElementWithoutExtendingExpireTime(parent);
+			if (count != null && count > 0)
+			{
+				children.put(parent, new Integer(count - 1));
+			}
+			else if (count != null)
+			{
+				children.remove(parent);
+			}
+		}
 	}
 	
 	/**
@@ -114,7 +168,26 @@ public abstract class CategoryBeanManager<C extends CategoryBean, UI extends Cat
 	 * @return list of category related objects
 	 * @throws HibernateException database exception
 	 */
-	public abstract List<C> getChildren(Long id) throws HibernateException;
+	public List<C> getChildren(Long id) throws HibernateException
+	{
+		return dao.getByParent(id);
+	}
+	
+	/**
+	 * Retrieve children of identified category related object.
+	 * 
+	 * @param id database ID of category related object
+	 * @return list of category related objects
+	 * @throws HibernateException database exception
+	 */
+	public int countChildren(Long id) throws HibernateException
+	{
+		if (children.isEmpty())
+		{
+			children.putAll(dao.countByParent());
+		}
+		return children.contains(id) ? children.getElementWithoutExtendingExpireTime(id) : 0;
+	}
 	
 	/**
 	 * Add a new category related object from user input.
@@ -135,5 +208,13 @@ public abstract class CategoryBeanManager<C extends CategoryBean, UI extends Cat
 	 * @throws Exception database exception
 	 */
 	public abstract C update(UI ui, SiteModel m) throws Exception;
+	
+	/**
+	 * Clear children counts cache
+	 */
+	public void clear()
+	{
+		children.clear();
+	}
 	
 }

@@ -30,4 +30,13 @@ public class CategoryDAO extends CategoryBeanDAO<Category>
 			this.getCurrentSession(), sb.toString(), Category.class).executeNativeQuery();
 	}
 	
+	public List<Category> getYoungest()
+	{
+		StringBuilder sb = new StringBuilder("SELECT p.* FROM ").append(this.getTableName()).append(" p");
+		sb.append(" LEFT JOIN ").append(this.getTableName()).append(" c ON p.id = c.parent");
+		sb.append(" WHERE c.id IS NULL");
+		return new DAOSelectQueryUtil<>(
+			this.getCurrentSession(), sb.toString(), Category.class).executeNativeQuery();
+	}
+	
 }

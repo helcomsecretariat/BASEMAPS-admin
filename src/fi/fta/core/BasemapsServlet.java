@@ -23,8 +23,6 @@ public class BasemapsServlet extends DispatcherServlet
 		try
 		{
 			HibernateUtil.create();
-			
-			
 		}
 		catch (Exception ex)
 		{

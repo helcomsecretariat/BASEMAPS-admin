@@ -40,12 +40,13 @@ public class CategoryBean extends IdBean
 	
 	
 	public CategoryBean()
-	{}
+	{
+		super();
+	}
 
 	public CategoryBean(CategoryBeanUI ui)
 	{
-		this();
-		this.setId(ui.getId());
+		super(ui.getId());
 		this.setPosition(ui.getPosition() != null ? ui.getPosition() : 1);
 	}
 	

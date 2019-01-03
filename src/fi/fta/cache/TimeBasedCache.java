@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.CountDownLatch;
+import java.util.function.Consumer;
 
 public class TimeBasedCache<K, V>
 {
@@ -15,16 +17,25 @@ public class TimeBasedCache<K, V>
 	
 	protected Boolean cacheLock;
 	
-	protected HashMap<K, Long> expireTimes;
+	protected Map<K, Long> expireTimes;
 	
 	protected HashMap<K, V> cache;
 	
+	protected Consumer<List<V>> afterRemove;
+	
+	
 	public TimeBasedCache(long expireTime)
 	{
+		this(expireTime, (values)->{});
+	}
+	
+	public TimeBasedCache(long expireTime, Consumer<List<V>> afterRemove)
+	{
 		this.cacheLock = Boolean.valueOf(true);
-		this.expireTimes = new HashMap<K, Long>();
-		this.cache = new HashMap<K, V>();
+		this.expireTimes = new HashMap<>();
+		this.cache = new HashMap<>();
 		this.expireTime = expireTime;
+		this.afterRemove = afterRemove;
 	}
 	
 	public long getExpireTime()
@@ -37,10 +48,8 @@ public class TimeBasedCache<K, V>
 		synchronized (cacheLock)
 		{
 			boolean start = cache.isEmpty();
-			
 			cache.put(key, value);
 			expireTimes.put(key, System.currentTimeMillis() + expireTime);
-			
 			if (start)
 			{
 				this.startCleaner();
@@ -53,15 +62,12 @@ public class TimeBasedCache<K, V>
 		synchronized (cacheLock)
 		{
 			boolean start = cache.isEmpty();
-			
 			long eTime = System.currentTimeMillis() + expireTime;
-			
 			for (Entry<K, V> e : beans.entrySet())
 			{
 				cache.put(e.getKey(), e.getValue());
 				expireTimes.put(e.getKey(), eTime);
 			}
-			
 			if (start)
 			{
 				this.startCleaner();
@@ -74,12 +80,10 @@ public class TimeBasedCache<K, V>
 		synchronized (cacheLock)
 		{
 			V ret = cache.get(id);
-			
-			if (ret == null)
-				return null;
-			
-			expireTimes.put(id, System.currentTimeMillis() + expireTime);
-			
+			if (ret != null)
+			{
+				expireTimes.put(id, System.currentTimeMillis() + expireTime);
+			}
 			return ret;
 		}
 	}
@@ -122,9 +126,12 @@ public class TimeBasedCache<K, V>
 		synchronized (cacheLock)
 		{
 			for (K id : ids)
+			{
 				if (!cache.containsKey(id))
+				{
 					return false;
-			
+				}
+			}
 			return true;
 		}
 	}
@@ -134,17 +141,11 @@ public class TimeBasedCache<K, V>
 		synchronized (cacheLock)
 		{	
 			V ret = cache.remove(id);
-			
-			if (ret == null)
-				return null;
-	
-			if (cache.isEmpty())
+			if (ret != null && cache.isEmpty())
 			{
 				this.stopCleaner();
-				
 				expireTimes.clear();
 			}
-			
 			return ret;
 		}
 	}
@@ -153,25 +154,44 @@ public class TimeBasedCache<K, V>
 	{
 		synchronized (cacheLock)
 		{
-			ArrayList<V> ret = new ArrayList<V>(ids.size());
-			
+			List<V> ret = new ArrayList<>(ids.size());
 			for (K id : ids)
 			{
 				V bean = cache.remove(id);
-				
-				if (bean == null)
-					continue;
-				
-				ret.add(bean);
+				if (bean != null)
+				{
+					ret.add(bean);
+				}
 			}
-			
 			if (cache.isEmpty())
 			{
 				this.stopCleaner();
 				expireTimes.clear();
 			}
-			
 			return ret;
+		}
+	}
+	
+	public Collection<V> removeAll()
+	{
+		synchronized (cacheLock)
+		{
+			List<V> ret = new ArrayList<>(cache.values());
+			if (!cache.isEmpty())
+			{
+				cache.clear();
+				this.stopCleaner();
+				expireTimes.clear();
+			}
+			return ret;
+		}
+	}
+	
+	public int size()
+	{
+		synchronized (cacheLock)
+		{
+			return cache.size();
 		}
 	}
 	
@@ -189,6 +209,7 @@ public class TimeBasedCache<K, V>
 		{
 			cache.clear();
 			this.stopCleaner();
+			expireTimes.clear();
 		}
 	}
 	
@@ -225,19 +246,22 @@ public class TimeBasedCache<K, V>
 				
 				while (!stop)
 				{
+					List<V> removed = new ArrayList<>();
 					synchronized (cacheLock)
 					{
 						long currentTime = System.currentTimeMillis();
-						
 						for (Iterator<Entry<K, Long>> it = expireTimes.entrySet().iterator(); it.hasNext(); )
 						{
 							Entry<K, Long> e = it.next();
-							
-							if (e.getValue() > currentTime)
-								continue;
-							
-							cache.remove(e.getKey());
-							it.remove();
+							if (e.getValue() <= currentTime)
+							{
+								V v = cache.remove(e.getKey());
+								it.remove();
+								if (v != null)
+								{
+									removed.add(v);
+								}
+							}
 						}
 						if (cache.isEmpty())
 						{
@@ -247,6 +271,7 @@ public class TimeBasedCache<K, V>
 							return;
 						}
 					}
+					TimeBasedCache.this.afterRemove.accept(removed);
 					
 					Thread.sleep(expireTime);
 				}

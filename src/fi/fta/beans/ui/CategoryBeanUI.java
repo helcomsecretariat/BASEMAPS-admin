@@ -1,8 +1,9 @@
 package fi.fta.beans.ui;
 
 import fi.fta.beans.CategoryBean;
+import fi.fta.beans.Child;
 
-public class CategoryBeanUI extends IdUI
+public class CategoryBeanUI extends IdUI implements Child
 {
 	
 	/**

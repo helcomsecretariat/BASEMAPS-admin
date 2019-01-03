@@ -101,6 +101,11 @@ public class SiteModel
 		loginUrl = null;
 	}
 	
+	public Long getUserId()
+	{
+		return this.logged() ? user.getId() : null;
+	}
+	
 	public String getUserName()
 	{
 		return this.logged() ? user.getName() : "";
@@ -114,6 +119,11 @@ public class SiteModel
 	public List<UserRight> getUserRights()
 	{
 		return this.logged() ? user.getRights() : Collections.emptyList();
+	}
+	
+	public UserRole getUserRole()
+	{
+		return this.logged() ? user.getRole() : null;
 	}
 	
 	public boolean checkPassword(String password)

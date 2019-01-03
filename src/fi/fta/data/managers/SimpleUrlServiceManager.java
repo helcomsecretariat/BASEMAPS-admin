@@ -18,6 +18,7 @@ import org.hibernate.HibernateException;
 import fi.fta.beans.ArcGISService;
 import fi.fta.beans.DownloadableService;
 import fi.fta.beans.LayerService;
+import fi.fta.beans.LayerServiceType;
 import fi.fta.beans.MetaData;
 import fi.fta.beans.ui.LayerServiceUI;
 import fi.fta.beans.ui.VerifyUI;
@@ -54,7 +55,8 @@ public class SimpleUrlServiceManager<S extends LayerService> extends ServiceMana
 				if (ArcGISInstance == null)
 				{
 					ArcGISInstance = new SimpleUrlServiceManager<ArcGISService>(
-						ArcGISService.class, (ui) -> { return new ArcGISService(ui); });
+						ArcGISService.class, LayerServiceType.ARCGIS,
+						(ui) -> { return new ArcGISService(ui); });
 				}
 			}
 		}
@@ -77,22 +79,28 @@ public class SimpleUrlServiceManager<S extends LayerService> extends ServiceMana
 				if (downloadableInstance == null)
 				{
 					downloadableInstance = new SimpleUrlServiceManager<DownloadableService>(
-						DownloadableService.class, (ui) -> { return new DownloadableService(ui); });
+						DownloadableService.class, LayerServiceType.DOWNLOAD,
+						(ui) -> { return new DownloadableService(ui); });
 				}
 			}
 		}
 		return downloadableInstance;
 	}
 	
-	protected SimpleUrlServiceManager(Class<S> cls, Function<LayerServiceUI, S> converter)
+	protected SimpleUrlServiceManager(Class<S> cls, LayerServiceType type, Function<LayerServiceUI, S> converter)
 	{
-		super(new LayerServiceDAO<S>(cls), null);
+		super(new LayerServiceDAO<S>(cls), type, null);
 		this.converter = converter;
 	}
 	
 	public Long add(LayerServiceUI ui) throws Exception
 	{
-		return super.add(converter.apply(ui));
+		Long id = super.add(converter.apply(ui));
+		if (id != null)
+		{
+			this.incChildren(ui.getParent());
+		}
+		return id;
 	}
 	
 	public S update(LayerServiceUI ui) throws Exception

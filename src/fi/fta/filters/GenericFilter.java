@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
+import java.util.function.Function;
 
 public abstract class GenericFilter<T> implements ObjectFilter<T>
 {
@@ -31,6 +32,19 @@ public abstract class GenericFilter<T> implements ObjectFilter<T>
 				ret2.add(o);
 			}	
 		return ret;
+	}
+	
+	
+	public static <T> GenericFilter<T> create(Function<T, Boolean> match)
+	{
+		return new GenericFilter<T>()
+		{
+			@Override
+			public boolean match(T obj)
+			{
+				return match.apply(obj).booleanValue();
+			}
+		};
 	}
 	
 }

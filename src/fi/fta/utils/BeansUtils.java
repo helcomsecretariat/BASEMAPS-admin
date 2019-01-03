@@ -3,7 +3,9 @@ package fi.fta.utils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.HibernateException;
 
@@ -27,9 +29,6 @@ import fi.fta.beans.ui.TreeWFSLayerUI;
 import fi.fta.beans.ui.TreeWMSLayerUI;
 import fi.fta.beans.ui.WMSStyleUI;
 import fi.fta.data.managers.CategoryManager;
-import fi.fta.data.managers.SimpleUrlServiceManager;
-import fi.fta.data.managers.WFSManager;
-import fi.fta.data.managers.WMSManager;
 import fi.fta.model.SiteModel;
 import fi.fta.utils.parse.wms.Style;
 
@@ -227,19 +226,47 @@ public class BeansUtils
 		return ret;
 	}
 	
-	public static List<CategorySummaryUI> getSummary(Long id) throws HibernateException
+	public static List<CategorySummaryUI> getSummary(Long id, Integer depth) throws HibernateException
 	{
 		List<CategorySummaryUI> summaries = new ArrayList<>();
 		if (id == null)
 		{
-			summaries.addAll(BeansUtils.getSummary(CategoryManager.getInstance().getRoot()));
+			if (depth == null || depth.intValue() == 0)
+			{
+				summaries.addAll(BeansUtils.getSummary(
+					CategoryManager.getInstance().getRoot()));
+			}
+			else if (depth.intValue() > 0)
+			{
+				summaries.addAll(BeansUtils.getSummaryDown(
+					CategoryManager.getInstance().getRoot(), depth));
+			}
+			else
+			{
+				summaries.addAll(BeansUtils.getSummaryUp(
+					CategoryManager.getInstance().getYoungest(), depth));
+			}
 		}
 		else
 		{
 			Category c = CategoryManager.getInstance().get(id);
 			if (c != null)
 			{
-				summaries.addAll(BeansUtils.getSummary(Collections.singletonList(c)));
+				if (depth == null || depth.intValue() == 0)
+				{
+					summaries.addAll(BeansUtils.getSummary(
+						Collections.singletonList(c)));
+				}
+				else if (depth.intValue() > 0)
+				{
+					summaries.addAll(BeansUtils.getSummaryDown(
+						Collections.singletonList(c), depth));
+				}
+				else
+				{
+					summaries.addAll(BeansUtils.getSummaryUp(
+						BeansUtils.getYoungest(c), depth));
+				}
 			}
 		}
 		return summaries;
@@ -251,23 +278,79 @@ public class BeansUtils
 		for (Category c : categories)
 		{
 			CategorySummaryUI ui = new CategorySummaryUI(c);
-			CategoryCountsUI cui = new CategoryCountsUI();
-			cui.setWmses(WMSManager.getInstance().countChildren(c.getId()));
-			cui.setWfses(WFSManager.getInstance().countChildren(c.getId()));
-			cui.setArcgises(
-				SimpleUrlServiceManager.getArcGISInstance().countChildren(c.getId()));
-			cui.setDownloadables(
-				SimpleUrlServiceManager.getDownloadableInstance().countChildren(c.getId()));
+			ui.setCounts(new CategoryCountsUI(c));
 			if (!Util.isEmptyCollection(c.getChildren()))
 			{
 				ui.setChildren(BeansUtils.getSummary(c.getChildren()));
-				for (CategorySummaryUI csui : ui.getChildren())
-				{
-					cui.sum(csui.getCounts());
-				}	
+				ui.getChildren().forEach(
+					(csui)->{ui.getCounts().sum(csui.getCounts());});	
 			}
-			ui.setCounts(cui);
 			ret.add(ui);
+		}
+		return ret;
+	}
+	
+	public static List<CategorySummaryUI> getSummaryDown(List<Category> categories, int depth) throws HibernateException
+	{
+		List<CategorySummaryUI> ret = new ArrayList<>();
+		for (Category c : categories)
+		{
+			CategorySummaryUI ui = new CategorySummaryUI(c);
+			ui.setCounts(new CategoryCountsUI(c));
+			if (!Util.isEmptyCollection(c.getChildren()))
+			{
+				if (depth > 1)
+				{
+					ui.setChildren(BeansUtils.getSummaryDown(c.getChildren(), depth-1));
+					ui.getChildren().forEach(
+						(csui)->{ui.getCounts().sum(csui.getCounts());});
+				}
+				else
+				{
+					BeansUtils.getSummary(c.getChildren()).forEach(
+						(csui)->{ui.getCounts().sum(csui.getCounts());});
+				}
+			}
+			ret.add(ui);
+		}
+		return ret;
+	}
+	
+	public static List<CategorySummaryUI> getSummaryUp(List<Category> categories, int depth) throws HibernateException
+	{
+		return BeansUtils.getSummary(BeansUtils.getParents(categories, depth));
+	}
+	
+	public static List<Category> getParents(List<Category> categories, int depth)
+	{
+		Map<Long, Category> m = new HashMap<>();
+		for (Category c : categories)
+		{
+			int d = depth;
+			Category p = c;
+			while (d < -1 && p.getParent() != null)
+			{
+				p = p.getParent();
+				d++;
+			}
+			m.put(p.getId(), p);
+		}
+		List<Category> parents = new ArrayList<>(m.values());
+		Collections.sort(parents, (p1, p2)->{return p1.getPosition().compareTo(p2.getPosition());});
+		return parents;
+	}
+	
+	public static List<Category> getYoungest(Category c)
+	{
+		List<Category> ret = new ArrayList<>();
+		if (Util.isEmptyCollection(c.getChildren()))
+		{
+			ret.add(c);
+		}
+		else
+		{
+			c.getChildren().forEach(
+				(cc)->{ret.addAll(BeansUtils.getYoungest(cc));});
 		}
 		return ret;
 	}

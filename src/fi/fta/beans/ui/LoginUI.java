@@ -10,6 +10,7 @@ public class LoginUI extends EmailUI
 	 */
 	private static final long serialVersionUID = 3943592777559019712L;
 	
+	
 	@NotBlank(message = "msg.validation.required")
 	private String password;
 	

@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import org.dom4j.DocumentException;
 import org.hibernate.HibernateException;
 
+import fi.fta.beans.LayerServiceType;
 import fi.fta.beans.MetaDataSource;
 import fi.fta.beans.Named;
 import fi.fta.beans.UrlFacade;
@@ -79,7 +80,7 @@ public class WMSManager extends ServiceManager<WMS, WMSDAO>
 	
 	protected WMSManager()
 	{
-		super(new WMSDAO(), MetaDataSource.WMS);
+		super(new WMSDAO(), LayerServiceType.WMS, MetaDataSource.WMS);
 		this.cacheLock = new ReentrantLock();
 		this.cache = new TimeBasedCache<>(WMSManager.WMS_CACHE_TIME);
 		this.updateInfoLock = new ReentrantLock();
@@ -112,7 +113,12 @@ public class WMSManager extends ServiceManager<WMS, WMSDAO>
 		{
 			logger.error("WMSManager.add parse layer", ex);
 		}
-		return super.add(wms);
+		Long id = super.add(wms);
+		if (id != null)
+		{
+			this.incChildren(wms.getParent());
+		}
+		return id;
 	}
 	
 	public WMS update(LayerServiceUI ui) throws Exception
@@ -299,6 +305,7 @@ public class WMSManager extends ServiceManager<WMS, WMSDAO>
 	 */
 	public void clear()
 	{
+		super.clear();
 		cacheLock.lock();
 		try
 		{
