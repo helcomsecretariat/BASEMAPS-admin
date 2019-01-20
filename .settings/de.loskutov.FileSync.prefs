@@ -5,4 +5,5 @@ eclipse.preferences.version=1
 includeTeamPrivateFiles=false
 map|0=WebContent|@target/basemaps-admin-1.0.0|,|,|,
 map|1=target/classes|@target/basemaps-admin-1.0.0/WEB-INF/classes|,|,|,
+map|2=etc|/home/andrysta/.m2|settings.xml|,|,
 useCurrentDateForDestinationFiles=false

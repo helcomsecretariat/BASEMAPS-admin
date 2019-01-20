@@ -179,7 +179,7 @@ public class CategoriesController
 	/**
 	 * Filters categories beans actions.
 	 * 
-	 * @param ui categories beans actions parameters wrapper
+	 * @param ui categories beans actions parameters wrapper (includes user ID and dates ranges of actions)
 	 * @param request http request
 	 * @param response http response
 	 * @return list of filtered categories beans actions

@@ -11,51 +11,6 @@
     <name>BASEMAPS admin application module</name>
 	<description>BASEMAPS admin application module as WEB application</description>
 	
-	<!--
-        List of profiles available in order to have different build and deployment configurations for separate
-        environments.
-	-->
-    <profiles>
-
-        <profile>
-            <id>andrius</id>
-            <properties>
-            	<project.file>project-andrius.properties</project.file>
-                <symlink.enabled>false</symlink.enabled>
-                <ant.build.file>build-maven</ant.build.file>
-                <hibernate.connection.url>jdbc:postgresql://localhost/basemaps</hibernate.connection.url>
-				<hibernate.connection.username>basemapsuser</hibernate.connection.username>
-				<hibernate.connection.password>B4semap5</hibernate.connection.password>
-            </properties>
-        </profile>
-		
-		<profile>
-            <id>andzej</id>
-            <properties>
-            	<project.file>project-andzej.properties</project.file>
-            	<symlink.enabled>false</symlink.enabled>
-                <ant.build.file>build-maven</ant.build.file>
-                <hibernate.connection.url>jdbc:postgresql://localhost/basemaps</hibernate.connection.url>
-				<hibernate.connection.username>basemapsuser</hibernate.connection.username>
-				<hibernate.connection.password>B4semap5</hibernate.connection.password>
-            </properties>
-        </profile>
-		
-        <!-- Production profile -->
-        <profile>
-            <id>product</id>
-            <properties>
-                <project.file>project-product.properties</project.file>
-                <symlink.enabled>true</symlink.enabled>
-                <ant.build.file>build-maven</ant.build.file>
-                <hibernate.connection.url>jdbc:postgresql://localhost/basemaps</hibernate.connection.url>
-				<hibernate.connection.username>basemapsuser</hibernate.connection.username>
-				<hibernate.connection.password>B4semap5</hibernate.connection.password>
-            </properties>
-        </profile>
-
-    </profiles>
-	
     <!-- JBoss related repositories that are not indexable by our custom maven repository. -->
     <repositories>
 
@@ -124,8 +79,7 @@
         </pluginRepository>
 		
     </pluginRepositories>
-
-
+	
     <scm>
         <connection>scm:git:git@github.com:helcomsecretariat/BASEMAPS-admin.git</connection>
         <developerConnection>scm:git:git@github.com:helcomsecretariat/BASEMAPS-admin.git</developerConnection>
@@ -140,9 +94,9 @@
             <resource>
                 <filtering>true</filtering>
                 <directory>${project.basedir}/resources</directory>
-                <excludes>
+                <!-- excludes>
                 	<exclude>project.properties</exclude>
-                </excludes>
+                </excludes -->
             </resource>
             <resource>
                 <directory>${project.basedir}/resources_binary</directory>
@@ -205,6 +159,7 @@
                             <targetPath>WEB-INF/classes</targetPath>
                             <includes>
                                 <include>**/hibernate.cfg.xml</include>
+                                <include>**/project.properties</include>
                             </includes>
                         </resource>
                     </webResources>
@@ -307,7 +262,7 @@
                         </goals>
                     </execution>
                     <!-- Copy project settings file -->
-                    <execution>
+                    <!-- execution>
    						<id>write</id>
 						<phase>generate-resources</phase>
 				        <configuration>
@@ -319,7 +274,7 @@
 						<goals>
 							<goal>run</goal>
 						</goals>
-                    </execution>
+                    </execution -->
                 </executions>
                 <configuration>
                     <exportAntProperties>true</exportAntProperties>
