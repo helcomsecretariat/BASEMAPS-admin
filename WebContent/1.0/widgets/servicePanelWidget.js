@@ -6,8 +6,9 @@ define([
 	"dojo/on",
 	"dojo/_base/array",
 	"basemaps/js/utils",
-	"dijit/TitlePane"
-], function(declare, lang, dom, domConstruct, on, array, utils, TitlePane){
+	"dijit/TitlePane",
+	"dijit/Tooltip"
+], function(declare, lang, dom, domConstruct, on, array, utils, TitlePane, Tooltip){
 	return declare(null, {
 		utils: null,
 		servicePanel: null,
@@ -43,6 +44,7 @@ define([
 			this.servicePanel.set("title", this.header);
 			this.servicePanel.set("open", true);
 			if (info.type == "WMS") {
+				console.log(info);
 				this.constructWmsInfo(info);
 			}
 			else if (info.type == "WFS") {
@@ -56,17 +58,16 @@ define([
 			this.servicePanel.set("title", this.header);
 			this.servicePanel.set("open", true);
 			if (typeof min == 'number') {
-				var infoMin = "Minimum display scale for this layer is 1 : " + Math.ceil(min);
+				var infoMin = "Under 1 : " + Math.ceil(min).toLocaleString() + " features will not be visible.";
 				domConstruct.create("div", {/*"class": "scaleMessage", */"innerHTML": infoMin}, this.infoContainer, "last");
 			}
 			if (typeof max == 'number') {
-				var infoMax = "Maximum display scale for this layer is 1 : " + Math.ceil(max);
+				var infoMax = "Zoom in until 1 : " + Math.ceil(max).toLocaleString() + " to make features visible.";
 				domConstruct.create("div", {/*"class": "scaleMessage", */"innerHTML": infoMax}, this.infoContainer, "last");
 			}
 			this.utils.show("servicePanel", "block");
 		},
 		setupAndShowWfsDownload: function(info) {
-			console.log("check wfs");
 			this.cleanServicePanel();
 			this.servicePanel.set("title", this.header);
 			this.servicePanel.set("open", true);
@@ -90,11 +91,23 @@ define([
 				else
 					this.buildInfoElement("Host organization", "No information");
 				
-				if (info.wms.info.accessConstraints)
-					this.buildInfoElement("Access constraints", info.wms.info.accessConstraints);
-				
-				if (info.wms.info.fees)
-					this.buildInfoElement("Fees", info.wms.info.fees);
+				if (info.wms.info.accessConstraints) {
+					if ((info.wms.info.accessConstraintsEn) && (info.wms.info.accessConstraintsEn != info.wms.info.accessConstraints)) {
+						this.buildInfoElementTranslated("Access constraints", info.wms.info.accessConstraintsEn, info.wms.info.accessConstraints);
+					}
+					else {
+						this.buildInfoElement("Access constraints", info.wms.info.accessConstraints);
+					}
+				}
+					
+				if (info.wms.info.fees) {
+					if ((info.wms.info.feesEn) && (info.wms.info.feesEn != info.wms.info.fees)) {
+						this.buildInfoElementTranslated("Fees", info.wms.info.feesEn, info.wms.info.fees);
+					}
+					else {
+						this.buildInfoElement("Fees", info.wms.info.fees);
+					}
+				}
 				
 				if (info.wms.url)
 					this.buildInfoElement("Wms url", info.wms.url);
@@ -102,11 +115,23 @@ define([
 				if (info.wms.name)
 					this.buildInfoElement("Wms layer name", info.wms.name);
 				
-				if (info.wms.info.title)
-					this.buildInfoElement("Wms layer title", info.wms.info.title);
+				if (info.wms.info.title) {
+					if ((info.wms.info.titleEn) && (info.wms.info.titleEn != info.wms.info.title)) {
+						this.buildInfoElementTranslated("Wms layer title", info.wms.info.titleEn, info.wms.info.title);
+					}
+					else {
+						this.buildInfoElement("Wms layer title", info.wms.info.title);
+					}
+				}
 				
-				if (info.wms.info.description)
-					this.buildInfoElement("Wms layer description", info.wms.info.description);
+				if (info.wms.info.description) {
+					if ((info.wms.info.descriptionEn) && (info.wms.info.descriptionEn != info.wms.info.description)) {
+						this.buildInfoElementTranslated("Wms layer description", info.wms.info.descriptionEn, info.wms.info.description);
+					}
+					else {
+						this.buildInfoElement("Wms layer description", info.wms.info.description);
+					}
+				}
 				
 				if ((info.wms.info.languages) && (info.wms.info.languages.length > 0))
 					this.buildInfoElement("Language support", info.wms.info.languages);
@@ -142,11 +167,23 @@ define([
 				else
 					this.buildInfoElement("Host organization", "No information");
 				
-				if (info.wfs.info.accessConstraints)
-					this.buildInfoElement("Access constraints", info.wfs.info.accessConstraints);
-				
-				if (info.wfs.info.fees)
-					this.buildInfoElement("Fees", info.wfs.info.fees);
+				if (info.wfs.info.accessConstraints) {
+					if ((info.wfs.info.accessConstraintsEn) && (info.wfs.info.accessConstraintsEn != info.wfs.info.accessConstraints)) {
+						this.buildInfoElementTranslated("Access constraints", info.wfs.info.accessConstraintsEn, info.wfs.info.accessConstraints);
+					}
+					else {
+						this.buildInfoElement("Access constraints", info.wfs.info.accessConstraints);
+					}
+				}
+					
+				if (info.wfs.info.fees) {
+					if ((info.wfs.info.feesEn) && (info.wfs.info.feesEn != info.wfs.info.fees)) {
+						this.buildInfoElementTranslated("Fees", info.wfs.info.feesEn, info.wfs.info.fees);
+					}
+					else {
+						this.buildInfoElement("Fees", info.wfs.info.fees);
+					}
+				}
 				
 				if (info.wfs.url)
 					this.buildInfoElement("Wfs url", info.wfs.url);
@@ -154,11 +191,23 @@ define([
 				if (info.wfs.name)
 					this.buildInfoElement("Wfs layer name", info.wfs.name);
 				
-				if (info.wfs.info.title)
-					this.buildInfoElement("Wfs layer title", info.wfs.info.title);
-				
-				if (info.wfs.info.description)
-					this.buildInfoElement("Wfs layer description", info.wfs.info.description);
+				if (info.wfs.info.title) {
+					if ((info.wfs.info.titleEn) && (info.wfs.info.titleEn != info.wfs.info.title)) {
+						this.buildInfoElementTranslated("Wfs layer title", info.wfs.info.titleEn, info.wfs.info.title);
+					}
+					else {
+						this.buildInfoElement("Wfs layer title", info.wfs.info.title);
+					}
+				}
+								
+				if (info.wfs.info.description) {
+					if ((info.wfs.info.descriptionEn) && (info.wfs.info.descriptionEn != info.wfs.info.description)) {
+						this.buildInfoElementTranslated("Wfs layer description", info.wfs.info.descriptionEn, info.wfs.info.description);
+					}
+					else {
+						this.buildInfoElement("Wfs layer description", info.wfs.info.description);
+					}
+				}
 				
 				if ((info.wfs.info.languages) && (info.wfs.info.languages.length > 0))
 					this.buildInfoElement("Language support", info.wfs.info.languages);
@@ -182,6 +231,21 @@ define([
 			var infoContainer = domConstruct.create("div", {"class": "servicePanelInfoElementContainer"}, this.infoContainer, "last");
 			var infoLabel = domConstruct.create("div", { "class": "servicePanelInfoElementLabel", "innerHTML": label+":" }, infoContainer, "last");
 			var infoValue = domConstruct.create("div", { "class": "servicePanelInfoElementValue", "innerHTML": value }, infoContainer, "last");
+		},
+		buildInfoElementTranslated: function(label, value, valueOriginal) {
+			var infoContainer = domConstruct.create("div", {"class": "servicePanelInfoElementContainer"}, this.infoContainer, "last");
+			var infoLabel = domConstruct.create("div", { "class": "servicePanelInfoElementLabel", "innerHTML": label+":" }, infoContainer, "last");
+			var infoValue = domConstruct.create("div", { "class": "servicePanelInfoElementValueTranslated", "innerHTML": value }, infoContainer, "last");
+			var tTip = new Tooltip({
+				connectId: [infoValue],
+				showDelay: 10,
+				position: ["below"]
+				//label: "Translated. Original text: <span style='font-weight: bold;'>" + valueOriginal + "</span>"
+			});
+			domConstruct.create("div", {"innerHTML": "Original text:", "style": "font-size: 13px; font-weight: bold;"}, tTip.domNode, "last");
+			domConstruct.create("div", {"innerHTML": valueOriginal, "style": "width: 200px; font-size: 13px;"}, tTip.domNode, "last");
+			var anchor = domConstruct.create("a", {"href": "http://aka.ms/MicrosoftTranslatorAttribution", "target": "_blank"}, tTip.domNode, "last");
+			domConstruct.create("div", {"class": "translateMicrosoft"}, anchor, "last");
 		},
 		buildMetadataContainer: function(metadata) {
 			var container = domConstruct.create("div", {"style": "margin-top: 20px;"}, this.infoContainer, "last");

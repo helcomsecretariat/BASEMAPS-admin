@@ -154,7 +154,7 @@ define([
 		},
 		
 		saveAddCategoryUserClick: function() {
-			console.log(this.currentCategory, this.categoryUserSelector.get("value"));
+			//console.log(this.currentCategory, this.categoryUserSelector.get("value"));
 			var url = "sc/users/add-right";
 			var data = {
 				"userId": this.categoryUserSelector.get("value"), 
@@ -522,7 +522,7 @@ define([
 		},
 		
 		deleteMetadata: function() {
-			console.log("two", this.currentCategory.metaData);
+			//console.log("two", this.currentCategory.metaData);
 			var url = "sc/categories/update";
 			request.post(url, this.utils.createPostRequestParams(this.currentCategory)).then(
 				lang.hitch(this, function(response) {
@@ -530,7 +530,7 @@ define([
 						this.showMessage("Failed to delete metadata.");
 					}
 					else if (response.type == "success") {
-						console.log("three", this.currentCategory.metaData, response);
+						//console.log("three", this.currentCategory.metaData, response);
 						this.showMessage("Metadata deleted.");
 						this.cleanMetadataDisplayForm();
 						if ((this.currentCategory.metaData) && (this.currentCategory.metaData.length > 0)) {
@@ -1156,7 +1156,8 @@ define([
 					var con = domConstruct.create("div", {"style": { "margin-bottom": "5px", "margin-top": "5px", "margin-left": "20px"}, "innerHTML": "No metadata assigned"}, this.metadataDisplayForm, "last");
 				}
 				
-				this.getWmsInfo(layer.wms.url, layer.wms.name);
+				//this.getWmsInfo(layer.wms.url, layer.wms.name);
+				this.getWmsInfo(layer.wms);
 			}
 			else if (layer.type == "WFS") {
 				this.utils.show("categoryMetadataSection", "none");
@@ -1532,11 +1533,35 @@ define([
 		},*/
 		
 		// -- wms info form
-		getWmsInfo: function(wmsUrl, wmsName) {
+		updateWmsInfo: function(wms) {
+			var url = "sc/wms/update-info/"+wms.id;
+			request.post(url, {
+				handleAs: "json"
+			}).then(
+				lang.hitch(this, function(response) {
+					if (response.type == "error") {
+						this.showMessage("Failed to update WMS info.");
+						// TODO: popup box message
+					}
+					else if (response.type == "success") {
+						this.showMessage("WMS info updated.");
+						this.cleanWmsInfoDisplayForm();
+						this.getWmsInfo(wms);
+					}
+				}),
+				lang.hitch(this, function(error) {
+					alert("Something went wrong (on wms/update-info/{id}). Please contact administrator.");
+					console.log(error);
+				})
+			);
+		},
+		
+		/*getWmsInfo: function(wms) {
+			console.log("wms", wms);
 			var url = "sc/wms/info";
 			var data = {
-				"url": wmsUrl,
-				"name": wmsName
+				"url": wms.url,
+				"name": wms.name
 			};
 			request.post(url, this.utils.createPostRequestParams(data)).then(
 				lang.hitch(this, function(response){
@@ -1544,16 +1569,25 @@ define([
 						this.showMessage("WMS did not pass validation. Can't get WMS info.");
 					}
 					else if (response.type == "success") {
-						console.log("wms info", response);
-						this.buildWmsInfoElement("WMS service URL", wmsUrl);
-						this.buildWmsInfoElement("Layer name", wmsName);
+						var updateInfoLink = domConstruct.create("div", {"class": "formLink", "innerHTML": "Update info"}, this.wmsDisplayInfoForm, "last");
+						on(updateInfoLink, "click", lang.hitch(this, function() {
+							this.updateWmsInfo(wms);
+						}));
+						this.buildWmsInfoElement("WMS service URL", wms.url);
+						this.buildWmsInfoElement("Layer name", wms.name);
 						this.buildWmsInfoElement("Layer title", response.item.title);
+						this.buildWmsInfoElement("Layer title (translated)", response.item.titleEn);
+						this.buildWmsInfoElement("Layer description", response.item.description);
+						this.buildWmsInfoElement("Layer description (translated)", response.item.descriptionEn);
 						this.buildWmsInfoElement("WMS version", response.item.version);
 						this.buildWmsInfoElement("Supported languages", response.item.languages.join(", "));
 						this.buildWmsInfoElement("Organization", response.item.organisation);
 						this.buildWmsInfoElement("Access constraints", response.item.accessConstraints);
+						this.buildWmsInfoElement("Access constraints (translated)", response.item.accessConstraintsEn);
 						this.buildWmsInfoElement("Fees", response.item.fees);
+						this.buildWmsInfoElement("Fees (translated)", response.item.feesEn);
 						this.buildWmsInfoElement("Keywords", response.item.keywords.join(", "));
+						this.buildWmsInfoElement("Keywords (translated)", response.item.keywordsEn.join(", "));
 						this.buildWmsMetadataElement("Metadata", response.item.metadata);
 						this.buildWmsInfoElement("GetFeatureInfo support", response.item.queryable);
 						this.buildWmsInfoElement("GetFeatureInfo response formats", response.item.formats.join(", "));
@@ -1568,6 +1602,36 @@ define([
 					this.showMessage("Something went wrong (on wms/info). Please contact administrator.");
 				})
 			);
+		},*/
+		getWmsInfo: function(wms) {
+			console.log(wms);
+			var updateInfoLink = domConstruct.create("div", {"class": "formLink", "innerHTML": "Update info"}, this.wmsDisplayInfoForm, "last");
+			on(updateInfoLink, "click", lang.hitch(this, function() {
+				this.updateWmsInfo(wms);
+			}));
+			this.buildWmsInfoElement("WMS service URL", wms.url);
+			this.buildWmsInfoElement("Layer name", wms.name);
+			this.buildWmsInfoElement("Layer title", wms.info.title);
+			this.buildWmsInfoElement("Layer title (translated)", wms.info.titleEn);
+			this.buildWmsInfoElement("Layer description", wms.info.description);
+			this.buildWmsInfoElement("Layer description (translated)", wms.info.descriptionEn);
+			this.buildWmsInfoElement("WMS version", wms.info.version);
+			this.buildWmsInfoElement("Supported languages", wms.info.languages.join(", "));
+			this.buildWmsInfoElement("Organization", wms.info.organisation);
+			this.buildWmsInfoElement("Access constraints", wms.info.accessConstraints);
+			this.buildWmsInfoElement("Access constraints (translated)", wms.info.accessConstraintsEn);
+			this.buildWmsInfoElement("Fees", wms.info.fees);
+			this.buildWmsInfoElement("Fees (translated)", wms.info.feesEn);
+			this.buildWmsInfoElement("Keywords", wms.info.keywords.join(", "));
+			this.buildWmsInfoElement("Keywords (translated)", wms.info.keywordsEn == null ? "" : wms.info.keywordsEn.join(", "));
+			//this.buildWmsMetadataElement("Metadata", wms.info.metadata);
+			this.buildWmsInfoElement("GetFeatureInfo support", wms.info.queryable);
+			this.buildWmsInfoElement("GetFeatureInfo response formats", wms.info.formats.join(", "));
+			this.buildWmsInfoElement("Supported CRSes", wms.info.crs.join(", "));
+			this.buildWmsInfoElement("Bounding box", "East: " + wms.info.boundEast + ", North: " + wms.info.boundNorth + ", West: " + wms.info.boundWest + ", South: " + wms.info.boundSouth);
+			this.buildWmsInfoElement("Min display scale", wms.info.scaleMin == "NaN" ? "" : wms.info.scaleMin);
+			this.buildWmsInfoElement("Max display scale", wms.info.scaleMax == "NaN" ? "" : wms.info.scaleMax);
+			this.buildWmsStyleElement("Styles", wms.styles);
 		},
 		
 		buildWmsInfoElement: function(label, value) {
@@ -1643,7 +1707,7 @@ define([
 		},
 		
 		buildWfsMetadataElement: function(label, value) {
-			var infoContainer = domConstruct.create("div", {"class": "serviceInfoElementContainer"}, this.wmsDisplayInfoForm, "last");
+			var infoContainer = domConstruct.create("div", {"class": "serviceInfoElementContainer"}, this.wfsDisplayInfoForm, "last");
 			var infoLabel = domConstruct.create("div", { "class": "serviceInfoElementLabel", "innerHTML": label+":" }, infoContainer, "last");
 			var infoValue = domConstruct.create("div", { "class": "serviceInfoElementValue"}, infoContainer, "last");
 			

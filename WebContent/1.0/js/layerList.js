@@ -601,9 +601,10 @@ define([
 					lyr.emptyCategory = true;
 				}
 			}
-		
-			this.data.push(lyr);
-		
+			if (!lyr.emptyCategory) {
+				this.data.push(lyr);
+			}
+				
 			if (lyr.type == "CATEGORY") {
 				this.dataFiltering.push(lyr);
 				array.forEach(layer.layers, lang.hitch(this, function(l) {
@@ -689,9 +690,10 @@ define([
 					var tnode = new dijit._TreeNode(args);
 					tnode.labelNode.innerHTML = args.label;
 
-					if (tnode.item.emptyCategory) {
-						domStyle.set(tnode.labelNode, {"color": "#999999"});
-					}
+					/*if (tnode.item.emptyCategory) {
+						//domStyle.set(tnode.labelNode, {"color": "#999999"});
+						domStyle.set(tnode.labelNode, {"display": "none"});
+					}*/
           
 					var infoButton = null;
 					if ((tnode.item.type == "WMS") || (tnode.item.type == "WFS")){

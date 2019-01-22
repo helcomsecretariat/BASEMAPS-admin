@@ -26,7 +26,7 @@ define([
     	var unit = this.map.getView().getProjection().getUnits();
     	var resolution = this.map.getView().getResolution();
     	var inchesPerMetre = 39.37;
-    	this.scalenode.innerHTML = "1 : " + Math.ceil(resolution * ol.proj.Units.METERS_PER_UNIT[unit] * inchesPerMetre * dpi);
+    	this.scalenode.innerHTML = "1 : " + Math.ceil(resolution * ol.proj.Units.METERS_PER_UNIT[unit] * inchesPerMetre * dpi).toLocaleString();
     }
       
   });

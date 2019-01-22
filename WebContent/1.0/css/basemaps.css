@@ -841,6 +841,24 @@ html, body {
 	word-wrap: break-word;
 }
 
+.servicePanelInfoElementValueTranslated {
+	font-size: 14px;
+	color: #0000ee;
+	display: table-cell;
+	word-wrap: break-word;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+.translateMicrosoft {
+  background-image: url("../img/TranslatedByMS.png");
+  background-repeat: no-repeat;
+  background-position: left;
+  width: 118px;
+  height: 22px;
+  cursor: pointer;
+}
+
 .servicePanelMetadataBox {
 	border: 1px dashed #cccccc;
 	margin: 5px;
@@ -1303,8 +1321,8 @@ html, body {
 }
 
 .scaleWidget {
-  color: #656565;
-  font-size: 16px;
+  color: #333;
+  font-size: 20px;
   font-weight: bold;
 }
 
@@ -1443,6 +1461,7 @@ html, body {
 	bottom: 12px;
 	left: -50px;
 	min-width: 280px;
+	height: 280px;
 }
 .ol-popup:after, .ol-popup:before {
 	top: 100%;
@@ -1473,6 +1492,11 @@ html, body {
 }
 .ol-popup-closer:after {
  	content: "✖";
+}
+
+#popup-content {
+	height: 100%;
+	overflow-y: auto;
 }
 
 .popupTable {

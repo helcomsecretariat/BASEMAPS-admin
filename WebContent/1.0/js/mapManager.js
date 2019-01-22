@@ -71,16 +71,50 @@ define([
 			});
 			/* popup */
 			
-			
-			
-			var basemapLayer = new ol.layer.Tile({
-				id: "basemap",
-				title: "Basemap TOPO",
-				source: new ol.source.TileArcGISRest({
-					url: "https://maps.helcom.fi/arcgis/rest/services/MADS/Basemap_TOPO/MapServer"
+			this.map = new ol.Map({
+				target: "map",
+				layers: [],
+				overlays: [this.popupOverlay],
+				view: new ol.View({
+					projection: 'EPSG:3857',
+					center: [2290596.795329124, 8263216.845732588],
+					zoom: 5
+					//extent: ol.proj.transform([57.000000, 20.373333, 60.000000, 28.209038], 'EPSG:4326', 'EPSG:3857')
+					//extent: [2267949.0925025064, 7760118.672726451, 3140215.762959987, 8399737.889636647]
 				})
 			});
 			
+			var backgroundUrlJson = "https://maps.helcom.fi/arcgis/rest/services/MADS/Basemap_TOPO/MapServer?f=pjson";
+			fetch(backgroundUrlJson)
+				.then(lang.hitch(this, function(response) {
+					return response.text();
+				}))
+				.then(lang.hitch(this, function(text) {
+					var resp = JSON.parse(text);
+					if (resp.error) {
+						var bgrLayer = new ol.layer.Tile({
+							source: new ol.source.OSM()
+						});
+						this.map.addLayer(bgrLayer);
+					}
+					else {
+						var bgrLayer = new ol.layer.Tile({
+							id: "basemap",
+							title: "Basemap TOPO",
+							source: new ol.source.TileArcGISRest({
+								url: "https://maps.helcom.fi/arcgis/rest/services/MADS/Basemap_TOPO/MapServer"
+							})
+						});
+						this.map.addLayer(bgrLayer);
+					}
+				}));
+		
+			/*var agsL = new ol.layer.Image({
+		          source: new ol.source.ImageArcGISRest({
+		            url: "https://maps.helcom.fi/arcgis/rest/services/MADS/Biodiversity/MapServer/300"
+		          })
+		        });
+			this.map.addLayer(agsL);*/
 			/*var arcgisLayer = new ol.layer.Image({
 		          source: new ol.source.ImageArcGISRest({
 		              url: "http://62.236.121.188/arcgis104/rest/services/PBS126/MspOutputData/MapServer"
@@ -95,20 +129,7 @@ define([
 					}
 				})
 			});*/
-			this.map = new ol.Map({
-				target: "map",
-				layers: [
-					basemapLayer//, mspwms//, arcgisLayer
-				],
-				overlays: [this.popupOverlay],
-				view: new ol.View({
-					projection: 'EPSG:3857',
-					center: [2290596.795329124, 8263216.845732588],
-					zoom: 5
-					//extent: ol.proj.transform([57.000000, 20.373333, 60.000000, 28.209038], 'EPSG:4326', 'EPSG:3857')
-					//extent: [2267949.0925025064, 7760118.672726451, 3140215.762959987, 8399737.889636647]
-				})
-			});
+			
 			
 			/* highlight layer */
 			var styles = [

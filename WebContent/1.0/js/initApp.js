@@ -25,9 +25,14 @@ define([
 		adminViewManagerObj: null,
 		adminView: false,
 		adminLayerList: null,
-		constructor: function(){
+		constructor: function() {
+			
 			var mainWindow = new BorderContainer({}, "mainWindow");
 			domConstruct.place(headerHTML, "mainWindow");
+			
+			if (this.isIE()){
+			    alert("We apologize, this browser is not supported.");
+			}
 			
 			this.mM = new mapManager().placeAt(dom.byId("mainWindow"));
 			
@@ -50,6 +55,13 @@ define([
 			on(mapButton, "click", lang.hitch(this, function(evt){
 				this.switchToMapView();
 	        }));
+		},
+		
+		isIE: function() {
+			ua = navigator.userAgent;
+			/* MSIE used to detect old browsers and Trident used to newer ones*/
+			var is_ie = ua.indexOf("MSIE ") > -1 || ua.indexOf("Trident/") > -1;
+			return is_ie; 
 		},
 		
 		getUser: function() {
