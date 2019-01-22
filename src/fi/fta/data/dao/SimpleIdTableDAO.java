@@ -1,5 +1,7 @@
 package fi.fta.data.dao;
 
+import java.util.List;
+
 import org.hibernate.HibernateException;
 import org.hibernate.type.LongType;
 
@@ -25,6 +27,13 @@ public class SimpleIdTableDAO<T extends Identifiable<Long>> extends SimpleTableD
 		sb.append(" where id = :id");
 		return new DAOUpdateQueryUtil(this.getCurrentSession(), sb.toString()).
 			setParameter("id", id, LongType.INSTANCE).executeQuery();
+	}
+	
+	public List<Long> getAllIds() throws HibernateException
+	{
+		StringBuilder sb = new StringBuilder("select id from ").append(this.getEntityName());
+		return new DAOSelectQueryUtil<>(
+			this.getCurrentSession(), sb.toString(), Long.class).executeQuery();
 	}
 	
 }

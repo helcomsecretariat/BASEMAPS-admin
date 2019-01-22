@@ -237,4 +237,31 @@ public class CategoryBeansController<
 		}
 	}
 	
+	/**
+	 * Retrieves the list of all database IDs if the user has rights (is ADMIN).
+	 * 
+	 * @param request http request
+	 * @param response http response
+	 * @return a list of IDs
+	 */
+	@RequestMapping(value = "/all-ids", method = RequestMethod.GET)
+	@ResponseBody
+	public SimpleResult<List<Long>> getAllIds(
+		HttpServletRequest request, HttpServletResponse response)
+	{
+		try
+		{
+			if (SiteModel.get(request).canRead(null))
+			{
+				return SimpleResult.newSuccess(manager.getAllIds());
+			}
+			return SimpleResult.noRightsFailure();
+		}
+		catch (Exception ex)
+		{
+			logger.error(this.getClass().getName() + ".getAllIds", ex);
+			return SimpleResult.newFailure(ResponseMessage.Code.ERROR_GENERAL, ex.getMessage());
+		}
+	}
+	
 }

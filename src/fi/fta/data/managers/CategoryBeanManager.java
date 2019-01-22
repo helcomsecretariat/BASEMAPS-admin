@@ -86,6 +86,17 @@ public abstract class CategoryBeanManager<C extends CategoryBean, UI extends Cat
 	}
 	
 	/**
+	 * Get all IDs from database.
+	 * 
+	 * @return Category related object
+	 * @throws HibernateException database exception database exception
+	 */
+	public List<Long> getAllIds() throws HibernateException
+	{
+		return dao.getAllIds();
+	}
+	
+	/**
 	 * Get category related object from database.
 	 * 
 	 * @param id database ID

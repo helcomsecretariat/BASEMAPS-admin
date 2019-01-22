@@ -19,6 +19,7 @@ import fi.fta.beans.ui.LayerServiceUI;
 import fi.fta.beans.ui.VerifyUI;
 import fi.fta.data.dao.LayerServiceDAO;
 import fi.fta.data.managers.ServiceManager;
+import fi.fta.model.SiteModel;
 import fi.fta.utils.Util;
 
 /**
@@ -57,6 +58,8 @@ public class ServicesController<
 	{
 		return super.update(ui, request, response);
 	}
+	
+	
 	
 	/**
 	 * Service verification method, requires service name and/or URL.
@@ -109,6 +112,34 @@ public class ServicesController<
 	}
 	
 	/**
+	 * Immediately update of service info from remote source. The service must be already in a database.
+	 * 
+	 * @param id database ID of service to be updated
+	 * @param request http request
+	 * @param response http response
+	 * @return success or error message
+	 */
+	@RequestMapping(value = "/update-info/{id}", method = RequestMethod.POST)
+	@ResponseBody
+	public SimpleMessage updateInfo(
+		@PathVariable("id") Long id, HttpServletRequest request, HttpServletResponse response)
+	{
+		try
+		{
+			if (!manager.updateInfo(id, SiteModel.get(request)))
+			{
+				return SimpleMessage.noRightsFailure();
+			}
+			return SimpleMessage.newSuccess();
+		}
+		catch (Exception ex)
+		{
+			logger.error("ServicesController.updateInfo(" + id + ")", ex);
+			return SimpleMessage.newFailure(ResponseMessage.Code.ERROR_GENERAL, ex.getMessage());
+		}
+	}
+	
+	/**
 	 * Schedules update of service from remote source. The service must be already in a database.
 	 * 
 	 * @param id database ID of service to be updated
@@ -116,9 +147,9 @@ public class ServicesController<
 	 * @param response http response
 	 * @return success or error message, however this does not tell if service was successfully updated (or was scheduled for update at all), because the action is deferred
 	 */
-	@RequestMapping(value = "/update-info/{id}", method = RequestMethod.POST)
+	@RequestMapping(value = "/schedule-update-info/{id}", method = RequestMethod.POST)
 	@ResponseBody
-	public SimpleMessage updateInfo(
+	public SimpleMessage scheduleUpdateInfo(
 		@PathVariable("id") Long id, HttpServletRequest request, HttpServletResponse response)
 	{
 		try
@@ -128,7 +159,7 @@ public class ServicesController<
 		}
 		catch (Exception ex)
 		{
-			logger.error("ServicesController.updateInfo(" + id + ")", ex);
+			logger.error("ServicesController.scheduleUpdateInfo(" + id + ")", ex);
 			return SimpleMessage.newFailure(ResponseMessage.Code.ERROR_GENERAL, ex.getMessage());
 		}
 	}

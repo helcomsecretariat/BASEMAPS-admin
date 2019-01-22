@@ -115,6 +115,26 @@ public abstract class ServiceManager<S extends LayerService, D extends LayerServ
 		}
 		return null;
 	}
+
+	/**
+	 * Immediately update of service info from remote source. The service must be already in a database.
+	 * 
+	 * @param id database ID of service for update
+	 * @param m site model to get current user information
+	 * @return has right to update info or not
+	 * @throws Exception database or remote exception
+	 */
+	public boolean updateInfo(Long id, SiteModel m) throws Exception
+	{
+		S service = this.get(id);
+		if (service != null && m.canWrite(service.getParent()))
+		{
+			CategoryBeanActionManager.getInstance().update(type, service, m);
+			this.updateInfo(service);
+			return true;
+		}
+		return false;
+	}
 	
 	/**
 	 * Helper method adding metadata to services.
@@ -231,7 +251,18 @@ public abstract class ServiceManager<S extends LayerService, D extends LayerServ
 	public abstract <SUI extends Serializable> SUI info(LayerServiceUI ui) throws MalformedURLException, IOException, DocumentException;
 	
 	/**
-	 * Schedules update of service from remote source. The service must be already in a database.
+	 * Update info part of service.
+	 * 
+	 * @param service database service object where info part needs to be updated from the particular layer of remote service.
+	 * @throws HibernateException database exception
+	 * @throws MalformedURLException remote exception
+	 * @throws IOException input exception
+	 * @throws DocumentException XML exception
+	 */
+	public abstract void updateInfo(S service) throws HibernateException, MalformedURLException, IOException, DocumentException;
+	
+	/**
+	 * Schedules update of service info from remote source. The service must be already in a database.
 	 * Update is only scheduled if meets provided conditions for particular service.
 	 * 
 	 * @param id database ID of service for update

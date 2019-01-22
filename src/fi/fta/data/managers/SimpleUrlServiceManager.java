@@ -148,16 +148,24 @@ public class SimpleUrlServiceManager<S extends LayerService> extends ServiceMana
 		return ret;
 	}
 	
-	
+	/*
+	 * operation is not available
+	 */
 	public <SUI extends Serializable> SUI info(LayerServiceUI ui) throws MalformedURLException, IOException, DocumentException
 	{
-		// operation is not available
 		return null;
 	}
 	
+	/*
+	 * operation is not available
+	 */
+	public void updateInfo(S service) throws HibernateException, MalformedURLException, IOException, DocumentException
+	{}
+	
+	/*
+	 * operation is not available
+	 */
 	public void scheduleUpdateInfo(Long id)
-	{
-		// operation is not available
-	}
+	{}
 	
 }

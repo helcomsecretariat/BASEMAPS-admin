@@ -29,6 +29,7 @@ import fi.fta.beans.ui.WMSLayerUI;
 import fi.fta.cache.TimeBasedCache;
 import fi.fta.data.dao.WMSDAO;
 import fi.fta.data.dao.WMSInfoDAO;
+import fi.fta.model.SiteModel;
 import fi.fta.utils.DateAndTimeUtils;
 import fi.fta.utils.Util;
 import fi.fta.utils.parse.wms.Layer;
@@ -279,6 +280,16 @@ public class WMSManager extends ServiceManager<WMS, WMSDAO>
 		WMSLayer l = this.getLayer(ui);
 		TranslateManager.getInstance().translate(l.getInfo());
 		return l != null ? new WMSLayerUI(l) : new WMSLayerUI();
+	}
+	
+	public boolean updateInfo(Long id, SiteModel m) throws Exception
+	{
+		WMS wms = this.get(id);
+		if (wms != null && WMSManager.needUpdate(wms.getInfo()))
+		{
+			this.updateInfo(wms);
+		}
+		return true;
 	}
 	
 	public void scheduleUpdateInfo(Long id)

@@ -15,6 +15,7 @@ fi.fta.utils.parse
 fi.fta.utils.parse.wfs
 fi.fta.utils.parse.wms
 fi.fta.utils.profile
+fi.fta.utils.translation
 fi.fta.validation
 fi.fta.velocity
 fi.fta.ws.security
