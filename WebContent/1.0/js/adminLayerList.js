@@ -85,7 +85,7 @@ define([
 	
 		postCreate: function() {
 			this.getLayersData();
-    	
+			alert("refresh");
 			on(this.formsObj.saveCategoryButton, "click", lang.hitch(this, function(){
 				this.formsObj.hideMessage();
 				this.formsObj.action = "ADD_CATEGORY";

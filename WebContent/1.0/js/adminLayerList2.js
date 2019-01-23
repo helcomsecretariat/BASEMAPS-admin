@@ -69,6 +69,10 @@ define([
 		currentWmsId: null,
 		currentHeader: "",
 		treePath: [],
+		uwms: [],
+		uwfs: [],
+		fwms: [],
+		fwfs: [],
 		constructor: function(params) {
 			this.formsObj = params.forms;
 			this.userRole = params.role;
@@ -85,7 +89,105 @@ define([
 		},
 		
 		refreshButtonClick: function() {
-			this.refreshLayerList(this.formsObj.currentObjId);
+			//this.refreshLayerList(this.formsObj.currentObjId);
+			this.getWmsIds();
+			this.getWfsIds();
+		},
+		
+		getWmsIds: function() {
+			var url = "sc/wms/all-ids";
+			request.get(url, {
+				handleAs: "json"
+			}).then(
+				lang.hitch(this, function(response) {
+					if (response.type == "error") {
+						console.log(response);
+						// TODO: popup box message
+					}
+					else if (response.type == "success") {
+						array.forEach(response.item, lang.hitch(this, function(id) {
+							this.updateWmsInfo(id);
+						}));
+					}
+				}),
+				lang.hitch(this, function(error){
+					alert("Something went wrong (on wms/all-ids). Please contact administrator.");
+					console.log(error);
+				})
+			);
+		},
+		
+		getWfsIds: function() {
+			var url = "sc/wfs/all-ids";
+			request.get(url, {
+				handleAs: "json"
+			}).then(
+				lang.hitch(this, function(response) {
+					if (response.type == "error") {
+						console.log(response);
+						// TODO: popup box message
+					}
+					else if (response.type == "success") {
+						array.forEach(response.item, lang.hitch(this, function(id) {
+							this.updateWfsInfo(id);
+						}));
+					}
+				}),
+				lang.hitch(this, function(error){
+					alert("Something went wrong (on wfs/all-ids). Please contact administrator.");
+					console.log(error);
+				})
+			);
+		},
+		
+		updateWmsInfo: function(id) {
+			var url = "sc/wms/update-info/"+id;
+			request.post(url, {
+				handleAs: "json"
+			}).then(
+				lang.hitch(this, function(response) {
+					if (response.type == "error") {
+						console.log("WMS Failed", id, response);
+						this.fwms.push(id);
+						console.log("WMS Failed array", this.fwms);
+						// TODO: popup box message
+					}
+					else if (response.type == "success") {
+						console.log("WMS Updated", id, response);
+						this.uwms.push(id);
+						console.log("WMS Updated array", this.uwms);
+					}
+				}),
+				lang.hitch(this, function(error) {
+					alert("Something went wrong (on wms/update-info/{id}). Please contact administrator.");
+					console.log(error);
+				})
+			);
+		},
+		
+		updateWfsInfo: function(id) {
+			var url = "sc/wfs/update-info/"+id;
+			request.post(url, {
+				handleAs: "json"
+			}).then(
+				lang.hitch(this, function(response) {
+					if (response.type == "error") {
+						console.log("WFS Failed", id, response);
+						this.fwfs.push(id);
+						console.log("WFS Failed array", this.fwfs);
+						// TODO: popup box message
+					}
+					else if (response.type == "success") {
+						console.log("WFS Updated", id, response);
+						this.uwfs.push(id);
+						console.log("WFS Updated array", this.uwfs);
+					}
+				}),
+				lang.hitch(this, function(error) {
+					alert("Something went wrong (on wfs/update-info/{id}). Please contact administrator.");
+					console.log(error);
+				})
+			);
 		},
 	
 		postCreate: function() {

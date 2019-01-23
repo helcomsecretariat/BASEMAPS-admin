@@ -57,13 +57,17 @@ define([
 			this.cleanServicePanel();
 			this.servicePanel.set("title", this.header);
 			this.servicePanel.set("open", true);
-			if (typeof min == 'number') {
-				var infoMin = "Under 1 : " + Math.ceil(min).toLocaleString() + " features will not be visible.";
-				domConstruct.create("div", {/*"class": "scaleMessage", */"innerHTML": infoMin}, this.infoContainer, "last");
+			if ((typeof min == 'number') && (!(typeof max == 'number'))){
+				var infoMin = "Layer is not shown above 1 : " + Math.ceil(min).toLocaleString() + " map scale.";
+				domConstruct.create("div", {"innerHTML": infoMin}, this.infoContainer, "last");
 			}
-			if (typeof max == 'number') {
-				var infoMax = "Zoom in until 1 : " + Math.ceil(max).toLocaleString() + " to make features visible.";
-				domConstruct.create("div", {/*"class": "scaleMessage", */"innerHTML": infoMax}, this.infoContainer, "last");
+			else if ((typeof max == 'number') && (!(typeof min == 'number'))){
+				var infoMax = "Layer is not shown below 1 : " + Math.ceil(max).toLocaleString() + " map scale.";
+				domConstruct.create("div", {"innerHTML": infoMax}, this.infoContainer, "last");
+			}
+			else if ((typeof max == 'number') && (typeof min == 'number')) {
+				var infoMax = "Layer is not shown above 1 : " + Math.ceil(min).toLocaleString() + " and below 1 : " + Math.ceil(max).toLocaleString()+ " map scale.";
+				domConstruct.create("div", {"innerHTML": infoMax}, this.infoContainer, "last");
 			}
 			this.utils.show("servicePanel", "block");
 		},
@@ -92,7 +96,7 @@ define([
 					this.buildInfoElement("Host organization", "No information");
 				
 				if (info.wms.info.accessConstraints) {
-					if ((info.wms.info.accessConstraintsEn) && (info.wms.info.accessConstraintsEn != info.wms.info.accessConstraints)) {
+					if ((info.wms.info.accessConstraintsEn) && (info.wms.info.accessConstraintsEn.toLowerCase() != info.wms.info.accessConstraints.toLowerCase())) {
 						this.buildInfoElementTranslated("Access constraints", info.wms.info.accessConstraintsEn, info.wms.info.accessConstraints);
 					}
 					else {
@@ -101,7 +105,7 @@ define([
 				}
 					
 				if (info.wms.info.fees) {
-					if ((info.wms.info.feesEn) && (info.wms.info.feesEn != info.wms.info.fees)) {
+					if ((info.wms.info.feesEn) && (info.wms.info.feesEn.toLowerCase() != info.wms.info.fees.toLowerCase())) {
 						this.buildInfoElementTranslated("Fees", info.wms.info.feesEn, info.wms.info.fees);
 					}
 					else {
@@ -116,7 +120,7 @@ define([
 					this.buildInfoElement("Wms layer name", info.wms.name);
 				
 				if (info.wms.info.title) {
-					if ((info.wms.info.titleEn) && (info.wms.info.titleEn != info.wms.info.title)) {
+					if ((info.wms.info.titleEn) && (info.wms.info.titleEn.toLowerCase() != info.wms.info.title.toLowerCase())) {
 						this.buildInfoElementTranslated("Wms layer title", info.wms.info.titleEn, info.wms.info.title);
 					}
 					else {
@@ -125,7 +129,7 @@ define([
 				}
 				
 				if (info.wms.info.description) {
-					if ((info.wms.info.descriptionEn) && (info.wms.info.descriptionEn != info.wms.info.description)) {
+					if ((info.wms.info.descriptionEn) && (info.wms.info.descriptionEn.toLowerCase() != info.wms.info.description.toLowerCase())) {
 						this.buildInfoElementTranslated("Wms layer description", info.wms.info.descriptionEn, info.wms.info.description);
 					}
 					else {
@@ -168,7 +172,7 @@ define([
 					this.buildInfoElement("Host organization", "No information");
 				
 				if (info.wfs.info.accessConstraints) {
-					if ((info.wfs.info.accessConstraintsEn) && (info.wfs.info.accessConstraintsEn != info.wfs.info.accessConstraints)) {
+					if ((info.wfs.info.accessConstraintsEn) && (info.wfs.info.accessConstraintsEn.toLowerCase() != info.wfs.info.accessConstraints.toLowerCase())) {
 						this.buildInfoElementTranslated("Access constraints", info.wfs.info.accessConstraintsEn, info.wfs.info.accessConstraints);
 					}
 					else {
@@ -177,7 +181,7 @@ define([
 				}
 					
 				if (info.wfs.info.fees) {
-					if ((info.wfs.info.feesEn) && (info.wfs.info.feesEn != info.wfs.info.fees)) {
+					if ((info.wfs.info.feesEn) && (info.wfs.info.feesEn.toLowerCase() != info.wfs.info.fees.toLowerCase())) {
 						this.buildInfoElementTranslated("Fees", info.wfs.info.feesEn, info.wfs.info.fees);
 					}
 					else {
@@ -192,7 +196,7 @@ define([
 					this.buildInfoElement("Wfs layer name", info.wfs.name);
 				
 				if (info.wfs.info.title) {
-					if ((info.wfs.info.titleEn) && (info.wfs.info.titleEn != info.wfs.info.title)) {
+					if ((info.wfs.info.titleEn) && (info.wfs.info.titleEn.toLowerCase() != info.wfs.info.title.toLowerCase())) {
 						this.buildInfoElementTranslated("Wfs layer title", info.wfs.info.titleEn, info.wfs.info.title);
 					}
 					else {
@@ -201,7 +205,7 @@ define([
 				}
 								
 				if (info.wfs.info.description) {
-					if ((info.wfs.info.descriptionEn) && (info.wfs.info.descriptionEn != info.wfs.info.description)) {
+					if ((info.wfs.info.descriptionEn) && (info.wfs.info.descriptionEn.toLowerCase() != info.wfs.info.description.toLowerCase())) {
 						this.buildInfoElementTranslated("Wfs layer description", info.wfs.info.descriptionEn, info.wfs.info.description);
 					}
 					else {

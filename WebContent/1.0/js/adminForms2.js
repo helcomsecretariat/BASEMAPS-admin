@@ -1604,7 +1604,7 @@ define([
 			);
 		},*/
 		getWmsInfo: function(wms) {
-			console.log(wms);
+			console.log("today", wms);
 			var updateInfoLink = domConstruct.create("div", {"class": "formLink", "innerHTML": "Update info"}, this.wmsDisplayInfoForm, "last");
 			on(updateInfoLink, "click", lang.hitch(this, function() {
 				this.updateWmsInfo(wms);
