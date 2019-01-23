@@ -89,12 +89,12 @@ define([
 		},
 		
 		refreshButtonClick: function() {
-			//this.refreshLayerList(this.formsObj.currentObjId);
-			this.getWmsIds();
-			this.getWfsIds();
+			this.refreshLayerList(this.formsObj.currentObjId);
+			//this.getWmsIds();
+			//this.getWfsIds();
 		},
 		
-		getWmsIds: function() {
+		/*getWmsIds: function() {
 			var url = "sc/wms/all-ids";
 			request.get(url, {
 				handleAs: "json"
@@ -188,7 +188,7 @@ define([
 					console.log(error);
 				})
 			);
-		},
+		},*/
 	
 		postCreate: function() {
 			
