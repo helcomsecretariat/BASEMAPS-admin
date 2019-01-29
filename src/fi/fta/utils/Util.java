@@ -45,24 +45,27 @@ public class Util
 	
 	public static boolean equalsWithNull(Object o1, Object o2)
     {
-    	if (o1 != null)
-    		if (o2 != null)
-    			return o1.equals(o2);
-    		else
-    			return false;
-    	else
-    		return o2 == null;
+    	return (o1 == null) ? o2 == null : ((o2 == null) ? false : o1.equals(o2));
     }
 	
-	public static <T extends Comparable<T>> int compareAsc(T first, T second)
+	public static boolean equalsIgnoreCase(String s1, String ... ss)
+	{
+		if (s1 != null && ss != null)
+		{
+			for (String s : ss)
+			{
+				if (s1.equalsIgnoreCase(s))
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	public static <T extends Comparable<T>> int compareAsc(T c1, T c2)
     {
-    	if (first != null)
-    		if (second != null)
-    			return first.compareTo(second);
-    		else
-    			return 1;
-    	else 
-    		return (second == null) ? 0 : -1;
+    	return (c1 == null) ? ((c2 == null) ? 0 : -1) : ((c2 == null) ? 1 : c1.compareTo(c2));
     }
 	
 	public static <T> String toCSV(Collection<T> values)

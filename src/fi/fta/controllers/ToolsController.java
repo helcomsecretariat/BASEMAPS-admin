@@ -13,9 +13,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import fi.fta.beans.Pair;
 import fi.fta.beans.WMS;
 import fi.fta.beans.response.ResponseMessage;
+import fi.fta.beans.response.SimpleMessage;
 import fi.fta.beans.response.SimpleResult;
 import fi.fta.beans.ui.IdentifiableUrlUI;
 import fi.fta.beans.ui.UrlFormatUI;
+import fi.fta.data.managers.CategoryManager;
+import fi.fta.data.managers.TranslateManager;
 import fi.fta.data.managers.WMSManager;
 import fi.fta.utils.ArcGISServer;
 import fi.fta.utils.parse.wms.WebMapServer;
@@ -83,6 +86,32 @@ public class ToolsController
 		{
 			logger.error("ToolsController.getData", ex);
 			return SimpleResult.newFailure(ResponseMessage.Code.ERROR_GENERAL, ex.getMessage());
+		}
+	}
+	
+	/**
+	 * Clears application cache in managers:
+	 * 		CategoryManager
+	 * 		TranslateManager
+	 * 
+	 * @param request http request
+	 * @param response http response
+	 * @return simple success or error message
+	 */
+	@RequestMapping(value = "/clear-cache", method = RequestMethod.POST)
+	@ResponseBody
+	public SimpleMessage clearCache(HttpServletRequest request, HttpServletResponse response)
+	{
+		try
+		{
+			CategoryManager.getInstance().clear();
+			TranslateManager.getInstance().clearCache();
+			return SimpleMessage.newSuccess();
+		}
+		catch (Exception ex)
+		{
+			logger.error("ToolsController.clearCache", ex);
+			return SimpleMessage.newFailure(ResponseMessage.Code.ERROR_GENERAL, ex.getMessage());
 		}
 	}
 	

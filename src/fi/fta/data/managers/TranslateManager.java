@@ -53,7 +53,7 @@ public class TranslateManager implements Languages
 	protected TranslateManager()
 	{
 		cache = new HashMap<>();
-		languages = new HashMap<>();
+		languages = new HashMap<>(TranslateManager.ISO_639_2B);
 		for (String c : Locale.getISOLanguages())
 		{
 			Locale l = new Locale(c);
@@ -70,7 +70,11 @@ public class TranslateManager implements Languages
 		List<String> keywords = new ArrayList<>();
 		for (String keyword : bean.getKeywords())
 		{
-			keywords.add(this.translate(keyword, language));
+			String tk = this.translate(keyword, language);
+			if (tk != null)
+			{
+				keywords.add(tk);
+			}
 		}
 		bean.setKeywordsEn(keywords);
 		bean.setDescriptionEn(this.translate(bean.getDescription(), language));
@@ -80,15 +84,14 @@ public class TranslateManager implements Languages
 	
 	public String translate(String text, String language)
 	{
-		if (language == null ||
-			!language.equalsIgnoreCase(TranslateManager.DEFAULT_ISO_639_1) &&
-			!language.equalsIgnoreCase(TranslateManager.DEFAULT_ISO_639_2))
+		if (!Util.equalsIgnoreCase(language,
+			TranslateManager.DEFAULT_ISO_639_1, TranslateManager.DEFAULT_ISO_639_2))
 		{
 			String l = language != null && languages.containsKey(language) ?
 				languages.get(language).getLanguage() : language;
 			return this.translate(text, l, TranslateManager.DEFAULT_ISO_639_1);
 		}
-		return text;
+		return null;
 	}
 	
 	/**
@@ -109,7 +112,11 @@ public class TranslateManager implements Languages
 		{
 			try
 			{
-				cache.put(text, service.translate(text, from, to));
+				String translated = service.translate(text, from, to);
+				if (translated != null)
+				{
+					cache.put(text, translated);
+				}
 			}
 			catch (Exception ex)
 			{

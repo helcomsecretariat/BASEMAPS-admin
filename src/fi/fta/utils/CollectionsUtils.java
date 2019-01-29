@@ -84,4 +84,18 @@ public class CollectionsUtils
 		return null;
 	}
 	
+	@SafeVarargs
+	public static <T1, T2> Map<T1, T2> map(Pair<T1, T2> ... pairs)
+	{
+		Map<T1, T2> ret = new HashMap<>();
+		if (pairs != null)
+		{
+			for (Pair<T1, T2> p : pairs)
+			{
+				ret.put(p.getFirst(), p.getSecond());
+			}
+		}
+		return ret;
+	}
+	
 }

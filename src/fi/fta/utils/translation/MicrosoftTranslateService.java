@@ -67,13 +67,17 @@ public class MicrosoftTranslateService implements TranslateService
 			url.toString(), new RequestBody[]{new RequestBody(text)});
 		if (!Util.isEmptyArray(response))
 		{
-			List<MicrosoftTranslationTranslation> translations = response[0].getTranslations();
-			if (!Util.isEmptyCollection(translations))
+			MicrosoftTranslationDetectedLanguage dl = response[0].getDetectedLanguage();
+			if (dl == null || dl.getLanguage() == null || !dl.getLanguage().equalsIgnoreCase(to))
 			{
-				return translations.iterator().next().getText();
+				List<MicrosoftTranslationTranslation> translations = response[0].getTranslations();
+				if (!Util.isEmptyCollection(translations))
+				{
+					return translations.iterator().next().getText();
+				}
 			}
 		}
-		return text;
+		return null;
 	}
 	
 	private MicrosoftTranslation[] post(String url, Object o) throws MalformedURLException, IOException, UnsupportedEncodingException

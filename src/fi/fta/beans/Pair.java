@@ -72,4 +72,10 @@ public class Pair<T1, T2> implements Serializable
 		return "Pair:[" + this.getFirst() + ", " + this.getSecond() + "]" + "@" + this.hashCode();
 	}
 	
+	
+	public static <T1, T2> Pair<T1, T2> get(T1 o1, T2 o2)
+	{
+		return new Pair<T1, T2>(o1, o2);
+	}
+	
 }
