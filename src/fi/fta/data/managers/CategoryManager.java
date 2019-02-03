@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -456,21 +457,41 @@ public class CategoryManager extends CategoryBeanManager<Category, CategoryUI, C
 	{
 		if (m.canWrite(ui.getId()))
 		{
+			Category old = this.get(ui.getId());
 			Category c = new Category(ui);
 			if (ui.getParent() != null)
 			{
-				c.setParent(this.get(ui.getParent()));
+				Category parent = this.get(ui.getParent());
+				c.setParent(parent);
+				boolean replaced = false;
+				ListIterator<Category> it = parent.getChildren().listIterator();
+				while (it.hasNext() && !replaced)
+				{
+					Category child = it.next();
+					if (child.getId().equals(old.getId()))
+					{
+						it.set(c);
+						replaced = true;
+					}
+				}
 			}
-			Category old = this.get(ui.getId());
 			c = this.update(c);
 			CategoryBeanActionManager.getInstance().update(c, m);
-			if (old != null && !old.getMetadata().isEmpty())
+			if (old != null)
 			{
-				Set<MetaData> remove = new TreeSet<>(
-					(m1, m2) -> {return Util.compareAsc(m1.getId(), m2.getId());});
-				remove.addAll(old.getMetadata());
-				remove.removeAll(c.getMetadata());
-				new MetaDataDAO().deleteAll(remove);
+				// update hibernate caches
+				for (Category child : old.getChildren())
+				{
+					child.setParent(c);
+				}
+				if (!old.getMetadata().isEmpty())
+				{
+					Set<MetaData> remove = new TreeSet<>(
+						(m1, m2) -> {return Util.compareAsc(m1.getId(), m2.getId());});
+					remove.addAll(old.getMetadata());
+					remove.removeAll(c.getMetadata());
+					new MetaDataDAO().deleteAll(remove);
+				}
 			}
 			return c;
 		}
