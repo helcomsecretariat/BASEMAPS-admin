@@ -88,6 +88,19 @@ define([
 			this.formsObj.setupMetadataFormatSelector(this.formsObj.addRootCategoryMetadataFormatSelect);
 		},
 		
+		summaryButtonClick: function() {
+			this.formsObj.currentObjId = null;
+			this.formsObj.cleanAdminForm();
+			this.utils.show("summaryForm", "block");
+			this.formsObj.getSummary();
+		},
+		
+		validateServicesButtonClick: function() {
+			this.formsObj.currentObjId = null;
+			this.formsObj.cleanAdminForm();
+			this.utils.show("validateServicesForm", "block");
+		},
+		
 		refreshButtonClick: function() {
 			this.refreshLayerList(this.formsObj.currentObjId);
 			//this.getWmsIds();
@@ -344,7 +357,7 @@ define([
 				}
 			}));
 			
-			// --- save wms
+			// --- save wfs
 			on(this.formsObj.saveWfs, "click", lang.hitch(this, function() {
 				var wfsUrl = this.utils.getInputValue("wfsUrlInput").trim();
 				var wfsName = null;
@@ -367,7 +380,55 @@ define([
 					this.saveCategoryForService(newWfs, "NEW_WFS");
 				}
 				else {
-					this.formsObj.showMessage("Wfs layer name or label is not valid.");
+					this.formsObj.showMessage("Wfs feature type name or label is not valid.");
+				}
+			}));
+			
+			// --- save download
+			on(this.formsObj.saveDownload, "click", lang.hitch(this, function() {
+				if (this.formsObj.downloadValidationPassed) {
+					var downloadUrl = this.utils.getInputValue("downloadUrlInput").trim();
+					var downloadLabel = this.utils.getInputValue("downloadLabelInput").trim();
+					var downloadHemcomId = this.utils.getInputValue("downloadHelcomIdInput").trim();
+					if (validate.isText(downloadLabel)) {
+						var newDownload = {
+							"parent": this.formsObj.currentObjId,
+							"label": downloadLabel,
+							"helcomId": downloadHemcomId,
+							"downloadUrl": downloadUrl
+						};
+						this.saveCategoryForService(newDownload, "NEW_DOWNLOAD");
+					}
+					else {
+						this.formsObj.showMessage("Label is not valid.");
+					}
+				}
+				else {
+					this.formsObj.showMessage("URL is not valid.");
+				}
+			}));
+			
+			// --- save ArcGIS
+			on(this.formsObj.saveArcgis, "click", lang.hitch(this, function() {
+				if (this.formsObj.arcgisValidationPassed) {
+					var arcgisUrl = this.utils.getInputValue("arcgisUrlInput").trim();
+					var arcgisLabel = this.utils.getInputValue("arcgisLabelInput").trim();
+					var arcgisHemcomId = this.utils.getInputValue("arcgisHelcomIdInput").trim();
+					if (validate.isText(arcgisLabel)) {
+						var newArcgis = {
+							"parent": this.formsObj.currentObjId,
+							"label": arcgisLabel,
+							"helcomId": arcgisHemcomId,
+							"arcgisUrl": arcgisUrl
+						};
+						this.saveCategoryForService(newArcgis, "NEW_ARCGIS");
+					}
+					else {
+						this.formsObj.showMessage("Label is not valid.");
+					}
+				}
+				else {
+					this.formsObj.showMessage("URL is not valid.");
 				}
 			}));
 			/* --- MANAGE CATEGORY SAVE BUTTONS END --- */
@@ -478,13 +539,29 @@ define([
 						}
 						else if (mode === "NEW_WFS") {
 							var newWfs = {
-									"parent": response.item,
-									"name": values.wfsName,
-									"url": values.wfsUrl,
-									"label": values.label
-								};
-								this.saveWfs(newWfs);
-							}
+								"parent": response.item,
+								"name": values.wfsName,
+								"url": values.wfsUrl,
+								"label": values.label
+							};
+							this.saveWfs(newWfs);
+						}
+						else if (mode === "NEW_DOWNLOAD") {
+							var newDownload = {
+								"parent": response.item,
+								"url": values.downloadUrl,
+								"label": values.label
+							};
+							this.saveDownload(newDownload);
+						}
+						else if (mode === "NEW_ARCGIS") {
+							var newArcgis = {
+								"parent": response.item,
+								"url": values.arcgisUrl,
+								"label": values.label
+							};
+							this.saveArcgis(newArcgis);
+						}
 					}
 				}),
 				lang.hitch(this, function(error) {
@@ -518,7 +595,6 @@ define([
 		
 		saveWfs: function(data) {
 			var url = "sc/wfs/add";
-			console.log(data);
 			request.post(url, this.utils.createPostRequestParams(data)).then(
 				lang.hitch(this, function(response) {
 					if (response.type == "error") {
@@ -533,6 +609,48 @@ define([
 				lang.hitch(this, function(error) {
 					this.refreshLayerList();
 					this.formsObj.showMessage("Something went wrong (on wfs/add). Please contact administrator.");
+					console.log(error);
+				})
+			);
+		},
+		
+		saveDownload: function(data) {
+			var url = "sc/dls/add";
+			request.post(url, this.utils.createPostRequestParams(data)).then(
+				lang.hitch(this, function(response) {
+					if (response.type == "error") {
+						this.formsObj.showMessage("Failed to add Downloadable resource.");
+					}
+					else if (response.type == "success") {
+						this.formsObj.showMessage("Downloadable resource added.");
+						this.refreshLayerList(this.formsObj.currentObjId);
+					}
+				}),
+				lang.hitch(this, function(error) {
+					this.refreshLayerList();
+					this.formsObj.showMessage("Something went wrong (on dls/add). Please contact administrator.");
+					console.log(error);
+				})
+			);
+		},
+		
+		saveArcgis: function(data) {
+			var url = "sc/ags/add";
+			console.log("saveArcgis", data);
+			request.post(url, this.utils.createPostRequestParams(data)).then(
+				lang.hitch(this, function(response) {
+					if (response.type == "error") {
+						//console.log(response);
+						this.formsObj.showMessage("Failed to add ArcGIS service.");
+					}
+					else if (response.type == "success") {
+						this.formsObj.showMessage("ArcGIS service added.");
+						this.refreshLayerList(this.formsObj.currentObjId);
+					}
+				}),
+				lang.hitch(this, function(error) {
+					this.refreshLayerList();
+					this.formsObj.showMessage("Something went wrong (on dls/add). Please contact administrator.");
 					console.log(error);
 				})
 			);
@@ -581,9 +699,13 @@ define([
 			this.userRights = rights;
 			if (role == "ADMIN") {
 				this.utils.show("topCategoryButton", "inline-block");
+				this.utils.show("summaryButton", "inline-block");
+				this.utils.show("validateServicesButton", "inline-block");
 			}
 			else {
 				this.utils.show("topCategoryButton", "none");
+				this.utils.show("summaryButton", "none");
+				this.utils.show("validateServicesButton", "none");
 			}
 		},
 		
@@ -602,6 +724,7 @@ define([
 						// TODO: popup box message
 					}
 					else if (response.type == "success") {
+						console.log("tree", response);
 						if (this.userRole == "ADMIN") {
 							this.utils.show("topCategoryButton", "inline-block");
 						}
@@ -733,6 +856,8 @@ define([
 			layer.movableForProvider = movableForProvider;
 			layer.wms = null;
 			layer.wfs = null;
+			layer.download = null;
+			layer.arcgis = null;
 			layer.metadata = layer.metadata;
 			layer.header = null;
 			
@@ -761,11 +886,23 @@ define([
 				layer.type = "WFS";
 			}
 			
+			if ((layer.others) && (layer.others[0])) {
+				if (layer.others[0].type == "DOWNLOAD") {
+					layer.download = layer.others[0];
+					layer.type = "DOWNLOAD";
+				}
+				else if (layer.others[0].type == "ARCGIS") {
+					layer.arcgis = layer.others[0];
+					layer.type = "ARCGIS";
+				}
+			}
+			
 			if (layer.layers) {
 				layer.type = "CATEGORY";
 			}
 						
 			if (layer.type == "CATEGORY") {
+				layer.layers.sort(this.comparePosition);
 				array.forEach(layer.layers, lang.hitch(this, function(l){
 					if (l.position === layer.layers.length) {
 						this.improveTreeRecord(l, layer.id.toString(), true, layer.editMode, movableChildren, layer.header);
@@ -783,6 +920,7 @@ define([
 				editMode = true;
 			}
 			
+			input.sort(this.comparePosition);
 			array.forEach(input, lang.hitch(this, function(record){
 				if (record.position === input.length) {
 					this.improveTreeRecord(record, this.rootLayerId, true, editMode, false, null);
@@ -791,6 +929,14 @@ define([
 					this.improveTreeRecord(record, this.rootLayerId, false, editMode, false, null);
 				}
 			}));
+		},
+		
+		comparePosition: function(a,b) {
+			if (a.position < b.position)
+				return -1;
+			if (a.position > b.position)
+				return 1;
+			return 0;
 		},
 		
 		createTree: function(input) {
@@ -904,6 +1050,14 @@ define([
 					else if (tnode.item.type == "WFS") {
 						domConstruct.destroy(tnode.expandoNode);
 						domStyle.set(tnode.labelNode, {"color": "blue", "width": "80%"});
+					}
+					else if (tnode.item.type == "DOWNLOAD") {
+						domConstruct.destroy(tnode.expandoNode);
+						domStyle.set(tnode.labelNode, {"color": "orange", "width": "80%"});
+					}
+					else if (tnode.item.type == "ARCGIS") {
+						domConstruct.destroy(tnode.expandoNode);
+						domStyle.set(tnode.labelNode, {"color": "purple", "width": "80%"});
 					}
 					else if (tnode.item.type == "CATEGORY") {
 						var rowNodePadding = domStyle.get(tnode.rowNode, "padding-left");

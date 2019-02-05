@@ -142,6 +142,7 @@ define([
 			// on collapse button click
 			on(this.collapseAllButton, "click", lang.hitch(this, function() {
 				this.tree.collapseAll();
+				this.utils.show("servicePanel", "none");
 			}));
 
 			// on hide button click
@@ -158,6 +159,7 @@ define([
 						}
 					}
 				}
+				this.utils.show("servicePanel", "none");
 			}));
 			
 			// on MSP intput data button click
@@ -564,6 +566,7 @@ define([
 						console.log(response);
 					}
 					else if (response.type == "success") {
+						console.log("tree", response.item);
 						this.createTree(response.item);
 					}
 				}),
@@ -583,6 +586,8 @@ define([
 				type: null,
 				wms: null,
 				wfs: null,
+				download: null,
+				arcgis: null,
 				metadata: layer.metadata,
 				emptyCategory: false
 			};
@@ -594,6 +599,16 @@ define([
 			if ((layer.wfses) && (layer.wfses[0])) {
 				lyr.wfs = layer.wfses[0];
 				lyr.type = "WFS";
+			}
+			if ((layer.others) && (layer.others[0])) {
+				if (layer.others[0].type == "DOWNLOAD") {
+					lyr.download = layer.others[0];
+					lyr.type = "DOWNLOAD";
+				}
+				else if (layer.others[0].type == "ARCGIS") {
+					lyr.arcgis = layer.others[0];
+					lyr.type = "ARCGIS";
+				}
 			}
 			if (layer.layers) {
 				lyr.type = "CATEGORY";
@@ -607,6 +622,7 @@ define([
 				
 			if (lyr.type == "CATEGORY") {
 				this.dataFiltering.push(lyr);
+				layer.layers.sort(this.comparePosition);
 				array.forEach(layer.layers, lang.hitch(this, function(l) {
 					this.addLayerToDataArray(l, layer.id.toString());
 				}));
@@ -614,6 +630,7 @@ define([
 		},
 
 		createDataArray: function(input) {
+			input.sort(this.comparePosition);
 			array.forEach(input, lang.hitch(this, function(record) {
 				this.addLayerToDataArray(record, this.rootLayerId);
 			}));
@@ -626,6 +643,14 @@ define([
 			if (storeElem.parent != this.rootLayerId) {
 				this.getLabelsFromRoot(storeElem.parent);
 			}
+		},
+		
+		comparePosition: function(a,b) {
+			if (a.position < b.position)
+				return -1;
+			if (a.position > b.position)
+				return 1;
+			return 0;
 		},
 
 		createTree: function(input) {
@@ -696,7 +721,7 @@ define([
 					}*/
           
 					var infoButton = null;
-					if ((tnode.item.type == "WMS") || (tnode.item.type == "WFS")){
+					if ((tnode.item.type == "WMS") || (tnode.item.type == "WFS") || (tnode.item.type == "DOWNLOAD") || (tnode.item.type == "ARCGIS")) {
 						if (tnode.item.type == "WMS") {
 							//domStyle.set(tnode.labelNode, {"color": "green"});
 							infoButton = domConstruct.create("div", { "class": "wmsGreenIcon" }, tnode.contentNode, "last");
@@ -705,8 +730,15 @@ define([
 							//domStyle.set(tnode.labelNode, {"color": "blue"});
 							infoButton = domConstruct.create("div", { "class": "wfsBlueIcon" }, tnode.contentNode, "last");
 						}
+						else if (tnode.item.type == "DOWNLOAD") {
+							infoButton = domConstruct.create("div", { "class": "downloadOrangeIcon" }, tnode.contentNode, "last");
+						}
+						else if (tnode.item.type == "ARCGIS") {
+							infoButton = domConstruct.create("div", { "class": "arcgisPurpleIcon" }, tnode.contentNode, "last");
+						}
 						
 						on(infoButton, "click", function() {
+							console.log("infoButton", tnode.item);
 							that.servicePanel.header = tnode.item.name;
 							that.getLabelsFromRoot(tnode.item.parent);
 							that.servicePanel.setupAndShowServicePanel(tnode.item);
@@ -738,6 +770,7 @@ define([
 						// on sublayer check box click
 						on(cb, "change", function(checked) {
 							if (checked) {
+								console.log("check", tnode.item);
 								if (tnode.item.type == "WMS") {
 									//console.log("checked", tnode.item);
 									if (!tnode.item.wmsMapLayer) {
@@ -783,10 +816,10 @@ define([
 										that.servicePanel.setupAndShowScaleMessage(tnode.item.wms.info.scaleMin, tnode.item.wms.info.scaleMax);
 									}
 								}
-								else if (tnode.item.type == "WFS") {
+								else {
 									that.servicePanel.header = tnode.item.name;
 									that.getLabelsFromRoot(tnode.item.parent);
-									that.servicePanel.setupAndShowWfsDownload(tnode.item);
+									that.servicePanel.setupAndShowServicePanel(tnode.item);
 								}
 								
 								// set tree path nodes style on select
@@ -806,12 +839,17 @@ define([
 								}));
 							}
 							else {
+								console.log("unclick", tnode.item);
 								if (tnode.item.type == "WMS") {
 									if (tnode.item.wmsMapLayer) {
 										tnode.item.wmsMapLayer.setVisible(false);
 									}
 									// hide legend
 									domStyle.set(tnode.item.legendContainerDiv, "display", "none");
+								}
+								else {
+									that.servicePanel.cleanServicePanel();
+									that.utils.show("servicePanel", "none");
 								}
                 
 								array.forEach(tnode.tree.path, lang.hitch(this, function(object, i) {

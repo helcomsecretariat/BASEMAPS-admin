@@ -29,9 +29,34 @@
 			<span id="cancelRootCategory" class="formLink" data-dojo-attach-event="onclick:cancelRootCategoryClick">Cancel</span>
 		</div>
 		
+		<!-- Summary section -->
+		<div id="summaryForm" class="formSectionGroup" style="display: none;">
+			<div class="formSectionLabel">Services summary</div>
+			<div class="scrollableContainer">
+				<table id="summaryTable" data-dojo-attach-point="summaryTable">
+					<tr>
+						<th>Category label</th>
+						<th>Contains WMS layers</th>
+						<th>Contains WFS feature types</th>
+						<th>Contains ArcGIS layers</th>
+						<th>Contains downloabale resources</th>
+					</tr>
+				</table>
+			</div>
+			<span id="closeSummaryForm" class="formLink" data-dojo-attach-event="onclick:closeSummaryFormClick">Close</span>
+		</div>
+		
+		<!-- Validate services section -->
+		<div id="validateServicesForm" class="formSectionGroup" style="display: none;">
+			<div class="formSectionLabel">Services validation</div>
+			<span id="closeValidateServices" class="formLink" data-dojo-attach-event="onclick:closeValidateServicesFormClick">Close</span>
+		</div>
+		
 		<div id="categoryForm" class="formContainer" style="display:none;">
 			<div class="scrollableContainer">
+				<div id="formInfoHeader" class="formSectionLabel" data-dojo-attach-point="formInfoHeader"></div>
 				<div id="deleteObject" class="deleteObjectLink" data-dojo-attach-event="onclick:deleteObjectClick">Delete</div>
+				
 				<!-- Category INFO section -->
 				<div id="categoryInfoForm" class="formSectionGroup">
 					<div class="formSectionLabel">Info:</div>
@@ -54,13 +79,22 @@
 						<div id="helcomCatalogueIdDescription" class="inputDescriptionNotRequired" style="display: none;">Filled in only by HELCOM.</div>
 					</div>
 					<div id=categoryMetadataSection class="inputLabelGroup">
-						<span class="textInputLabel">Metadata:</span>
+						<span class="textInputLabel">Metadata for this category:</span>
 						<span id="categoryMetadataLink" class="textLabel"></span>
 						<input id="categoryMetadataLinkInput" class="textInput" type="text" tabindex="2" maxlength="500" style="display: none;">
 						<span id="editCategoryMetadataLink" class="formLink" data-dojo-attach-event="onclick:editCategoryMetadataLinkClick">Edit</span>
 						<span id="cancelCategoryMetadataLink" class="formLink" style="display: none;" data-dojo-attach-event="onclick:cancelCategoryMetadataLinkClick">Cancel</span>
 						<span id="saveCategoryMetadataLink" class="formLink" style="display: none;" data-dojo-attach-point="saveCategoryMetadataLink">Save</span>
 						<div id="categoryMetadataLinkDescription" class="inputDescriptionNotRequired" style="display: none;">Input any valid metadata URL pointing to metadata web page (HTML), XML or plain text content that describes this category.</div>
+					</div>
+					<div id=downloadArcgisUrlSection class="inputLabelGroup">
+						<span class="textInputLabel">URL:</span>
+						<span id="downloadArcgisUrl" class="textLabel"></span>
+						<!-- <input id="cdownloadArcgisUrlInput" class="textInput" type="text" tabindex="2" maxlength="500" style="display: none;">
+						<span id="editDownloadArcgisUrl" class="formLink" data-dojo-attach-event="onclick:editDownloadArcgisUrlClick">Edit</span>
+						<span id="cancelDownloadArcgisUrl" class="formLink" style="display: none;" data-dojo-attach-event="onclick:cancelDownloadArcgisUrlClick">Cancel</span>
+						<span id="saveDownloadArcgisUrl" class="formLink" style="display: none;" data-dojo-attach-point="saveDownloadArcgisUrl">Save</span>
+						<div id="downloadArcgisUrlDescription" class="inputDescriptionNotRequired" style="display: none;">Input any valid URL pointing to resource.</div>-->
 					</div>
 				</div>
 				
@@ -194,6 +228,62 @@
 						<span id="cancelWfs" class="formLink" data-dojo-attach-event="onclick:cancelWfsClick">Cancel</span>
 					</div>
 					<div id="wfsDisplayForm" data-dojo-attach-point="wfsDisplayForm"></div>
+				</div>
+				
+				<!-- Category Download section -->
+				<div id="categoryDownloadForm" class="formSectionGroup">
+					<div class="formSectionLabel">Downloadable resources:</div>
+					<div id="addDownload" class="formLink" data-dojo-attach-event="onclick:addDownloadClick">Add new</div>
+					<div id="addDownloadForm" class="formSubSectionGroup" style="display: none;">
+						<div class="formSubSectionLabel">Add new Downloadable resource</div>
+						<div class="inputLabelGroup">
+							<span class="textInputLabel">URL:</span>
+							<input id="downloadUrlInput" class="textInput" type="text" tabindex="2" maxlength="500" placeholder="Required">
+							<span id="validateDownload" class="formLink" data-dojo-attach-event="onclick:validateDownloadClick">Validate</span>
+							<div class="inputDescriptionRequired">Input downloadable resource URL.</div>
+						</div>
+						<div class="inputLabelGroup">
+							<span class="textInputLabel">Label:</span>
+							<input id="downloadLabelInput" class="textInput" type="text" tabindex="2" maxlength="200" placeholder="Required">
+							<div class="inputDescriptionRequired">Label will appear in the layer list. Label should briefly describe this resource.</div>
+						</div>
+						<div class="inputLabelGroup">
+							<span class="textInputLabel">HELCOM id:</span>
+							<input id="downloadHelcomIdInput" class="textInput" type="text" tabindex="2" maxlength="200">
+							<div class="inputDescriptionNotRequired">Filled in only by HELCOM.</div>
+						</div>
+						<span id="saveDownload" class="formLink" data-dojo-attach-point="saveDownload">Save</span>
+						<span id="cancelDownload" class="formLink" data-dojo-attach-event="onclick:cancelDownloadClick">Cancel</span>
+					</div>
+					<div id="downloadDisplayForm" data-dojo-attach-point="downloadDisplayForm"></div>
+				</div>
+				
+				<!-- Category ArcGIS section -->
+				<div id="categoryArcgisForm" class="formSectionGroup">
+					<div class="formSectionLabel">ArcGIS MapServer resources:</div>
+					<div id="addArcgis" class="formLink" data-dojo-attach-event="onclick:addArcgisClick">Add new</div>
+					<div id="addArcgisForm" class="formSubSectionGroup" style="display: none;">
+						<div class="formSubSectionLabel">Add new ArcGIS MapServer resource</div>
+						<div class="inputLabelGroup">
+							<span class="textInputLabel">URL:</span>
+							<input id="arcgisUrlInput" class="textInput" type="text" tabindex="2" maxlength="500" placeholder="Required">
+							<span id="validateArcgis" class="formLink" data-dojo-attach-event="onclick:validateArcgisClick">Validate</span>
+							<div class="inputDescriptionRequired">Input ArcGIS MapServer resource URL.</div>
+						</div>
+						<div class="inputLabelGroup">
+							<span class="textInputLabel">Label:</span>
+							<input id="arcgisLabelInput" class="textInput" type="text" tabindex="2" maxlength="200" placeholder="Required">
+							<div class="inputDescriptionRequired">Label will appear in the layer list. Label should briefly describe this resource.</div>
+						</div>
+						<div class="inputLabelGroup">
+							<span class="textInputLabel">HELCOM id:</span>
+							<input id="arcgisHelcomIdInput" class="textInput" type="text" tabindex="2" maxlength="200">
+							<div class="inputDescriptionNotRequired">Filled in only by HELCOM.</div>
+						</div>
+						<span id="saveArcgis" class="formLink" data-dojo-attach-point="saveArcgis">Save</span>
+						<span id="cancelArcgis" class="formLink" data-dojo-attach-event="onclick:cancelArcgisClick">Cancel</span>
+					</div>
+					<div id="arcgisDisplayForm" data-dojo-attach-point="arcgisDisplayForm"></div>
 				</div>
 				
 				<!-- Category WMS INFO section -->

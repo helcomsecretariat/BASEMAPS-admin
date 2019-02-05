@@ -44,12 +44,16 @@ define([
 			this.servicePanel.set("title", this.header);
 			this.servicePanel.set("open", true);
 			if (info.type == "WMS") {
-				console.log(info);
 				this.constructWmsInfo(info);
 			}
 			else if (info.type == "WFS") {
 				this.constructWfsInfo(info);
-				console.log(info);
+			}
+			else if (info.type == "DOWNLOAD") {	
+				this.constructDownloadInfo(info);
+			}
+			else if (info.type == "ARCGIS") {
+				this.constructArcgisInfo(info);
 			}
 			this.utils.show("servicePanel", "block");
 		},
@@ -76,7 +80,7 @@ define([
 			this.servicePanel.set("title", this.header);
 			this.servicePanel.set("open", true);
 			
-			domConstruct.create("div", {"innerHTML": "Get features of this WFS layer"}, this.infoContainer, "last");
+			domConstruct.create("div", {"innerHTML": "Get features of WFS feature type"}, this.infoContainer, "last");
 			
 			var url = info.wfs.url + "?service=wfs&version=" + info.wfs.info.version + "&request=GetFeature&typeNames=" + info.wfs.name;
 			domConstruct.create("a", { "class": "formLink", "href": url, "target": "_blank", "innerHTML": "Download" }, this.infoContainer, "last");
@@ -85,6 +89,15 @@ define([
 				var url = info.wfs.url + "?service=wfs&version=" + info.wfs.info.version + "&request=GetFeature&typeNames=" + info.wfs.name;
 			    console.log("download", url);
 			}));*/
+			this.utils.show("servicePanel", "block");
+		},
+		setupAndShowDownloadResource: function(info) {
+			this.cleanServicePanel();
+			this.servicePanel.set("title", this.header);
+			this.servicePanel.set("open", true);
+			
+			domConstruct.create("div", {"innerHTML": "Download this resource"}, this.infoContainer, "last");
+			domConstruct.create("a", { "class": "formLink", "href": info.download.url, "target": "_blank", "innerHTML": "Download" }, this.infoContainer, "last");
 			this.utils.show("servicePanel", "block");
 		},
 		constructWmsInfo: function(info) {
@@ -165,6 +178,8 @@ define([
 		},
 		constructWfsInfo: function(info) {
 			if (info.type) {
+				var url = info.wfs.url + "?service=wfs&version=" + info.wfs.info.version + "&request=GetFeature&typeNames=" + info.wfs.name;
+				domConstruct.create("a", { "class": "formLink", "href": url, "target": "_blank", "innerHTML": "Get features of WFS feature type" }, this.infoContainer, "last");
 				this.buildInfoElement("Service type", info.type);
 				if (info.wfs.info.organisation)
 					this.buildInfoElement("Host organization", info.wfs.info.organisation);
@@ -193,23 +208,23 @@ define([
 					this.buildInfoElement("Wfs url", info.wfs.url);
 				
 				if (info.wfs.name)
-					this.buildInfoElement("Wfs layer name", info.wfs.name);
+					this.buildInfoElement("Wfs feature type name", info.wfs.name);
 				
 				if (info.wfs.info.title) {
 					if ((info.wfs.info.titleEn) && (info.wfs.info.titleEn.toLowerCase() != info.wfs.info.title.toLowerCase())) {
-						this.buildInfoElementTranslated("Wfs layer title", info.wfs.info.titleEn, info.wfs.info.title);
+						this.buildInfoElementTranslated("Wfs feature type title", info.wfs.info.titleEn, info.wfs.info.title);
 					}
 					else {
-						this.buildInfoElement("Wfs layer title", info.wfs.info.title);
+						this.buildInfoElement("Wfs feature type title", info.wfs.info.title);
 					}
 				}
 								
 				if (info.wfs.info.description) {
 					if ((info.wfs.info.descriptionEn) && (info.wfs.info.descriptionEn.toLowerCase() != info.wfs.info.description.toLowerCase())) {
-						this.buildInfoElementTranslated("Wfs layer description", info.wfs.info.descriptionEn, info.wfs.info.description);
+						this.buildInfoElementTranslated("Wfs feature type description", info.wfs.info.descriptionEn, info.wfs.info.description);
 					}
 					else {
-						this.buildInfoElement("Wfs layer description", info.wfs.info.description);
+						this.buildInfoElement("Wfs feature type description", info.wfs.info.description);
 					}
 				}
 				
@@ -218,6 +233,31 @@ define([
 				else
 					this.buildInfoElement("Language support", "No information");
 								
+				if ((info.metadata.length) && (info.metadata.length > 0))
+					this.buildMetadataContainer(info.metadata);
+				else
+					this.buildInfoElement("Metadata", "No metadata provided");
+			}
+		},
+		constructDownloadInfo: function(info) {
+			console.log("constructDownloadInfo", info);
+			if (info.type) {
+				domConstruct.create("a", { "class": "formLink", "href": info.download.url, "target": "_blank", "innerHTML": "Download this resource" }, this.infoContainer, "last");
+				this.buildInfoElement("Service type", info.type);
+				if (info.download.url)
+					this.buildInfoElement("Downloadable resource url", info.download.url);
+				if ((info.metadata.length) && (info.metadata.length > 0))
+					this.buildMetadataContainer(info.metadata);
+				else
+					this.buildInfoElement("Metadata", "No metadata provided");
+			}
+		},
+		constructArcgisInfo: function(info) {
+			console.log("constructArcgisInfo", info);
+			if (info.type) {
+				this.buildInfoElement("Service type", info.type);
+				if (info.arcgis.url)
+					this.buildInfoElement("ArcGIS MapServer url", info.arcgis.url);
 				if ((info.metadata.length) && (info.metadata.length > 0))
 					this.buildMetadataContainer(info.metadata);
 				else

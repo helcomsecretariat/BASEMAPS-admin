@@ -222,18 +222,19 @@ html, body {
 
 #adminListButtons {
 	width: 100%;
-	height: 30px;
+	height: 50px;
 }
 
 .adminListButton {
 	display: inline-block;
 	border: 1px solid #800000;
 	cursor: pointer;
-	width: 150px;
-	height: 20px;
+	width: 100px;
+	height: 40px;
 	line-height: 20px;
 	color: black;
 	text-align: center;
+	font-size: 12pt;
 	margin: 0px 5px;
 }
 /* END admin view section */
@@ -483,7 +484,7 @@ html, body {
 .formLink {
 	cursor: pointer;
 	color: #B73C2B;
-	margin-left: 20px;
+	/*margin-left: 20px;*/
 	font-size: 14px;
 }
 
@@ -563,6 +564,17 @@ html, body {
 .serviceInfoElementValue {
 	font-size: 16px;
 	display: table-cell;
+}
+
+#summaryTable {
+	border-collapse: collapse;
+	width: 100%;
+}
+
+#summaryTable td, th {
+	border: 1px solid #cccccc;
+	text-align: left;
+	padding: 8px;
 }
 
 /* END admin forms section */
@@ -823,6 +835,7 @@ html, body {
 	width: 100%;
 	border-bottom: 1px solid #cccccc;
 	margin-bottom: 5px;
+	margin-top: 5px;
 	display:table;
 	table-layout: fixed;
 }
@@ -1105,7 +1118,7 @@ html, body {
   font-weight: bold;
 }
 #hideAllButton {
-  margin-right: 30px;
+  /*margin-right: 30px;*/
 }
 
 #collapseAllButton {
@@ -1184,6 +1197,26 @@ html, body {
 
 .wfsBlueIcon {
   background-image: url("../img/wfs_blue_icon.png");
+  background-repeat: no-repeat;
+  background-position: left;
+  width: 29px;
+  height: 16px;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.downloadOrangeIcon {
+  background-image: url("../img/download_orange_icon.png");
+  background-repeat: no-repeat;
+  background-position: left;
+  width: 29px;
+  height: 16px;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.arcgisPurpleIcon {
+  background-image: url("../img/arcgis_purple_icon.png");
   background-repeat: no-repeat;
   background-position: left;
   width: 29px;
@@ -1321,8 +1354,7 @@ html, body {
 }
 
 .scaleWidget {
-  color: #333;
-  font-size: 20px;
+  font-size: 16px;
   font-weight: bold;
 }
 

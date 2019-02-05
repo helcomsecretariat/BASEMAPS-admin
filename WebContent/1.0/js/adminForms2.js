@@ -35,11 +35,15 @@ define([
 		wfsValidationPassed: false,
 		wfsNameSelector: null,
 		wfsUpdate: false,
+		downloadValidationPassed: false,
+		arcgisValidationPassed: false,
 		metadataFormatSelector: null,
 		currentObjId: null,
 		currentCategory: null,
 		currentCategoryWmses: [],
 		currentCategoryWfses: [],
+		currentCategoryDownloads: [],
+		currentCategoryArcgises: [],
 		currentCategoryCategories: [],
 		editMode: false,
 		categoryUserSelector: null,
@@ -95,6 +99,8 @@ define([
 			this.cleanCategoryUsersDisplayForm();
 			
 			this.cleanRootCategoryAddForm();
+			this.cleanSummaryForm();
+			this.cleanValidateServicesForm();
 			
 			this.cleanCategoryLabel();
 			this.cleanHelcomCatalogueId();
@@ -113,6 +119,12 @@ define([
 			this.cleanWfsDisplayForm();
 			this.cleanWfsAddForm();
 			this.cleanWfsInfoDisplayForm();
+			
+			this.cleanDownloadDisplayForm();
+			this.cleanDownloadAddForm();
+			
+			this.cleanArcgisDisplayForm();
+			this.cleanArcgisAddForm();
 			
 			this.utils.show("categoryUsersForm", "none");
 			this.utils.show("categoryForm", "none");
@@ -216,6 +228,16 @@ define([
 		// --- root category
 		cancelRootCategoryClick: function() {
 			this.cleanRootCategoryAddForm();
+		},
+		
+		// --- summary form
+		closeSummaryFormClick: function() {
+			this.cleanSummaryForm();
+		},
+		
+		// --- validate services
+		closeValidateServicesFormClick: function() {
+			this.cleanValidateServicesForm();
 		},
 				
 		// --- category info
@@ -337,6 +359,49 @@ define([
 				this.showMessage("Wfs url is not valid.");
 			}
 		},
+		
+		// --- category download
+		addDownloadClick: function() {
+			this.utils.show("addDownloadForm", "block");
+			this.utils.show("addDownload", "none");
+		},
+		
+		cancelDownloadClick: function() {
+			this.cleanDownloadAddForm();
+		},
+		
+		validateDownloadClick: function() {
+			this.cleanDownloadNameAndLabelForms();
+			var downloadUrl = this.utils.getInputValue("downloadUrlInput").trim();
+			/*if (validate.isUrl(downloadUrl)) {
+				this.validateDownload(downloadUrl);
+			}
+			else {
+				this.showMessage("Downloadable resource url is not valid.");
+			}*/
+			this.validateDownload(downloadUrl);
+		},
+		
+		// --- category arcgis
+		addArcgisClick: function() {
+			this.utils.show("addArcgisForm", "block");
+			this.utils.show("addArcgis", "none");
+		},
+		
+		cancelArcgisClick: function() {
+			this.cleanArcgisAddForm();
+		},
+		
+		validateArcgisClick: function() {
+			this.cleanArcgisNameAndLabelForms();
+			var arcgisUrl = this.utils.getInputValue("arcgisUrlInput").trim();
+			if (validate.isUrl(arcgisUrl)) {
+				this.validateArcgis(arcgisUrl);
+			}
+			else {
+				this.showMessage("ArcGIS MapService url is not valid.");
+			}
+		},
 		/* --- MANAGE CATEGORY BUTTONS END --- */
 		
 		/* --- MANAGE USER CLEAN START--- */
@@ -391,6 +456,17 @@ define([
 			this.utils.clearInput("addRootCategoryHelcomIdInput");
 			this.utils.clearInput("addRootCategoryMetadataUrlInput");
 			this.utils.show("addRootCategoryForm", "none");
+		},
+		
+		// --- summary form
+		cleanSummaryForm: function() {
+			domConstruct.empty(this.summaryTable);
+			this.utils.show("summaryForm", "none");
+		},
+		
+		// --- validate services form
+		cleanValidateServicesForm: function() {
+			this.utils.show("validateServicesForm", "none");
 		},
 		
 		// --- category info		
@@ -480,6 +556,33 @@ define([
 		cleanWfsInfoDisplayForm: function() {
 			domConstruct.empty(this.wfsDisplayInfoForm);
 		},
+		
+		// --- category download
+		cleanDownloadDisplayForm: function() {
+			domConstruct.empty(this.downloadDisplayForm);
+		},
+		
+		cleanDownloadAddForm: function() {
+			this.cleanDownloadNameAndLabelForms();
+			this.utils.clearInput("downloadUrlInput");
+			this.utils.show("addDownloadForm", "none");
+			this.utils.show("addDownload", "inline-block");
+			
+		},
+		
+		// --- category arcgis
+		cleanArcgisDisplayForm: function() {
+			domConstruct.empty(this.arcgisDisplayForm);
+		},
+		
+		cleanArcgisAddForm: function() {
+			this.cleanArcgisNameAndLabelForms();
+			this.utils.clearInput("arcgisUrlInput");
+			this.utils.show("addArcgisForm", "none");
+			this.utils.show("addArcgis", "inline-block");
+			
+		},
+		
 		/* --- MANAGE CATEGORY CLEAN END--- */
 		
 		
@@ -714,7 +817,7 @@ define([
 					var urlValue = domConstruct.create("a", { "class": "textLabel", "href": wms.wms.url, "target": "_blank", "innerHTML": wms.wms.url }, url, "last");
 					
 					if (this.editMode) {
-						var editButton = domConstruct.create("div", {"class": "formEditDeleteLink", "innerHTML": "Edit"}, buttonContainer, "last");
+						var editButton = domConstruct.create("div", {"class": "formEditDeleteLink", "innerHTML": "View or edit"}, buttonContainer, "last");
 						on(editButton, "click", lang.hitch(this, function() {
 							this.setupManageEditForm(wms);
 						}));
@@ -835,7 +938,7 @@ define([
 					var labelValue = domConstruct.create("span", { "class": "textLabel", "innerHTML": wfs.label }, label, "last");
 					
 					var name = domConstruct.create("div", null, content, "last");
-					var nameLabel = domConstruct.create("span", { "class": "textInputLabel", "innerHTML": "WFS layer name: " }, name, "last");
+					var nameLabel = domConstruct.create("span", { "class": "textInputLabel", "innerHTML": "WFS feature type name: " }, name, "last");
 					var nameValue = domConstruct.create("span", { "class": "textLabel", "innerHTML": wfs.wfs.name }, name, "last");
 					
 					var url = domConstruct.create("div", null, content, "last");
@@ -843,7 +946,7 @@ define([
 					var urlValue = domConstruct.create("a", { "class": "textLabel", "href": wfs.wfs.url, "target": "_blank", "innerHTML": wfs.wfs.url }, url, "last");
 					
 					if (this.editMode) {
-						var editButton = domConstruct.create("div", {"class": "formEditDeleteLink", "innerHTML": "Edit"}, buttonContainer, "last");
+						var editButton = domConstruct.create("div", {"class": "formEditDeleteLink", "innerHTML": "View or edit"}, buttonContainer, "last");
 						on(editButton, "click", lang.hitch(this, function() {
 							this.setupManageEditForm(wfs);
 						}));
@@ -880,6 +983,199 @@ define([
 							this.currentCategoryWfses.splice(index, 1);
 							this.cleanWfsDisplayForm();
 							this.displayWfses(this.currentCategoryWfses);
+						}
+					}
+				}),
+				lang.hitch(this, function(error){
+					this.showMessage("Something went wrong (on categories/delete/{id}). Please contact administrator.");
+					console.log(error);
+				})
+			);
+		},
+		
+		// --- category download
+		validateDownload: function(downloadUrl) {
+			var url = "sc/dls/verify";
+			var data = {
+				"url": downloadUrl
+			};
+			request.post(url, this.utils.createPostRequestParams(data)).then(
+				lang.hitch(this, function(response){
+					if (response.type == "error") {
+						this.downloadValidationPassed = false;
+						this.showMessage("URL is not valid.");
+					}
+					else if (response.type == "success") {
+						this.downloadValidationPassed = true;
+						this.showMessage("URL is valid.");
+					}
+				}),
+				lang.hitch(this, function(error){
+					this.action = null;
+					this.showMessage("Something went wrong (on dls/verify). Please contact administrator.");
+				})
+			);
+		},
+				
+		cleanDownloadNameAndLabelForms: function() {
+			this.utils.clearInput("downloadLabelInput");
+			this.utils.clearInput("downloadHelcomIdInput");
+			this.downloadValidationPassed = false;
+		},
+				
+		displayDownloads: function() {
+			if (this.currentCategoryDownloads.length > 0) {
+				
+				array.forEach(this.currentCategoryDownloads, lang.hitch(this, function(download) {
+					
+					var container = domConstruct.create("div", {"class": "formSubSectionGroup"}, this.downloadDisplayForm, "last");
+					var content = domConstruct.create("div", {"style": "display: inline-block; width: 90%"}, container, "last");
+					var buttonContainer = domConstruct.create("div", {"style": "display: inline-block; width: 10%"}, container, "last");
+					
+					var label = domConstruct.create("div", null, content, "last");
+					var labelLabel = domConstruct.create("span", { "class": "textInputLabel", "innerHTML": "Label: " }, label, "last");
+					var labelValue = domConstruct.create("span", { "class": "textLabel", "innerHTML": download.label }, label, "last");
+					
+					var url = domConstruct.create("div", null, content, "last");
+					var urlLabel = domConstruct.create("span", { "class": "textInputLabel", "innerHTML": "URL: " }, url, "last");
+					var urlValue = domConstruct.create("a", { "class": "textLabel", "href": download.download.url, "target": "_blank", "innerHTML": download.download.url }, url, "last");
+					
+					if (this.editMode) {
+						var editButton = domConstruct.create("div", {"class": "formEditDeleteLink", "innerHTML": "View or Edit"}, buttonContainer, "last");
+						on(editButton, "click", lang.hitch(this, function() {
+							this.setupManageEditForm(download);
+						}));
+						
+						var deleteButton = domConstruct.create("div", {"class": "formEditDeleteLink", "innerHTML": "Delete"}, buttonContainer, "last");
+						on(deleteButton, "click", lang.hitch(this, function() {
+							console.log(download.id);
+						    if (confirm("Please confirm removing resource: " + download.label) == true) {
+						    	this.deleteDownload(download.id);
+						    }
+						}));
+					}
+				}));
+			}
+			else {
+				var con = domConstruct.create("div", {"style": { "margin-bottom": "5px", "margin-top": "5px", "margin-left": "20px"}, "innerHTML": "No Downloadable resources in this category"}, this.downloadDisplayForm, "last");
+			}
+		},
+		
+		deleteDownload: function(id) {
+			var url = "sc/categories/delete/" + id;
+			//this.getTreePath(this.store.get(this.currentObjId).parent);
+			request.del(url, {
+				handleAs: "json"
+			}).then(
+				lang.hitch(this, function(response){
+					if (response.type == "error") {
+						this.showMessage("Failed to delete Downloadable resource.");
+					}
+					else if (response.type == "success") {
+						this.showMessage("Downloadable resource deleted.");
+						var index = this.currentCategoryDownloads.findIndex(x => x.id == id);
+						if (index > -1) {
+							this.currentCategoryDownloads.splice(index, 1);
+							this.cleanDownloadDisplayForm();
+							this.displayDownloads(this.currentCategoryDownloads);
+						}
+					}
+				}),
+				lang.hitch(this, function(error){
+					this.showMessage("Something went wrong (on categories/delete/{id}). Please contact administrator.");
+					console.log(error);
+				})
+			);
+		},
+		
+		// --- category arcgis
+		validateArcgis: function(arcgisUrl) {
+			var url = "sc/ags/verify";
+			var data = {
+				"url": arcgisUrl
+			};
+			request.post(url, this.utils.createPostRequestParams(data)).then(
+				lang.hitch(this, function(response){
+					console.log(response);
+					//this.hideWmsNameAndLabelSelector();
+					if (response.type == "error") {
+						this.arcgisValidationPassed = false;
+						this.showMessage("ArcGIS MapServer URL did not pass validation.");
+					}
+					else if (response.type == "success") {
+						this.arcgisValidationPassed = true;
+						this.showMessage("ArcGIS MapServer URL is valid.");
+						
+						console.log(response.item);
+					}
+				}),
+				lang.hitch(this, function(error){
+					this.action = null;
+					this.showMessage("Something went wrong (on dls/verify). Please contact administrator.");
+				})
+			);
+		},
+				
+		cleanArcgisNameAndLabelForms: function() {
+			this.utils.clearInput("arcgisLabelInput");
+			this.utils.clearInput("arcgisHelcomIdInput");
+			this.arcgisValidationPassed = false;
+		},
+		
+		displayArcgises: function() {
+			if (this.currentCategoryArcgises.length > 0) {
+				
+				array.forEach(this.currentCategoryArcgises, lang.hitch(this, function(arcgis) {
+					
+					var container = domConstruct.create("div", {"class": "formSubSectionGroup"}, this.arcgisDisplayForm, "last");
+					var content = domConstruct.create("div", {"style": "display: inline-block; width: 90%"}, container, "last");
+					var buttonContainer = domConstruct.create("div", {"style": "display: inline-block; width: 10%"}, container, "last");
+					
+					var label = domConstruct.create("div", null, content, "last");
+					var labelLabel = domConstruct.create("span", { "class": "textInputLabel", "innerHTML": "Label: " }, label, "last");
+					var labelValue = domConstruct.create("span", { "class": "textLabel", "innerHTML": arcgis.label }, label, "last");
+					
+					var url = domConstruct.create("div", null, content, "last");
+					var urlLabel = domConstruct.create("span", { "class": "textInputLabel", "innerHTML": "URL: " }, url, "last");
+					var urlValue = domConstruct.create("a", { "class": "textLabel", "href": arcgis.arcgis.url, "target": "_blank", "innerHTML": arcgis.arcgis.url }, url, "last");
+					
+					if (this.editMode) {
+						var editButton = domConstruct.create("div", {"class": "formEditDeleteLink", "innerHTML": "View or Edit"}, buttonContainer, "last");
+						on(editButton, "click", lang.hitch(this, function() {
+							this.setupManageEditForm(arcgis);
+						}));
+						
+						var deleteButton = domConstruct.create("div", {"class": "formEditDeleteLink", "innerHTML": "Delete"}, buttonContainer, "last");
+						on(deleteButton, "click", lang.hitch(this, function() {
+							console.log(arcgis.id);
+						    if (confirm("Please confirm removing resource: " + arcgis.label) == true) {
+						    	this.deleteArcgis(arcgis.id);
+						    }
+						}));
+					}
+				}));
+			}
+			else {
+				var con = domConstruct.create("div", {"style": { "margin-bottom": "5px", "margin-top": "5px", "margin-left": "20px"}, "innerHTML": "No ArcGIS services in this category"}, this.arcgisDisplayForm, "last");
+			}
+		},
+		
+		deleteArcgis: function(id) {
+			var url = "sc/categories/delete/" + id;
+			request.del(url, {
+				handleAs: "json"
+			}).then(
+				lang.hitch(this, function(response){
+					if (response.type == "error") {
+						this.showMessage("Failed to delete ArcGIS service.");
+					}
+					else if (response.type == "success") {
+						this.showMessage("ArcGIS service deleted.");
+						var index = this.currentCategoryArcgises.findIndex(x => x.id == id);
+						if (index > -1) {
+							this.currentCategoryArcgises.splice(index, 1);
+							this.cleanArcgisDisplayForm();
+							this.displayArcgises(this.currentCategoryArcgises);
 						}
 					}
 				}),
@@ -1079,7 +1375,28 @@ define([
 			this.displayWfses();
 		},
 		
+		setupAndDisplayDownloads: function(layers) {
+			this.currentCategoryDownloads = [];
+			array.forEach(layers, lang.hitch(this, function(layer) {
+				if (layer.download != null) {
+					this.currentCategoryDownloads.push(layer);
+				}
+			}));
+			this.displayDownloads();
+		},
+		
+		setupAndDisplayArcgises: function(layers) {
+			this.currentCategoryArcgises = [];
+			array.forEach(layers, lang.hitch(this, function(layer) {
+				if (layer.arcgis != null) {
+					this.currentCategoryArcgises.push(layer);
+				}
+			}));
+			this.displayArcgises();
+		},
+		
 		setupManageEditForm: function(layer) {
+			console.log("setup", layer);
 			this.cleanAdminForm();
 			this.currentObjId = layer.id;
 			this.getCurrentCategory();
@@ -1093,6 +1410,8 @@ define([
 				this.utils.show("addCategory", "block");
 				this.utils.show("addWms", "block");
 				this.utils.show("addWfs", "block");
+				this.utils.show("addDownload", "block");
+				this.utils.show("addArcgis", "block");
 				this.utils.show("deleteObject", "block");
 			}
 			else {
@@ -1103,6 +1422,8 @@ define([
 				this.utils.show("addCategory", "none");
 				this.utils.show("addWms", "none");
 				this.utils.show("addWfs", "none");
+				this.utils.show("addDownload", "none");
+				this.utils.show("addArcgis", "none");
 				this.utils.show("deleteObject", "none");
 			}
 			
@@ -1122,9 +1443,13 @@ define([
 				this.utils.show("categoryCategoriesForm", "block");
 				this.utils.show("categoryWmsForm", "block");
 				this.utils.show("categoryWfsForm", "block");
+				this.utils.show("categoryDownloadForm", "block");
+				this.utils.show("categoryArcgisForm", "block");
+				this.utils.show("downloadArcgisUrlSection", "none");
 				this.utils.show("categoryMetadataForm", "none");
 				this.utils.show("categoryWmsInfoForm", "none");
 				this.utils.show("categoryWfsInfoForm", "none");
+				this.utils.setTextValue("formInfoHeader", "Category info and it's content");
 				this.utils.setTextValue("deleteObject", "Delete this category with all content");
 				
 				if ((layer.metadata) && (layer.metadata.length > 0)) {
@@ -1137,16 +1462,22 @@ define([
 				this.setupAndDisplayCategories(layer.layers);
 				this.setupAndDisplayWmses(layer.layers);
 				this.setupAndDisplayWfses(layer.layers);
+				this.setupAndDisplayDownloads(layer.layers);
+				this.setupAndDisplayArcgises(layer.layers);
 				
 			}
 			else if (layer.type == "WMS") {
 				this.utils.show("categoryMetadataSection", "none");
+				this.utils.show("downloadArcgisUrlSection", "none");
 				this.utils.show("categoryCategoriesForm", "none");
 				this.utils.show("categoryWmsForm", "none");
 				this.utils.show("categoryWfsForm", "none");
+				this.utils.show("categoryDownloadForm", "none");
+				this.utils.show("categoryArcgisForm", "none");
 				this.utils.show("categoryWfsInfoForm", "none");
 				this.utils.show("categoryMetadataForm", "block");
 				this.utils.show("categoryWmsInfoForm", "block");
+				this.utils.setTextValue("formInfoHeader", "WMS service layer");
 				this.utils.setTextValue("deleteObject", "Delete this WMS");
 				
 				if ((layer.metadata) && (layer.metadata.length > 0)) {
@@ -1161,12 +1492,16 @@ define([
 			}
 			else if (layer.type == "WFS") {
 				this.utils.show("categoryMetadataSection", "none");
+				this.utils.show("downloadArcgisUrlSection", "none");
 				this.utils.show("categoryCategoriesForm", "none");
 				this.utils.show("categoryWmsForm", "none");
 				this.utils.show("categoryWfsForm", "none");
+				this.utils.show("categoryDownloadForm", "none");
+				this.utils.show("categoryArcgisForm", "none");
 				this.utils.show("categoryWmsInfoForm", "none");
 				this.utils.show("categoryMetadataForm", "block");
 				this.utils.show("categoryWfsInfoForm", "block");
+				this.utils.setTextValue("formInfoHeader", "WFS service feature type");
 				this.utils.setTextValue("deleteObject", "Delete this WFS");
 				
 				if ((layer.metadata) && (layer.metadata.length > 0)) {
@@ -1177,6 +1512,54 @@ define([
 				}
 				
 				this.getWfsInfo(layer.wfs.url, layer.wfs.name);
+			}
+			else if (layer.type == "DOWNLOAD") {
+				console.log("Download view");
+				this.utils.show("categoryMetadataSection", "none");
+				this.utils.show("categoryCategoriesForm", "none");
+				this.utils.show("categoryWmsForm", "none");
+				this.utils.show("categoryWfsForm", "none");
+				this.utils.show("categoryDownloadForm", "none");
+				this.utils.show("categoryArcgisForm", "none");
+				this.utils.show("categoryWmsInfoForm", "none");
+				this.utils.show("categoryWfsInfoForm", "none");
+				this.utils.show("downloadArcgisUrlSection", "block");
+				this.utils.show("categoryMetadataForm", "block");
+				this.utils.setTextValue("formInfoHeader", "Downloadable resource");
+				this.utils.setTextValue("deleteObject", "Delete this resource");
+				
+				this.utils.setTextValue("downloadArcgisUrl", layer.download.url);
+				
+				if ((layer.metadata) && (layer.metadata.length > 0)) {
+					this.displayMetadata(layer.metadata);
+				}
+				else {
+					var con = domConstruct.create("div", {"style": { "margin-bottom": "5px", "margin-top": "5px", "margin-left": "20px"}, "innerHTML": "No metadata assigned"}, this.metadataDisplayForm, "last");
+				}
+			}
+			else if (layer.type == "ARCGIS") {
+				console.log("ArcGIS view");
+				this.utils.show("categoryMetadataSection", "none");
+				this.utils.show("categoryCategoriesForm", "none");
+				this.utils.show("categoryWmsForm", "none");
+				this.utils.show("categoryWfsForm", "none");
+				this.utils.show("categoryDownloadForm", "none");
+				this.utils.show("categoryArcgisForm", "none");
+				this.utils.show("categoryWmsInfoForm", "none");
+				this.utils.show("categoryWfsInfoForm", "none");
+				this.utils.show("downloadArcgisUrlSection", "block");
+				this.utils.show("categoryMetadataForm", "block");
+				this.utils.setTextValue("formInfoHeader", "ArcGIS MapServer");
+				this.utils.setTextValue("deleteObject", "Delete this resource");
+				
+				this.utils.setTextValue("downloadArcgisUrl", layer.arcgis.url);
+				
+				if ((layer.metadata) && (layer.metadata.length > 0)) {
+					this.displayMetadata(layer.metadata);
+				}
+				else {
+					var con = domConstruct.create("div", {"style": { "margin-bottom": "5px", "margin-top": "5px", "margin-left": "20px"}, "innerHTML": "No metadata assigned"}, this.metadataDisplayForm, "last");
+				}
 			}
 			
 			this.utils.show("categoryForm", "block");
@@ -1680,8 +2063,8 @@ define([
 					else if (response.type == "success") {
 						console.log("wfs info", response);
 						this.buildWfsInfoElement("WFS service URL", wfsUrl);
-						this.buildWfsInfoElement("Layer name", wfsName);
-						this.buildWfsInfoElement("Layer title", response.item.title);
+						this.buildWfsInfoElement("Feature type name", wfsName);
+						this.buildWfsInfoElement("Feature type title", response.item.title);
 						this.buildWfsInfoElement("WFS version", response.item.version);
 						this.buildWfsInfoElement("Supported languages", response.item.languages.join(", "));
 						this.buildWfsInfoElement("Organization", response.item.organisation);
@@ -1716,6 +2099,55 @@ define([
 				var metadataLabel = domConstruct.create("div", { "style": { "font-size": "14px", "font-weight": "bold" }, "innerHTML": record.format }, metadataContainer, "last");
 				var metadataURL = domConstruct.create("div", { "innerHTML": record.url }, metadataContainer, "last");
 			}));
+		},
+		
+		getSummary: function() {
+			var url = "sc/categories/summary";
+			request.get(url, {
+				handleAs: "json"
+			}).then(
+				lang.hitch(this, function(response) {
+					if (response.type == "error") {
+						this.showMessage("Failed to get services summary.");
+					}
+					else if (response.type == "success") {
+						this.cleanSummaryForm();
+						console.log(response.item);
+						array.forEach(response.item, lang.hitch(this, function(item) {
+							this.getSummaryRecord(item);
+						}));
+					}
+				}),
+				lang.hitch(this, function(error) {
+					alert("Something went wrong (on categories/summary). Please contact administrator.");
+					console.log(error);
+				})
+			);
+		},
+		
+		getSummaryRecord: function(item) {
+			var info = {
+				label: item.label,
+				wmsCount: item.counts.wmses,
+				wfsCount: item.counts.wfses,
+				agsCount: item.counts.arcgises,
+				dnlCount: item.counts.downloadables
+			};
+			this.buildSummaryRecord(info);
+			if (item.children != null) {
+				array.forEach(item.children, lang.hitch(this, function(item) {
+					this.getSummaryRecord(item);
+				}));
+			}
+		},
+		
+		buildSummaryRecord: function(info) {
+			var row = domConstruct.create("tr", this.summaryTable, "last");
+			domConstruct.create("td", { "innerHTML": info.label }, row, "last");
+			domConstruct.create("td", { "innerHTML": info.wmsCount }, row, "last");
+			domConstruct.create("td", { "innerHTML": info.wfsCount }, row, "last");
+			domConstruct.create("td", { "innerHTML": info.agsCount }, row, "last");
+			domConstruct.create("td", { "innerHTML": info.dnlCount }, row, "last");
 		}
 	});
 });
