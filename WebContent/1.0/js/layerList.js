@@ -784,7 +784,6 @@ define([
 						// on sublayer check box click
 						on(cb, "change", function(checked) {
 							if (checked) {
-								console.log("check", tnode.item);
 								if (tnode.item.type == "WMS") {
 									//console.log("checked", tnode.item);
 									if (!tnode.item.wmsMapLayer) {
@@ -853,7 +852,6 @@ define([
 								}));
 							}
 							else {
-								console.log("unclick", tnode.item);
 								if (tnode.item.type == "WMS") {
 									if (tnode.item.wmsMapLayer) {
 										tnode.item.wmsMapLayer.setVisible(false);

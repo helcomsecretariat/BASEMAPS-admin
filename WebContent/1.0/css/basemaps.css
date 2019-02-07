@@ -1198,7 +1198,6 @@ html, body {
   width: 29px;
   height: 16px;
   display: inline-block;
-  cursor: pointer;
 }
 
 .wfsBlueIcon {
@@ -1208,7 +1207,6 @@ html, body {
   width: 29px;
   height: 16px;
   display: inline-block;
-  cursor: pointer;
 }
 
 .downloadOrangeIcon {
@@ -1218,7 +1216,6 @@ html, body {
   width: 29px;
   height: 16px;
   display: inline-block;
-  cursor: pointer;
 }
 
 .arcgisPurpleIcon {
@@ -1228,7 +1225,6 @@ html, body {
   width: 29px;
   height: 16px;
   display: inline-block;
-  cursor: pointer;
 }
 
 .topGroupButton {

@@ -240,7 +240,6 @@ define([
 			}
 		},
 		constructDownloadInfo: function(info) {
-			console.log("constructDownloadInfo", info);
 			if (info.type == "DOWNLOAD") {
 				domConstruct.create("a", { "class": "serviceWindowDownloadLink", "href": info.download.url, "target": "_blank", "innerHTML": "Download this resource" }, this.infoContainer, "last");
 				this.buildInfoElement("Resource type", "Downloadable resource");
@@ -253,7 +252,6 @@ define([
 			}
 		},
 		constructArcgisInfo: function(info) {
-			console.log("constructArcgisInfo", info);
 			if (info.type == "ARCGIS") {
 				this.buildInfoElement("Resource type", "ArcGIS REST MapServer layer");
 				if (info.arcgis.url)

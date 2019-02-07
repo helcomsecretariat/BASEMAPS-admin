@@ -262,7 +262,6 @@ define([
 						if ((layers[i].getProperties().id != "basemap") && (layers[i].getProperties().id != "highlight") && (!("mspName" in layers[i].getProperties())) && (layers[i].getVisible())) {
 							var infoFormat = "application/json";
 							var u = layers[i].getSource().getGetFeatureInfoUrl(popupCoordinate, viewResolution, viewProjection, {"buffer": 10, "INFO_FORMAT": ""});
-							console.log(u);
 							this.getInfo(layers[i].getProperties().wmsId, u, popupCoordinate, layers[i].getProperties().name);
 						}
 					}
@@ -291,7 +290,6 @@ define([
 			"id": id,
 			"url": u
 		};
-		console.log("request data ", data);
 		request.post(url, this.utils.createPostRequestParams(data)).then(
 			lang.hitch(this, function(response) {
 				this.layersCounter = this.layersCounter + 1;
