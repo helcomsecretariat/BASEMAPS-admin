@@ -1449,7 +1449,7 @@ define([
 				this.utils.show("categoryMetadataForm", "none");
 				this.utils.show("categoryWmsInfoForm", "none");
 				this.utils.show("categoryWfsInfoForm", "none");
-				this.utils.setTextValue("formInfoHeader", "Category info and it's content");
+				this.utils.setTextValue("formInfoHeader", "Category information and it's content");
 				this.utils.setTextValue("deleteObject", "Delete this category with all content");
 				
 				if ((layer.metadata) && (layer.metadata.length > 0)) {
@@ -1477,7 +1477,7 @@ define([
 				this.utils.show("categoryWfsInfoForm", "none");
 				this.utils.show("categoryMetadataForm", "block");
 				this.utils.show("categoryWmsInfoForm", "block");
-				this.utils.setTextValue("formInfoHeader", "WMS service layer");
+				this.utils.setTextValue("formInfoHeader", "WMS layer");
 				this.utils.setTextValue("deleteObject", "Delete this WMS");
 				
 				if ((layer.metadata) && (layer.metadata.length > 0)) {
@@ -1501,7 +1501,7 @@ define([
 				this.utils.show("categoryWmsInfoForm", "none");
 				this.utils.show("categoryMetadataForm", "block");
 				this.utils.show("categoryWfsInfoForm", "block");
-				this.utils.setTextValue("formInfoHeader", "WFS service feature type");
+				this.utils.setTextValue("formInfoHeader", "WFS feature type");
 				this.utils.setTextValue("deleteObject", "Delete this WFS");
 				
 				if ((layer.metadata) && (layer.metadata.length > 0)) {
@@ -1549,7 +1549,7 @@ define([
 				this.utils.show("categoryWfsInfoForm", "none");
 				this.utils.show("downloadArcgisUrlSection", "block");
 				this.utils.show("categoryMetadataForm", "block");
-				this.utils.setTextValue("formInfoHeader", "ArcGIS MapServer");
+				this.utils.setTextValue("formInfoHeader", "ArcGIS REST MapServer layer");
 				this.utils.setTextValue("deleteObject", "Delete this resource");
 				
 				this.utils.setTextValue("downloadArcgisUrl", layer.arcgis.url);
@@ -1956,7 +1956,7 @@ define([
 						on(updateInfoLink, "click", lang.hitch(this, function() {
 							this.updateWmsInfo(wms);
 						}));
-						this.buildWmsInfoElement("WMS service URL", wms.url);
+						this.buildWmsInfoElement("WMS URL", wms.url);
 						this.buildWmsInfoElement("Layer name", wms.name);
 						this.buildWmsInfoElement("Layer title", response.item.title);
 						this.buildWmsInfoElement("Layer title (translated)", response.item.titleEn);
@@ -1992,7 +1992,7 @@ define([
 			on(updateInfoLink, "click", lang.hitch(this, function() {
 				this.updateWmsInfo(wms);
 			}));
-			this.buildWmsInfoElement("WMS service URL", wms.url);
+			this.buildWmsInfoElement("WMS url", wms.url);
 			this.buildWmsInfoElement("Layer name", wms.name);
 			this.buildWmsInfoElement("Layer title", wms.info.title);
 			this.buildWmsInfoElement("Layer title (translated)", wms.info.titleEn);
@@ -2062,7 +2062,7 @@ define([
 					}
 					else if (response.type == "success") {
 						console.log("wfs info", response);
-						this.buildWfsInfoElement("WFS service URL", wfsUrl);
+						this.buildWfsInfoElement("WFS url", wfsUrl);
 						this.buildWfsInfoElement("Feature type name", wfsName);
 						this.buildWfsInfoElement("Feature type title", response.item.title);
 						this.buildWfsInfoElement("WFS version", response.item.version);

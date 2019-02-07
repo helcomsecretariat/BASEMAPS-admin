@@ -83,8 +83,8 @@ define([
 			domConstruct.create("div", {"innerHTML": "Get features of WFS feature type"}, this.infoContainer, "last");
 			
 			var url = info.wfs.url + "?service=wfs&version=" + info.wfs.info.version + "&request=GetFeature&typeNames=" + info.wfs.name;
-			domConstruct.create("a", { "class": "formLink", "href": url, "target": "_blank", "innerHTML": "Download" }, this.infoContainer, "last");
-			/*var button = domConstruct.create("div", {"class": "formLink", "innerHTML": "Download"}, this.infoContainer, "last");
+			domConstruct.create("a", { "class": "serviceWindowDownloadLink", "href": url, "target": "_blank", "innerHTML": "Download" }, this.infoContainer, "last");
+			/*var button = domConstruct.create("div", {"class": "serviceWindowDownloadLink", "innerHTML": "Download"}, this.infoContainer, "last");
 			on(button, "click", lang.hitch(this, function() {
 				var url = info.wfs.url + "?service=wfs&version=" + info.wfs.info.version + "&request=GetFeature&typeNames=" + info.wfs.name;
 			    console.log("download", url);
@@ -97,19 +97,19 @@ define([
 			this.servicePanel.set("open", true);
 			
 			domConstruct.create("div", {"innerHTML": "Download this resource"}, this.infoContainer, "last");
-			domConstruct.create("a", { "class": "formLink", "href": info.download.url, "target": "_blank", "innerHTML": "Download" }, this.infoContainer, "last");
+			domConstruct.create("a", { "class": "serviceWindowDownloadLink", "href": info.download.url, "target": "_blank", "innerHTML": "Download" }, this.infoContainer, "last");
 			this.utils.show("servicePanel", "block");
 		},
 		constructWmsInfo: function(info) {
-			if (info.type) {
-				this.buildInfoElement("Service type", info.type);
+			if (info.type == "WMS") {
+				this.buildInfoElement("Resource type", "WMS layer");
 				if (info.wms.info.organisation)
 					this.buildInfoElement("Host organization", info.wms.info.organisation);
 				else
 					this.buildInfoElement("Host organization", "No information");
 				
 				if (info.wms.info.accessConstraints) {
-					if ((info.wms.info.accessConstraintsEn) && (info.wms.info.accessConstraintsEn.toLowerCase() != info.wms.info.accessConstraints.toLowerCase())) {
+					if ((info.wms.info.accessConstraintsEn) && (info.wms.info.accessConstraintsEn.toLowerCase().replace(/\s/g, "") != info.wms.info.accessConstraints.toLowerCase().replace(/\s/g, ""))) {
 						this.buildInfoElementTranslated("Access constraints", info.wms.info.accessConstraintsEn, info.wms.info.accessConstraints);
 					}
 					else {
@@ -118,7 +118,7 @@ define([
 				}
 					
 				if (info.wms.info.fees) {
-					if ((info.wms.info.feesEn) && (info.wms.info.feesEn.toLowerCase() != info.wms.info.fees.toLowerCase())) {
+					if ((info.wms.info.feesEn) && (info.wms.info.feesEn.toLowerCase().replace(/\s/g, "") != info.wms.info.fees.toLowerCase().replace(/\s/g, ""))) {
 						this.buildInfoElementTranslated("Fees", info.wms.info.feesEn, info.wms.info.fees);
 					}
 					else {
@@ -127,26 +127,26 @@ define([
 				}
 				
 				if (info.wms.url)
-					this.buildInfoElement("Wms url", info.wms.url);
+					this.buildInfoElement("WMS url", info.wms.url);
 				
 				if (info.wms.name)
-					this.buildInfoElement("Wms layer name", info.wms.name);
+					this.buildInfoElement("WMS layer name", info.wms.name);
 				
 				if (info.wms.info.title) {
-					if ((info.wms.info.titleEn) && (info.wms.info.titleEn.toLowerCase() != info.wms.info.title.toLowerCase())) {
-						this.buildInfoElementTranslated("Wms layer title", info.wms.info.titleEn, info.wms.info.title);
+					if ((info.wms.info.titleEn) && (info.wms.info.titleEn.toLowerCase().replace(/\s/g, "") != info.wms.info.title.toLowerCase().replace(/\s/g, ""))) {
+						this.buildInfoElementTranslated("WMS layer title", info.wms.info.titleEn, info.wms.info.title);
 					}
 					else {
-						this.buildInfoElement("Wms layer title", info.wms.info.title);
+						this.buildInfoElement("WMS layer title", info.wms.info.title);
 					}
 				}
 				
 				if (info.wms.info.description) {
-					if ((info.wms.info.descriptionEn) && (info.wms.info.descriptionEn.toLowerCase() != info.wms.info.description.toLowerCase())) {
-						this.buildInfoElementTranslated("Wms layer description", info.wms.info.descriptionEn, info.wms.info.description);
+					if ((info.wms.info.descriptionEn) && (info.wms.info.descriptionEn.toLowerCase().replace(/\s/g, "") != info.wms.info.description.toLowerCase().replace(/\s/g, ""))) {
+						this.buildInfoElementTranslated("WMS layer description", info.wms.info.descriptionEn, info.wms.info.description);
 					}
 					else {
-						this.buildInfoElement("Wms layer description", info.wms.info.description);
+						this.buildInfoElement("WMS layer description", info.wms.info.description);
 					}
 				}
 				
@@ -177,17 +177,17 @@ define([
 			}
 		},
 		constructWfsInfo: function(info) {
-			if (info.type) {
+			if (info.type == "WFS") {
 				var url = info.wfs.url + "?service=wfs&version=" + info.wfs.info.version + "&request=GetFeature&typeNames=" + info.wfs.name;
-				domConstruct.create("a", { "class": "formLink", "href": url, "target": "_blank", "innerHTML": "Get features of WFS feature type" }, this.infoContainer, "last");
-				this.buildInfoElement("Service type", info.type);
+				domConstruct.create("a", { "class": "serviceWindowDownloadLink", "href": url, "target": "_blank", "innerHTML": "Get features of WFS feature type" }, this.infoContainer, "last");
+				this.buildInfoElement("Resource type", "WFS feature type");
 				if (info.wfs.info.organisation)
 					this.buildInfoElement("Host organization", info.wfs.info.organisation);
 				else
 					this.buildInfoElement("Host organization", "No information");
 				
 				if (info.wfs.info.accessConstraints) {
-					if ((info.wfs.info.accessConstraintsEn) && (info.wfs.info.accessConstraintsEn.toLowerCase() != info.wfs.info.accessConstraints.toLowerCase())) {
+					if ((info.wfs.info.accessConstraintsEn) && (info.wfs.info.accessConstraintsEn.toLowerCase().replace(/\s/g, "") != info.wfs.info.accessConstraints.toLowerCase().replace(/\s/g, ""))) {
 						this.buildInfoElementTranslated("Access constraints", info.wfs.info.accessConstraintsEn, info.wfs.info.accessConstraints);
 					}
 					else {
@@ -196,7 +196,7 @@ define([
 				}
 					
 				if (info.wfs.info.fees) {
-					if ((info.wfs.info.feesEn) && (info.wfs.info.feesEn.toLowerCase() != info.wfs.info.fees.toLowerCase())) {
+					if ((info.wfs.info.feesEn) && (info.wfs.info.feesEn.toLowerCase().replace(/\s/g, "") != info.wfs.info.fees.toLowerCase().replace(/\s/g, ""))) {
 						this.buildInfoElementTranslated("Fees", info.wfs.info.feesEn, info.wfs.info.fees);
 					}
 					else {
@@ -205,26 +205,26 @@ define([
 				}
 				
 				if (info.wfs.url)
-					this.buildInfoElement("Wfs url", info.wfs.url);
+					this.buildInfoElement("WFS url", info.wfs.url);
 				
 				if (info.wfs.name)
-					this.buildInfoElement("Wfs feature type name", info.wfs.name);
+					this.buildInfoElement("WFS feature type name", info.wfs.name);
 				
 				if (info.wfs.info.title) {
-					if ((info.wfs.info.titleEn) && (info.wfs.info.titleEn.toLowerCase() != info.wfs.info.title.toLowerCase())) {
-						this.buildInfoElementTranslated("Wfs feature type title", info.wfs.info.titleEn, info.wfs.info.title);
+					if ((info.wfs.info.titleEn) && (info.wfs.info.titleEn.toLowerCase().replace(/\s/g, "") != info.wfs.info.title.toLowerCase().replace(/\s/g, ""))) {
+						this.buildInfoElementTranslated("WFS feature type title", info.wfs.info.titleEn, info.wfs.info.title);
 					}
 					else {
-						this.buildInfoElement("Wfs feature type title", info.wfs.info.title);
+						this.buildInfoElement("WFS feature type title", info.wfs.info.title);
 					}
 				}
 								
 				if (info.wfs.info.description) {
-					if ((info.wfs.info.descriptionEn) && (info.wfs.info.descriptionEn.toLowerCase() != info.wfs.info.description.toLowerCase())) {
-						this.buildInfoElementTranslated("Wfs feature type description", info.wfs.info.descriptionEn, info.wfs.info.description);
+					if ((info.wfs.info.descriptionEn) && (info.wfs.info.descriptionEn.toLowerCase().replace(/\s/g, "") != info.wfs.info.description.toLowerCase().replace(/\s/g, ""))) {
+						this.buildInfoElementTranslated("WFS feature type description", info.wfs.info.descriptionEn, info.wfs.info.description);
 					}
 					else {
-						this.buildInfoElement("Wfs feature type description", info.wfs.info.description);
+						this.buildInfoElement("WFS feature type description", info.wfs.info.description);
 					}
 				}
 				
@@ -241,9 +241,9 @@ define([
 		},
 		constructDownloadInfo: function(info) {
 			console.log("constructDownloadInfo", info);
-			if (info.type) {
-				domConstruct.create("a", { "class": "formLink", "href": info.download.url, "target": "_blank", "innerHTML": "Download this resource" }, this.infoContainer, "last");
-				this.buildInfoElement("Service type", info.type);
+			if (info.type == "DOWNLOAD") {
+				domConstruct.create("a", { "class": "serviceWindowDownloadLink", "href": info.download.url, "target": "_blank", "innerHTML": "Download this resource" }, this.infoContainer, "last");
+				this.buildInfoElement("Resource type", "Downloadable resource");
 				if (info.download.url)
 					this.buildInfoElement("Downloadable resource url", info.download.url);
 				if ((info.metadata.length) && (info.metadata.length > 0))
@@ -254,8 +254,8 @@ define([
 		},
 		constructArcgisInfo: function(info) {
 			console.log("constructArcgisInfo", info);
-			if (info.type) {
-				this.buildInfoElement("Service type", info.type);
+			if (info.type == "ARCGIS") {
+				this.buildInfoElement("Resource type", "ArcGIS REST MapServer layer");
 				if (info.arcgis.url)
 					this.buildInfoElement("ArcGIS MapServer url", info.arcgis.url);
 				if ((info.metadata.length) && (info.metadata.length > 0))
@@ -296,9 +296,9 @@ define([
 			array.forEach(metadata, lang.hitch(this, function(record) {
 				var subcontainer = domConstruct.create("div", {"class": "servicePanelMetadataBox"}, container, "last");
 				
-				var provider = domConstruct.create("div", {"style": "display: table; table-layout: fixed; width: 100%;"}, subcontainer, "last");
+				/*var provider = domConstruct.create("div", {"style": "display: table; table-layout: fixed; width: 100%;"}, subcontainer, "last");
 				var providerLabel = domConstruct.create("span", { "class": "servicePanelInfoElementLabel", "innerHTML": "Metadata source: " }, provider, "last");
-				var providerValue = domConstruct.create("span", { "class": "servicePanelInfoElementValue", "innerHTML": record.source }, provider, "last");
+				var providerValue = domConstruct.create("span", { "class": "servicePanelInfoElementValue", "innerHTML": record.source }, provider, "last");*/
 				
 				var format = domConstruct.create("div", {"style": "display: table; table-layout: fixed; width: 100%;"}, subcontainer, "last");
 				var formatLabel = domConstruct.create("span", { "class": "servicePanelInfoElementLabel", "innerHTML": "Metadata format: " }, format, "last");

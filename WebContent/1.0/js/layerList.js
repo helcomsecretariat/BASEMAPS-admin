@@ -721,28 +721,42 @@ define([
 					}*/
           
 					var infoButton = null;
+					var infoLabel = null;
 					if ((tnode.item.type == "WMS") || (tnode.item.type == "WFS") || (tnode.item.type == "DOWNLOAD") || (tnode.item.type == "ARCGIS")) {
 						if (tnode.item.type == "WMS") {
 							//domStyle.set(tnode.labelNode, {"color": "green"});
 							infoButton = domConstruct.create("div", { "class": "wmsGreenIcon" }, tnode.contentNode, "last");
+							infoLabel = "WMS layer";
 						}
 						else if (tnode.item.type == "WFS") {
 							//domStyle.set(tnode.labelNode, {"color": "blue"});
 							infoButton = domConstruct.create("div", { "class": "wfsBlueIcon" }, tnode.contentNode, "last");
+							infoLabel = "WFS feature type";
 						}
 						else if (tnode.item.type == "DOWNLOAD") {
 							infoButton = domConstruct.create("div", { "class": "downloadOrangeIcon" }, tnode.contentNode, "last");
+							infoLabel = "Downloadable resource";
 						}
 						else if (tnode.item.type == "ARCGIS") {
 							infoButton = domConstruct.create("div", { "class": "arcgisPurpleIcon" }, tnode.contentNode, "last");
+							infoLabel = "ArcGIS REST MapServer layer";
 						}
 						
-						on(infoButton, "click", function() {
+						if (infoButton != null) {
+							new Tooltip({
+								connectId: [infoButton],
+								showDelay: 10,
+								position: ["below"],
+								label: infoLabel
+							});
+						}
+						
+						/*on(infoButton, "click", function() {
 							console.log("infoButton", tnode.item);
 							that.servicePanel.header = tnode.item.name;
 							that.getLabelsFromRoot(tnode.item.parent);
 							that.servicePanel.setupAndShowServicePanel(tnode.item);
-						});
+						});*/
 						
 						domConstruct.destroy(tnode.expandoNode);
 						var cb = new dijit.form.CheckBox();
@@ -816,11 +830,11 @@ define([
 										that.servicePanel.setupAndShowScaleMessage(tnode.item.wms.info.scaleMin, tnode.item.wms.info.scaleMax);
 									}
 								}
-								else {
-									that.servicePanel.header = tnode.item.name;
-									that.getLabelsFromRoot(tnode.item.parent);
-									that.servicePanel.setupAndShowServicePanel(tnode.item);
-								}
+								//else {
+								that.servicePanel.header = tnode.item.name;
+								that.getLabelsFromRoot(tnode.item.parent);
+								that.servicePanel.setupAndShowServicePanel(tnode.item);
+								//}
 								
 								// set tree path nodes style on select
 								array.forEach(tnode.tree.path, lang.hitch(this, function(object, i) {
@@ -847,11 +861,10 @@ define([
 									// hide legend
 									domStyle.set(tnode.item.legendContainerDiv, "display", "none");
 								}
-								else {
-									that.servicePanel.cleanServicePanel();
-									that.utils.show("servicePanel", "none");
-								}
-                
+								
+								that.servicePanel.cleanServicePanel();
+								that.utils.show("servicePanel", "none");
+								
 								array.forEach(tnode.tree.path, lang.hitch(this, function(object, i) {
 									if (i>0) {
 										var n = tnode.tree.getNodeFromItem(object.id);

@@ -484,12 +484,18 @@ html, body {
 .formLink {
 	cursor: pointer;
 	color: #B73C2B;
-	/*margin-left: 20px;*/
+	margin-left: 20px;
 	font-size: 14px;
 }
 
 .formLink:hover {
 	color: #800000;
+}
+
+.serviceWindowDownloadLink {
+	cursor: pointer;
+	color: #B73C2B;
+	font-size: 14px;
 }
 
 .formEditDeleteLink {
