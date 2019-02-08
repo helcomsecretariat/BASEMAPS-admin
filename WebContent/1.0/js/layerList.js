@@ -566,7 +566,6 @@ define([
 						console.log(response);
 					}
 					else if (response.type == "success") {
-						console.log("tree", response.item);
 						this.createTree(response.item);
 					}
 				}),
@@ -780,6 +779,85 @@ define([
 								}, tnode.item.legendContainerDiv);
 							}
 						}
+						// create ARCGIS legend node
+						if (tnode.item.type == "ARCGIS") {
+							var lastSlashIndex = tnode.item.arcgis.url.lastIndexOf("/");
+							var layerNr = parseInt(tnode.item.arcgis.url.substring(lastSlashIndex+1));
+							var legendUrl = tnode.item.arcgis.url.substring(0, lastSlashIndex) + "/legend?f=pjson";
+							var serviceUrl = "sc/tools/get-data";
+							
+							var servicedata = {
+								"url": tnode.item.arcgis.url.substring(0, lastSlashIndex) + "/legend?f=pjson",
+								"format": "json"
+							};
+							request.post(serviceUrl, that.utils.createPostRequestParams(servicedata)).then(
+								lang.hitch(that, function(response) {
+									if (response.type == "error") {
+										console.log("Can't get ArcGIS MapServer legend.", response);
+										domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
+									}
+									else if (response.type == "success") {
+										if (response.item) {
+											var legendInfo = response.item.layers.find(layer => {
+												return layer.layerId == layerNr
+											});
+											if (legendInfo) {
+												tnode.item.legendContainerDiv = domConstruct.create("div", { "class": "legendContainerDiv" }, tnode.rowNode, "last");
+												// create legend row	
+												array.forEach(legendInfo.legend, lang.hitch(that, function(row){
+													var legendRow = domConstruct.create("div", { "class": "legendRow" }, tnode.item.legendContainerDiv, "last");
+													legendRow.innerHTML = row.label;
+													var legendRowStyle = {
+														"background-image": 'url("'+tnode.item.arcgis.url+'/images/' + row.url+'")',
+														"line-height": row.height+"px",
+														"padding-left": row.width+5+"px",
+														"margin-left": "22px",
+														"width": 238-rowNodePadding+"px"
+													};
+													domStyle.set(legendRow, legendRowStyle);
+												}));
+											}
+										}
+									}
+								}),
+								lang.hitch(that, function(error) {
+									console.log(error);
+									//domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
+								})
+							);
+							/*fetch(legendUrl)
+								.then(lang.hitch(this, function(response) {
+									return response.text();
+								}))
+								.then(lang.hitch(this, function(text) {
+									var resp = JSON.parse(text);
+									if (resp.error) {
+										console.log("Can't get ArcGIS MapServer legend.", resp.error);
+									}
+									else {
+										var legendInfo = resp.layers.find(layer => {
+											return layer.layerId == layerNr
+										});
+										//console.log(legendInfo);
+										if (legendInfo) {
+											tnode.item.legendContainerDiv = domConstruct.create("div", { "class": "legendContainerDiv" }, tnode.rowNode, "last");
+											// create legend row	
+											array.forEach(legendInfo.legend, lang.hitch(this, function(row){
+												var legendRow = domConstruct.create("div", { "class": "legendRow" }, tnode.item.legendContainerDiv, "last");
+												legendRow.innerHTML = row.label;
+												var legendRowStyle = {
+													"background-image": 'url("'+tnode.item.arcgis.url+'/images/' + row.url+'")',
+													"line-height": row.height+"px",
+													"padding-left": row.width+5+"px",
+													"margin-left": "22px",
+													"width": 238-rowNodePadding+"px"
+												};
+												domStyle.set(legendRow, legendRowStyle);
+											}));
+										}
+									}
+								}));*/
+						}
 												
 						// on sublayer check box click
 						on(cb, "change", function(checked) {
@@ -807,7 +885,9 @@ define([
 											});
 	                   
 											mapa.addLayer(tnode.item.wmsMapLayer);
-											domStyle.set(tnode.item.legendContainerDiv, "display", "block");
+											if (tnode.item.legendContainerDiv) {
+												domStyle.set(tnode.item.legendContainerDiv, "display", "block");
+											}
 	                    
 											if (tnode.item.wms.info.boundWest) {
 												var view = mapa.getView();
@@ -820,7 +900,9 @@ define([
 									}
 									else {
 										tnode.item.wmsMapLayer.setVisible(true);
-										domStyle.set(tnode.item.legendContainerDiv, "display", "block");
+										if (tnode.item.legendContainerDiv) {
+											domStyle.set(tnode.item.legendContainerDiv, "display", "block");
+										}
 									}
 	
 									if ((typeof tnode.item.wms.info.scaleMax == "number") || (typeof tnode.item.wms.info.scaleMin == "number")) {
@@ -828,6 +910,56 @@ define([
 										that.getLabelsFromRoot(tnode.item.parent);
 										that.servicePanel.setupAndShowScaleMessage(tnode.item.wms.info.scaleMin, tnode.item.wms.info.scaleMax);
 									}
+								}
+								else if (tnode.item.type == "ARCGIS") {
+									if (!tnode.item.agsMapLayer) {
+										if (tnode.item.arcgis.url.length > 0) {
+											var lastSlashIndex = tnode.item.arcgis.url.lastIndexOf("/");
+											var layerNr = tnode.item.arcgis.url.substring(lastSlashIndex+1);
+											var agsUrl = tnode.item.arcgis.url.substring(0, lastSlashIndex);
+											tnode.item.agsMapLayer = new ol.layer.Image({
+												id: tnode.item.id,
+												agsId: tnode.item.arcgis.id,
+												source: new ol.source.ImageArcGISRest({
+													ratio: 1,
+													url: agsUrl,
+													params: {
+														LAYERS: "show:"+layerNr
+														//STYLES: (tnode.item.wms.styles[0] ? tnode.item.wms.styles[0].name : ""),
+														//TILED: false,
+														//VERSION: tnode.item.wms.info.version,
+														//VERSION: "1.3.0",
+														//CRS: "EPSG:3857"
+													}
+												})
+											});
+	                   
+											mapa.addLayer(tnode.item.agsMapLayer);
+											if (tnode.item.legendContainerDiv) {
+												domStyle.set(tnode.item.legendContainerDiv, "display", "block");
+											}
+												                    
+											/*if (tnode.item.wms.info.boundWest) {
+												var view = mapa.getView();
+												view.fit(ol.proj.transformExtent([tnode.item.wms.info.boundWest, tnode.item.wms.info.boundSouth, tnode.item.wms.info.boundEast, tnode.item.wms.info.boundNorth], 'EPSG:4326', 'EPSG:3857'));
+											}*/
+										}
+										else {
+											alert("This layer is not available.");
+										}
+									}
+									else {
+										tnode.item.agsMapLayer.setVisible(true);
+										if (tnode.item.legendContainerDiv) {
+											domStyle.set(tnode.item.legendContainerDiv, "display", "block");
+										}
+									}
+	
+									/*if ((typeof tnode.item.wms.info.scaleMax == "number") || (typeof tnode.item.wms.info.scaleMin == "number")) {
+										that.servicePanel.header = tnode.item.name;
+										that.getLabelsFromRoot(tnode.item.parent);
+										that.servicePanel.setupAndShowScaleMessage(tnode.item.wms.info.scaleMin, tnode.item.wms.info.scaleMax);
+									}*/
 								}
 								//else {
 								that.servicePanel.header = tnode.item.name;
@@ -857,7 +989,18 @@ define([
 										tnode.item.wmsMapLayer.setVisible(false);
 									}
 									// hide legend
-									domStyle.set(tnode.item.legendContainerDiv, "display", "none");
+									if (tnode.item.legendContainerDiv) {
+										domStyle.set(tnode.item.legendContainerDiv, "display", "none");
+									}
+								}
+								else if (tnode.item.type == "ARCGIS") {
+									if (tnode.item.agsMapLayer) {
+										tnode.item.agsMapLayer.setVisible(false);
+									}
+									// hide legend
+									if (tnode.item.legendContainerDiv) {
+										domStyle.set(tnode.item.legendContainerDiv, "display", "none");
+									}
 								}
 								
 								that.servicePanel.cleanServicePanel();

@@ -160,7 +160,7 @@
 							<span class="textInputLabel">URL:</span>
 							<input id="wmsUrlInput" class="textInput" type="text" tabindex="2" maxlength="500" placeholder="Required">
 							<span id="validateWms" class="formLink" data-dojo-attach-event="onclick:validateWmsClick">Validate</span>
-							<div class="inputDescriptionRequired">Input valid WMS service URL. Examples:</div>
+							<div class="inputDescriptionRequired">Input valid WMS url. Examples:</div>
 							<div class="inputDescriptionRequired">http://www.myserver.com/arcgis/services/maps/MapServer/WMSServer</div>
 							<div class="inputDescriptionRequired">https://www.myserver.com/service?SERVICENAME=name&LOGIN=login&PASSWORD=password</div>
 						</div>
@@ -172,7 +172,7 @@
 						<div id="wmsLayerNameInputGroup" class="inputLabelGroup" style="display:none;">
 							<span class="textInputLabel">WMS layer name:</span>
 							<input id="wmsNameInput" class="textInput" type="text" tabindex="2" maxlength="200" placeholder="Required">
-							<div class="inputDescriptionRequired">Input WMS GetCapabilities layer name. </div>
+							<div class="inputDescriptionRequired">Input WMS layer name. </div>
 						</div>
 						<div class="inputLabelGroup">
 							<span class="textInputLabel">Label:</span>
@@ -184,7 +184,7 @@
 							<input id="wmsHelcomIdInput" class="textInput" type="text" tabindex="2" maxlength="200">
 							<div class="inputDescriptionNotRequired">Filled in only by HELCOM.</div>
 						</div>
-						<span id="saveWms" class="formLink" data-dojo-attach-point="saveWms">Save</span>
+						<span id="saveWms" class="formLink" style="display: none;" data-dojo-attach-point="saveWms">Save</span>
 						<span id="cancelWms" class="formLink" data-dojo-attach-event="onclick:cancelWmsClick">Cancel</span>
 					</div>
 					<div id="wmsDisplayForm" data-dojo-attach-point="wmsDisplayForm"></div>
@@ -192,39 +192,39 @@
 				
 				<!-- Category WFS section -->
 				<div id="categoryWfsForm" class="formSectionGroup">
-					<div class="formSectionLabel">WFS layers:</div>
+					<div class="formSectionLabel">WFS feature types:</div>
 					<div id="addWfs" class="formLink" data-dojo-attach-event="onclick:addWfsClick">Add new</div>
 					<div id="addWfsForm" class="formSubSectionGroup" style="display: none;">
-						<div class="formSubSectionLabel">Add new WFS layer</div>
+						<div class="formSubSectionLabel">Add new WFS feature type</div>
 						<div class="inputLabelGroup">
 							<span class="textInputLabel">URL:</span>
 							<input id="wfsUrlInput" class="textInput" type="text" tabindex="2" maxlength="500" placeholder="Required">
 							<span id="validateWfs" class="formLink" data-dojo-attach-event="onclick:validateWfsClick">Validate</span>
-							<div class="inputDescriptionRequired">Input valid WFS service URL. Examples:</div>
+							<div class="inputDescriptionRequired">Input valid WFS url. Examples:</div>
 							<div class="inputDescriptionRequired">http://www.myserver.com/arcgis/services/download/service</div>
 							<div class="inputDescriptionRequired">https://www.myserver.com/service</div>
 						</div>
 						<div id="wfsLayerNameSelectGroup" class="inputLabelGroup" style="display:none;">
-							<span class="textInputLabel">WFS layer name:</span>
+							<span class="textInputLabel">WFS feature type name:</span>
 							<span id="wfsNameSelect" data-dojo-attach-point="wfsNameSelect"></span>
-							<div class="inputDescriptionRequired">Choose layer (layer FeatureType names have been extracted from WFS GetCapabilities).</div>
+							<div class="inputDescriptionRequired">Choose feature type (feature type names have been extracted from WFS GetCapabilities).</div>
 						</div>
 						<div id="wfsLayerNameInputGroup" class="inputLabelGroup" style="display:none;">
-							<span class="textInputLabel">WFS layer name:</span>
+							<span class="textInputLabel">WFS feature type name:</span>
 							<input id="wfsNameInput" class="textInput" type="text" tabindex="2" maxlength="200" placeholder="Required">
-							<div class="inputDescriptionRequired">Input WFS GetCapabilities FeatureType name. </div>
+							<div class="inputDescriptionRequired">Input WFS feature type name. </div>
 						</div>
 						<div class="inputLabelGroup">
 							<span class="textInputLabel">Label:</span>
 							<input id="wfsLabelInput" class="textInput" type="text" tabindex="2" maxlength="200" placeholder="Required">
-							<div class="inputDescriptionRequired">Label will appear in the layer list. It can be WFS FeatureType's title from the WFS GetCapabilities or other label describing this layer.</div>
+							<div class="inputDescriptionRequired">Label will appear in the layer list. It can be WFS feature type's title from the WFS GetCapabilities or other label describing this layer.</div>
 						</div>
 						<div class="inputLabelGroup">
 							<span class="textInputLabel">HELCOM id:</span>
 							<input id="wfsHelcomIdInput" class="textInput" type="text" tabindex="2" maxlength="200">
 							<div class="inputDescriptionNotRequired">Filled in only by HELCOM.</div>
 						</div>
-						<span id="saveWfs" class="formLink" data-dojo-attach-point="saveWfs">Save</span>
+						<span id="saveWfs" class="formLink" style="display: none;" data-dojo-attach-point="saveWfs">Save</span>
 						<span id="cancelWfs" class="formLink" data-dojo-attach-event="onclick:cancelWfsClick">Cancel</span>
 					</div>
 					<div id="wfsDisplayForm" data-dojo-attach-point="wfsDisplayForm"></div>
@@ -252,7 +252,7 @@
 							<input id="downloadHelcomIdInput" class="textInput" type="text" tabindex="2" maxlength="200">
 							<div class="inputDescriptionNotRequired">Filled in only by HELCOM.</div>
 						</div>
-						<span id="saveDownload" class="formLink" data-dojo-attach-point="saveDownload">Save</span>
+						<span id="saveDownload" class="formLink" style="display: none;" data-dojo-attach-point="saveDownload">Save</span>
 						<span id="cancelDownload" class="formLink" data-dojo-attach-event="onclick:cancelDownloadClick">Cancel</span>
 					</div>
 					<div id="downloadDisplayForm" data-dojo-attach-point="downloadDisplayForm"></div>
@@ -260,15 +260,16 @@
 				
 				<!-- Category ArcGIS section -->
 				<div id="categoryArcgisForm" class="formSectionGroup">
-					<div class="formSectionLabel">ArcGIS MapServer resources:</div>
+					<div class="formSectionLabel">ArcGIS MapServer layers:</div>
 					<div id="addArcgis" class="formLink" data-dojo-attach-event="onclick:addArcgisClick">Add new</div>
 					<div id="addArcgisForm" class="formSubSectionGroup" style="display: none;">
-						<div class="formSubSectionLabel">Add new ArcGIS MapServer resource</div>
+						<div class="formSubSectionLabel">Add new ArcGIS MapServer layer</div>
 						<div class="inputLabelGroup">
 							<span class="textInputLabel">URL:</span>
 							<input id="arcgisUrlInput" class="textInput" type="text" tabindex="2" maxlength="500" placeholder="Required">
 							<span id="validateArcgis" class="formLink" data-dojo-attach-event="onclick:validateArcgisClick">Validate</span>
-							<div class="inputDescriptionRequired">Input ArcGIS MapServer resource URL.</div>
+							<div class="inputDescriptionRequired">Input ArcGIS MapServer layer URL. Example:</div>
+							<div class="inputDescriptionRequired">http://www.myserver.com/arcgis/rest/services/store/MapServer/1</div>
 						</div>
 						<div class="inputLabelGroup">
 							<span class="textInputLabel">Label:</span>
@@ -280,7 +281,7 @@
 							<input id="arcgisHelcomIdInput" class="textInput" type="text" tabindex="2" maxlength="200">
 							<div class="inputDescriptionNotRequired">Filled in only by HELCOM.</div>
 						</div>
-						<span id="saveArcgis" class="formLink" data-dojo-attach-point="saveArcgis">Save</span>
+						<span id="saveArcgis" class="formLink" style="display: none;" data-dojo-attach-point="saveArcgis">Save</span>
 						<span id="cancelArcgis" class="formLink" data-dojo-attach-event="onclick:cancelArcgisClick">Cancel</span>
 					</div>
 					<div id="arcgisDisplayForm" data-dojo-attach-point="arcgisDisplayForm"></div>

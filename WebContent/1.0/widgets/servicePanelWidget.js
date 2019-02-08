@@ -290,7 +290,9 @@ define([
 			domConstruct.create("div", {"class": "translateMicrosoft"}, anchor, "last");
 		},
 		buildMetadataContainer: function(metadata) {
+			
 			var container = domConstruct.create("div", {"style": "margin-top: 20px;"}, this.infoContainer, "last");
+			domConstruct.create("div", { "class": "formSubSectionLabel", "innerHTML": "Metadata:" }, container, "last");
 			array.forEach(metadata, lang.hitch(this, function(record) {
 				var subcontainer = domConstruct.create("div", {"class": "servicePanelMetadataBox"}, container, "last");
 				

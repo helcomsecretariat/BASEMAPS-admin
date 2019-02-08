@@ -251,7 +251,8 @@ define([
 					var layers = this.map.getLayers().getArray();
 					this.mapsLayersCount = 0;
 					for (var i = layers.length-1; i > 0; i--) {
-						if ((layers[i].getProperties().id != "basemap") && (layers[i].getProperties().id != "highlight") && (!("mspName" in layers[i].getProperties())) && (layers[i].getVisible())) {
+						//if ((layers[i].getProperties().id != "basemap") && (layers[i].getProperties().id != "highlight") && (!("mspName" in layers[i].getProperties())) && (layers[i].getVisible())) {
+						if (("wmsId" in layers[i].getProperties()) && (layers[i].getVisible())) {
 							this.mapsLayersCount = this.mapsLayersCount + 1;
 						}
 					}
@@ -259,7 +260,8 @@ define([
 					this.layersCounter = 0;
 					this.identifyResults = [];
 					for (var i = layers.length-1; i > 0; i--) {
-						if ((layers[i].getProperties().id != "basemap") && (layers[i].getProperties().id != "highlight") && (!("mspName" in layers[i].getProperties())) && (layers[i].getVisible())) {
+						//if ((layers[i].getProperties().id != "basemap") && (layers[i].getProperties().id != "highlight") && (!("mspName" in layers[i].getProperties()))&& (!("agsId" in layers[i].getProperties())) && (layers[i].getVisible())) {
+						if (("wmsId" in layers[i].getProperties()) && (layers[i].getVisible())) {
 							var infoFormat = "application/json";
 							var u = layers[i].getSource().getGetFeatureInfoUrl(popupCoordinate, viewResolution, viewProjection, {"buffer": 10, "INFO_FORMAT": ""});
 							this.getInfo(layers[i].getProperties().wmsId, u, popupCoordinate, layers[i].getProperties().name);

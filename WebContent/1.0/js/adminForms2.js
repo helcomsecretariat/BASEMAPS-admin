@@ -166,7 +166,6 @@ define([
 		},
 		
 		saveAddCategoryUserClick: function() {
-			//console.log(this.currentCategory, this.categoryUserSelector.get("value"));
 			var url = "sc/users/add-right";
 			var data = {
 				"userId": this.categoryUserSelector.get("value"), 
@@ -353,7 +352,6 @@ define([
 			var wfsUrl = this.utils.getInputValue("wfsUrlInput").trim();
 			if (validate.isUrl(wfsUrl)) {
 				this.validateWfs(wfsUrl);
-				//console.log("validate wfs");
 			}
 			else {
 				this.showMessage("Wfs url is not valid.");
@@ -396,10 +394,24 @@ define([
 			this.cleanArcgisNameAndLabelForms();
 			var arcgisUrl = this.utils.getInputValue("arcgisUrlInput").trim();
 			if (validate.isUrl(arcgisUrl)) {
-				this.validateArcgis(arcgisUrl);
+				this.checkArcgisLayerUrl(arcgisUrl);
 			}
 			else {
-				this.showMessage("ArcGIS MapService url is not valid.");
+				this.showMessage("Url is not valid.");
+			}
+		},
+		checkArcgisLayerUrl: function(url) {
+			var last = url.slice(-1);
+			if (last == "/") {
+				url = url.substring(0, url.length - 1);
+				this.utils.setInputValue("arcgisUrlInput", url);
+			}
+			var elems = url.split("/");
+			if ((elems.slice(-2)[0].toLowerCase() == "mapserver") && (Number.isInteger(Number(elems.slice(-2)[1])))) {
+				this.validateArcgis(url);				
+			}
+			else {
+				this.showMessage("Url is not valid. Url should end with 'MapServer/{number}'");
 			}
 		},
 		/* --- MANAGE CATEGORY BUTTONS END --- */
@@ -533,7 +545,7 @@ define([
 			this.utils.clearInput("wmsUrlInput");
 			this.utils.show("addWmsForm", "none");
 			this.utils.show("addWms", "inline-block");
-			
+			this.utils.show("saveWms", "none");
 		},
 		
 		cleanWmsInfoDisplayForm: function() {
@@ -550,7 +562,7 @@ define([
 			this.utils.clearInput("wfsUrlInput");
 			this.utils.show("addWfsForm", "none");
 			this.utils.show("addWfs", "inline-block");
-			
+			this.utils.show("saveWfs", "none");
 		},
 		
 		cleanWfsInfoDisplayForm: function() {
@@ -567,7 +579,7 @@ define([
 			this.utils.clearInput("downloadUrlInput");
 			this.utils.show("addDownloadForm", "none");
 			this.utils.show("addDownload", "inline-block");
-			
+			this.utils.show("saveDownload", "none");
 		},
 		
 		// --- category arcgis
@@ -580,7 +592,7 @@ define([
 			this.utils.clearInput("arcgisUrlInput");
 			this.utils.show("addArcgisForm", "none");
 			this.utils.show("addArcgis", "inline-block");
-			
+			this.utils.show("saveArcgis", "none");
 		},
 		
 		/* --- MANAGE CATEGORY CLEAN END--- */
@@ -625,7 +637,6 @@ define([
 		},
 		
 		deleteMetadata: function() {
-			//console.log("two", this.currentCategory.metaData);
 			var url = "sc/categories/update";
 			request.post(url, this.utils.createPostRequestParams(this.currentCategory)).then(
 				lang.hitch(this, function(response) {
@@ -633,7 +644,6 @@ define([
 						this.showMessage("Failed to delete metadata.");
 					}
 					else if (response.type == "success") {
-						//console.log("three", this.currentCategory.metaData, response);
 						this.showMessage("Metadata deleted.");
 						this.cleanMetadataDisplayForm();
 						if ((this.currentCategory.metaData) && (this.currentCategory.metaData.length > 0)) {
@@ -743,8 +753,7 @@ define([
 			};
 			request.post(url, this.utils.createPostRequestParams(data)).then(
 				lang.hitch(this, function(response){
-					console.log(response);
-					//this.hideWmsNameAndLabelSelector();
+					this.utils.show("saveWms", "inline");
 					if (response.type == "error") {
 						this.wmsValidationPassed = false;
 						this.showMessage("WMS did not pass validation.");
@@ -824,8 +833,7 @@ define([
 						
 						var deleteButton = domConstruct.create("div", {"class": "formEditDeleteLink", "innerHTML": "Delete"}, buttonContainer, "last");
 						on(deleteButton, "click", lang.hitch(this, function() {
-							console.log(wms.id);
-						    if (confirm("Please confirm removing WMS: " + wms.label) == true) {
+							if (confirm("Please confirm removing WMS: " + wms.label) == true) {
 						    	this.deleteWms(wms.id);
 						    }
 						}));
@@ -872,8 +880,7 @@ define([
 			};
 			request.post(url, this.utils.createPostRequestParams(data)).then(
 				lang.hitch(this, function(response){
-					console.log(response);
-					//this.hideWmsNameAndLabelSelector();
+					this.utils.show("saveWfs", "inline");
 					if (response.type == "error") {
 						this.wfsValidationPassed = false;
 						this.showMessage("WFS did not pass validation.");
@@ -953,8 +960,7 @@ define([
 						
 						var deleteButton = domConstruct.create("div", {"class": "formEditDeleteLink", "innerHTML": "Delete"}, buttonContainer, "last");
 						on(deleteButton, "click", lang.hitch(this, function() {
-							console.log(wfs.id);
-						    if (confirm("Please confirm removing WFS: " + wfs.label) == true) {
+							if (confirm("Please confirm removing WFS: " + wfs.label) == true) {
 						    	this.deleteWfs(wfs.id);
 						    }
 						}));
@@ -1008,6 +1014,7 @@ define([
 					else if (response.type == "success") {
 						this.downloadValidationPassed = true;
 						this.showMessage("URL is valid.");
+						this.utils.show("saveDownload", "inline");
 					}
 				}),
 				lang.hitch(this, function(error){
@@ -1048,8 +1055,7 @@ define([
 						
 						var deleteButton = domConstruct.create("div", {"class": "formEditDeleteLink", "innerHTML": "Delete"}, buttonContainer, "last");
 						on(deleteButton, "click", lang.hitch(this, function() {
-							console.log(download.id);
-						    if (confirm("Please confirm removing resource: " + download.label) == true) {
+							if (confirm("Please confirm removing resource: " + download.label) == true) {
 						    	this.deleteDownload(download.id);
 						    }
 						}));
@@ -1096,22 +1102,19 @@ define([
 			};
 			request.post(url, this.utils.createPostRequestParams(data)).then(
 				lang.hitch(this, function(response){
-					console.log(response);
-					//this.hideWmsNameAndLabelSelector();
 					if (response.type == "error") {
 						this.arcgisValidationPassed = false;
-						this.showMessage("ArcGIS MapServer URL did not pass validation.");
+						this.showMessage("URL did not pass validation.");
 					}
 					else if (response.type == "success") {
 						this.arcgisValidationPassed = true;
-						this.showMessage("ArcGIS MapServer URL is valid.");
-						
-						console.log(response.item);
+						this.showMessage("URL is valid.");
+						this.utils.show("saveArcgis", "inline");
 					}
 				}),
 				lang.hitch(this, function(error){
 					this.action = null;
-					this.showMessage("Something went wrong (on dls/verify). Please contact administrator.");
+					this.showMessage("Something went wrong (on ags/verify). Please contact administrator.");
 				})
 			);
 		},
@@ -1147,8 +1150,7 @@ define([
 						
 						var deleteButton = domConstruct.create("div", {"class": "formEditDeleteLink", "innerHTML": "Delete"}, buttonContainer, "last");
 						on(deleteButton, "click", lang.hitch(this, function() {
-							console.log(arcgis.id);
-						    if (confirm("Please confirm removing resource: " + arcgis.label) == true) {
+							if (confirm("Please confirm removing resource: " + arcgis.label) == true) {
 						    	this.deleteArcgis(arcgis.id);
 						    }
 						}));
@@ -1187,7 +1189,6 @@ define([
 		},
 		
 		deleteObject: function(id) {
-			console.log(id);
 			var url = "sc/categories/delete/" + id;
 			request.del(url, {
 				handleAs: "json"
@@ -1396,7 +1397,6 @@ define([
 		},
 		
 		setupManageEditForm: function(layer) {
-			console.log("setup", layer);
 			this.cleanAdminForm();
 			this.currentObjId = layer.id;
 			this.getCurrentCategory();
@@ -1487,7 +1487,6 @@ define([
 					var con = domConstruct.create("div", {"style": { "margin-bottom": "5px", "margin-top": "5px", "margin-left": "20px"}, "innerHTML": "No metadata assigned"}, this.metadataDisplayForm, "last");
 				}
 				
-				//this.getWmsInfo(layer.wms.url, layer.wms.name);
 				this.getWmsInfo(layer.wms);
 			}
 			else if (layer.type == "WFS") {
@@ -1514,7 +1513,6 @@ define([
 				this.getWfsInfo(layer.wfs.url, layer.wfs.name);
 			}
 			else if (layer.type == "DOWNLOAD") {
-				console.log("Download view");
 				this.utils.show("categoryMetadataSection", "none");
 				this.utils.show("categoryCategoriesForm", "none");
 				this.utils.show("categoryWmsForm", "none");
@@ -1538,7 +1536,6 @@ define([
 				}
 			}
 			else if (layer.type == "ARCGIS") {
-				console.log("ArcGIS view");
 				this.utils.show("categoryMetadataSection", "none");
 				this.utils.show("categoryCategoriesForm", "none");
 				this.utils.show("categoryWmsForm", "none");
@@ -1987,7 +1984,6 @@ define([
 			);
 		},*/
 		getWmsInfo: function(wms) {
-			console.log("today", wms);
 			var updateInfoLink = domConstruct.create("div", {"class": "formLink", "innerHTML": "Update info"}, this.wmsDisplayInfoForm, "last");
 			on(updateInfoLink, "click", lang.hitch(this, function() {
 				this.updateWmsInfo(wms);
@@ -2061,7 +2057,6 @@ define([
 						this.showMessage("WFS did not pass validation. Can't get WFS info.");
 					}
 					else if (response.type == "success") {
-						console.log("wfs info", response);
 						this.buildWfsInfoElement("WFS url", wfsUrl);
 						this.buildWfsInfoElement("Feature type name", wfsName);
 						this.buildWfsInfoElement("Feature type title", response.item.title);
