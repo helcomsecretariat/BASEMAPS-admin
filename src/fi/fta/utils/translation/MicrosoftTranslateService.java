@@ -16,6 +16,7 @@ import java.util.UUID;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import fi.fta.beans.Pair;
 import fi.fta.utils.Encoding;
 import fi.fta.utils.JsonUtils;
 import fi.fta.utils.MimeFormat;
@@ -56,7 +57,7 @@ public class MicrosoftTranslateService implements TranslateService
 	}
 	
 	@Override
-	public String translate(String text, String from, String to) throws Exception
+	public Pair<String, String> translate(String text, String from, String to) throws Exception
 	{
 		StringBuilder url = new StringBuilder(MicrosoftTranslateService.HOST);
 		url.append(MicrosoftTranslateService.PATH);
@@ -65,19 +66,21 @@ public class MicrosoftTranslateService implements TranslateService
 		url.append("?").append(Util.composeQuery(params));
 		MicrosoftTranslation[] response = this.post(
 			url.toString(), new RequestBody[]{new RequestBody(text)});
+		Pair<String, String> ret = new Pair<>();
 		if (!Util.isEmptyArray(response))
 		{
-			MicrosoftTranslationDetectedLanguage dl = response[0].getDetectedLanguage();
-			if (dl == null || dl.getLanguage() == null || !dl.getLanguage().equalsIgnoreCase(to))
+			List<MicrosoftTranslationTranslation> translations = response[0].getTranslations();
+			if (!Util.isEmptyCollection(translations))
 			{
-				List<MicrosoftTranslationTranslation> translations = response[0].getTranslations();
-				if (!Util.isEmptyCollection(translations))
-				{
-					return translations.iterator().next().getText();
-				}
+				ret.setFirst(translations.iterator().next().getText());
+			}
+			MicrosoftTranslationDetectedLanguage dl = response[0].getDetectedLanguage();
+			if (dl != null && dl.getLanguage() != null)
+			{
+				ret.setSecond(dl.getLanguage());
 			}
 		}
-		return null;
+		return ret;
 	}
 	
 	private MicrosoftTranslation[] post(String url, Object o) throws MalformedURLException, IOException, UnsupportedEncodingException

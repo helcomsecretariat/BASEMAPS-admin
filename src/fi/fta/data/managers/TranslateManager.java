@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import fi.fta.beans.Pair;
 import fi.fta.beans.ServiceLayerBean;
 import fi.fta.utils.Languages;
 import fi.fta.utils.Util;
@@ -112,10 +113,15 @@ public class TranslateManager implements Languages
 		{
 			try
 			{
-				String translated = service.translate(text, from, to);
-				if (translated != null)
+				Pair<String, String> translated = service.translate(text, from, to);
+				if (translated.getFirst() != null)
 				{
-					cache.put(text, translated);
+					String tt = null;
+					if (this.suitable(from, translated.getSecond(), to))
+					{
+						tt = translated.getFirst();
+					}
+					cache.put(text, tt);
 				}
 			}
 			catch (Exception ex)
@@ -124,6 +130,11 @@ public class TranslateManager implements Languages
 			}
 		}
 		return cache.get(text);
+	}
+	
+	private boolean suitable(String from, String detected, String to)
+	{
+		return !Util.isEmptyString(from) || Util.isEmptyString(detected) || !detected.equalsIgnoreCase(to);
 	}
 	
 	/**
