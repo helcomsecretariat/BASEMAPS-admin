@@ -172,6 +172,7 @@ define([
 				"categoryId": this.currentCategory.id, 
 				"rights": ["w", "r"]
 			};
+			console.log(data);
 			request.post(url, this.utils.createPostRequestParams(data)).then(
 				lang.hitch(this, function(response) {
 					if (response.type == "error") {
@@ -1413,6 +1414,7 @@ define([
 				this.utils.show("addDownload", "block");
 				this.utils.show("addArcgis", "block");
 				this.utils.show("deleteObject", "block");
+				//this.utils.show("wmsUpdateInfoButton", "block");
 			}
 			else {
 				this.utils.show("editCategoryLabel", "none");
@@ -1425,6 +1427,7 @@ define([
 				this.utils.show("addDownload", "none");
 				this.utils.show("addArcgis", "none");
 				this.utils.show("deleteObject", "none");
+				//this.utils.show("wmsUpdateInfoButton", "none");
 			}
 			
 			this.utils.changeText("adminFormsHeader", layer.header);
@@ -1510,7 +1513,8 @@ define([
 					var con = domConstruct.create("div", {"style": { "margin-bottom": "5px", "margin-top": "5px", "margin-left": "20px"}, "innerHTML": "No metadata assigned"}, this.metadataDisplayForm, "last");
 				}
 				
-				this.getWfsInfo(layer.wfs.url, layer.wfs.name);
+				//this.getWfsInfo(layer.wfs.url, layer.wfs.name);
+				this.getWfsInfo(layer.wfs);
 			}
 			else if (layer.type == "DOWNLOAD") {
 				this.utils.show("categoryMetadataSection", "none");
@@ -1913,7 +1917,7 @@ define([
 		},*/
 		
 		// -- wms info form
-		updateWmsInfo: function(wms) {
+		/*updateWmsInfo: function(wms) {
 			var url = "sc/wms/update-info/"+wms.id;
 			request.post(url, {
 				handleAs: "json"
@@ -1934,7 +1938,7 @@ define([
 					console.log(error);
 				})
 			);
-		},
+		},*/
 		
 		/*getWmsInfo: function(wms) {
 			console.log("wms", wms);
@@ -1984,10 +1988,10 @@ define([
 			);
 		},*/
 		getWmsInfo: function(wms) {
-			var updateInfoLink = domConstruct.create("div", {"class": "formLink", "innerHTML": "Update info"}, this.wmsDisplayInfoForm, "last");
+			/*var updateInfoLink = domConstruct.create("div", {"id": "wmsUpdateInfoButton", "class": "formLink", "innerHTML": "Update info"}, this.wmsDisplayInfoForm, "last");
 			on(updateInfoLink, "click", lang.hitch(this, function() {
 				this.updateWmsInfo(wms);
-			}));
+			}));*/
 			this.buildWmsInfoElement("WMS url", wms.url);
 			this.buildWmsInfoElement("Layer name", wms.name);
 			this.buildWmsInfoElement("Layer title", wms.info.title);
@@ -2045,7 +2049,7 @@ define([
 		},
 		
 		// -- wfs info form
-		getWfsInfo: function(wfsUrl, wfsName) {
+		/*getWfsInfo: function(wfsUrl, wfsName) {
 			var url = "sc/wfs/info";
 			var data = {
 				"url": wfsUrl,
@@ -2076,6 +2080,27 @@ define([
 					this.showMessage("Something went wrong (on wms/info). Please contact administrator.");
 				})
 			);
+		},*/
+		
+		getWfsInfo: function(wfs) {
+			console.log(wfs);
+			this.buildWfsInfoElement("WFS url", wfs.url);
+			this.buildWfsInfoElement("Feature type name", wfs.name);
+			this.buildWfsInfoElement("Feature type title", wfs.info.title);
+			this.buildWfsInfoElement("Feature type title (translated)", wfs.info.titleEn);
+			this.buildWfsInfoElement("WFS version", wfs.info.version);
+			this.buildWfsInfoElement("Supported languages", wfs.info.languages.join(", "));
+			this.buildWfsInfoElement("Organization", wfs.info.organisation);
+			this.buildWfsInfoElement("Access constraints", wfs.info.accessConstraints);
+			this.buildWfsInfoElement("Access constraints (translated)", wfs.info.accessConstraintsEn);
+			this.buildWfsInfoElement("Fees", wfs.info.fees);
+			this.buildWfsInfoElement("Fees (translated)", wfs.info.feesEn);
+			this.buildWfsInfoElement("Keywords", wfs.info.keywords.join(", "));
+			this.buildWfsInfoElement("Keywords (translated)", wfs.info.keywordsEn.join(", "));
+			//this.buildWfsMetadataElement("Metadata", wfs.info.metadata);
+			this.buildWfsInfoElement("Response formats", wfs.info.formats.join(", "));
+			this.buildWfsInfoElement("Supported CRSes", wfs.info.crs.join(", "));
+			this.buildWfsInfoElement("Bounding box", "East: " + wfs.info.upperLong + ", North: " + wfs.info.upperLat + ", West: " + wfs.info.lowerLong + ", South: " + wfs.info.lowerLat);
 		},
 		
 		buildWfsInfoElement: function(label, value) {

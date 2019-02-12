@@ -92,7 +92,7 @@ define([
 			this.formsObj.currentObjId = null;
 			this.formsObj.cleanAdminForm();
 			this.utils.show("summaryForm", "block");
-			this.formsObj.getSummary();
+			//this.formsObj.getSummary();
 		},
 		
 		validateServicesButtonClick: function() {
@@ -514,7 +514,6 @@ define([
 		},
 		
 		saveCategoryForService: function(values, mode) {
-			console.log("saveCategoryForService", values);
 			var url = "sc/categories/add";
 			var data = {
 				"parent": values.parent,
@@ -726,9 +725,13 @@ define([
 					else if (response.type == "success") {
 						if (this.userRole == "ADMIN") {
 							this.utils.show("topCategoryButton", "inline-block");
+							this.utils.show("summaryButton", "inline-block");
+							this.utils.show("validateServicesButton", "inline-block");
 						}
 						else {
 							this.utils.show("topCategoryButton", "none");
+							this.utils.show("summaryButton", "none");
+							this.utils.show("validateServicesButton", "none");
 						}
 						
 						this.createTree(response.item);
