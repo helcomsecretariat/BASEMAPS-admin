@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import fi.fta.beans.Pair;
 import fi.fta.beans.ServiceLayerBean;
 import fi.fta.utils.Languages;
+import fi.fta.utils.ProjectProperties;
 import fi.fta.utils.Util;
 import fi.fta.utils.translation.MicrosoftTranslateService;
 import fi.fta.utils.translation.TranslateService;
@@ -134,7 +135,13 @@ public class TranslateManager implements Languages
 	
 	private boolean suitable(String from, String detected, String to)
 	{
-		return !Util.isEmptyString(from) || Util.isEmptyString(detected) || !detected.equalsIgnoreCase(to);
+		return !Util.isEmptyString(from) || Util.isEmptyString(detected) ||
+			(!detected.equalsIgnoreCase(to) && this.acceptable(detected));
+	}
+	
+	private boolean acceptable(String language)
+	{
+		return language != null && ProjectProperties.getInstance().getTranslationAcceptableLanguages().contains(language);
 	}
 	
 	/**

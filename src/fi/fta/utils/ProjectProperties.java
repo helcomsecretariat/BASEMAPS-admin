@@ -1,7 +1,10 @@
 package fi.fta.utils;
 
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 
 import fi.fta.beans.MailSettingsFacade;
 
@@ -18,6 +21,7 @@ public class ProjectProperties implements MailSettingsFacade
 	protected String projectURL;
 	
 	protected String azureKey;
+	protected Set<String> translationAcceptableLanguages;
 	
 	protected String smtpServer;
 	protected Integer smtpPort;
@@ -61,6 +65,8 @@ public class ProjectProperties implements MailSettingsFacade
 	        projectURL = props.getProperty("project.url");
 	        
 	        azureKey = props.getProperty("azure.key");
+	        translationAcceptableLanguages = new HashSet<>(
+	        	Arrays.asList(props.getProperty("translation.acceptable.languages").split(",")));
 	        
 			smtpServer = props.getProperty("smtp.server");
 			smtpPort = Integer.valueOf(props.getProperty("smtp.port"));
@@ -106,6 +112,10 @@ public class ProjectProperties implements MailSettingsFacade
 	
 	public String getAzureKey() {
 		return azureKey;
+	}
+
+	public Set<String> getTranslationAcceptableLanguages() {
+		return translationAcceptableLanguages;
 	}
 
 	public String getSmtpServer() {
