@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +34,7 @@ public class MicrosoftTranslateService implements TranslateService
     private static String PARAM_FROM = "from";
     private static String PARAM_TO = "to";
     private static String VERSION = "3.0";
+    private static int TEXT_COUNT_LIMIT = 100;
 	
     
     public String key;
@@ -59,13 +62,7 @@ public class MicrosoftTranslateService implements TranslateService
 	@Override
 	public Pair<String, String> translate(String text, String from, String to) throws Exception
 	{
-		StringBuilder url = new StringBuilder(MicrosoftTranslateService.HOST);
-		url.append(MicrosoftTranslateService.PATH);
-		this.addParam(MicrosoftTranslateService.PARAM_FROM, from);
-		this.addParam(MicrosoftTranslateService.PARAM_TO, to);
-		url.append("?").append(Util.composeQuery(params));
-		MicrosoftTranslation[] response = this.post(
-			url.toString(), new RequestBody[]{new RequestBody(text)});
+		MicrosoftTranslation[] response = this.post(RequestBody.get(text), from, to);
 		Pair<String, String> ret = new Pair<>();
 		if (!Util.isEmptyArray(response))
 		{
@@ -81,6 +78,49 @@ public class MicrosoftTranslateService implements TranslateService
 			}
 		}
 		return ret;
+	}
+	
+	public List<Pair<String, String>> translate(List<String> texts, String from, String to) throws Exception
+	{
+		List<Pair<String, String>> ret = new ArrayList<>(texts.size());
+		int c = 0;
+		while (c * MicrosoftTranslateService.TEXT_COUNT_LIMIT < texts.size())
+		{
+			List<String> sub = texts.subList(
+				c * MicrosoftTranslateService.TEXT_COUNT_LIMIT,
+				Math.min((c + 1) * MicrosoftTranslateService.TEXT_COUNT_LIMIT, texts.size()));
+			MicrosoftTranslation[] response = this.post(RequestBody.get(sub), from, to);
+			if (!Util.isEmptyArray(response))
+			{
+				for (MicrosoftTranslation mt : response)
+				{
+					Pair<String, String> p = new Pair<>();
+					List<MicrosoftTranslationTranslation> translations = mt.getTranslations();
+					if (!Util.isEmptyCollection(translations))
+					{
+						p.setFirst(translations.iterator().next().getText());
+					}
+					MicrosoftTranslationDetectedLanguage dl = response[0].getDetectedLanguage();
+					if (dl != null && dl.getLanguage() != null)
+					{
+						p.setSecond(dl.getLanguage());
+					}
+					ret.add(p);
+				}
+			}
+			c++;
+		}
+		return ret;
+	}
+	
+	private MicrosoftTranslation[] post(Object o, String from, String to) throws MalformedURLException, IOException, UnsupportedEncodingException
+	{
+		StringBuilder url = new StringBuilder(MicrosoftTranslateService.HOST);
+		url.append(MicrosoftTranslateService.PATH);
+		this.addParam(MicrosoftTranslateService.PARAM_FROM, from);
+		this.addParam(MicrosoftTranslateService.PARAM_TO, to);
+		url.append("?").append(Util.composeQuery(params));
+		return this.post(url.toString(), o);
 	}
 	
 	private MicrosoftTranslation[] post(String url, Object o) throws MalformedURLException, IOException, UnsupportedEncodingException
@@ -124,6 +164,24 @@ public class MicrosoftTranslateService implements TranslateService
 		public RequestBody(String text)
 		{
 		    this.Text = text;
+		}
+		
+		
+		public static RequestBody[] get(String text)
+		{
+			return new RequestBody[]{new RequestBody(text)};
+		}
+		
+		public static RequestBody[] get(Collection<String> text)
+		{
+			RequestBody[] ret = new RequestBody[text.size()];
+			int i = 0;
+			for (String t : text)
+			{
+				ret[i] = new RequestBody(t);
+				i++;
+			}
+			return ret;
 		}
 		
 	}

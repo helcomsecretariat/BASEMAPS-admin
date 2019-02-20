@@ -64,10 +64,24 @@ public class TranslateManager implements Languages
 		service = new MicrosoftTranslateService();
 	}
 	
+	/**
+	 * Uses remote translate service and translates a service layer bean from detected 
+	 * language to default language (english).
+	 * Fields, that are translated:
+	 * 		title
+	 * 		keywords
+	 * 		description
+	 * 		fees
+	 * 		access constraints
+	 * 
+	 * 
+	 * @param bean a service layer bean to translate
+	 */
 	public void translate(ServiceLayerBean bean)
 	{
 		String language = !Util.isEmptyCollection(bean.getLanguages()) ?
 			bean.getLanguages().get(0) : null;
+		
 		bean.setTitleEn(this.translate(bean.getTitle(), language));
 		List<String> keywords = new ArrayList<>();
 		for (String keyword : bean.getKeywords())
@@ -84,6 +98,13 @@ public class TranslateManager implements Languages
 		bean.setAccessConstraintsEn(this.translate(bean.getAccessConstraints(), language));
 	}
 	
+	/**
+	 * Uses remote translate service and translates a text from language to default language (english)
+	 * 
+	 * @param text a text to translate
+	 * @param language language to translate from
+	 * @return a translated text
+	 */
 	public String translate(String text, String language)
 	{
 		if (!Util.equalsIgnoreCase(language,
@@ -132,6 +153,67 @@ public class TranslateManager implements Languages
 		}
 		return cache.get(text);
 	}
+	
+	/*
+	private List<String> translate(List<String> texts, String from, String to)
+	{
+		List<String> ret = new ArrayList<>();
+		if (!Util.isEmptyCollection(texts))
+		{
+			List<String> translatable = new ArrayList<>();
+			Map<String, LinkedList<Integer>> indexes = new HashMap<>();
+			int i = 0;
+			for (String text : texts)
+			{
+				if (Util.isEmptyString(text))
+				{
+					ret.add(text);
+				}
+				else if (cache.containsKey(text))
+				{
+					ret.add(cache.get(text));
+				}
+				else
+				{
+					if (!indexes.containsKey(text))
+					{
+						indexes.put(text, new LinkedList<>());
+						translatable.add(text);
+					}
+					indexes.get(text).add(i);
+					ret.add(null);
+				}
+				i++;
+			}
+			if (!translatable.isEmpty())
+			{
+				try
+				{
+					Pair<List<String>, String> translated = service.translate(translatable, from, to);
+					if (translated.getFirst() != null &&
+						translated.getFirst().size() == translatable.size())
+					{
+						boolean suitable = this.suitable(from, translated.getSecond(), to);
+						for (int j = 0; j < translatable.size(); j++)
+						{
+							String key = translatable.get(j);
+							cache.put(key, suitable ? translated.getFirst().get(j) : null);
+							for (Integer index : indexes.get(key))
+							{
+								ret.set(index, cache.get(key));
+							}
+						}
+					}
+				}
+				catch (Exception ex)
+				{
+					logger.error("TranslateManager.service.translate(" + translatable + ")", ex);
+				}
+			}
+		}
+		return ret;
+	}
+	*/
 	
 	private boolean suitable(String from, String detected, String to)
 	{
