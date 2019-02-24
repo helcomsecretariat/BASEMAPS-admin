@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -129,21 +130,22 @@ public class SimpleUrlServiceManager<S extends LayerService> extends ServiceMana
 		VerifyUI ret = new VerifyUI();
 		if (!Util.isEmptyString(ui.getUrl()))
 		{
-			HttpURLConnection c = (HttpURLConnection)new URL(ui.getUrl()).openConnection();
-			if (c.getResponseCode() == HttpServletResponse.SC_OK)
+			URLConnection c = new URL(ui.getUrl()).openConnection();
+			if (c instanceof HttpURLConnection)
 			{
-				String type = c.getContentType();
-				ret.setNames(new ArrayList<>());
-				if (type != null)
+				HttpURLConnection connection = (HttpURLConnection)c;
+				if (connection.getResponseCode() != HttpServletResponse.SC_OK)
 				{
-					ret.getNames().add(type);
+					throw new IOException("Http code " + connection.getResponseCode());
 				}
-				ret.setOrganization("");
 			}
-			else
+			String type = c.getContentType();
+			ret.setNames(new ArrayList<>());
+			if (type != null)
 			{
-				throw new IOException("Http code " + c.getResponseCode());
+				ret.getNames().add(type);
 			}
+			ret.setOrganization("");
 		}
 		return ret;
 	}
