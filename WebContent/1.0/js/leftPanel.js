@@ -141,7 +141,8 @@ define([
 				this.utils.show("outputDataSection", "none");
 				this.inputDataLL.layerListMode = "INPUT";
 				this.outputDataLL.layerListMode = "INPUT";
-				this.outputDataLL.cleanMspHighlight();
+				//this.outputDataLL.cleanMspHighlight();
+				this.outputDataLL.hideAllLayers();
 				this.mspFeaturesUrl = null;
 			}));
 			
@@ -157,6 +158,7 @@ define([
 				this.utils.show("mspLayerListTreeID", "none");
 				this.inputDataLL.layerListMode = null;
 				this.outputDataLL.layerListMode = null;
+				this.inputDataLL.hideAllLayers();
 			}));
 		}
 	});

@@ -1326,6 +1326,16 @@ html, body {
   padding-left: 20px;
 }
 
+.psuLegend {
+  background-image: url("../img/psu_legend.png");
+  background-repeat: no-repeat;
+  background-position: left;
+  width: 77px;
+  height: 211px;
+  margin-left: 20px; 
+  margin-top: 10px;
+}
+
 .legendRow {
   margin: 0;
   margin-bottom: 5px;

@@ -65,6 +65,7 @@ define([
 			this.map = params.map;
 			this.servicePanel = params.sp;
 			this.utils = new utils();
+			this.layerListMode = "INPUT";
 		},
 
 		postCreate: function() {
@@ -78,19 +79,7 @@ define([
 
 			// on hide button click
 			on(this.hideAllButton, "click", lang.hitch(this, function() {
-				for (var id in this.visitedNodesIds) {
-					if (this.visitedNodesIds.hasOwnProperty(id)) {
-						var n = this.tree.getNodeFromItem(id);
-						delete this.visitedNodesIds[id];
-						domStyle.set(n.rowNode, {
-							"background-color": ""
-						});
-						if (n.checkBox) {
-							n.checkBox.set("checked", false);
-						}
-					}
-				}
-				this.utils.show("servicePanel", "none");
+				this.hideAllLayers();
 			}));
 			
 			/* popup */
@@ -172,6 +161,23 @@ define([
 					});
 				}
 			}));
+		},
+		
+		hideAllLayers: function() {
+			for (var id in this.visitedNodesIds) {
+				if (this.visitedNodesIds.hasOwnProperty(id)) {
+					var n = this.tree.getNodeFromItem(id);
+					delete this.visitedNodesIds[id];
+					domStyle.set(n.rowNode, {
+						"background-color": ""
+					});
+					if (n.checkBox) {
+						n.checkBox.set("checked", false);
+					}
+				}
+			}
+			this.utils.show("servicePanel", "none");
+			this.cleanHighlight();
 		},
 		
 		getInfo: function(id, u, popupCoordinate, name) {
@@ -698,6 +704,7 @@ define([
 									if (tnode.item.legendContainerDiv) {
 										domStyle.set(tnode.item.legendContainerDiv, "display", "none");
 									}
+									that.cleanHighlight();
 								}
 								else if (tnode.item.type == "ARCGIS") {
 									if (tnode.item.agsMapLayer) {
@@ -707,6 +714,7 @@ define([
 									if (tnode.item.legendContainerDiv) {
 										domStyle.set(tnode.item.legendContainerDiv, "display", "none");
 									}
+									//that.cleanHighlight();
 								}
 								
 								that.servicePanel.cleanServicePanel();

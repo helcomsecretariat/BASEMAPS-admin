@@ -13,6 +13,7 @@ define([
 	"dijit/form/CheckBox", "dijit/Tooltip",
 	"dojox/widget/TitleGroup", "dijit/TitlePane", 
 	"dijit/layout/AccordionContainer", "dijit/layout/ContentPane", "dijit/form/Select",
+	"dojox/gfx",
 	"widgets/servicePanelWidget",
 	"basemaps/js/utils",
 	"basemaps/js/ol",
@@ -34,6 +35,7 @@ define([
 	checkBox, Tooltip,
 	TitleGroup, TitlePane,
 	AccordionContainer, ContentPane, Select,
+	gfx,
 	servicePanelWidget,
 	utils,
 	ol,
@@ -53,16 +55,19 @@ define([
 		mspAllParentsChecked: false,
 		mspGetCapabilitiesFetched: false,
 		mspArcgisRestFetched: false,
+		mspDisplayedWmsArray: [],
+		mspViewAccordion: null,
+		mspViewAccordionPanes: {},
 		mspFilteringAccordion: null,
 		mspParamsArray: [],
 		mspStyles: {},
 		mspDistinctCodes: {},
 		mspDisplayLayer: null,
 		mspHighlightLayer: null,
-		mspFeaturesUrl: null,
+		//mspFeaturesUrl: null,
 		mspIdentifyResults: [],
 		mspIdentifyNr: null,
-		mspExcludeProperties: ["shape", "plan id", "symbol", "shape_length", "shape_area"],
+		mspExcludeProperties: ["objectid", "objectid_1", "shape", "plan id", "symbol", "shape_length", "shape_area"],
 		mspPropertiesList: {
 			"OBJECTID": "OBJECTID",
 			"priority_info": "Priority sea use", 
@@ -83,62 +88,53 @@ define([
 
 		postCreate: function() {
 			this.getMspLayersData();
-			this.setupMspParamsArray();
 			this.setMspMapLayers();
+			this.setupMspViewAccordion();
+			//this.setupMspParamsArray();
+			
     	
 			// MSP view old version
 			on(this.oldVersionButton, "click", lang.hitch(this, function() {
 				this.utils.show("mspLayerListTreeID", "block");
 				this.utils.show("mspFilterContainerID", "none");
 				this.layerListMode = "OUTPUT";
-				this.cleanMspHighlight();
-				this.mspDisplayLayer.setSource(null);
-				array.forEach(this.mspParamsArray, lang.hitch(this, function(mspParams, i) {
-					if (mspParams.allWmsLayer != null) {
-						mspParams.allWmsLayer.setVisible(false);
-					}
-				}));
-				this.mspFeaturesUrl = "https://maps.helcom.fi/arcgis/rest/services/PBS126/MspOutputData/MapServer/identify?f=pjson&geometryType=esriGeometryPoint&tolerance=3&imageDisplay=1920%2C+647%2C+96&returnGeometry=true&layers=all:";
+				this.hideAllLayers();
+				
+				//this.mspFeaturesUrl = "https://maps.helcom.fi/arcgis/rest/services/PBS126/MspOutputData/MapServer/identify?f=pjson&geometryType=esriGeometryPoint&tolerance=3&imageDisplay=1920%2C+647%2C+96&returnGeometry=true&layers=all:";
 			}));
 			
 			// MSP view new version
 			on(this.newVersionButton, "click", lang.hitch(this, function() {
 				this.utils.show("mspFilterContainerID", "block");
 				this.utils.show("mspLayerListTreeID", "none");
-				this.layerListMode = "OUTPUT_FILTER";
-				this.cleanMspHighlight();
-				this.mspDisplayLayer.setSource(null);
+				//this.layerListMode = "OUTPUT_FILTER";
+				this.hideAllLayers();
+				//this.cleanMspHighlight();
+				//this.mspDisplayLayer.setSource(null);
 			}));
 			
 			this.map.on('singleclick', lang.hitch(this, function(evt) {
-				var identifyUrl = this.mspFeaturesUrl;
-				if (this.layerListMode == "OUTPUT") {
-					this.cleanMspHighlight();
-					console.log("OUTPUT this.mspFeaturesUrl", identifyUrl);
-					var mspLayersIds = [];
-					var mapLayers = this.map.getLayers().getArray();
-					for (var i = 0; i < mapLayers.length; i++) {
-						// get only visible MSP layers
-						if ((mapLayers[i].getProperties().mspName) && (mapLayers[i].getVisible())) {
-							// find arcgis layer id for identification
-							var r = this.mspArcgisLayers.filter(obj => {
-								return obj.name === mapLayers[i].getProperties().mspName
-							})
-							identifyUrl += r[0].id + ","
+				var layers = this.map.getLayers().getArray();
+				var identifyUrl = null;
+				if (this.layerListMode == "OUTPUT_PSU") {
+					identifyUrl = "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput2_2019/MapServer/identify?f=pjson&geometryType=esriGeometryPoint&tolerance=3&imageDisplay=1920%2C+647%2C+96&returnGeometry=true&layers=all:";
+					array.forEach(this.mspParamsArray, lang.hitch(this, function(mspParams, i) {
+						if ((mspParams.useType != null) && (mspParams.agsLayer != null)) {
+							if (mspParams.allWmsLayer.getVisible()) {
+								identifyUrl += mspParams.agsLayer + ",";
+							}
 						}
-					}
+					}));
 					identifyUrl = identifyUrl.slice(0, -1) + "&geometry=";
 					
-					var mspPopupCoordinate = evt.coordinate;
-					var clickLonLat = ol.proj.transform(mspPopupCoordinate, 'EPSG:3857', 'EPSG:4326');
+					var clickLonLat = ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326');
 					identifyUrl += clickLonLat + "&mapExtent=";
 					
 					var mapExtent = ol.proj.transformExtent(this.map.getView().calculateExtent(), 'EPSG:3857', 'EPSG:4326');
 					identifyUrl += mapExtent;
 					
-					/*this.mspIdentifyResults = [];
-					this.mspIdentifyNr = null;
-					this.cleanHighlight();*/
+					console.log(this.layerListMode);
+					console.log("identifyUrl", identifyUrl);
 					
 					domStyle.set(dojo.byId("loadingCover"), {"display": "block"});
 					var url = "sc/tools/get-data";
@@ -165,17 +161,6 @@ define([
 										this.mspIdentifyNr = 0;
 										this.setMspPopupContent();
 									}
-									
-									/*var gjson = ArcgisToGeojsonUtils.arcgisToGeoJSON(response.item);
-									console.log(response.item);
-									console.log(gjson);
-									array.forEach(gjson.features, lang.hitch(this, function(f) {
-										this.mspIdentifyResults.push(f);
-									}));
-									if (this.mspIdentifyResults.length > 0) {
-										this.mspIdentifyNr = 0;
-										this.setMspPopupContent();
-									}*/
 								}
 								domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
 							}
@@ -184,62 +169,225 @@ define([
 							console.log(error);
 						})
 					);
-					
 				}
-				else if (this.layerListMode == "OUTPUT_FILTER") {
-					this.cleanMspHighlight();
-					console.log("this.mspFeaturesUrl", this.mspFeaturesUrl);
+				else {
+					array.forEach(layers, lang.hitch(this, function(layer, i) {
+						if (("identify" in layer.getProperties()) && (layer.getVisible())) {
+							identifyUrl = layer.getProperties().identify;
+						}
+					}));
+					console.log(this.layerListMode);
+					console.log("identifyUrl", identifyUrl);
 					if (identifyUrl != null) {
-						//var identifyUrl = this.mspFeaturesUrl;
-						var mspPopupCoordinate = evt.coordinate;
-						var clickLonLat = ol.proj.transform(mspPopupCoordinate, 'EPSG:3857', 'EPSG:4326');
-						identifyUrl += "&geometryType=esriGeometryPoint&geometry=" + clickLonLat + "&spatialRel=esriSpatialRelIntersects&distance=2&units=esriSRUnit_Kilometer&outFields=*";
-						
-						var url = "sc/tools/get-data";
-						var data = {
-							"url": identifyUrl,
-							"format": "json"
-						};
-						request.post(url, this.utils.createPostRequestParams(data)).then(
-							lang.hitch(this, function(response) {
-								if (response.type == "error") {
-									console.log("Identifying MSP Feature failed", response);
-									//domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
-								}
-								else if (response.type == "success") {
-									if (response.item) {
-										/*array.forEach(response.item.results, lang.hitch(this, function(arcgisResult) {
-											var gjson = ArcgisToGeojsonUtils.arcgisToGeoJSON(arcgisResult);
-											gjson.layerName = arcgisResult.layerName;
-											this.mspIdentifyResults.push(gjson);
-										}));
-										if (this.mspIdentifyResults.length > 0) {
-											this.mspIdentifyNr = 0;
-											this.setMspPopupContent(mspPopupCoordinate);
-										}*/
-										this.mspIdentifyResults = [];
-										this.mspIdentifyNr = null;
-										var gjson = ArcgisToGeojsonUtils.arcgisToGeoJSON(response.item);
-										console.log(response.item);
-										console.log(gjson);
-										array.forEach(gjson.features, lang.hitch(this, function(f) {
-											this.mspIdentifyResults.push(f);
-										}));
-										if (this.mspIdentifyResults.length > 0) {
-											this.mspIdentifyNr = 0;
-											this.setMspPopupContent();
-										}
+						if (this.layerListMode == "OUTPUT_AREA") {
+							
+							var clickLonLat = ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326');
+							identifyUrl += clickLonLat + "&mapExtent=";
+							
+							var mapExtent = ol.proj.transformExtent(this.map.getView().calculateExtent(), 'EPSG:3857', 'EPSG:4326');
+							identifyUrl += mapExtent;
+												
+							domStyle.set(dojo.byId("loadingCover"), {"display": "block"});
+							var url = "sc/tools/get-data";
+							var data = {
+								"url": identifyUrl,
+								"format": "json"
+							};
+							request.post(url, this.utils.createPostRequestParams(data)).then(
+								lang.hitch(this, function(response) {
+									if (response.type == "error") {
+										console.log("Identifying MSP AREA failed", response);
+										domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
 									}
-									//domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
+									else if (response.type == "success") {
+										if (response.item) {
+											this.mspIdentifyResults = [];
+											this.mspIdentifyNr = null;
+											array.forEach(response.item.results, lang.hitch(this, function(arcgisResult) {
+												var gjson = ArcgisToGeojsonUtils.arcgisToGeoJSON(arcgisResult);
+												gjson.layerName = arcgisResult.layerName;
+												this.mspIdentifyResults.push(gjson);
+											}));
+											if (this.mspIdentifyResults.length > 0) {
+												this.mspIdentifyNr = 0;
+												this.setMspPopupContent();
+											}
+										}
+										domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
+									}
+								}),
+								lang.hitch(this, function(error) {
+									console.log(error);
+								})
+							);
+						}
+						else if (this.layerListMode == "OUTPUT_FILTER_ALL") {
+							var mspPopupCoordinate = evt.coordinate;
+							var clickLonLat = ol.proj.transform(mspPopupCoordinate, 'EPSG:3857', 'EPSG:4326');
+							identifyUrl += "&geometry=" + clickLonLat + "&mapExtent=";
+							
+							var mapExtent = ol.proj.transformExtent(this.map.getView().calculateExtent(), 'EPSG:3857', 'EPSG:4326');
+							identifyUrl += mapExtent;
+												
+							domStyle.set(dojo.byId("loadingCover"), {"display": "block"});
+							var url = "sc/tools/get-data";
+							var data = {
+								"url": identifyUrl,
+								"format": "json"
+							};
+							request.post(url, this.utils.createPostRequestParams(data)).then(
+								lang.hitch(this, function(response) {
+									if (response.type == "error") {
+										console.log("Identifying MSP REST failed", response);
+										domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
+									}
+									else if (response.type == "success") {
+										if (response.item) {
+											this.mspIdentifyResults = [];
+											this.mspIdentifyNr = null;
+											array.forEach(response.item.results, lang.hitch(this, function(arcgisResult) {
+												var gjson = ArcgisToGeojsonUtils.arcgisToGeoJSON(arcgisResult);
+												gjson.layerName = arcgisResult.layerName;
+												this.mspIdentifyResults.push(gjson);
+											}));
+											if (this.mspIdentifyResults.length > 0) {
+												this.mspIdentifyNr = 0;
+												this.setMspPopupContent();
+											}
+										}
+										domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
+									}
+								}),
+								lang.hitch(this, function(error) {
+									console.log(error);
+								})
+							);
+						}
+						else if (this.layerListMode == "OUTPUT") {
+							this.cleanMspHighlight();
+							//console.log("OUTPUT identy url", identifyUrl);
+							var mspLayersIds = [];
+							var mapLayers = this.map.getLayers().getArray();
+							for (var i = 0; i < mapLayers.length; i++) {
+								// get only visible MSP layers
+								if ((mapLayers[i].getProperties().mspName) && (mapLayers[i].getVisible())) {
+									// find arcgis layer id for identification
+									var r = this.mspArcgisLayers.filter(obj => {
+										return obj.name === mapLayers[i].getProperties().mspName
+									})
+									identifyUrl += r[0].id + ","
 								}
-							}),
-							lang.hitch(this, function(error) {
-								console.log(error);
-							})
-						);
-					}			
+							}
+							identifyUrl = identifyUrl.slice(0, -1) + "&geometry=";
+							
+							var mspPopupCoordinate = evt.coordinate;
+							var clickLonLat = ol.proj.transform(mspPopupCoordinate, 'EPSG:3857', 'EPSG:4326');
+							identifyUrl += clickLonLat + "&mapExtent=";
+							
+							var mapExtent = ol.proj.transformExtent(this.map.getView().calculateExtent(), 'EPSG:3857', 'EPSG:4326');
+							identifyUrl += mapExtent;
+												
+							domStyle.set(dojo.byId("loadingCover"), {"display": "block"});
+							var url = "sc/tools/get-data";
+							var data = {
+								"url": identifyUrl,
+								"format": "json"
+							};
+							request.post(url, this.utils.createPostRequestParams(data)).then(
+								lang.hitch(this, function(response) {
+									if (response.type == "error") {
+										console.log("Identifying MSP REST failed", response);
+										domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
+									}
+									else if (response.type == "success") {
+										if (response.item) {
+											this.mspIdentifyResults = [];
+											this.mspIdentifyNr = null;
+											array.forEach(response.item.results, lang.hitch(this, function(arcgisResult) {
+												var gjson = ArcgisToGeojsonUtils.arcgisToGeoJSON(arcgisResult);
+												gjson.layerName = arcgisResult.layerName;
+												this.mspIdentifyResults.push(gjson);
+											}));
+											if (this.mspIdentifyResults.length > 0) {
+												this.mspIdentifyNr = 0;
+												this.setMspPopupContent();
+											}
+										}
+										domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
+									}
+								}),
+								lang.hitch(this, function(error) {
+									console.log(error);
+								})
+							);
+							
+						}
+						else if (this.layerListMode == "OUTPUT_FILTER") {
+							this.cleanMspHighlight();
+							if (identifyUrl != null) {
+								//var identifyUrl = this.mspFeaturesUrl;
+								var mspPopupCoordinate = evt.coordinate;
+								var clickLonLat = ol.proj.transform(mspPopupCoordinate, 'EPSG:3857', 'EPSG:4326');
+								identifyUrl += "&geometryType=esriGeometryPoint&geometry=" + clickLonLat + "&spatialRel=esriSpatialRelIntersects&distance=2&units=esriSRUnit_Kilometer&outFields=*";
+								
+								var url = "sc/tools/get-data";
+								var data = {
+									"url": identifyUrl,
+									"format": "json"
+								};
+								request.post(url, this.utils.createPostRequestParams(data)).then(
+									lang.hitch(this, function(response) {
+										if (response.type == "error") {
+											console.log("Identifying MSP Feature failed", response);
+											//domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
+										}
+										else if (response.type == "success") {
+											if (response.item) {
+												this.mspIdentifyResults = [];
+												this.mspIdentifyNr = null;
+												var gjson = ArcgisToGeojsonUtils.arcgisToGeoJSON(response.item);
+												array.forEach(gjson.features, lang.hitch(this, function(f) {
+													this.mspIdentifyResults.push(f);
+												}));
+												if (this.mspIdentifyResults.length > 0) {
+													this.mspIdentifyNr = 0;
+													this.setMspPopupContent();
+												}
+											}
+											//domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
+										}
+									}),
+									lang.hitch(this, function(error) {
+										console.log(error);
+									})
+								);
+							}			
+						}
+					}
+				}
+				
+			}));
+		},
+		
+		hideAllLayers: function() {
+			this.cleanMspHighlight();
+			this.mspDisplayLayer.setSource(null);
+			array.forEach(this.mspParamsArray, lang.hitch(this, function(mspParams) {
+				if (mspParams.allWmsLayer != null) {
+					mspParams.allWmsLayer.setVisible(false);
 				}
 			}));
+			
+			for (var property in this.mspViewAccordionPanes) {
+				if (this.mspViewAccordionPanes.hasOwnProperty(property)) {
+					this.mspViewAccordionPanes[property].set("open", false);
+				}
+			}	
+			
+			array.forEach(this.mspDisplayedWmsArray, lang.hitch(this, function(wms) {
+				wms.setVisible(false);
+			}));
+			this.mspDisplayedWmsArray = [];
 		},
 		
 		getMspLayersData: function() {
@@ -305,10 +453,16 @@ define([
 			);
 		},
 		
-		setupMspParamsArray: function() {
-			this.mspFilteringAccordion = new TitleGroup({style:"width: 280px"}, this.mspFilterContainer);
-			this.mspFilteringAccordion.startup();
-			
+		setupMspViewAccordion: function() {
+			this.mspViewAccordion = new TitleGroup({style:"width: 280px"}, this.mspFilterContainer);
+			this.mspViewAccordion.startup();
+			this.setupMspParams();		
+			this.setupPane1();
+			this.setupPane2();
+			this.setupPane3();
+		},
+		
+		setupMspParams: function() {
 			this.mspParamsArray.push({
 				"useType": "priority",
 				"title": "Priority Sea Use",
@@ -316,10 +470,12 @@ define([
 				"allLayerName": "PriorityUse",
 				"allLegendUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput2_2019/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=PriorityUse",
 				"allWmsLayer": null,
+				"agsLayer": 0,
 				"filterUrl": "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput2_2019/MapServer/0",
 				"distinctUses": [],
 				"distinctValues": [],
-				"titlePane": null
+				"titlePane": null,
+				"psuCheckbox": null
 			}, {
 				"useType": "reserved",
 				"title": "Reserved Sea Use",
@@ -327,10 +483,12 @@ define([
 				"allLayerName": null,
 				"allLegendUrl": null,
 				"allWmsLayer": null,
+				"agsLayer": null,
 				"filterUrl": null,
 				"distinctUses": [],
 				"distinctValues": [],
-				"titlePane": null
+				"titlePane": null,
+				"psuCheckbox": null
 			}, {
 				"useType": "allowed",
 				"title": "Allowed Sea Use",
@@ -338,10 +496,12 @@ define([
 				"allLayerName": "AllowedUse",
 				"allLegendUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput2_2019/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=AllowedUse",
 				"allWmsLayer": null,
+				"agsLayer": 1,
 				"filterUrl": "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput2_2019/MapServer/1",
 				"distinctUses": [],
 				"distinctValues": [],
-				"titlePane": null
+				"titlePane": null,
+				"psuCheckbox": null
 			}, {
 				"useType": "restricted",
 				"title": "Restricted Sea Use",
@@ -349,10 +509,12 @@ define([
 				"allLayerName": "RestrictedUse",
 				"allLegendUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput2_2019/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=RestrictedUse",
 				"allWmsLayer": null,
+				"agsLayer": 2,
 				"filterUrl": "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput2_2019/MapServer/2",
 				"distinctUses": [],
 				"distinctValues": [],
-				"titlePane": null
+				"titlePane": null,
+				"psuCheckbox": null
 			}, {
 				"useType": "forbidden",
 				"title": "Forbidden Sea Use",
@@ -360,10 +522,12 @@ define([
 				"allLayerName": "ForbiddenUse",
 				"allLegendUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput2_2019/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=ForbiddenUse",
 				"allWmsLayer": null,
+				"agsLayer": 3,
 				"filterUrl": "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput2_2019/MapServer/3",
 				"distinctUses": [],
 				"distinctValues": [],
-				"titlePane": null
+				"titlePane": null,
+				"psuCheckbox": null
 			}, {
 				"useType": null,
 				"title": "All Sea Use Types",
@@ -371,12 +535,63 @@ define([
 				"allLayerName": null,
 				"allLegendUrl": null,
 				"allWmsLayer": null,
+				"agsLayer": 4,
 				"filterUrl": "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput2_2019/MapServer/4",
 				"distinctUses": [],
 				"distinctValues": [],
 				"titlePane": null
 			});
+		},
+		
+		setupPane1: function() {
+			this.mspViewAccordionPanes.tp1 = new TitlePane({ open: false, title: "Plan Area", id: "tp1" });
+			this.mspViewAccordion.addChild(this.mspViewAccordionPanes.tp1);
 			
+			var legendContainerDiv = domConstruct.create("div", { }, this.mspViewAccordionPanes.tp1.containerNode, "last");
+			var image = domConstruct.create('img', {
+				"src": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput2_2019/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=MaritimeSpatialPlanAreas"
+			}, legendContainerDiv);
+			
+			var areasLayer = null;
+			
+			on(this.mspViewAccordionPanes.tp1, "show", lang.hitch(this, function() {
+				if (areasLayer == null) {
+					areasLayer = new ol.layer.Tile({
+						type: "msp_output",
+						identify: "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput2_2019/MapServer/identify?f=pjson&geometryType=esriGeometryPoint&tolerance=3&imageDisplay=1920%2C+647%2C+96&returnGeometry=true&layers=all:5&geometry=",
+						source: new ol.source.TileWMS({
+							url: "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput2_2019/MapServer/WmsServer",
+							params: {
+								LAYERS: "MaritimeSpatialPlanAreas"
+							}
+						})
+					});
+					this.map.addLayer(areasLayer);
+					areasLayer.setVisible(true);
+				}
+				else {
+					areasLayer.setVisible(true);
+				}
+				this.layerListMode = "OUTPUT_AREA";
+				this.servicePanel.header = "MSP Plan Area";
+			}));
+			
+			on(this.mspViewAccordionPanes.tp1, "hide", lang.hitch(this, function() {
+				if (areasLayer != null) {
+					areasLayer.setVisible(false);
+				}
+				this.cleanMspHighlight();
+			}));
+			
+		},
+		
+		setupPane2: function() {
+			this.mspViewAccordionPanes.tp2 = new TitlePane({ open: false, title: "Sea Use by Type and Sector", id: "tp2"  });
+			this.mspViewAccordion.addChild(this.mspViewAccordionPanes.tp2);
+			
+			this.mspFilteringAccordion = new TitleGroup({style:"width: 250px"}, this.mspViewAccordionPanes.tp2.containerNode);
+			this.mspFilteringAccordion.startup();
+						
 			this.mspStyles = {
 				"aquaculture": "rgba(94, 175, 147, 1)",
 				"coast": "rgba(177, 163, 125, 1)",
@@ -408,6 +623,88 @@ define([
 			}));
 			
 			this.setupMspFilteringCp(5);
+			
+			on(this.mspViewAccordionPanes.tp2, "show", lang.hitch(this, function() {
+				//this.layerListMode = "OUTPUT_FILTER";
+			}));
+			
+			on(this.mspViewAccordionPanes.tp2, "hide", lang.hitch(this, function() {
+				array.forEach(this.mspParamsArray, lang.hitch(this, function(mspParams) {	
+					if (mspParams.titlePane != null) {
+						mspParams.titlePane.set("open", false);
+					}
+				}));
+			}));
+		},
+		
+		setupPane3: function() {
+			this.mspViewAccordionPanes.tp3 = new TitlePane({ open: false, title: "Planned Sea Use", id: "tp3" });
+			this.mspViewAccordion.addChild(this.mspViewAccordionPanes.tp3);
+			
+			array.forEach(this.mspParamsArray, lang.hitch(this, function(mspParams, i) {
+				if (mspParams.useType != null) {
+					this.createPlannedSeaUseLayer(i);
+				}
+			}));
+			
+			
+			var legendContainerDiv = domConstruct.create("div", { "class": "psuLegend" }, this.mspViewAccordionPanes.tp3.containerNode, "last");
+						
+			on(this.mspViewAccordionPanes.tp3, "show", lang.hitch(this, function() {
+				array.forEach(this.mspParamsArray, lang.hitch(this, function(mspParams, i) {
+					if ((mspParams.useType != null) && (mspParams.psuCheckbox != null)) {
+						mspParams.psuCheckbox.set("checked", true);
+					}
+				}));
+				
+				this.layerListMode = "OUTPUT_PSU"; 
+			}));
+			
+			on(this.mspViewAccordionPanes.tp3, "hide", lang.hitch(this, function() {
+				array.forEach(this.mspParamsArray, lang.hitch(this, function(mspParams, i) {
+					if ((mspParams.useType != null) && (mspParams.psuCheckbox != null)) {
+						mspParams.psuCheckbox.set("checked", false);
+					}
+				}));
+			}));
+			
+		},
+		
+		createPlannedSeaUseLayer: function(nr) {
+			var psuContainer = domConstruct.create("div", {}, this.mspViewAccordionPanes.tp3.containerNode, "last");
+			this.mspParamsArray[nr].psuCheckbox = new dijit.form.CheckBox();
+			this.mspParamsArray[nr].psuCheckbox.placeAt(psuContainer, "first");
+			var psuLabel = domConstruct.create("span", {"innerHTML": this.mspParamsArray[nr].title, "style": "margin-top: 5px;"}, psuContainer, "last");
+			
+			//this.mspParamsArray[nr].psuCheckbox.set("checked", true);
+			
+			
+			on(this.mspParamsArray[nr].psuCheckbox, "change", lang.hitch(this, function(checked) {
+				if (checked) {
+					if (this.mspParamsArray[nr].allWmsLayer == null) {
+						this.mspParamsArray[nr].allWmsLayer = new ol.layer.Tile({
+							id: this.mspParamsArray[nr].title.replace(/\s+/g, ''),
+							type: "msp_output",
+							identify: "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput2_2019/MapServer/identify?f=pjson&geometryType=esriGeometryPoint&tolerance=3&imageDisplay=1920%2C+647%2C+96&returnGeometry=true&layers=all:",
+							source: new ol.source.TileWMS({
+								url: this.mspParamsArray[nr].allUrl,
+								params: {
+									LAYERS: this.mspParamsArray[nr].allLayerName
+								}
+							})
+						});
+						this.map.addLayer(this.mspParamsArray[nr].allWmsLayer);
+						this.mspParamsArray[nr].allWmsLayer.setVisible(true);
+					}
+					else {
+						this.mspParamsArray[nr].allWmsLayer.setVisible(true);
+					}
+				}
+				else {
+					this.mspParamsArray[nr].allWmsLayer.setVisible(false);
+					this.cleanMspHighlight();
+				}
+			}));
 		},
 		
 		getDistinctMspCodes: function(nr) {
@@ -424,8 +721,6 @@ define([
 					}
 					else if (response.type == "success") {
 						if (response.item) {
-							console.log("Getting MSP distinct codes for " + this.mspParamsArray[nr].useType + " fetched.");
-							//this.mspParamsArray[nr].distinctUses = [];
 							array.forEach(response.item.features, lang.hitch(this, function(feature) {
 								if (feature.attributes[this.mspParamsArray[nr].useType+"_info"] != null) {
 									if (!(this.mspParamsArray[nr].distinctValues.includes(feature.attributes[this.mspParamsArray[nr].useType].trim()))) {
@@ -445,18 +740,8 @@ define([
 										};
 										this.mspParamsArray[5].distinctUses.push(rec5);
 									}
-									/*if (!(this.mspParamsArray[5].distinctUses.includes(rec))) {
-										this.mspParamsArray[5].distinctUses.push(rec);
-									}*/
-									/*var codes = feature.attributes[this.mspParamsArray[nr].useType+"_info"].split(", ");
-									array.forEach(codes, lang.hitch(this, function(code) {
-										if (!(this.mspParamsArray[nr].distinctUses.includes(code.trim()))) {
-											this.mspParamsArray[nr].distinctUses.push({"label": code.trim(), "value": code.trim()});
-										}
-									}));*/
 								}
 							}));
-							console.log(this.mspParamsArray[nr].useType, this.mspParamsArray[nr].distinctUses);
 							this.setupMspFilteringCp(nr);
 						}
 					}
@@ -488,11 +773,14 @@ define([
 				
 				on(allCheckbox, "change", lang.hitch(this, function(checked) {
 					if (checked) {
+						this.layerListMode = "OUTPUT_FILTER_ALL";
 						filterCheckbox.set("checked", false);
 						if (this.mspParamsArray[nr].allWmsLayer == null) {
 							this.mspParamsArray[nr].allWmsLayer = new ol.layer.Tile({
 								id: this.mspParamsArray[nr].title.replace(/\s+/g, ''),
-								mspName: this.mspParamsArray[nr].title,
+								type: "msp_output",
+								//identify: this.mspParamsArray[nr].filterUrl + "/query?where=1%3D1&returnGeometry=true&f=pjson",
+								identify: "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput2_2019/MapServer/identify?f=pjson&geometryType=esriGeometryPoint&tolerance=3&imageDisplay=1920%2C+647%2C+96&returnGeometry=true&layers=all:",
 								source: new ol.source.TileWMS({
 									url: this.mspParamsArray[nr].allUrl,
 									params: {
@@ -506,18 +794,15 @@ define([
 						else {
 							this.mspParamsArray[nr].allWmsLayer.setVisible(true);
 						}
+						this.mspParamsArray[nr].allWmsLayer.set("identify", "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput2_2019/MapServer/identify?f=pjson&geometryType=esriGeometryPoint&tolerance=3&imageDisplay=1920%2C+647%2C+96&returnGeometry=true&layers=all:" + this.mspParamsArray[nr].agsLayer);
 						domStyle.set(legendContainerDiv, "display", "block");
-						
-						setTimeout(lang.hitch(this, function() {
-							this.mspFeaturesUrl = this.mspParamsArray[nr].filterUrl + "/query?where=1%3D1&returnGeometry=true&f=pjson";
-							this.servicePanel.header = this.mspParamsArray[nr].title; 
-						}, 1000));
+						this.servicePanel.header = this.mspParamsArray[nr].title;
 					}
 					else {
 						this.mspParamsArray[nr].allWmsLayer.setVisible(false);
 						domStyle.set(legendContainerDiv, "display", "none");
 						this.cleanMspHighlight();
-						this.mspFeaturesUrl = null;
+						
 					}
 				}));
 			}
@@ -543,7 +828,12 @@ define([
 			});
 			sel.placeAt(filterSelectContainer);
 			sel.startup();
-			var filterShowButton = domConstruct.create("div", {"class": "toolLink", "style": "margin-top: 10px; display: inline-block;", "innerHTML": "Show"}, filterOptionsContainer, "last");
+			
+			var filterLegend = domConstruct.create("div", {"style": "margin-top: 10px; display: none;"}, filterOptionsContainer, "last");
+			var surface = gfx.createSurface(filterLegend, 30, 20);
+			var legendRect = surface.createRect({ x: 2, y: 2, width: 26, height: 16 });
+			
+			//var filterShowButton = domConstruct.create("div", {"class": "toolLink", "style": "margin-top: 10px; display: inline-block;", "innerHTML": "Show"}, filterOptionsContainer, "last");
 			
 			if (nr < 5) {
 				on(filterCheckbox, "change", lang.hitch(this, function(checked) {
@@ -554,18 +844,34 @@ define([
 					else {
 						domStyle.set(filterOptionsContainer, {"display": "none"});
 						this.mspDisplayLayer.setSource(null);
+						this.mspDisplayLayer.setVisible(false);
 						this.cleanMspHighlight();
-						this.mspFeaturesUrl = null;
+						domStyle.set(filterLegend, {"display": "none"});
+						//this.mspFeaturesUrl = null;
+						//console.log("OUTPUT_FILTER_FILTER_checkbox close");
 					}
 				}));
 			}
 					
-			on(filterShowButton, "click", lang.hitch(this, function() {
+			sel.on("change", lang.hitch(this, function(evt) {
+		        this.layerListMode = "OUTPUT_FILTER";
+		        this.mspDisplayLayer.setSource(null);
+		        this.cleanMspHighlight();
+				this.servicePanel.header = this.mspParamsArray[nr].title + " - " + sel.attr('displayedValue');
+				this.getMspFeatures(nr, this.mspParamsArray[nr].filterUrl, this.mspParamsArray[nr].useType, sel.get("value"));
+				legendRect.setStroke({width: 3, color: this.mspStyles[sel.get("value").split("-")[0]]});
+				domStyle.set(filterLegend, {"display": "block"});
+		    }));
+			/*on(filterShowButton, "click", lang.hitch(this, function() {
+				this.layerListMode = "OUTPUT_FILTER";
 				this.mspDisplayLayer.setSource(null);
 				this.cleanMspHighlight();
 				this.servicePanel.header = this.mspParamsArray[nr].title + " - " + sel.attr('displayedValue');
 				this.getMspFeatures(nr, this.mspParamsArray[nr].filterUrl, this.mspParamsArray[nr].useType, sel.get("value"));
-			}));
+				legendRect.setStroke({width: 3, color: this.mspStyles[sel.get("value").split("-")[0]]});
+				
+				domStyle.set(filterLegend, {"display": "block"});
+			}));*/
 			
 			on(this.mspParamsArray[nr].titlePane, "hide", lang.hitch(this, function() {
 				if (nr < 5) {
@@ -575,7 +881,9 @@ define([
 				else {
 					if (this.mspDisplayLayer != null) {
 						this.mspDisplayLayer.setSource(null);
+						this.mspDisplayLayer.setVisible(false);
 						this.cleanMspHighlight();
+						domStyle.set(filterLegend, {"display": "none"});
 					}
 				}
 			}));
@@ -591,7 +899,7 @@ define([
 				new ol.style.Style({
 					stroke: new ol.style.Stroke({
 						color: "rgba(0, 0, 0, 1)",
-						width: 1
+						width: 2
 					}),
 					fill: new ol.style.Fill({
 						color: "rgba(255, 255, 0, 0.2)"
@@ -625,7 +933,9 @@ define([
 			
 			this.mspDisplayLayer = new ol.layer.Vector({
 				id: "mspDisplayLayer",
+				type: "msp_output",
 				style: displayStyles,
+				visible: false,
 				zIndex: 100
 			});
 			this.map.addLayer(this.mspDisplayLayer);
@@ -646,39 +956,29 @@ define([
 		
 		getMspFeatures: function(nr, layerUrl, useType, use) {
 			var serviceUrl = "sc/tools/get-data";
+			var featuresUrl = null;
 			if (nr < 5) {
-				this.mspFeaturesUrl = layerUrl + "/query?where=" + useType + "+%3D+%27" + use + "%27+OR+" + useType + "+LIKE+%27" + use + "%2C%25%27+OR+" + useType + "+LIKE+%27%25%2C+" + use + "%2C%25%27+OR+" + useType + "+LIKE+%27%25%2C+" + use + "%27&returnGeometry=true&f=pjson";
+				featuresUrl = layerUrl + "/query?where=" + useType + "+%3D+%27" + use + "%27+OR+" + useType + "+LIKE+%27" + use + "%2C%25%27+OR+" + useType + "+LIKE+%27%25%2C+" + use + "%2C%25%27+OR+" + useType + "+LIKE+%27%25%2C+" + use + "%27&returnGeometry=true&f=pjson";
 			}
 			else {
-				this.mspFeaturesUrl = layerUrl + "/query?where=priority+%3D+%27" + use + "%27+OR+priority+LIKE+%27" + use + "%2C%25%27+OR+priority+LIKE+%27%25%2C+" + use + "%2C%25%27+OR+priority+LIKE+%27%25%2C+" + use + "%27+OR+reserved+%3D+%27" + use + "%27+OR+reserved+LIKE+%27" + use + "%2C%25%27+OR+reserved+LIKE+%27%25%2C+" + use + "%2C%25%27+OR+reserved+LIKE+%27%25%2C+" + use + "%27+OR+allowed+%3D+%27" + use + "%27+OR+allowed+LIKE+%27" + use + "%2C%25%27+OR+allowed+LIKE+%27%25%2C+" + use + "%2C%25%27+OR+allowed+LIKE+%27%25%2C+" + use + "%27++OR+restricted+%3D+%27" + use + "%27+OR+restricted+LIKE+%27" + use + "%2C%25%27+OR+restricted+LIKE+%27%25%2C+" + use + "%2C%25%27+OR+restricted+LIKE+%27%25%2C+" + use + "%27++OR+forbidden+%3D+%27" + use + "%27+OR+forbidden+LIKE+%27" + use + "%2C%25%27+OR+forbidden+LIKE+%27%25%2C+" + use + "%2C%25%27+OR+forbidden+LIKE+%27%25%2C+" + use + "%27&returnGeometry=true&f=pjson";
+				featuresUrl = layerUrl + "/query?where=priority+%3D+%27" + use + "%27+OR+priority+LIKE+%27" + use + "%2C%25%27+OR+priority+LIKE+%27%25%2C+" + use + "%2C%25%27+OR+priority+LIKE+%27%25%2C+" + use + "%27+OR+reserved+%3D+%27" + use + "%27+OR+reserved+LIKE+%27" + use + "%2C%25%27+OR+reserved+LIKE+%27%25%2C+" + use + "%2C%25%27+OR+reserved+LIKE+%27%25%2C+" + use + "%27+OR+allowed+%3D+%27" + use + "%27+OR+allowed+LIKE+%27" + use + "%2C%25%27+OR+allowed+LIKE+%27%25%2C+" + use + "%2C%25%27+OR+allowed+LIKE+%27%25%2C+" + use + "%27++OR+restricted+%3D+%27" + use + "%27+OR+restricted+LIKE+%27" + use + "%2C%25%27+OR+restricted+LIKE+%27%25%2C+" + use + "%2C%25%27+OR+restricted+LIKE+%27%25%2C+" + use + "%27++OR+forbidden+%3D+%27" + use + "%27+OR+forbidden+LIKE+%27" + use + "%2C%25%27+OR+forbidden+LIKE+%27%25%2C+" + use + "%2C%25%27+OR+forbidden+LIKE+%27%25%2C+" + use + "%27&returnGeometry=true&f=pjson";
 			}
 			var servicedata = {
-				"url": this.mspFeaturesUrl,
+				"url": featuresUrl,
 				"format": "json"
 			};
 			domStyle.set(dojo.byId("loadingCover"), {"display": "block"});
 			request.post(serviceUrl, this.utils.createPostRequestParams(servicedata)).then(
 				lang.hitch(this, function(response) {
 					if (response.type == "error") {
-						console.log("Getting MSP features (", useType, use, ") failed", response);
 						domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
 					}
 					else if (response.type == "success") {
 						domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
 						if (response.item) {
-							console.log("Getting MSP features (", useType, use, ") fetched.");
+							this.mspDisplayLayer.set("identify", featuresUrl);
+							this.mspDisplayLayer.setVisible(true);
 							
-							/*this.mspDistinctCodes[useType] = [];
-							array.forEach(response.item.features, lang.hitch(this, function(feature) {
-								if (feature.attributes[useType] != null) {
-									var codes = feature.attributes[useType].split(", ");
-									array.forEach(codes, lang.hitch(this, function(code) {
-										if (!(this.mspDistinctCodes[useType].includes(code.trim()))) {
-											this.mspDistinctCodes[useType].push(code.trim());
-										}
-									}));
-								}
-							}));*/
 							var gjson = ArcgisToGeojsonUtils.arcgisToGeoJSON(response.item);
 							this.drawMspFeatures(gjson, use);
 						}
@@ -697,7 +997,7 @@ define([
 			var style = new ol.style.Style({
 				stroke: new ol.style.Stroke({
 					color: this.mspStyles[use.split("-")[0]],
-					width: 2
+					width: 3
 				})/*,
 				fill: new ol.style.Fill({
 					color: "rgba(255, 255, 0, 0.2)"
@@ -757,10 +1057,16 @@ define([
 			var featureProperties = null;
 			if (this.mspIdentifyResults[this.mspIdentifyNr].properties) {
 				featureProperties = this.mspIdentifyResults[this.mspIdentifyNr].properties;
+				console.log("properties", featureProperties);
 				var displayProperties = {};
 				for (var property in featureProperties) {
 					if (featureProperties.hasOwnProperty(property)) {
-						if (this.layerListMode == "OUTPUT") {
+						if (this.layerListMode == "OUTPUT_AREA") {
+							if (!(this.mspExcludeProperties.includes(property.toLowerCase()))) {
+								displayProperties[property] = featureProperties[property];
+							}
+						}
+						else if (this.layerListMode == "OUTPUT") {
 							/*if (!(this.mspExcludeProperties.includes(property.toLowerCase()))) {
 								displayProperties[property] = featureProperties[property];
 							}*/
@@ -769,9 +1075,12 @@ define([
 							}
 							this.servicePanel.header = this.mspIdentifyResults[this.mspIdentifyNr].layerName;
 						}
-						else if (this.layerListMode == "OUTPUT_FILTER") {
-							if ((featureProperties[property] != null) && (this.mspPropertiesList.hasOwnProperty(property))) {
+						else if ((this.layerListMode == "OUTPUT_FILTER") || (this.layerListMode == "OUTPUT_FILTER_ALL") || (this.layerListMode == "OUTPUT_PSU")) {
+							if ((featureProperties[property] != null) && (featureProperties[property] != "Null") && (this.mspPropertiesList.hasOwnProperty(property))) {
 								displayProperties[this.mspPropertiesList[property]] = featureProperties[property];
+							}
+							if (this.mspIdentifyResults[this.mspIdentifyNr].layerName) {
+								this.servicePanel.header = this.mspIdentifyResults[this.mspIdentifyNr].layerName;
 							}
 						}
 					}
@@ -926,6 +1235,7 @@ define([
 						tnode.item.wmsMapLayer = new ol.layer.Tile({
 							id: tnode.item.id,
 							mspName: tnode.item.name,
+							identify: "https://maps.helcom.fi/arcgis/rest/services/PBS126/MspOutputData/MapServer/identify?f=pjson&geometryType=esriGeometryPoint&tolerance=3&imageDisplay=1920%2C+647%2C+96&returnGeometry=true&layers=all:",
 							source: new ol.source.TileWMS({
 								url: that.mspWmsUrl,
 								params: {
@@ -952,6 +1262,7 @@ define([
 							if (tnode.item.wmsName) {
 								if (that.mspAllParentsChecked) {
 									tnode.item.wmsMapLayer.setVisible(true);
+									that.mspDisplayedWmsArray.push(tnode.item.wmsMapLayer);
 								}								
 								domStyle.set(tnode.item.legendContainerDiv, "display", "block");
 							}
