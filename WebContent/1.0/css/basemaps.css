@@ -536,7 +536,7 @@ html, body {
 }
 
 .claro .dijitSelect {
-	font-size: 16px;
+	font-size: 14px;
 	border-radius: 4px;
 	border: 1px solid #800000;
 }
@@ -956,7 +956,7 @@ html, body {
 
 /* Layer List widget */
 
-#layerlistContainer {
+#leftPanelContainer {
   position: absolute;
   top:0px;
   left: 0px;
@@ -971,7 +971,7 @@ html, body {
   overflow: hidden;
 }
 
-#layerlistSectionsContainer {
+#leftPanelSectionsContainer {
   position: absolute;
   top:0px;
   left: 0px;
@@ -985,7 +985,16 @@ html, body {
   overflow: hidden;
 }
 
-.collapseExpandLayerList {
+.dijitTitlePane {
+	border: 1px solid #B73C2B;
+}
+
+.claro .dijitTitlePaneTitleOpen {
+	background-color: #EBEDEF;
+	border-bottom-color:#B73C2B;
+}
+
+.collapseExpandLeftPanel {
   position: absolute;
   top: 70px;
   right: 0px;
@@ -1021,11 +1030,11 @@ html, body {
     z-index: 10;
 }*/
 
-#collapseLayerList {
+#collapseLeftPanel {
   background-image: url("../img/arrowGreyLeft.png");
 }
 
-#expandLayerList {
+#expandLeftPanel {
   display: none;
   background-image: url("../img/arrowGreyRight.png");
 }
@@ -1063,7 +1072,7 @@ html, body {
   cursor:pointer;
 }*/
 
-.layerListViewButton {
+.leftPanelViewButton {
 	display: inline-block;
 	border: 1px solid #800000;
 	background-color: #B73C2B;
@@ -1076,11 +1085,11 @@ html, body {
 	margin: 10px 10px;
 }
 
-.layerListViewButton:hover {
+.leftPanelViewButton:hover {
 	font-weight: bold;
 }
 
-.layerListViewButtonActive {
+.leftPanelViewButtonActive {
 	display: inline-block;
 	border: 2px solid #800000;
 	background-color: #B73C2B;
@@ -1094,7 +1103,7 @@ html, body {
 	margin: 10px 10px;
 }
 
-#layerListSection {
+#inputDataSection {
   top: 80px;
   left: 10px;
   position: absolute;
@@ -1102,6 +1111,7 @@ html, body {
   width: 320px;
   font-size: 14px;
   padding: 5px 0px;
+  overflow: auto;
 }
 .layerListTree {
   position: relative;
@@ -1123,6 +1133,7 @@ html, body {
 .layerListButton:hover {
   font-weight: bold;
 }
+
 #hideAllButton {
   /*margin-right: 30px;*/
 }
@@ -1131,15 +1142,26 @@ html, body {
 
 }
 
-#mspLayerListSection {
+.toolLink {
+	cursor: pointer;
+	color: #B73C2B;
+	font-size: 14px;
+}
+
+.toolLink:hover {
+	color: #800000;
+}
+
+#outputDataSection {
   top: 80px;
   left: 10px;
   position: absolute;
-  height: 85%;
+  height: 75%;
   width: 320px;
   font-size: 14px;
   padding: 5px 0px;
   display: none;
+  overflow: auto;
 }
 
 .claro .dijitTreeRowSelected {
@@ -1302,6 +1324,16 @@ html, body {
 .legendContainerDiv {
   display: none;
   padding-left: 20px;
+}
+
+.psuLegend {
+  background-image: url("../img/psu_legend.png");
+  background-repeat: no-repeat;
+  background-position: left;
+  width: 77px;
+  height: 211px;
+  margin-left: 20px; 
+  margin-top: 10px;
 }
 
 .legendRow {

@@ -4,6 +4,7 @@
 <tiles:insertDefinition name="BasicTile">
 	<tiles:putAttribute name="title">BASEMAPS - Baltic LINes</tiles:putAttribute>
 	<tiles:putAttribute name="links">
+		<link rel="shortcut icon" href="http://helcom.fi/Style%20Library/HelcomWeb/favicon.ico?rev=23" type="image/vnd.microsoft.icon" id="favicon" />
 		<!--<link rel="stylesheet" href="https://js.arcgis.com/3.20/esri/css/esri.css">-->
 		<link rel="stylesheet" href="1.0/css/ol.css" type="text/css">
 		<link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.10.4/dijit/themes/claro/claro.css">

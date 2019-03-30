@@ -172,7 +172,6 @@ define([
 				"categoryId": this.currentCategory.id, 
 				"rights": ["w", "r"]
 			};
-			console.log(data);
 			request.post(url, this.utils.createPostRequestParams(data)).then(
 				lang.hitch(this, function(response) {
 					if (response.type == "error") {
@@ -1297,6 +1296,7 @@ define([
 								}
 							}
 					    	this.updateUser(user, categoryId, users);
+							//this.updateUser(user);
 					    }
 					}));
 				}));
@@ -1308,6 +1308,7 @@ define([
 		},
 		
 		updateUser: function(user, categoryId, users) {
+		//updateUser: function(user) {
 			var url = "sc/users/update";
 			request.post(url, this.utils.createPostRequestParams(user)).then(
 				lang.hitch(this, function(response) {
@@ -1317,7 +1318,7 @@ define([
 					else if (response.type == "success") {
 						this.cleanCategoryUsersDisplayForm();
 						this.showMessage("User updated.");
-						this.displayCategoryUsers(categoryId, users);
+						//this.displayCategoryUsers(categoryId, users);
 					}
 				}),
 				lang.hitch(this, function(error) {

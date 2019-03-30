@@ -32,7 +32,7 @@ define([
 		cleanServicePanel: function() {
 			domConstruct.empty(this.infoContainer);
 		},
-		setupAndShowPopup: function(info) {
+		setupAndShowMspPopup: function(info) {
 			//this.cleanServicePanel();
 			this.servicePanel.set("title", this.header);
 			this.servicePanel.set("open", true);

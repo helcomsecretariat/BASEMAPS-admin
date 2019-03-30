@@ -26,7 +26,6 @@ define([
 		adminView: false,
 		adminLayerList: null,
 		constructor: function() {
-			
 			var mainWindow = new BorderContainer({}, "mainWindow");
 			domConstruct.place(headerHTML, "mainWindow");
 			
