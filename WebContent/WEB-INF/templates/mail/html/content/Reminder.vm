@@ -1,2 +1,25 @@
-Hi $user.getName(),
-change you password $user.getPassword().
+<div>
+	<span>Hello $user.getName(),</span>
+	<br />
+	<br />
+</div>
+<div>
+	we have received a request for basemaps&#173;.helcom&#173;.fi user <span style="white-space: nowrap"><span class="strong" style="font-weight: 600">$user.getEmail().replaceAll("\\.", "&#173;.")</span></span> password change&#173;.
+	<span class="strong" style="font-weight: 600">For security reasons this link will expire on $expires</span>, later <a href="$props.getProjectURL()/account/?reminder=1&utm_source=basemaps&utm_medium=email&utm_campaign=password&ref=message">please, use password reminder function</a> again&#173;.
+	You can change the password on pressing the button below:
+</div>
+<div>
+	<a href="$props.getProjectURL()/slaptazodis/?key=$key&utm_source=cv&utm_medium=email&utm_campaign=password&ref=message">Change password</a>
+</div>
+<div>
+	#if($browser)This request was received from "$browser" browser#if($os) "$os" operating system#end&#173;.#end 
+	If you do not want to change any password, just ignore this email&#173;.
+	If you think, that someone is trying to steal your account - remove password changing link by clicking
+	<a href="$props.getProjectURL()/password/?key=$key&finish=0&utm_source=basemaps&utm_medium=email&utm_campaign=password&ref=message" target="_blank">here</a>
+</div>
+<div>
+	<span>If you cannot click on the password change button, copy and paste this link to the address bar of your browser:</span>
+	<br />
+	<br />
+	<span>$props.getProjectURL()/password/?key=$key&utm_source=basemaps&utm_medium=email&utm_campaign=password&ref=message</span>
+</div>

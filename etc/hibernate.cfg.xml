@@ -38,6 +38,7 @@
   <mapping class="fi.fta.beans.ArcGISService"/>
   <mapping class="fi.fta.beans.DownloadableService"/>
   <mapping class="fi.fta.beans.CategoryBeanAction"/>
+  <mapping class="fi.fta.beans.PasswordResetToken"/>
   
  </session-factory>
 </hibernate-configuration>

@@ -18,6 +18,7 @@ import fi.fta.beans.response.SimpleResult;
 import fi.fta.beans.ui.IdentifiableUrlUI;
 import fi.fta.beans.ui.UrlFormatUI;
 import fi.fta.data.managers.CategoryManager;
+import fi.fta.data.managers.PasswordResetTokenManager;
 import fi.fta.data.managers.TranslateManager;
 import fi.fta.data.managers.WMSManager;
 import fi.fta.utils.ArcGISServer;
@@ -93,6 +94,7 @@ public class ToolsController
 	 * Clears application cache in managers:
 	 * 		CategoryManager
 	 * 		TranslateManager
+	 * 		PasswordResetTokenManager
 	 * 
 	 * @param request http request
 	 * @param response http response
@@ -106,6 +108,7 @@ public class ToolsController
 		{
 			CategoryManager.getInstance().clear();
 			TranslateManager.getInstance().clearCache();
+			PasswordResetTokenManager.getInstance().clear();
 			return SimpleMessage.newSuccess();
 		}
 		catch (Exception ex)

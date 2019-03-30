@@ -81,7 +81,7 @@
     </pluginRepositories>
 	
     <scm>
-        <connection>scm:git:git@github.com:helcomsecretariat/BASEMAPS-admin.git</connection>
+        <connection>scm:git:https://github.com/helcomsecretariat/BASEMAPS-admin.git</connection>
         <developerConnection>scm:git:git@github.com:helcomsecretariat/BASEMAPS-admin.git</developerConnection>
     </scm>
 	

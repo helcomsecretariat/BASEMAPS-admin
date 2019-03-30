@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 
 import fi.fta.data.managers.CategoryBeanActionManager;
 import fi.fta.data.managers.CategoryManager;
+import fi.fta.data.managers.PasswordResetTokenManager;
 import fi.fta.data.managers.SimpleUrlServiceManager;
 import fi.fta.data.managers.TranslateManager;
 import fi.fta.data.managers.WFSManager;
@@ -33,6 +34,7 @@ public class BasemapsServletContextListener implements ServletContextListener
 		CategoryManager.getInstance().clear();
 		TranslateManager.getInstance().clearCache();
 		CategoryBeanActionManager.getInstance().clear();
+		PasswordResetTokenManager.getInstance().clear();
 		
 		// Axis 2 commons-httpclient-3.1 memory leak workaround
 		//MultiThreadedHttpConnectionManager.shutdownAll();

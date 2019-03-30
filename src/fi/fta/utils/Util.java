@@ -406,4 +406,87 @@ public class Util
 		return source;
 	}
 	
+	public static String osFromUserAgent(String ua)
+    {
+    	if (ua != null)
+    	{
+    		String[][] oss = new String[][]{
+	    		new String[]{"Windows", "Windows|Win 9x|Win16|Win95|Win98|WinNT4.0|WinNT"},
+	    		new String[]{"Android", "Android"},
+	    		new String[]{"Open BSD", "OpenBSD"},
+	    		new String[]{"Sun OS", "SunOS"},
+	    		new String[]{"Linux", "Linux|X11"},
+	    		new String[]{"iOS", "iPhone|iPad|iPod"},
+	    		new String[]{"Mac OS X", "Mac OS X"},
+	    		new String[]{"Mac OS", "MacPPC|MacIntel|Mac_PowerPC|Macintosh"},
+	    		new String[]{"QNX", "QNX"},
+	    		new String[]{"UNIX", "UNIX"},
+	    		new String[]{"BeOS", "BeOS"},
+	    		new String[]{"OS/2", "OS\\/2"},
+	    		new String[]{"Search Bot", "nuhk|Googlebot|Yammybot|Openbot|Slurp|MSNBot|Ask Jeeves\\/Teoma|ia_archiver"}
+	    	};
+	    	for (String[] os : oss)
+	    	{
+	    		if (Pattern.matches(".*(" + os[1] + ").*", ua))
+	    		{
+	    			return os[0];
+	    		}
+	    	}
+    	}
+    	return null;
+    }
+    
+    public static String browserFromUserAgent(String ua)
+    {
+		if (ua != null)
+		{
+	    	// Opera
+			if (ua.indexOf("Opera") >= 0)
+			{
+				return "Opera";
+			}
+			// MSIE
+			else if (ua.indexOf("MSIE") >= 0)
+			{
+				return "Microsoft Internet Explorer";
+			}
+			//IE 11 no longer identifies itself as MS IE, so trap it
+			//http://stackoverflow.com/questions/17907445/how-to-detect-ie11
+			else if (ua.indexOf("Netscape") >= 0 && ua.indexOf("Trident/") >= 0)
+			{
+				return "Microsoft Internet Explorer";
+			}
+			// Chrome
+			else if (ua.indexOf("Chrome") >= 0)
+			{
+				return "Chrome";
+			}
+			// Safari
+			else if (ua.indexOf("Safari") >= 0)
+			{
+				return "Safari";
+			}
+			// Chrome on iPad identifies itself as Safari. Actual results do not match what Google claims
+			//  at: https://developers.google.com/chrome/mobile/docs/user-agent?hl=ja
+			//  No mention of chrome in the user agent string. However it does mention CriOS, which presumably
+			//  can be keyed on to detect it.
+			if (ua.indexOf("CriOS") >= 0)
+			{
+				//Chrome on iPad spoofing Safari...correct it.
+				return "Chrome";
+			}
+			// Firefox
+			else if (ua.indexOf("Firefox") >= 0)
+			{
+				return "Firefox";
+			}
+			// Other browsers
+			else if ((ua.lastIndexOf(' ') + 1) < ua.lastIndexOf("/"))
+			{
+				return ua.substring((ua.lastIndexOf(' ') + 1), ua.lastIndexOf('/'));
+			}
+		}
+		return null;
+    }
+    
 }

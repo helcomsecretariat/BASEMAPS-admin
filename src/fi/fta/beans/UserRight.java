@@ -24,7 +24,7 @@ public class UserRight extends IdBean
 	 */
 	private static final long serialVersionUID = 2260768498546558512L;
 
-	@Column(name= "user_id", updatable = false, insertable = false)
+	@Column(name = "user_id", updatable = false, insertable = false)
 	private Long userId;
 	
 	@Column(name = "category_id")

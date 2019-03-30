@@ -1,15 +1,26 @@
 package fi.fta.utils;
 
 import java.text.Collator;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class StringUtils
 {
+	
+	protected static Set<Character> excludedChars = new HashSet<>(
+		Arrays.asList('"', '\'', '/', '\\', '`', '>', '<', '&', '.'));
+	
+	public static boolean isExcluded(char c)
+	{
+		return excludedChars.contains(c);
+	}
 	
 	protected static String AMPERSAND = "&";
 	
