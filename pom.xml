@@ -81,9 +81,8 @@
     </pluginRepositories>
 	
     <scm>
-        <connection>scm:git:git@github.com:helcomsecretariat/BASEMAPS-admin.git</connection>
+        <connection>scm:git:https://github.com/helcomsecretariat/BASEMAPS-admin.git</connection>
         <developerConnection>scm:git:git@github.com:helcomsecretariat/BASEMAPS-admin.git</developerConnection>
-        <url>https://github.com/helcomsecretariat/BASEMAPS-admin.git</url>
     </scm>
 	
 	<build>
@@ -172,8 +171,9 @@
                 <artifactId>maven-scm-plugin</artifactId>
                 <version>1.9.5</version>
                 <configuration>
-                    <username>git</username>
-                    <password></password>
+                	<connection>${scm.connection}</connection>
+                    <username>${scm.username}</username>
+                    <password>${scm.password}</password>
                 </configuration>
             </plugin>
 
