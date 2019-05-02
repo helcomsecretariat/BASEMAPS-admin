@@ -1,0 +1,29 @@
+<div>
+	<span>Hello $user.getName(),</span>
+	<br />
+	<br />
+</div>
+<table cellspacing="0" cellpadding="0" width="100%">
+	<thead>
+		<tr>
+			<th>Action</th>
+			<th>What</th>
+			<th>Where</th>
+			<th>Who</th>
+			<th>When</th>
+		</tr>
+	</thead>
+	<tbody>
+#foreach ($action in $actions)
+		<tr>
+			<td>$action.getAction()</td>
+			<td>$action.getKind()</td>
+			<td>$action.getPath()</td>
+			<td>$action.getEmail()</td>
+			<td>$action.getCreated()</td>
+		</tr>
+#else
+		<tr><td colspan="1">-</td></tr>
+#end
+	</tbody>
+</table>

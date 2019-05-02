@@ -17,6 +17,7 @@ import fi.fta.beans.response.SimpleMessage;
 import fi.fta.beans.response.SimpleResult;
 import fi.fta.beans.ui.IdentifiableUrlUI;
 import fi.fta.beans.ui.UrlFormatUI;
+import fi.fta.data.managers.CategoryBeanActionManager;
 import fi.fta.data.managers.CategoryManager;
 import fi.fta.data.managers.PasswordResetTokenManager;
 import fi.fta.data.managers.TranslateManager;
@@ -107,6 +108,7 @@ public class ToolsController
 		try
 		{
 			CategoryManager.getInstance().clear();
+			CategoryBeanActionManager.getInstance().clear();
 			TranslateManager.getInstance().clearCache();
 			PasswordResetTokenManager.getInstance().clear();
 			return SimpleMessage.newSuccess();

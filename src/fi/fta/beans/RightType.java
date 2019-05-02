@@ -3,6 +3,6 @@ package fi.fta.beans;
 public enum RightType
 {
 	
-	r, w;
+	a, r, w;
 	
 }

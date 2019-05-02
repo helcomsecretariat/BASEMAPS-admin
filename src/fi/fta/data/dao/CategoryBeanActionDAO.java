@@ -4,9 +4,11 @@ import java.util.Date;
 import java.util.List;
 
 import org.hibernate.type.LongType;
+import org.hibernate.type.StringType;
 import org.hibernate.type.TimestampType;
 
 import fi.fta.beans.CategoryBeanAction;
+import fi.fta.beans.UserRole;
 
 public class CategoryBeanActionDAO extends SimpleTableDAO<CategoryBeanAction>
 {
@@ -16,10 +18,10 @@ public class CategoryBeanActionDAO extends SimpleTableDAO<CategoryBeanAction>
 		super(CategoryBeanAction.class);
 	}
 	
-	public List<CategoryBeanAction> get(Long userId, Date from, Date till)
+	public List<CategoryBeanAction> get(Long userId, UserRole userRole, Date from, Date till)
 	{
 		StringBuilder sb = new StringBuilder("from ").append(this.getEntityName());
-		if (userId != null || from != null || till != null)
+		if (userId != null || userRole != null || from != null || till != null)
 		{
 			sb.append(" where");
 		}
@@ -27,9 +29,17 @@ public class CategoryBeanActionDAO extends SimpleTableDAO<CategoryBeanAction>
 		{
 			sb.append(" userId = :userId");
 		}
-		if (from != null)
+		if (userRole != null)
 		{
 			if (userId != null)
+			{
+				sb.append(" and");
+			}
+			sb.append(" role = :userRole");
+		}
+		if (from != null)
+		{
+			if (userId != null || userRole != null)
 			{
 				sb.append(" and");
 			}
@@ -37,17 +47,22 @@ public class CategoryBeanActionDAO extends SimpleTableDAO<CategoryBeanAction>
 		}
 		if (till != null)
 		{
-			if (userId != null || from != null)
+			if (userId != null | userRole != null || from != null)
 			{
 				sb.append(" and");
 			}
 			sb.append(" created < :till");
 		}
+		sb.append(" order by created desc");
 		DAOSelectQueryUtil<CategoryBeanAction> q = new DAOSelectQueryUtil<>(
 			this.getCurrentSession(), sb.toString(), CategoryBeanAction.class);
 		if (userId != null)
 		{
 			q.setParameter("userId", userId, LongType.INSTANCE);
+		}
+		if (userRole != null)
+		{
+			q.setParameter("userRole", userRole.toString(), StringType.INSTANCE);
 		}
 		if (from != null)
 		{

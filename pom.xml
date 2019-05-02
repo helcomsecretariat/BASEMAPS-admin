@@ -487,7 +487,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.velocity</groupId>
-			<artifactId>velocity</artifactId>
+			<artifactId>velocity-engine-core</artifactId>
 			<version>${velocity.version}</version>
 			<scope>compile</scope>
 		</dependency>
@@ -895,7 +895,7 @@
 		<!-- Libraries versions -->
 		<log4j.version>1.2.17</log4j.version>
 		<mail.version>1.4</mail.version>
-		<velocity.version>1.7</velocity.version>
+		<velocity.version>2.1</velocity.version>
 		<commons-beanutils.version>1.8.3</commons-beanutils.version>
 		<commons-codec.version>1.10</commons-codec.version>
 		<commons-io.version>1.4</commons-io.version>

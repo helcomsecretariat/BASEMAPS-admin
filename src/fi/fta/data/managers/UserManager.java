@@ -215,4 +215,15 @@ public class UserManager
 		return null;
 	}
 	
+	/**
+	 * Get list of users who have right to get actions of categories (has right 'a').
+	 * 
+	 * @return list of user objects having right 'a'.
+	 * @throws HibernateException database exception
+	 */
+	public List<User> getWithActionsRight() throws HibernateException
+	{
+		return dao.getWithActionsRight();
+	}
+	
 }

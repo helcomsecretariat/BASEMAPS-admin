@@ -3,6 +3,8 @@ package fi.fta.beans.ui;
 import java.io.Serializable;
 import java.util.Date;
 
+import fi.fta.beans.UserRole;
+
 public class CategoryBeanActionParamsUI implements Serializable
 {
 
@@ -13,6 +15,8 @@ public class CategoryBeanActionParamsUI implements Serializable
 	
 	
 	private Long userId;
+	
+	private UserRole userRole;
 	
 	private Date from;
 	
@@ -28,6 +32,14 @@ public class CategoryBeanActionParamsUI implements Serializable
 
 	public void setUserId(Long userId) {
 		this.userId = userId;
+	}
+
+	public UserRole getUserRole() {
+		return userRole;
+	}
+
+	public void setUserRole(UserRole userRole) {
+		this.userRole = userRole;
 	}
 
 	public Date getFrom() {

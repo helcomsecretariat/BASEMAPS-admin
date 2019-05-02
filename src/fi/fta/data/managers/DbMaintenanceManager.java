@@ -7,7 +7,13 @@ import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 
 import fi.fta.beans.Pair;
+import fi.fta.data.dao.CategoryBeanActionDAO;
+import fi.fta.data.dao.CategoryDAO;
 import fi.fta.data.dao.SimpleDAO;
+import fi.fta.data.dao.UserDAO;
+import fi.fta.data.dao.WFSInfoDAO;
+import fi.fta.data.dao.WMSDAO;
+import fi.fta.data.dao.WMSInfoDAO;
 import fi.fta.utils.HibernateUtil;
 
 /**
@@ -21,9 +27,16 @@ public class DbMaintenanceManager
 	
 	public static void main(String[] args)
 	{
-		List<String> vacuum = new ArrayList<String>();
+		List<String> vacuum = new ArrayList<>();
+		vacuum.add(new CategoryDAO().getTableName());
+		vacuum.add(new CategoryBeanActionDAO().getTableName());
+		vacuum.add(new WMSDAO().getTableName());
+		vacuum.add(new WMSInfoDAO().getTableName());
+		vacuum.add(new WFSInfoDAO().getTableName());
+		vacuum.add(new UserDAO().getTableName());
 		
-		List<Pair<String, String>> cluster = new ArrayList<Pair<String, String>>();
+		List<Pair<String, String>> cluster = new ArrayList<>();
+		cluster.add(new Pair<>(new UserDAO().getTableName(), "users_email_idx"));
 		
 		try
     	{
@@ -51,7 +64,7 @@ public class DbMaintenanceManager
     			}
     			catch (HibernateException ex)
     			{
-    				Logger.getRootLogger().error("DbMaintenanceManager.main.vacuum " + table + " Fatal error", ex);
+    				Logger.getRootLogger().error("DbMaintenanceManager.main.cluster " + table + " Fatal error", ex);
     				ex.printStackTrace();
     			}
     		}

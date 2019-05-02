@@ -176,7 +176,7 @@ public class SimpleDAO<T>
 		}).start();
 	}
 	
-	protected String getEntityName()
+	public String getEntityName()
 	{
 		if (entityName == null)
 		{
@@ -190,7 +190,7 @@ public class SimpleDAO<T>
 		return entityName;
 	}
 	
-	protected String getTableName()
+	public String getTableName()
 	{
 		if (tableName == null)
 		{
