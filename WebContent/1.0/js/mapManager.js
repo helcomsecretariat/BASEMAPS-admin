@@ -11,7 +11,7 @@ define([
 	"basemaps/js/leftPanel",
 	"basemaps/js/utils",
 	"widgets/scaleWidget",
-	"basemaps/js/ol",
+	//"basemaps/js/ol",
 	"dijit/_WidgetBase", 
 	"dijit/_TemplatedMixin",
 	"dojo/text!../templates/mapView.html"//,
@@ -19,7 +19,7 @@ define([
 ], function(
 	declare, dom, domConstruct, lang, domStyle, query, request, array, on,
 	leftPanel, utils, scaleWidget,
-	ol,
+	//ol,
 	_WidgetBase, _TemplatedMixin, template
 ) {
 	return declare([_WidgetBase, _TemplatedMixin], {
@@ -54,7 +54,8 @@ define([
 				})
 			});
 			
-			var backgroundUrlJson = "https://maps.helcom.fi/arcgis/rest/services/MADS/Basemap_TOPO/MapServer?f=pjson";
+			//var backgroundUrlJson = "https://maps.helcom.fi/arcgis/rest/services/MADS/Basemap_TOPO/MapServer?f=pjson";
+			var backgroundUrlJson = "//maps.helcom.fi/arcgis/rest/services/MADS/Basemap_TOPO/MapServer?f=pjson";
 			fetch(backgroundUrlJson)
 				.then(lang.hitch(this, function(response) {
 					return response.text();
@@ -72,7 +73,8 @@ define([
 							id: "basemap",
 							title: "Basemap TOPO",
 							source: new ol.source.TileArcGISRest({
-								url: "https://maps.helcom.fi/arcgis/rest/services/MADS/Basemap_TOPO/MapServer"
+								//url: "https://maps.helcom.fi/arcgis/rest/services/MADS/Basemap_TOPO/MapServer"
+								url: "//maps.helcom.fi/arcgis/rest/services/MADS/Basemap_TOPO/MapServer"
 							})
 						});
 						this.map.addLayer(bgrLayer);

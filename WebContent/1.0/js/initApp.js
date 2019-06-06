@@ -12,16 +12,18 @@ define([
 	"basemaps/js/adminViewManager",
 	"basemaps/js/utils",
 	"widgets/loginWidget",
+	"widgets/aboutPanelWidget",
 	"dojo/text!../templates/header.html",
 	"dojo/domReady!"
 ], function(
 	declare, lang, request, on, dom, domConstruct, array, win, 
-	BorderContainer, mapManager, adminViewManager, utils, loginWidget, 
+	BorderContainer, mapManager, adminViewManager, utils, loginWidget, aboutPanelWidget, 
 	headerHTML
 ) {
 	return declare(null, {
 		mM: null,
 		utils: null,
+		aboutPanel: null,
 		adminViewManagerObj: null,
 		adminView: false,
 		adminLayerList: null,
@@ -37,22 +39,30 @@ define([
 			
 			this.utils = new utils();
 			
+			this.aboutPanel = new aboutPanelWidget();
+			
 			// on Admin link click get logged in user.
 			var adminButton = dom.byId("adminLink");
-			on(adminButton, "click", lang.hitch(this, function(evt){
+			on(adminButton, "click", lang.hitch(this, function(evt) {
 				this.getUser();
 	        }));
 			
 			// on Logout link click logout user.
 			var logoutButton = dom.byId("logoutLink");
-			on(logoutButton, "click", lang.hitch(this, function(evt){
+			on(logoutButton, "click", lang.hitch(this, function(evt) {
 				this.logout();
 	        }));
 			
 			// on Map link click show map view.
 			var mapButton = dom.byId("mapLink");
-			on(mapButton, "click", lang.hitch(this, function(evt){
+			on(mapButton, "click", lang.hitch(this, function(evt) {
 				this.switchToMapView();
+	        }));
+			
+			// on About link click display help window.
+			var aboutButton = dom.byId("aboutLink");
+			on(aboutButton, "click", lang.hitch(this, function(evt) {
+				this.aboutPanel.setupAndShowAboutPanel();
 	        }));
 		},
 		

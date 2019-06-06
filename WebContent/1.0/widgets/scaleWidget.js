@@ -2,11 +2,11 @@ define([
   "dojo/_base/declare",
   "dojo/_base/lang",
   "dojo/on",
-  "basemaps/js/ol",
+  //"basemaps/js/ol",
   "dijit/_WidgetBase",
   "dijit/_TemplatedMixin",
   "dojo/text!./templates/scaleWidget.html"
-], function(declare, lang, on, ol, _WidgetBase, _TemplatedMixin, template){
+], function(declare, lang, on, /*ol,*/ _WidgetBase, _TemplatedMixin, template){
   return declare([_WidgetBase, _TemplatedMixin], {
     templateString: template,
     baseClass: "scaleWidget",

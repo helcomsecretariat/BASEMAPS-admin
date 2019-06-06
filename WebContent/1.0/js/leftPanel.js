@@ -17,7 +17,7 @@ define([
 	"widgets/inputDataLayerList",
 	"widgets/outputDataLayerList",
 	"basemaps/js/utils",
-	"basemaps/js/ol",
+	//"basemaps/js/ol",
 	"dijit/_WidgetBase", "dijit/_TemplatedMixin",
 	"dojo/text!../templates/leftPanel.html"
 	//"dojo/text!../templates/layerlistWidget.html"
@@ -40,7 +40,7 @@ define([
 	inputDataLayerList,
 	outputDataLayerList,
 	utils,
-	ol,
+	//ol,
 	_WidgetBase, _TemplatedMixin, template
 ){
 	return declare([_WidgetBase, _TemplatedMixin], {

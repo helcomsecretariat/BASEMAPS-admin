@@ -15,7 +15,7 @@ define([
 	"dijit/layout/AccordionContainer", "dijit/layout/ContentPane", "dijit/form/Select",
 	"widgets/servicePanelWidget",
 	"basemaps/js/utils",
-	"basemaps/js/ol",
+	//"basemaps/js/ol",
 	"dijit/_WidgetBase", "dijit/_TemplatedMixin",
 	"dojo/text!./templates/inputDataLayerList.html"
 	//"dojo/text!../templates/layerlistWidget.html"
@@ -36,7 +36,7 @@ define([
 	AccordionContainer, ContentPane, Select,
 	servicePanelWidget,
 	utils,
-	ol,
+	//ol,
 	_WidgetBase, _TemplatedMixin, template
 ){
 	return declare([_WidgetBase, _TemplatedMixin], {

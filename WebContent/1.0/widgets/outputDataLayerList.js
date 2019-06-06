@@ -10,13 +10,15 @@ define([
 	"dojo/_base/array", "dojo/dom-construct",  "dojo/query!css3",
 	"dojox/validate/web",
 	"dojo/store/Memory","dijit/tree/ObjectStoreModel", "dijit/Tree", "dijit/form/FilteringSelect",
+	"dojo/data/ItemFileReadStore",
 	"dijit/form/CheckBox", "dijit/Tooltip",
 	"dojox/widget/TitleGroup", "dijit/TitlePane", 
 	"dijit/layout/AccordionContainer", "dijit/layout/ContentPane", "dijit/form/Select",
 	"dojox/gfx",
 	"widgets/servicePanelWidget",
 	"basemaps/js/utils",
-	"basemaps/js/ol",
+	//"basemaps/js/ol",
+	//"basemaps/js/ol-ext",
 	"dijit/_WidgetBase", "dijit/_TemplatedMixin",
 	"dojo/text!./templates/outputDataLayerList.html"
 	//"dojo/text!../templates/layerlistWidget.html"
@@ -32,13 +34,15 @@ define([
 	array, domConstruct, query,
 	validate,
 	Memory, ObjectStoreModel, Tree, FilteringSelect,
+	ItemFileReadStore,
 	checkBox, Tooltip,
 	TitleGroup, TitlePane,
 	AccordionContainer, ContentPane, Select,
 	gfx,
 	servicePanelWidget,
 	utils,
-	ol,
+	//ol,
+	//olExt,
 	_WidgetBase, _TemplatedMixin, template
 ){
 	return declare([_WidgetBase, _TemplatedMixin], {
@@ -59,6 +63,7 @@ define([
 		mspViewAccordion: null,
 		mspViewAccordionPanes: {},
 		mspFilteringAccordion: null,
+		mspFilteringUses: [],
 		mspParamsArray: [],
 		mspStyles: {},
 		mspDistinctCodes: {},
@@ -69,13 +74,13 @@ define([
 		mspIdentifyNr: null,
 		mspExcludeProperties: ["objectid", "objectid_1", "shape", "plan id", "symbol", "shape_length", "shape_area"],
 		mspPropertiesList: {
-			"OBJECTID": "OBJECTID",
+			//"OBJECTID": "OBJECTID",
 			"priority_info": "Priority sea use", 
 			"reserved_info": "Reserved sea use",
 			"allowed_info": "Allowed sea use", 
 			"restricted_info": "Restricted sea use",
 			"forbidden_info": "Forbidden sea use", 
-			"use_dsc": "Use description",
+			"useDsc": "Use description",
 			"area": "Area (sq km)"
 		},
 		rootMspLayerId: "msplayerlist",
@@ -100,7 +105,7 @@ define([
 				this.layerListMode = "OUTPUT";
 				this.hideAllLayers();
 				
-				//this.mspFeaturesUrl = "https://maps.helcom.fi/arcgis/rest/services/PBS126/MspOutputData/MapServer/identify?f=pjson&geometryType=esriGeometryPoint&tolerance=3&imageDisplay=1920%2C+647%2C+96&returnGeometry=true&layers=all:";
+				//this.mspFeaturesUrl = "https://maps.helcom.fi/s.helcom.fi/arcgis/rest/services/PBS126/MspOutputData/MapServer/identify?f=pjson&geometryType=esriGeometryPoint&tolerance=3&imageDisplay=1920%2C+647%2C+96&returnGeometry=true&layers=all:";
 			}));
 			
 			// MSP view new version
@@ -117,67 +122,73 @@ define([
 				var layers = this.map.getLayers().getArray();
 				var identifyUrl = null;
 				if (this.layerListMode == "OUTPUT_PSU") {
-					identifyUrl = "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput2_2019/MapServer/identify?f=pjson&geometryType=esriGeometryPoint&tolerance=3&imageDisplay=1920%2C+647%2C+96&returnGeometry=true&layers=all:";
-					array.forEach(this.mspParamsArray, lang.hitch(this, function(mspParams, i) {
+					array.some(this.mspParamsArray, lang.hitch(this, function(mspParams) {
 						if ((mspParams.useType != null) && (mspParams.agsLayer != null)) {
 							if (mspParams.allWmsLayer.getVisible()) {
-								identifyUrl += mspParams.agsLayer + ",";
+								identifyUrl = "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput2_2019/MapServer/identify?f=pjson&geometryType=esriGeometryPoint&tolerance=3&imageDisplay=1920%2C+647%2C+96&returnGeometry=true&layers=all:";
+								return false;
 							}
-						}
+						}	
 					}));
-					identifyUrl = identifyUrl.slice(0, -1) + "&geometry=";
-					
-					var clickLonLat = ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326');
-					identifyUrl += clickLonLat + "&mapExtent=";
-					
-					var mapExtent = ol.proj.transformExtent(this.map.getView().calculateExtent(), 'EPSG:3857', 'EPSG:4326');
-					identifyUrl += mapExtent;
-					
-					console.log(this.layerListMode);
-					console.log("identifyUrl", identifyUrl);
-					
-					domStyle.set(dojo.byId("loadingCover"), {"display": "block"});
-					var url = "sc/tools/get-data";
-					var data = {
-						"url": identifyUrl,
-						"format": "json"
-					};
-					request.post(url, this.utils.createPostRequestParams(data)).then(
-						lang.hitch(this, function(response) {
-							if (response.type == "error") {
-								console.log("Identifying MSP REST failed", response);
-								domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
-							}
-							else if (response.type == "success") {
-								if (response.item) {
-									this.mspIdentifyResults = [];
-									this.mspIdentifyNr = null;
-									array.forEach(response.item.results, lang.hitch(this, function(arcgisResult) {
-										var gjson = ArcgisToGeojsonUtils.arcgisToGeoJSON(arcgisResult);
-										gjson.layerName = arcgisResult.layerName;
-										this.mspIdentifyResults.push(gjson);
-									}));
-									if (this.mspIdentifyResults.length > 0) {
-										this.mspIdentifyNr = 0;
-										this.setMspPopupContent();
-									}
+					if (identifyUrl != null) {
+						array.forEach(this.mspParamsArray, lang.hitch(this, function(mspParams, i) {
+							if ((mspParams.useType != null) && (mspParams.agsLayer != null)) {
+								if (mspParams.allWmsLayer.getVisible()) {
+									identifyUrl += mspParams.agsLayer + ",";
 								}
-								domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
 							}
-						}),
-						lang.hitch(this, function(error) {
-							console.log(error);
-						})
-					);
+						}));
+						identifyUrl = identifyUrl.slice(0, -1) + "&geometry=";
+						
+						var clickLonLat = ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326');
+						identifyUrl += clickLonLat + "&mapExtent=";
+						
+						var mapExtent = ol.proj.transformExtent(this.map.getView().calculateExtent(), 'EPSG:3857', 'EPSG:4326');
+						identifyUrl += mapExtent;
+												
+						domStyle.set(dojo.byId("loadingCover"), {"display": "block"});
+						var url = "sc/tools/get-data";
+						var data = {
+							"url": identifyUrl,
+							"format": "json"
+						};
+						request.post(url, this.utils.createPostRequestParams(data)).then(
+							lang.hitch(this, function(response) {
+								if (response.type == "error") {
+									console.log("Identifying MSP REST failed", response);
+									domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
+								}
+								else if (response.type == "success") {
+									if (response.item) {
+										this.mspIdentifyResults = [];
+										this.mspIdentifyNr = null;
+										array.forEach(response.item.results, lang.hitch(this, function(arcgisResult) {
+											var gjson = ArcgisToGeojsonUtils.arcgisToGeoJSON(arcgisResult);
+											gjson.layerName = arcgisResult.layerName;
+											this.mspIdentifyResults.push(gjson);
+										}));
+										if (this.mspIdentifyResults.length > 0) {
+											this.mspIdentifyNr = 0;
+											this.setMspPopupContent();
+										}
+									}
+									domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
+								}
+							}),
+							lang.hitch(this, function(error) {
+								console.log(error);
+							})
+						);
+					}
+					
 				}
 				else {
 					array.forEach(layers, lang.hitch(this, function(layer, i) {
 						if (("identify" in layer.getProperties()) && (layer.getVisible())) {
 							identifyUrl = layer.getProperties().identify;
+							console.log("identifyUrl", identifyUrl);
 						}
 					}));
-					console.log(this.layerListMode);
-					console.log("identifyUrl", identifyUrl);
 					if (identifyUrl != null) {
 						if (this.layerListMode == "OUTPUT_AREA") {
 							
@@ -265,7 +276,6 @@ define([
 						}
 						else if (this.layerListMode == "OUTPUT") {
 							this.cleanMspHighlight();
-							//console.log("OUTPUT identy url", identifyUrl);
 							var mspLayersIds = [];
 							var mapLayers = this.map.getLayers().getArray();
 							for (var i = 0; i < mapLayers.length; i++) {
@@ -324,12 +334,16 @@ define([
 						}
 						else if (this.layerListMode == "OUTPUT_FILTER") {
 							this.cleanMspHighlight();
+							if (this.mspDisplayLayer.getSource() == null) {
+								identifyUrl = null;
+							}
 							if (identifyUrl != null) {
 								//var identifyUrl = this.mspFeaturesUrl;
 								var mspPopupCoordinate = evt.coordinate;
 								var clickLonLat = ol.proj.transform(mspPopupCoordinate, 'EPSG:3857', 'EPSG:4326');
 								identifyUrl += "&geometryType=esriGeometryPoint&geometry=" + clickLonLat + "&spatialRel=esriSpatialRelIntersects&distance=2&units=esriSRUnit_Kilometer&outFields=*";
 								
+								domStyle.set(dojo.byId("loadingCover"), {"display": "block"});
 								var url = "sc/tools/get-data";
 								var data = {
 									"url": identifyUrl,
@@ -339,7 +353,7 @@ define([
 									lang.hitch(this, function(response) {
 										if (response.type == "error") {
 											console.log("Identifying MSP Feature failed", response);
-											//domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
+											domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
 										}
 										else if (response.type == "success") {
 											if (response.item) {
@@ -354,7 +368,7 @@ define([
 													this.setMspPopupContent();
 												}
 											}
-											//domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
+											domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
 										}
 									}),
 									lang.hitch(this, function(error) {
@@ -454,7 +468,7 @@ define([
 		},
 		
 		setupMspViewAccordion: function() {
-			this.mspViewAccordion = new TitleGroup({style:"width: 280px"}, this.mspFilterContainer);
+			this.mspViewAccordion = new TitleGroup({style:"width: 380px"}, this.mspFilterContainer);
 			this.mspViewAccordion.startup();
 			this.setupMspParams();		
 			this.setupPane1();
@@ -474,19 +488,23 @@ define([
 				"filterUrl": "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput2_2019/MapServer/0",
 				"distinctUses": [],
 				"distinctValues": [],
+				"filteringData": [],
+				"tree": null,
 				"titlePane": null,
 				"psuCheckbox": null
 			}, {
 				"useType": "reserved",
 				"title": "Reserved Sea Use",
-				"allUrl": null,
-				"allLayerName": null,
-				"allLegendUrl": null,
+				"allUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput2_2019/MapServer/WMSServer",
+				"allLayerName": "ReservedUse",
+				"allLegendUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput2_2019/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=ReservedUse",
 				"allWmsLayer": null,
-				"agsLayer": null,
-				"filterUrl": null,
+				"agsLayer": 1,
+				"filterUrl": "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput2_2019/MapServer/1",
 				"distinctUses": [],
 				"distinctValues": [],
+				"filteringData": [],
+				"tree": null,
 				"titlePane": null,
 				"psuCheckbox": null
 			}, {
@@ -496,10 +514,12 @@ define([
 				"allLayerName": "AllowedUse",
 				"allLegendUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput2_2019/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=AllowedUse",
 				"allWmsLayer": null,
-				"agsLayer": 1,
-				"filterUrl": "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput2_2019/MapServer/1",
+				"agsLayer": 2,
+				"filterUrl": "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput2_2019/MapServer/2",
 				"distinctUses": [],
 				"distinctValues": [],
+				"filteringData": [],
+				"tree": null,
 				"titlePane": null,
 				"psuCheckbox": null
 			}, {
@@ -509,10 +529,12 @@ define([
 				"allLayerName": "RestrictedUse",
 				"allLegendUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput2_2019/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=RestrictedUse",
 				"allWmsLayer": null,
-				"agsLayer": 2,
-				"filterUrl": "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput2_2019/MapServer/2",
+				"agsLayer": 3,
+				"filterUrl": "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput2_2019/MapServer/3",
 				"distinctUses": [],
 				"distinctValues": [],
+				"filteringData": [],
+				"tree": null,
 				"titlePane": null,
 				"psuCheckbox": null
 			}, {
@@ -522,25 +544,29 @@ define([
 				"allLayerName": "ForbiddenUse",
 				"allLegendUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput2_2019/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=ForbiddenUse",
 				"allWmsLayer": null,
-				"agsLayer": 3,
-				"filterUrl": "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput2_2019/MapServer/3",
+				"agsLayer": 4,
+				"filterUrl": "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput2_2019/MapServer/4",
 				"distinctUses": [],
 				"distinctValues": [],
+				"filteringData": [],
+				"tree": null,
 				"titlePane": null,
 				"psuCheckbox": null
-			}, {
+			}/*, {
 				"useType": null,
 				"title": "All Sea Use Types",
 				"allUrl": null,
 				"allLayerName": null,
 				"allLegendUrl": null,
 				"allWmsLayer": null,
-				"agsLayer": 4,
-				"filterUrl": "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput2_2019/MapServer/4",
+				"agsLayer": 5,
+				"filterUrl": "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput2_2019/MapServer/5",
 				"distinctUses": [],
 				"distinctValues": [],
+				"filteringData": [],
+				"tree": null,
 				"titlePane": null
-			});
+			}*/);
 		},
 		
 		setupPane1: function() {
@@ -558,7 +584,7 @@ define([
 				if (areasLayer == null) {
 					areasLayer = new ol.layer.Tile({
 						type: "msp_output",
-						identify: "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput2_2019/MapServer/identify?f=pjson&geometryType=esriGeometryPoint&tolerance=3&imageDisplay=1920%2C+647%2C+96&returnGeometry=true&layers=all:5&geometry=",
+						identify: "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput2_2019/MapServer/identify?f=pjson&geometryType=esriGeometryPoint&tolerance=3&imageDisplay=1920%2C+647%2C+96&returnGeometry=true&layers=all:6&geometry=",
 						source: new ol.source.TileWMS({
 							url: "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput2_2019/MapServer/WmsServer",
 							params: {
@@ -586,10 +612,10 @@ define([
 		},
 		
 		setupPane2: function() {
-			this.mspViewAccordionPanes.tp2 = new TitlePane({ open: false, title: "Sea Use by Type and Sector", id: "tp2"  });
+			this.mspViewAccordionPanes.tp2 = new TitlePane({ open: false, title: "Query Planned Sea Uses", id: "tp2"  });
 			this.mspViewAccordion.addChild(this.mspViewAccordionPanes.tp2);
 			
-			this.mspFilteringAccordion = new TitleGroup({style:"width: 250px"}, this.mspViewAccordionPanes.tp2.containerNode);
+			this.mspFilteringAccordion = new TitleGroup({style:"width: 350px"}, this.mspViewAccordionPanes.tp2.containerNode);
 			this.mspFilteringAccordion.startup();
 						
 			this.mspStyles = {
@@ -622,10 +648,10 @@ define([
 				}
 			}));
 			
-			this.setupMspFilteringCp(5);
+			//this.createFilteringTreeData(5);
 			
 			on(this.mspViewAccordionPanes.tp2, "show", lang.hitch(this, function() {
-				//this.layerListMode = "OUTPUT_FILTER";
+				this.layerListMode = "OUTPUT_FILTER";
 			}));
 			
 			on(this.mspViewAccordionPanes.tp2, "hide", lang.hitch(this, function() {
@@ -638,24 +664,23 @@ define([
 		},
 		
 		setupPane3: function() {
-			this.mspViewAccordionPanes.tp3 = new TitlePane({ open: false, title: "Planned Sea Use", id: "tp3" });
+			this.mspViewAccordionPanes.tp3 = new TitlePane({ open: false, title: "View Planned Sea Uses", id: "tp3" });
 			this.mspViewAccordion.addChild(this.mspViewAccordionPanes.tp3);
-			
-			array.forEach(this.mspParamsArray, lang.hitch(this, function(mspParams, i) {
-				if (mspParams.useType != null) {
+						
+			for (var i = this.mspParamsArray.length-1; i >= 0; i--) {
+				if (this.mspParamsArray[i].useType != null) {
 					this.createPlannedSeaUseLayer(i);
 				}
-			}));
-			
+			}
 			
 			var legendContainerDiv = domConstruct.create("div", { "class": "psuLegend" }, this.mspViewAccordionPanes.tp3.containerNode, "last");
 						
 			on(this.mspViewAccordionPanes.tp3, "show", lang.hitch(this, function() {
-				array.forEach(this.mspParamsArray, lang.hitch(this, function(mspParams, i) {
-					if ((mspParams.useType != null) && (mspParams.psuCheckbox != null)) {
-						mspParams.psuCheckbox.set("checked", true);
+				for (var i = this.mspParamsArray.length-1; i >= 0; i--) {
+					if ((this.mspParamsArray[i].useType != null) && (this.mspParamsArray[i].psuCheckbox != null)) {
+						this.mspParamsArray[i].psuCheckbox.set("checked", true);
 					}
-				}));
+				}
 				
 				this.layerListMode = "OUTPUT_PSU"; 
 			}));
@@ -670,15 +695,28 @@ define([
 			
 		},
 		
+		setupWmsLayer: function(nr) {
+			console.log("setup", this.mspParamsArray[nr]);
+			this.mspParamsArray[nr].allWmsLayer = new ol.layer.Tile({
+				id: this.mspParamsArray[nr].title.replace(/\s+/g, ''),
+				type: "msp_output",
+				identify: "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput2_2019/MapServer/identify?f=pjson&geometryType=esriGeometryPoint&tolerance=3&imageDisplay=1920%2C+647%2C+96&returnGeometry=true&layers=all:",
+				source: new ol.source.TileWMS({
+					url: this.mspParamsArray[nr].allUrl,
+					params: {
+						LAYERS: this.mspParamsArray[nr].allLayerName
+					}
+				})
+			});
+			this.map.addLayer(this.mspParamsArray[nr].allWmsLayer);
+		},
+		
 		createPlannedSeaUseLayer: function(nr) {
-			var psuContainer = domConstruct.create("div", {}, this.mspViewAccordionPanes.tp3.containerNode, "last");
+			var psuContainer = domConstruct.create("div", {}, this.mspViewAccordionPanes.tp3.containerNode, "first");
 			this.mspParamsArray[nr].psuCheckbox = new dijit.form.CheckBox();
 			this.mspParamsArray[nr].psuCheckbox.placeAt(psuContainer, "first");
 			var psuLabel = domConstruct.create("span", {"innerHTML": this.mspParamsArray[nr].title, "style": "margin-top: 5px;"}, psuContainer, "last");
-			
-			//this.mspParamsArray[nr].psuCheckbox.set("checked", true);
-			
-			
+						
 			on(this.mspParamsArray[nr].psuCheckbox, "change", lang.hitch(this, function(checked) {
 				if (checked) {
 					if (this.mspParamsArray[nr].allWmsLayer == null) {
@@ -710,11 +748,12 @@ define([
 		getDistinctMspCodes: function(nr) {
 			var serviceUrl = "sc/tools/get-data";
 			var servicedata = {
-				"url": this.mspParamsArray[nr].filterUrl + "/query?where=1%3D1&outFields=" + this.mspParamsArray[nr].useType + "," + this.mspParamsArray[nr].useType + "_info,symbol&returnGeometry=false&returnDistinctValues=true&orderByFields=" + this.mspParamsArray[nr].useType + "&f=pjson",
+				"url": this.mspParamsArray[nr].filterUrl + "/query?where=1%3D1&outFields=" + this.mspParamsArray[nr].useType + "," + this.mspParamsArray[nr].useType + "_info," + this.mspParamsArray[nr].useType + "_symbol&returnGeometry=false&returnDistinctValues=true&orderByFields=" + this.mspParamsArray[nr].useType + "&f=pjson",
 				"format": "json"
 			};
 			request.post(serviceUrl, this.utils.createPostRequestParams(servicedata)).then(
 				lang.hitch(this, function(response) {
+					//console.log(response);
 					if (response.type == "error") {
 						console.log("Getting MSP distinct codes for " + this.mspParamsArray[nr].useType + " failed", response);
 						//domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
@@ -732,17 +771,17 @@ define([
 										this.mspParamsArray[nr].distinctUses.push(rec);
 									}
 									
-									if (!(this.mspParamsArray[5].distinctValues.includes(feature.attributes[this.mspParamsArray[nr].useType].trim()))) {
+									/*if (!(this.mspParamsArray[5].distinctValues.includes(feature.attributes[this.mspParamsArray[nr].useType].trim()))) {
 										this.mspParamsArray[5].distinctValues.push(feature.attributes[this.mspParamsArray[nr].useType].trim());
 										var rec5 = {
 											"label": feature.attributes[this.mspParamsArray[nr].useType+"_info"],
 											"value": feature.attributes[this.mspParamsArray[nr].useType]
 										};
 										this.mspParamsArray[5].distinctUses.push(rec5);
-									}
+									}*/
 								}
 							}));
-							this.setupMspFilteringCp(nr);
+							this.createFilteringTreeData(nr);
 						}
 					}
 				}),
@@ -751,6 +790,41 @@ define([
 					//domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
 				})
 			);
+		},
+		createFilteringTreeData: function(nr) {
+			var idSec = 0;
+			var currentId = 0;
+			array.forEach(this.mspParamsArray[nr].distinctUses, lang.hitch(this, function(use) {
+				if ((idSec > 0) && (this.mspParamsArray[nr].filteringData[idSec-1]) && (this.mspParamsArray[nr].filteringData[idSec-1].id == use.value.split("-")[0] + "_parent")) {
+					var rec = {
+						label: use.label,
+						//id: idSec.toString(),
+						id: use.value,
+						level: 2
+					};
+					this.mspParamsArray[nr].filteringData[idSec-1].children.push(rec);
+				}
+				else {
+					var rec = {
+						label: use.value.split("-")[0],
+						id: use.value.split("-")[0] + "_parent",
+						level: 1,
+						children: [
+							{
+								label: use.label,
+								id: use.value,
+								level: 2
+							}
+						]
+					};
+					this.mspParamsArray[nr].filteringData[idSec] = rec;
+					idSec = idSec + 1;
+				} 
+			}));
+			
+			
+			
+			this.setupMspFilteringCp(nr);
 		},
 		
 		createMspFilteringCp: function(nr) {
@@ -762,6 +836,129 @@ define([
 			var cpContent = domConstruct.create("div", {}, this.mspParamsArray[nr].titlePane.containerNode, "last");
 			if (nr < 5) {
 				var allContainer = domConstruct.create("div", {}, cpContent, "last");
+								
+				var store = new ItemFileReadStore({
+					data: {
+						identifier: "id",
+						label: "label",
+						items: this.mspParamsArray[nr].filteringData
+					}
+				});
+				var that = this;
+				//var treeControl = new dijit.Tree({
+				this.mspParamsArray[nr].tree = new dijit.Tree({
+					store: store,
+				    showRoot: false,
+				    getNodeFromItem: function (id) {
+				    	return this._itemNodesMap[ id ][0];
+				    },
+				    _createTreeNode: function(args) {
+				    	var tnode = new dijit._TreeNode(args);
+				    	tnode.labelNode.innerHTML = args.label;
+
+				    	domStyle.set(tnode.labelNode, {"font-size": "12px"});
+				    	domConstruct.destroy(tnode.iconNode);
+				    	if (tnode.item.level == 1) {
+				    		domStyle.set(tnode.labelNode, {"font-weight": "bold"});
+				    		var metadataButton = domConstruct.create("div", { "class": "legendIcon" }, tnode.contentNode, "last");
+				    	}
+				    	if (tnode.item.level == 2) {
+				    		domConstruct.destroy(tnode.expandoNode);
+				    		domStyle.set(tnode.labelNode, {"padding-left": "20px"});
+				    	}
+
+				    	var cb = new dijit.form.CheckBox();
+				    	cb.placeAt(tnode.labelNode, "first");
+				      
+				    	on(cb, "change", function(checked) {
+				    	  
+				    		var treeNode = dijit.getEnclosingWidget(cb.domNode.parentNode);
+				    		//treeNode.expand();
+				    		treeNode.tree._expandNode(treeNode);
+  
+				    		var parentcb = cb;
+				    		//console.log(parentcb.checked)
+				    		treeNode.getChildren().forEach(function(item) {
+				    			var checkbox =  dijit.getEnclosingWidget(item.labelNode.children[0]);
+				    			checkbox.set("checked", parentcb.checked)
+				    		});
+				    	  
+				    	  
+				    		if (checked) {
+				    			console.log("checked item", tnode.item.label);
+				    			if (tnode.item.level == 2) {
+				    				that.mspFilteringUses.push(tnode.item.id[0]);
+				    				
+				    				//that.layerListMode = "OUTPUT_FILTER";
+							        that.mspDisplayLayer.setSource(null);
+							        that.cleanMspHighlight();
+									that.servicePanel.header = that.mspParamsArray[nr].title;
+									that.getMspFeatures(nr, that.mspParamsArray[nr].filterUrl, that.mspParamsArray[nr].useType, that.mspFilteringUses);
+				    			}
+				    		}
+				    		else {
+				    			if (tnode.item.level == 2) {
+				    				var index = that.mspFilteringUses.indexOf(tnode.item.id[0]);
+				    				if (index > -1) {
+				    					that.mspFilteringUses.splice(index, 1);
+				    				}
+				    				
+				    				//that.layerListMode = "OUTPUT_FILTER";
+							        that.mspDisplayLayer.setSource(null);
+							        that.cleanMspHighlight();
+							        if (that.mspFilteringUses.length > 0) {
+							        	that.servicePanel.header = that.mspParamsArray[nr].title;
+										that.getMspFeatures(nr, that.mspParamsArray[nr].filterUrl, that.mspParamsArray[nr].useType, that.mspFilteringUses);
+							        }
+				    			}
+				    		}
+				    	  
+				    	});
+				    	
+				    	return tnode;
+				    }
+				}, allContainer);
+				
+				var hideAllButton = domConstruct.create("div", {"class": "toolLink", "style": "margin-top: 10px; display: inline-block;", "innerHTML": "Hide all"}, cpContent, "last");
+				var collapseAllButton = domConstruct.create("div", {"class": "toolLink", "style": "margin-top: 10px; margin-left: 20px; display: inline-block;", "innerHTML": "Collapse all"}, cpContent, "last");
+				on(hideAllButton, "click", lang.hitch(this, function() {
+					this.hideAllFiltering(nr);
+				}));
+				
+				on(collapseAllButton, "click", lang.hitch(this, function() {
+					this.mspParamsArray[nr].tree.collapseAll();
+				}));
+				      
+				      /*dojo.connect(cb, "onChange", function() {
+				    	  console.log("checked item", tnode.item);
+				        var treeNode = dijit.getEnclosingWidget(this.domNode.parentNode);
+				        //treeNode.expand();
+				        treeNode.tree._expandNode(treeNode);
+				        dojo.publish("/checkbox/clicked", [{
+				          "checkbox": this,
+				          "item": treeNode
+				        }]);
+				        
+				        var parentcb = this;
+				        console.log(parentcb.checked)
+				          treeNode.getChildren().forEach(function(item) {
+				          var checkbox =  dijit.getEnclosingWidget(item.labelNode.children[0]);
+				         checkbox.set('checked', parentcb.checked)
+				      });
+				      });
+				   
+				      return tnode;
+				    }
+				  }, allContainer);
+				dojo.subscribe("/checkbox/clicked", function(message) {
+					console.log("you clicked:", message);
+					console.log("you clicked:", store.getLabel(message.item.item));
+
+				  });*/
+				
+				
+				
+				/*var allContainer = domConstruct.create("div", {}, cpContent, "last");
 				var allLabelContainer = domConstruct.create("div", {}, allContainer, "last");
 				var allCheckbox = new dijit.form.CheckBox();
 				allCheckbox.placeAt(allLabelContainer, "first");
@@ -804,10 +1001,16 @@ define([
 						this.cleanMspHighlight();
 						
 					}
-				}));
+				}));*/
 			}
 			
-			var filterContainer = domConstruct.create("div", {"style": "margin-top: 10px"}, cpContent, "last");
+			on(this.mspParamsArray[nr].titlePane, "hide", lang.hitch(this, function() {
+				if (nr < 5) {
+					this.hideAllFiltering(nr);
+				}
+			}));
+			
+			/*var filterContainer = domConstruct.create("div", {"style": "margin-top: 10px"}, cpContent, "last");
 			var filterLabelContainer = domConstruct.create("div", {"style": "width: 100%;"}, filterContainer, "last");
 			
 			if (nr < 5) {
@@ -851,9 +1054,9 @@ define([
 						//console.log("OUTPUT_FILTER_FILTER_checkbox close");
 					}
 				}));
-			}
+			}*/
 					
-			sel.on("change", lang.hitch(this, function(evt) {
+			/*sel.on("change", lang.hitch(this, function(evt) {
 		        this.layerListMode = "OUTPUT_FILTER";
 		        this.mspDisplayLayer.setSource(null);
 		        this.cleanMspHighlight();
@@ -861,7 +1064,7 @@ define([
 				this.getMspFeatures(nr, this.mspParamsArray[nr].filterUrl, this.mspParamsArray[nr].useType, sel.get("value"));
 				legendRect.setStroke({width: 3, color: this.mspStyles[sel.get("value").split("-")[0]]});
 				domStyle.set(filterLegend, {"display": "block"});
-		    }));
+		    }));*/
 			/*on(filterShowButton, "click", lang.hitch(this, function() {
 				this.layerListMode = "OUTPUT_FILTER";
 				this.mspDisplayLayer.setSource(null);
@@ -873,7 +1076,7 @@ define([
 				domStyle.set(filterLegend, {"display": "block"});
 			}));*/
 			
-			on(this.mspParamsArray[nr].titlePane, "hide", lang.hitch(this, function() {
+			/*on(this.mspParamsArray[nr].titlePane, "hide", lang.hitch(this, function() {
 				if (nr < 5) {
 					allCheckbox.set("checked", false);
 					filterCheckbox.set("checked", false);
@@ -891,7 +1094,30 @@ define([
 				if (nr < 5) {
 					allCheckbox.set("checked", true);
 				}
+			}));*/
+		},
+		
+		hideAllFiltering: function(nr) {
+			var treeNodes = this.mspParamsArray[nr].tree.getChildren();
+			array.forEach(treeNodes[0].item.children, lang.hitch(this, function(parentItem) {
+				var parentNode = this.mspParamsArray[nr].tree.getNodeFromItem(parentItem.id);
+				var parentCheckbox =  dijit.getEnclosingWidget(parentNode.labelNode.children[0]);
+				parentCheckbox.set("checked", false);
+				
+    			array.forEach(parentItem.children, lang.hitch(this, function(childItem) {
+    				try {
+    					var childNode = this.mspParamsArray[nr].tree.getNodeFromItem(childItem.id);
+        				var childCheckbox =  dijit.getEnclosingWidget(childNode.labelNode.children[0]);
+        				childCheckbox.set("checked", false);
+    				}
+    				catch(err) {
+    					//console.log(err);
+    				}
+    			}));
 			}));
+			
+			this.mspDisplayLayer.setSource(null);
+	        this.cleanMspHighlight();
 		},
 				
 		setMspMapLayers: function() {
@@ -954,14 +1180,21 @@ define([
 			this.utils.show("servicePanel", "none");
 		},
 		
-		getMspFeatures: function(nr, layerUrl, useType, use) {
+		getMspFeatures: function(nr, layerUrl, useType, uses) {
 			var serviceUrl = "sc/tools/get-data";
 			var featuresUrl = null;
 			if (nr < 5) {
-				featuresUrl = layerUrl + "/query?where=" + useType + "+%3D+%27" + use + "%27+OR+" + useType + "+LIKE+%27" + use + "%2C%25%27+OR+" + useType + "+LIKE+%27%25%2C+" + use + "%2C%25%27+OR+" + useType + "+LIKE+%27%25%2C+" + use + "%27&returnGeometry=true&f=pjson";
+				//featuresUrl = layerUrl + "/query?where=" + useType + "+%3D+%27" + use + "%27+OR+" + useType + "+LIKE+%27" + use + "%2C%25%27+OR+" + useType + "+LIKE+%27%25%2C+" + use + "%2C%25%27+OR+" + useType + "+LIKE+%27%25%2C+" + use + "%27&returnGeometry=true&f=pjson";
+				featuresUrl = layerUrl + "/query?where=";
+				array.forEach(uses, lang.hitch(this, function(use) {
+					featuresUrl = featuresUrl + useType + "+%3D+%27" + use + "%27+OR+" + useType + "+LIKE+%27" + use + "%2C%25%27+OR+" + useType + "+LIKE+%27%25%2C+" + use + "%2C%25%27+OR+" + useType + "+LIKE+%27%25%2C+" + use + "%27+OR+";
+				}));
+				featuresUrl = featuresUrl.slice(0, -4) + "&outFields=*&returnGeometry=true&f=pjson";
+				//featuresUrl = featuresUrl + "&returnGeometry=true&f=pjson";
+				console.log(featuresUrl);
 			}
 			else {
-				featuresUrl = layerUrl + "/query?where=priority+%3D+%27" + use + "%27+OR+priority+LIKE+%27" + use + "%2C%25%27+OR+priority+LIKE+%27%25%2C+" + use + "%2C%25%27+OR+priority+LIKE+%27%25%2C+" + use + "%27+OR+reserved+%3D+%27" + use + "%27+OR+reserved+LIKE+%27" + use + "%2C%25%27+OR+reserved+LIKE+%27%25%2C+" + use + "%2C%25%27+OR+reserved+LIKE+%27%25%2C+" + use + "%27+OR+allowed+%3D+%27" + use + "%27+OR+allowed+LIKE+%27" + use + "%2C%25%27+OR+allowed+LIKE+%27%25%2C+" + use + "%2C%25%27+OR+allowed+LIKE+%27%25%2C+" + use + "%27++OR+restricted+%3D+%27" + use + "%27+OR+restricted+LIKE+%27" + use + "%2C%25%27+OR+restricted+LIKE+%27%25%2C+" + use + "%2C%25%27+OR+restricted+LIKE+%27%25%2C+" + use + "%27++OR+forbidden+%3D+%27" + use + "%27+OR+forbidden+LIKE+%27" + use + "%2C%25%27+OR+forbidden+LIKE+%27%25%2C+" + use + "%2C%25%27+OR+forbidden+LIKE+%27%25%2C+" + use + "%27&returnGeometry=true&f=pjson";
+				//featuresUrl = layerUrl + "/query?where=priority+%3D+%27" + use + "%27+OR+priority+LIKE+%27" + use + "%2C%25%27+OR+priority+LIKE+%27%25%2C+" + use + "%2C%25%27+OR+priority+LIKE+%27%25%2C+" + use + "%27+OR+reserved+%3D+%27" + use + "%27+OR+reserved+LIKE+%27" + use + "%2C%25%27+OR+reserved+LIKE+%27%25%2C+" + use + "%2C%25%27+OR+reserved+LIKE+%27%25%2C+" + use + "%27+OR+allowed+%3D+%27" + use + "%27+OR+allowed+LIKE+%27" + use + "%2C%25%27+OR+allowed+LIKE+%27%25%2C+" + use + "%2C%25%27+OR+allowed+LIKE+%27%25%2C+" + use + "%27++OR+restricted+%3D+%27" + use + "%27+OR+restricted+LIKE+%27" + use + "%2C%25%27+OR+restricted+LIKE+%27%25%2C+" + use + "%2C%25%27+OR+restricted+LIKE+%27%25%2C+" + use + "%27++OR+forbidden+%3D+%27" + use + "%27+OR+forbidden+LIKE+%27" + use + "%2C%25%27+OR+forbidden+LIKE+%27%25%2C+" + use + "%2C%25%27+OR+forbidden+LIKE+%27%25%2C+" + use + "%27&returnGeometry=true&f=pjson";
 			}
 			var servicedata = {
 				"url": featuresUrl,
@@ -980,7 +1213,7 @@ define([
 							this.mspDisplayLayer.setVisible(true);
 							
 							var gjson = ArcgisToGeojsonUtils.arcgisToGeoJSON(response.item);
-							this.drawMspFeatures(gjson, use);
+							this.drawMspFeatures(gjson, useType, uses[0]);
 						}
 					}
 				}),
@@ -991,29 +1224,63 @@ define([
 			);
 		},
 		
-		drawMspFeatures: function(featureSet, use) {
-			this.mspDisplayLayer.setSource(null);
-			
-			var style = new ol.style.Style({
-				stroke: new ol.style.Stroke({
-					color: this.mspStyles[use.split("-")[0]],
-					width: 3
-				})/*,
-				fill: new ol.style.Fill({
-					color: "rgba(255, 255, 0, 0.2)"
-				})*/
-			});
-			this.mspDisplayLayer.setStyle(style);	
-						
-			var gjson = new ol.format.GeoJSON( {
-				featureProjection: 'EPSG:3857'
-			});
-			var source = new ol.source.Vector({
-				features: gjson.readFeatures(featureSet)
-			});
-			this.mspDisplayLayer.setSource(source);
-			var extent = source.getExtent();
-			this.map.getView().fit(extent, this.map.getSize());
+		drawMspFeatures: function(featureSet, useType, use) {
+			if (use) {
+				this.mspDisplayLayer.setSource(null);
+				
+				var styleFunction = lang.hitch(this, function(feature) {
+					var fUse = feature.get(useType+"_symbol");
+					/*var pat = "sand"
+					if (fUse.split("-")[0] == "coast") {
+						pat = "dolomite";
+					}
+					else if (fUse.split("-")[0] == "extraction") {
+						pat = "pine";
+					}
+					else if (fUse.split("-")[0] == "transport") {
+						pat = "chaos";
+					}
+					else if (fUse.split("-")[0] == "line") {
+						pat = "copy (char pattern)";
+					}
+					else if (fUse.split("-")[0] == "general") {
+						pat = "hexagon";
+					}
+					else if (fUse.split("-")[0] == "nature") {
+						pat = "hatch";
+					}*/
+					var style = new ol.style.Style({
+						stroke: new ol.style.Stroke({
+							color: this.mspStyles[fUse.split("-")[0]],
+							width: 3
+						})/*,
+						fill: new ol.style.FillPattern({	
+							pattern: pat,
+							ratio: 1,
+							color: this.mspStyles[fUse.split("-")[0]],
+							offset: 0,
+							scale: 5,
+							//fill: new ol.style.Fill ({ color:$("#bg").val() }),
+							size: 1,
+							spacing: 5,
+							angle: 0
+						})*/
+					});
+					return style;
+				});
+				
+				this.mspDisplayLayer.setStyle(styleFunction);	
+							
+				var gjson = new ol.format.GeoJSON( {
+					featureProjection: 'EPSG:3857'
+				});
+				var source = new ol.source.Vector({
+					features: gjson.readFeatures(featureSet)
+				});
+				this.mspDisplayLayer.setSource(source);
+				var extent = source.getExtent();
+				this.map.getView().fit(extent, this.map.getSize());
+			}
 		},
 		
 		drawMspHighlightFeature: function() {
@@ -1029,6 +1296,9 @@ define([
 		
 		setMspPopupContent: function() {
 			this.servicePanel.cleanServicePanel();
+			if (this.mspIdentifyResults.length > 1) {
+				domConstruct.create("div", {"innerHTML": this.mspIdentifyResults.length + " objects found in this location. Use arrows below to view other objects information.", "id": "headerInfoMessage"}, this.servicePanel.infoContainer, "last");
+			}
 			var objectInfoContainer = domConstruct.create("div", {"class": "headerInfoContainer"}, this.servicePanel.infoContainer, "last");
 			var nr = this.mspIdentifyNr + 1;
 			if (this.mspIdentifyNr > 0) {
@@ -1057,7 +1327,6 @@ define([
 			var featureProperties = null;
 			if (this.mspIdentifyResults[this.mspIdentifyNr].properties) {
 				featureProperties = this.mspIdentifyResults[this.mspIdentifyNr].properties;
-				console.log("properties", featureProperties);
 				var displayProperties = {};
 				for (var property in featureProperties) {
 					if (featureProperties.hasOwnProperty(property)) {
@@ -1076,9 +1345,16 @@ define([
 							this.servicePanel.header = this.mspIdentifyResults[this.mspIdentifyNr].layerName;
 						}
 						else if ((this.layerListMode == "OUTPUT_FILTER") || (this.layerListMode == "OUTPUT_FILTER_ALL") || (this.layerListMode == "OUTPUT_PSU")) {
-							if ((featureProperties[property] != null) && (featureProperties[property] != "Null") && (this.mspPropertiesList.hasOwnProperty(property))) {
-								displayProperties[this.mspPropertiesList[property]] = featureProperties[property];
-							}
+							for (var property in this.mspPropertiesList) {
+								if (this.mspPropertiesList.hasOwnProperty(property)) {
+									if ((featureProperties[property] == null) || (featureProperties[property] == "Null")) {
+										displayProperties[this.mspPropertiesList[property]] = "";
+									}
+									else {
+										displayProperties[this.mspPropertiesList[property]] = featureProperties[property];
+									}
+								}
+							}	
 							if (this.mspIdentifyResults[this.mspIdentifyNr].layerName) {
 								this.servicePanel.header = this.mspIdentifyResults[this.mspIdentifyNr].layerName;
 							}
@@ -1087,7 +1363,6 @@ define([
 				}
 			}
 			this.drawMspHighlightFeature();
-			//this.servicePanel.header = this.mspIdentifyResults[this.mspIdentifyNr].layerName;
 			this.servicePanel.setupAndShowMspPopup(displayProperties);
 			
 			on(this.servicePanel.closeButton, "click", lang.hitch(this, function() {

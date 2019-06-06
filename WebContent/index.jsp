@@ -16,6 +16,8 @@
 		<!-- <script src="1.0/js/proj4.js" type="text/javascript"></script>
 		<script src="1.0/js/proj3035.js" type="text/javascript"></script>-->
 		<script src="1.0/js/arcgis-to-geojson.js" type="text/javascript"></script>
+		<script src="1.0/js/ol.js" type="text/javascript"></script>
+		<script src="1.0/js/ol-ext.js" type="text/javascript"></script>
 		
 		<script>
 			var basemapsVersion = "1.0";

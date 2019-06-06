@@ -7,10 +7,7 @@ define([
   "dojo/_base/array", "dojo/dom-construct",  //"dojo/query!css3",
   "dojo/store/Memory","dijit/tree/ObjectStoreModel", "dijit/Tree", "dijit/form/FilteringSelect",
   "dijit/form/CheckBox", "dijit/Tooltip",
-  //"dojox/validate/regexp",
-  "basemaps/js/ol",
-  //"esri/request", "esri/tasks/IdentifyTask", "esri/tasks/IdentifyParameters",
-  //"dijit/form/HorizontalSlider", "dijit/form/HorizontalRule", "dijit/form/HorizontalRuleLabels",
+  //"basemaps/js/ol",
   "dijit/_WidgetBase", "dijit/_TemplatedMixin",
   "dojo/text!../templates/layerlistWidget.html"
 ], function(
@@ -22,10 +19,7 @@ define([
   array, domConstruct, //array, query,
   Memory, ObjectStoreModel, Tree, FilteringSelect,
   checkBox, Tooltip,
-  //regexp,
-  ol,
-  //esriRequest, IdentifyTask, IdentifyParameters,
-  //HorizontalSlider, HorizontalRule, HorizontalRuleLabels,
+  //ol,
   _WidgetBase, _TemplatedMixin, template
 ){
   return declare([_WidgetBase, _TemplatedMixin], {
