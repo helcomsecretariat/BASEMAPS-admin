@@ -1191,13 +1191,16 @@ html, body {
 }
 
 .claro .dijitTreeRowSelected {
-  background-color: #EBEDEF;
-  border-color: #B73C2B;
+  /*background-color: #EBEDEF;
+  border-color: #B73C2B;*/
+  background-color: #FFF;
+  border-color: #FFF;
 }
 
 .claro .dijitTreeRowHover {
   background-color: #EBEDEF;
-  border-color: #B73C2B;
+  /*border-color: #B73C2B;*/
+  border-color: #FFF;
 }
 
 .dijitTreeContent {
@@ -1227,6 +1230,13 @@ html, body {
   height: 16px;
   display: inline-block;
   cursor: pointer;
+  float: right;
+}
+
+.legendIconTest {
+  width: 30px;
+  height: 20px;
+  display: inline-block;
   float: right;
 }
 

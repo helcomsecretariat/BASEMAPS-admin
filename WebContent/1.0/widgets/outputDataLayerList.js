@@ -65,7 +65,9 @@ define([
 		mspFilteringAccordion: null,
 		mspFilteringUses: [],
 		mspParamsArray: [],
-		mspStyles: {},
+		mspFillStyles: {},
+		mspFilteringHideAllAvailable: false,
+		mspCountourStyles: {},
 		mspDistinctCodes: {},
 		mspDisplayLayer: null,
 		mspHighlightLayer: null,
@@ -618,7 +620,7 @@ define([
 			this.mspFilteringAccordion = new TitleGroup({style:"width: 350px"}, this.mspViewAccordionPanes.tp2.containerNode);
 			this.mspFilteringAccordion.startup();
 						
-			this.mspStyles = {
+			/*this.mspStyles = {
 				"aquaculture": "rgba(94, 175, 147, 1)",
 				"coast": "rgba(177, 163, 125, 1)",
 				"extraction": "rgba(177, 129, 125, 1)",
@@ -634,6 +636,122 @@ define([
 				"tourism": "rgba(174, 175, 94, 1)",
 				"transport": "rgba(75, 112, 175, 1)",
 				"multiuse": "rgba(236, 89, 89, 1)"				
+			};*/
+			
+			this.mspFillStyles = {
+				"aquaculture": {
+					"rgb": "rgba(190, 255, 232, 1)",
+					"pattern": "hatch",
+					"size": 2,
+					"spacing": 8,
+					"angle": 45
+				},
+				"coast": {
+					"rgb": "rgba(215, 215, 158, 1)",
+					"pattern": "hatch",
+					"size": 2,
+					"spacing": 8,
+					"angle": 45
+				},
+				"extraction": {
+					"rgb": "rgba(215, 176, 158, 1)",
+					"pattern": "hatch",
+					"size": 2,
+					"spacing": 8,
+					"angle": 45
+				},
+				"fishing": {
+					"rgb": "rgba(190, 232, 255, 1)",
+					"pattern": "hatch",
+					"size": 2,
+					"spacing": 8,
+					"angle": 45
+				},
+				"general": {
+					"rgb": "rgba(100, 100, 100, 1)",
+					"pattern": "tile",
+					"size": 2,
+					"spacing": 8,
+					"angle": 0
+				},
+				"heritage": {
+					"rgb": "rgba(245, 202, 122, 1)",
+					"pattern": "hatch",
+					"size": 2,
+					"spacing": 8,
+					"angle": 45
+				},
+				"installations": {
+					"rgb": "rgba(255, 190, 190, 1)",
+					"pattern": "hatch",
+					"size": 2,
+					"spacing": 8,
+					"angle": 45
+				},
+				"line": {
+					"rgb": "rgba(232, 190, 255, 1)",
+					"pattern": "hatch",
+					"size": 2,
+					"spacing": 8,
+					"angle": 45
+				},
+				"military": {
+					"rgb": "rgba(156, 156, 156, 1)",
+					"pattern": "hatch",
+					"size": 2,
+					"spacing": 8,
+					"angle": 45
+				},
+				"nature": {
+					"rgb": "rgba(165, 245, 122, 1)",
+					"pattern": "hatch",
+					"size": 2,
+					"spacing": 8,
+					"angle": 45
+				},
+				"other": {
+					"rgb": "rgba(178, 178, 178, 1)",
+					"pattern": "cross",
+					"size": 1,
+					"spacing": 10,
+					"angle": 0
+				},
+				"research": {
+					"rgb": "rgba(233, 255, 190, 1)",
+					"pattern": "hatch",
+					"size": 2,
+					"spacing": 8,
+					"angle": 45
+				},
+				"tourism": {
+					"rgb": "rgba(255, 255, 190, 1)",
+					"pattern": "hatch",
+					"size": 2,
+					"spacing": 8,
+					"angle": 45
+				},
+				"transport": {
+					"rgb": "rgba(115, 178, 255, 1)",
+					"pattern": "hatch",
+					"size": 2,
+					"spacing": 8,
+					"angle": 45
+				},
+				"multiuse": {
+					"rgb": "rgba(230, 0, 0, 1)",
+					"pattern": "hatch",
+					"size": 2,
+					"spacing": 8,
+					"angle": 45
+				},				
+			};
+			
+			this.mspCountourStyles = {
+				"priority": "rgba(197, 0, 255, 1)",
+				"reserved": "rgba(0, 112, 255, 1)",
+				"allowed": "rgba(76, 230, 0, 1)",
+				"restricted": "rgba(255, 170, 0, 1)",
+				"forbidden": "rgba(255, 0, 0, 1)",
 			};
 			
 			array.forEach(this.mspParamsArray, lang.hitch(this, function(mspParams, i) {
@@ -860,7 +978,26 @@ define([
 				    	domConstruct.destroy(tnode.iconNode);
 				    	if (tnode.item.level == 1) {
 				    		domStyle.set(tnode.labelNode, {"font-weight": "bold"});
-				    		var metadataButton = domConstruct.create("div", { "class": "legendIcon" }, tnode.contentNode, "last");
+				    		
+				    		var styleInfo = that.mspFillStyles[tnode.item.label];
+				    		/*var styleInfo2 = that.mspFillStyles[tnode.item.label[0]];
+				    		console.log("styleInfo", styleInfo);
+				    		console.log("styleInfo2", styleInfo2);*/
+				    		var fPat = new ol.style.FillPattern({
+								pattern: styleInfo.pattern,
+								ratio: 1,
+								color: styleInfo.rgb,
+								offset: 0,
+								scale: 1,
+								size: styleInfo.size,
+								spacing: styleInfo.spacing,
+								angle: styleInfo.angle
+							});
+							//console.log("pat", fPat.getImage().toDataURL());
+							
+							//that.mspCountourStyles[that.mspParamsArray[nr].useType]
+							
+				    		var metadataButton = domConstruct.create("div", { "class": "legendIconTest", "style": "background-image: url('" + fPat.getImage().toDataURL() +"'); border: 1px solid " + that.mspCountourStyles[that.mspParamsArray[nr].useType] }, tnode.contentNode, "last");
 				    	}
 				    	if (tnode.item.level == 2) {
 				    		domConstruct.destroy(tnode.expandoNode);
@@ -887,6 +1024,7 @@ define([
 				    		if (checked) {
 				    			console.log("checked item", tnode.item.label);
 				    			if (tnode.item.level == 2) {
+				    				that.mspFilteringHideAllAvailable = true;
 				    				that.mspFilteringUses.push(tnode.item.id[0]);
 				    				
 				    				//that.layerListMode = "OUTPUT_FILTER";
@@ -897,7 +1035,7 @@ define([
 				    			}
 				    		}
 				    		else {
-				    			if (tnode.item.level == 2) {
+				    			if ((tnode.item.level == 2) && (that.mspFilteringHideAllAvailable)) {
 				    				var index = that.mspFilteringUses.indexOf(tnode.item.id[0]);
 				    				if (index > -1) {
 				    					that.mspFilteringUses.splice(index, 1);
@@ -921,12 +1059,22 @@ define([
 				
 				var hideAllButton = domConstruct.create("div", {"class": "toolLink", "style": "margin-top: 10px; display: inline-block;", "innerHTML": "Hide all"}, cpContent, "last");
 				var collapseAllButton = domConstruct.create("div", {"class": "toolLink", "style": "margin-top: 10px; margin-left: 20px; display: inline-block;", "innerHTML": "Collapse all"}, cpContent, "last");
+				var zoomAllButton = domConstruct.create("div", {"class": "toolLink", "style": "margin-top: 10px; margin-left: 20px; display: inline-block;", "innerHTML": "Zoom to"}, cpContent, "last");
+				
 				on(hideAllButton, "click", lang.hitch(this, function() {
 					this.hideAllFiltering(nr);
 				}));
 				
 				on(collapseAllButton, "click", lang.hitch(this, function() {
 					this.mspParamsArray[nr].tree.collapseAll();
+				}));
+				
+				on(zoomAllButton, "click", lang.hitch(this, function() {
+					var source = this.mspDisplayLayer.getSource();
+					if (source != null) {
+						var extent = source.getExtent();
+						this.map.getView().fit(extent, this.map.getSize());
+					}
 				}));
 				      
 				      /*dojo.connect(cb, "onChange", function() {
@@ -1098,6 +1246,12 @@ define([
 		},
 		
 		hideAllFiltering: function(nr) {
+			
+			this.mspFilteringHideAllAvailable = false;
+			this.mspFilteringUses = [];
+			this.mspDisplayLayer.setSource(null);
+			this.cleanMspHighlight();
+			
 			var treeNodes = this.mspParamsArray[nr].tree.getChildren();
 			array.forEach(treeNodes[0].item.children, lang.hitch(this, function(parentItem) {
 				var parentNode = this.mspParamsArray[nr].tree.getNodeFromItem(parentItem.id);
@@ -1213,7 +1367,8 @@ define([
 							this.mspDisplayLayer.setVisible(true);
 							
 							var gjson = ArcgisToGeojsonUtils.arcgisToGeoJSON(response.item);
-							this.drawMspFeatures(gjson, useType, uses[0]);
+							//this.drawMspFeatures(gjson, useType, uses[0]);
+							this.drawMspFeatures(gjson, useType);
 						}
 					}
 				}),
@@ -1224,63 +1379,45 @@ define([
 			);
 		},
 		
-		drawMspFeatures: function(featureSet, useType, use) {
-			if (use) {
-				this.mspDisplayLayer.setSource(null);
+		//drawMspFeatures: function(featureSet, useType, use) {
+		drawMspFeatures: function(featureSet, useType) {
+			this.mspDisplayLayer.setSource(null);
+			
+			var styleFunction = lang.hitch(this, function(feature) {
+				var fUse = feature.get(useType+"_symbol");
 				
-				var styleFunction = lang.hitch(this, function(feature) {
-					var fUse = feature.get(useType+"_symbol");
-					/*var pat = "sand"
-					if (fUse.split("-")[0] == "coast") {
-						pat = "dolomite";
-					}
-					else if (fUse.split("-")[0] == "extraction") {
-						pat = "pine";
-					}
-					else if (fUse.split("-")[0] == "transport") {
-						pat = "chaos";
-					}
-					else if (fUse.split("-")[0] == "line") {
-						pat = "copy (char pattern)";
-					}
-					else if (fUse.split("-")[0] == "general") {
-						pat = "hexagon";
-					}
-					else if (fUse.split("-")[0] == "nature") {
-						pat = "hatch";
-					}*/
-					var style = new ol.style.Style({
-						stroke: new ol.style.Stroke({
-							color: this.mspStyles[fUse.split("-")[0]],
-							width: 3
-						})/*,
-						fill: new ol.style.FillPattern({	
-							pattern: pat,
-							ratio: 1,
-							color: this.mspStyles[fUse.split("-")[0]],
-							offset: 0,
-							scale: 5,
-							//fill: new ol.style.Fill ({ color:$("#bg").val() }),
-							size: 1,
-							spacing: 5,
-							angle: 0
-						})*/
-					});
-					return style;
+				var fUseSymbol = fUse.split("-")[0];
+				var fillPattern = new ol.style.FillPattern({
+					pattern: this.mspFillStyles[fUseSymbol].pattern,
+					ratio: 1,
+					color: this.mspFillStyles[fUseSymbol].rgb,
+					offset: 0,
+					scale: 1,
+					size: this.mspFillStyles[fUseSymbol].size,
+					spacing: this.mspFillStyles[fUseSymbol].spacing,
+					angle: this.mspFillStyles[fUseSymbol].angle
 				});
-				
-				this.mspDisplayLayer.setStyle(styleFunction);	
-							
-				var gjson = new ol.format.GeoJSON( {
-					featureProjection: 'EPSG:3857'
+				var style = new ol.style.Style({
+					stroke: new ol.style.Stroke({
+						color: this.mspCountourStyles[useType],
+						width: 1
+					}),
+					fill: fillPattern
 				});
-				var source = new ol.source.Vector({
-					features: gjson.readFeatures(featureSet)
-				});
-				this.mspDisplayLayer.setSource(source);
-				var extent = source.getExtent();
-				this.map.getView().fit(extent, this.map.getSize());
-			}
+				return style;
+			});
+			
+			this.mspDisplayLayer.setStyle(styleFunction);	
+						
+			var gjson = new ol.format.GeoJSON( {
+				featureProjection: 'EPSG:3857'
+			});
+			var source = new ol.source.Vector({
+				features: gjson.readFeatures(featureSet)
+			});
+			this.mspDisplayLayer.setSource(source);
+			//var extent = source.getExtent();
+			//this.map.getView().fit(extent, this.map.getSize());
 		},
 		
 		drawMspHighlightFeature: function() {
