@@ -808,6 +808,22 @@ html, body {
 	z-index: 100;
 }
 
+.splashWidget {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin-top: -160px;
+	margin-left: -200px;
+	width: 600px;
+	height: 405px;
+	/*background-color: #B73C2B;*/
+	color: #800000;
+	border: 3px solid #800000;
+	text-align: center;
+	font-family: "Istok Web", "Calibri", sans-serif;
+	z-index: 100;
+}
+
 .aboutPanelWidget {
 	position: absolute;
 	top: 70px;
@@ -932,6 +948,17 @@ html, body {
 	background-repeat: no-repeat;
 	background-position: center;
 	background-color: #B73C2B;
+	width: 100%;
+	height: 60px;
+	margin-top: 10px;
+}
+
+.splashPopupFooter {
+	text-align: center;
+	font-size: 12px;
+	font-style: italic;
+	background-color: #B73C2B;
+	color: white;
 	width: 100%;
 	height: 60px;
 	margin-top: 10px;
@@ -1233,11 +1260,19 @@ html, body {
   float: right;
 }
 
-.legendIconTest {
-  width: 30px;
+.legendIconQuery {
+  width: 20px;
   height: 20px;
   display: inline-block;
   float: right;
+}
+
+.legendAllUsesQuery {
+  background-image: url("../img/allUsesLegend.png");
+  background-repeat: no-repeat;
+  background-position: left;
+  width: 136px;
+  height: 104px;
 }
 
 .metadataButtonActive {
@@ -1374,13 +1409,11 @@ html, body {
 }
 
 .psuLegend {
-  /*background-image: url("../img/psu_legend.png");*/
   background-image: url("//maps.helcom.fi/arcgis/services/PBS126/MSPoutput2_2019/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=PriorityUse");
   background-repeat: no-repeat;
   background-position: left;
   width: 378px;
   height: 270px;
-  margin-left: 20px; 
   margin-top: 10px;
 }
 

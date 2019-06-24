@@ -154,8 +154,8 @@ define([
 				dojo.addClass(this.inputDataView, "leftPanelViewButton");
 				this.utils.show("inputDataSection", "none");
 				this.utils.show("outputDataSection", "block");
-				this.utils.show("mspFilterContainerID", "none");
-				this.utils.show("mspLayerListTreeID", "none");
+				//this.utils.show("mspFilterContainerID", "none");
+				//this.utils.show("mspLayerListTreeID", "none");
 				this.inputDataLL.layerListMode = null;
 				this.outputDataLL.layerListMode = null;
 				this.inputDataLL.hideAllLayers();

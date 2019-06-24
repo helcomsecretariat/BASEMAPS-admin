@@ -29,41 +29,20 @@ define([
 				this.utils.show("aboutPanel", "none");
 			}));
 		    
-		    var mspInputButton = domConstruct.create("div", { "class": "toolLink", "style": "margin-top: 10px; display: inline-block;", "innerHTML": "MSP input data manual"}, this.aboutPanel.containerNode, "last");
-		    var mspOutputButton = domConstruct.create("div", { "class": "toolLink", "style": "margin-left: 20px; margin-top: 10px; display: inline-block;", "innerHTML": "MSP output data manual"}, this.aboutPanel.containerNode, "last");
+		    //var mspInputButton = domConstruct.create("div", { "class": "toolLink", "style": "margin-top: 10px; display: inline-block;", "innerHTML": "MSP input data manual"}, this.aboutPanel.containerNode, "last");
+		    //var mspOutputButton = domConstruct.create("div", { "class": "toolLink", "style": "margin-left: 20px; margin-top: 10px; display: inline-block;", "innerHTML": "MSP output data manual"}, this.aboutPanel.containerNode, "last");
 		    
-		    var mspInputSection = domConstruct.create("div", { "style": "margin-top: 10px; font-style: italic;", "innerHTML": "Placeholder for MSP input data manual"}, this.aboutPanel.containerNode, "last");
-		    var mspOutputSection = domConstruct.create("div", { "style": "display: none; margin-top: 10px; font-style: italic;", "innerHTML": "Placeholder for MSP output data manual"}, this.aboutPanel.containerNode, "last");
+		    var mspInputSection = domConstruct.create("div", { "style": "margin-top: 10px; font-style: italic;", "innerHTML": "<a href= 'http://www.helcom.fi/Documents/BASEMAPSInstructions_Users_V1.pdf' target='_blank'>MSP input data manual</a>"}, this.aboutPanel.containerNode, "last");
+		    var mspOutputSection = domConstruct.create("div", { "style": "display: none; margin-top: 10px; font-style: italic;", "innerHTML": "MSP input data manual is not available yet."}, this.aboutPanel.containerNode, "last");
 		    
-		    on(mspInputButton, "click", lang.hitch(this, function() {
+		    /*on(mspInputButton, "click", lang.hitch(this, function() {
 		    	domStyle.set(mspOutputSection, "display", "none");
 		    	domStyle.set(mspInputSection, "display", "block");
 			}));
 		    on(mspOutputButton, "click", lang.hitch(this, function() {
 		    	domStyle.set(mspInputSection, "display", "none");
 		    	domStyle.set(mspOutputSection, "display", "block");
-			}));
-		    
-		    /*var tc = new TabContainer({
-		    	doLayout: false//,
-		    	//style: "height: 100%; width: 100%;"
-		    }, container);
-
-		    var cp1 = new ContentPane({
-		    	title: "MSP input data",
-		    	content: "MSP input data user manual will be here."
-		    });
-		    tc.addChild(cp1);
-
-		    var cp2 = new ContentPane({
-		    	title: "MSP output data",
-		    	content: "MSP output data user manual will be here."
-		    });
-		    tc.addChild(cp2);
-
-		    tc.startup();*/
-		    //this.infoContainer = domConstruct.create("div", { "class": "aboutPanelInfoContainer" }, this.aboutPanel.containerNode, "last");
-		    
+			}));*/
 		},
 		/*cleanServicePanel: function() {
 			domConstruct.empty(this.infoContainer);

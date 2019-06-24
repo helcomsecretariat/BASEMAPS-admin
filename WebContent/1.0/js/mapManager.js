@@ -67,6 +67,7 @@ define([
 							source: new ol.source.OSM()
 						});
 						this.map.addLayer(bgrLayer);
+						domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
 					}
 					else {
 						var bgrLayer = new ol.layer.Tile({
@@ -78,6 +79,7 @@ define([
 							})
 						});
 						this.map.addLayer(bgrLayer);
+						domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
 					}
 				}));
 		

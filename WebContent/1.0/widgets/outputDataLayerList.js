@@ -68,7 +68,7 @@ define([
 		mspFillStyles: {},
 		mspFilteringHideAllAvailable: false,
 		mspCountourStyles: {},
-		mspDistinctCodes: {},
+		mspDistinctCodesCount: 0,
 		mspDisplayLayer: null,
 		mspHighlightLayer: null,
 		//mspFeaturesUrl: null,
@@ -94,31 +94,31 @@ define([
 		},
 
 		postCreate: function() {
-			this.getMspLayersData();
+			//this.getMspLayersData();
 			this.setMspMapLayers();
 			this.setupMspViewAccordion();
 			//this.setupMspParamsArray();
 			
     	
 			// MSP view old version
-			on(this.oldVersionButton, "click", lang.hitch(this, function() {
+			/*on(this.oldVersionButton, "click", lang.hitch(this, function() {
 				this.utils.show("mspLayerListTreeID", "block");
 				this.utils.show("mspFilterContainerID", "none");
 				this.layerListMode = "OUTPUT";
 				this.hideAllLayers();
 				
 				//this.mspFeaturesUrl = "https://maps.helcom.fi/s.helcom.fi/arcgis/rest/services/PBS126/MspOutputData/MapServer/identify?f=pjson&geometryType=esriGeometryPoint&tolerance=3&imageDisplay=1920%2C+647%2C+96&returnGeometry=true&layers=all:";
-			}));
+			}));*/
 			
 			// MSP view new version
-			on(this.newVersionButton, "click", lang.hitch(this, function() {
+			/*on(this.newVersionButton, "click", lang.hitch(this, function() {
 				this.utils.show("mspFilterContainerID", "block");
 				this.utils.show("mspLayerListTreeID", "none");
 				//this.layerListMode = "OUTPUT_FILTER";
 				this.hideAllLayers();
 				//this.cleanMspHighlight();
 				//this.mspDisplayLayer.setSource(null);
-			}));
+			}));*/
 			
 			this.map.on('singleclick', lang.hitch(this, function(evt) {
 				var layers = this.map.getLayers().getArray();
@@ -554,7 +554,7 @@ define([
 				"tree": null,
 				"titlePane": null,
 				"psuCheckbox": null
-			}/*, {
+			}, {
 				"useType": null,
 				"title": "All Sea Use Types",
 				"allUrl": null,
@@ -568,7 +568,7 @@ define([
 				"filteringData": [],
 				"tree": null,
 				"titlePane": null
-			}*/);
+			});
 		},
 		
 		setupPane1: function() {
@@ -613,11 +613,11 @@ define([
 			
 		},
 		
-		setupPane2: function() {
-			this.mspViewAccordionPanes.tp2 = new TitlePane({ open: false, title: "Query Planned Sea Uses", id: "tp2"  });
-			this.mspViewAccordion.addChild(this.mspViewAccordionPanes.tp2);
+		setupPane3: function() {
+			this.mspViewAccordionPanes.tp3 = new TitlePane({ open: false, title: "Query Planned Sea Uses", id: "tp3"  });
+			this.mspViewAccordion.addChild(this.mspViewAccordionPanes.tp3);
 			
-			this.mspFilteringAccordion = new TitleGroup({style:"width: 350px"}, this.mspViewAccordionPanes.tp2.containerNode);
+			this.mspFilteringAccordion = new TitleGroup({style:"width: 350px"}, this.mspViewAccordionPanes.tp3.containerNode);
 			this.mspFilteringAccordion.startup();
 						
 			/*this.mspStyles = {
@@ -768,11 +768,11 @@ define([
 			
 			//this.createFilteringTreeData(5);
 			
-			on(this.mspViewAccordionPanes.tp2, "show", lang.hitch(this, function() {
+			on(this.mspViewAccordionPanes.tp3, "show", lang.hitch(this, function() {
 				this.layerListMode = "OUTPUT_FILTER";
 			}));
 			
-			on(this.mspViewAccordionPanes.tp2, "hide", lang.hitch(this, function() {
+			on(this.mspViewAccordionPanes.tp3, "hide", lang.hitch(this, function() {
 				array.forEach(this.mspParamsArray, lang.hitch(this, function(mspParams) {	
 					if (mspParams.titlePane != null) {
 						mspParams.titlePane.set("open", false);
@@ -781,9 +781,9 @@ define([
 			}));
 		},
 		
-		setupPane3: function() {
-			this.mspViewAccordionPanes.tp3 = new TitlePane({ open: false, title: "View Planned Sea Uses", id: "tp3" });
-			this.mspViewAccordion.addChild(this.mspViewAccordionPanes.tp3);
+		setupPane2: function() {
+			this.mspViewAccordionPanes.tp2 = new TitlePane({ open: false, title: "View Planned Sea Uses", id: "tp2" });
+			this.mspViewAccordion.addChild(this.mspViewAccordionPanes.tp2);
 						
 			for (var i = this.mspParamsArray.length-1; i >= 0; i--) {
 				if (this.mspParamsArray[i].useType != null) {
@@ -791,9 +791,9 @@ define([
 				}
 			}
 			
-			var legendContainerDiv = domConstruct.create("div", { "class": "psuLegend" }, this.mspViewAccordionPanes.tp3.containerNode, "last");
+			var legendContainerDiv = domConstruct.create("div", { "class": "psuLegend" }, this.mspViewAccordionPanes.tp2.containerNode, "last");
 						
-			on(this.mspViewAccordionPanes.tp3, "show", lang.hitch(this, function() {
+			on(this.mspViewAccordionPanes.tp2, "show", lang.hitch(this, function() {
 				for (var i = this.mspParamsArray.length-1; i >= 0; i--) {
 					if ((this.mspParamsArray[i].useType != null) && (this.mspParamsArray[i].psuCheckbox != null)) {
 						this.mspParamsArray[i].psuCheckbox.set("checked", true);
@@ -803,7 +803,7 @@ define([
 				this.layerListMode = "OUTPUT_PSU"; 
 			}));
 			
-			on(this.mspViewAccordionPanes.tp3, "hide", lang.hitch(this, function() {
+			on(this.mspViewAccordionPanes.tp2, "hide", lang.hitch(this, function() {
 				array.forEach(this.mspParamsArray, lang.hitch(this, function(mspParams, i) {
 					if ((mspParams.useType != null) && (mspParams.psuCheckbox != null)) {
 						mspParams.psuCheckbox.set("checked", false);
@@ -830,7 +830,7 @@ define([
 		},
 		
 		createPlannedSeaUseLayer: function(nr) {
-			var psuContainer = domConstruct.create("div", {}, this.mspViewAccordionPanes.tp3.containerNode, "first");
+			var psuContainer = domConstruct.create("div", {}, this.mspViewAccordionPanes.tp2.containerNode, "first");
 			this.mspParamsArray[nr].psuCheckbox = new dijit.form.CheckBox();
 			this.mspParamsArray[nr].psuCheckbox.placeAt(psuContainer, "first");
 			var psuLabel = domConstruct.create("span", {"innerHTML": this.mspParamsArray[nr].title, "style": "margin-top: 5px;"}, psuContainer, "last");
@@ -865,19 +865,20 @@ define([
 		
 		getDistinctMspCodes: function(nr) {
 			var serviceUrl = "sc/tools/get-data";
+			var url = this.mspParamsArray[nr].filterUrl + "/query?where=1%3D1&outFields=" + this.mspParamsArray[nr].useType + "," + this.mspParamsArray[nr].useType + "_info," + this.mspParamsArray[nr].useType + "_symbol&returnGeometry=false&returnDistinctValues=true&orderByFields=" + this.mspParamsArray[nr].useType + "&f=pjson";
 			var servicedata = {
-				"url": this.mspParamsArray[nr].filterUrl + "/query?where=1%3D1&outFields=" + this.mspParamsArray[nr].useType + "," + this.mspParamsArray[nr].useType + "_info," + this.mspParamsArray[nr].useType + "_symbol&returnGeometry=false&returnDistinctValues=true&orderByFields=" + this.mspParamsArray[nr].useType + "&f=pjson",
+				"url": url,
 				"format": "json"
 			};
 			request.post(serviceUrl, this.utils.createPostRequestParams(servicedata)).then(
 				lang.hitch(this, function(response) {
-					//console.log(response);
 					if (response.type == "error") {
 						console.log("Getting MSP distinct codes for " + this.mspParamsArray[nr].useType + " failed", response);
 						//domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
 					}
 					else if (response.type == "success") {
 						if (response.item) {
+							this.mspDistinctCodesCount += 1;
 							array.forEach(response.item.features, lang.hitch(this, function(feature) {
 								if (feature.attributes[this.mspParamsArray[nr].useType+"_info"] != null) {
 									if (!(this.mspParamsArray[nr].distinctValues.includes(feature.attributes[this.mspParamsArray[nr].useType].trim()))) {
@@ -889,17 +890,20 @@ define([
 										this.mspParamsArray[nr].distinctUses.push(rec);
 									}
 									
-									/*if (!(this.mspParamsArray[5].distinctValues.includes(feature.attributes[this.mspParamsArray[nr].useType].trim()))) {
+									if (!(this.mspParamsArray[5].distinctValues.includes(feature.attributes[this.mspParamsArray[nr].useType].trim()))) {
 										this.mspParamsArray[5].distinctValues.push(feature.attributes[this.mspParamsArray[nr].useType].trim());
 										var rec5 = {
 											"label": feature.attributes[this.mspParamsArray[nr].useType+"_info"],
 											"value": feature.attributes[this.mspParamsArray[nr].useType]
 										};
 										this.mspParamsArray[5].distinctUses.push(rec5);
-									}*/
+									}
 								}
 							}));
 							this.createFilteringTreeData(nr);
+							if (this.mspDistinctCodesCount == 5) {
+								this.createFilteringTreeData(5);
+							}
 						}
 					}
 				}),
@@ -913,7 +917,39 @@ define([
 			var idSec = 0;
 			var currentId = 0;
 			array.forEach(this.mspParamsArray[nr].distinctUses, lang.hitch(this, function(use) {
-				if ((idSec > 0) && (this.mspParamsArray[nr].filteringData[idSec-1]) && (this.mspParamsArray[nr].filteringData[idSec-1].id == use.value.split("-")[0] + "_parent")) {
+				
+				var index = -1;
+				array.forEach(this.mspParamsArray[nr].filteringData, lang.hitch(this, function(data, i) {
+					if (data.id == use.value.split("-")[0] + "_parent") {
+						index = i;
+					}
+				}));
+				
+				if (index > -1) {
+					var rec = {
+						label: use.label,
+						id: use.value,
+						level: 2
+					};
+					this.mspParamsArray[nr].filteringData[index].children.push(rec);
+				}
+				else {
+					var rec = {
+						label: use.value.split("-")[0],
+						id: use.value.split("-")[0] + "_parent",
+						level: 1,
+						children: [
+							{
+								label: use.label,
+								id: use.value,
+								level: 2
+							}
+						]
+					};
+					this.mspParamsArray[nr].filteringData.push(rec);
+				}
+				
+				/*if ((idSec > 0) && (this.mspParamsArray[nr].filteringData[idSec-1]) && (this.mspParamsArray[nr].filteringData[idSec-1].id == use.value.split("-")[0] + "_parent")) {
 					var rec = {
 						label: use.label,
 						//id: idSec.toString(),
@@ -937,7 +973,7 @@ define([
 					};
 					this.mspParamsArray[nr].filteringData[idSec] = rec;
 					idSec = idSec + 1;
-				} 
+				}*/ 
 			}));
 			
 			
@@ -952,8 +988,32 @@ define([
 		
 		setupMspFilteringCp: function(nr) {
 			var cpContent = domConstruct.create("div", {}, this.mspParamsArray[nr].titlePane.containerNode, "last");
-			if (nr < 5) {
-				var allContainer = domConstruct.create("div", {}, cpContent, "last");
+			//if (nr < 5) {
+				var hideAllButton = domConstruct.create("div", {"class": "toolLink", "style": "margin-top: 10px; display: inline-block;", "innerHTML": "Hide all"}, cpContent, "last");
+				var collapseAllButton = domConstruct.create("div", {"class": "toolLink", "style": "margin-top: 10px; margin-left: 20px; display: inline-block;", "innerHTML": "Collapse all"}, cpContent, "last");
+				var zoomAllButton = domConstruct.create("div", {"class": "toolLink", "style": "margin-top: 10px; margin-left: 20px; display: inline-block;", "innerHTML": "Zoom to"}, cpContent, "last");
+				
+				on(hideAllButton, "click", lang.hitch(this, function() {
+					this.hideAllFiltering(nr);
+				}));
+				
+				on(collapseAllButton, "click", lang.hitch(this, function() {
+					this.mspParamsArray[nr].tree.collapseAll();
+				}));
+				
+				on(zoomAllButton, "click", lang.hitch(this, function() {
+					var source = this.mspDisplayLayer.getSource();
+					if (source != null) {
+						var extent = source.getExtent();
+						this.map.getView().fit(extent, this.map.getSize());
+					}
+				}));
+				
+				if (nr == 5) {
+					domConstruct.create("div", {"class": "legendAllUsesQuery"}, cpContent, "last");
+				}
+				
+				var treeContainer = domConstruct.create("div", {}, cpContent, "last");
 								
 				var store = new ItemFileReadStore({
 					data: {
@@ -997,7 +1057,13 @@ define([
 							
 							//that.mspCountourStyles[that.mspParamsArray[nr].useType]
 							
-				    		var metadataButton = domConstruct.create("div", { "class": "legendIconTest", "style": "background-image: url('" + fPat.getImage().toDataURL() +"'); border: 1px solid " + that.mspCountourStyles[that.mspParamsArray[nr].useType] }, tnode.contentNode, "last");
+				    		if (nr < 5) {
+				    			var metadataButton = domConstruct.create("div", { "class": "legendIconQuery", "style": "background-image: url('" + fPat.getImage().toDataURL() +"'); border: 1px solid " + that.mspCountourStyles[that.mspParamsArray[nr].useType] }, tnode.contentNode, "last");
+				    		}
+				    		else {
+				    			var metadataButton = domConstruct.create("div", { "class": "legendIconQuery", "style": "background-image: url('" + fPat.getImage().toDataURL() +"')" }, tnode.contentNode, "last");
+				    		}
+				    		
 				    	}
 				    	if (tnode.item.level == 2) {
 				    		domConstruct.destroy(tnode.expandoNode);
@@ -1022,7 +1088,6 @@ define([
 				    	  
 				    	  
 				    		if (checked) {
-				    			console.log("checked item", tnode.item.label);
 				    			if (tnode.item.level == 2) {
 				    				that.mspFilteringHideAllAvailable = true;
 				    				that.mspFilteringUses.push(tnode.item.id[0]);
@@ -1055,28 +1120,9 @@ define([
 				    	
 				    	return tnode;
 				    }
-				}, allContainer);
+				}, treeContainer);
 				
-				var hideAllButton = domConstruct.create("div", {"class": "toolLink", "style": "margin-top: 10px; display: inline-block;", "innerHTML": "Hide all"}, cpContent, "last");
-				var collapseAllButton = domConstruct.create("div", {"class": "toolLink", "style": "margin-top: 10px; margin-left: 20px; display: inline-block;", "innerHTML": "Collapse all"}, cpContent, "last");
-				var zoomAllButton = domConstruct.create("div", {"class": "toolLink", "style": "margin-top: 10px; margin-left: 20px; display: inline-block;", "innerHTML": "Zoom to"}, cpContent, "last");
-				
-				on(hideAllButton, "click", lang.hitch(this, function() {
-					this.hideAllFiltering(nr);
-				}));
-				
-				on(collapseAllButton, "click", lang.hitch(this, function() {
-					this.mspParamsArray[nr].tree.collapseAll();
-				}));
-				
-				on(zoomAllButton, "click", lang.hitch(this, function() {
-					var source = this.mspDisplayLayer.getSource();
-					if (source != null) {
-						var extent = source.getExtent();
-						this.map.getView().fit(extent, this.map.getSize());
-					}
-				}));
-				      
+								      
 				      /*dojo.connect(cb, "onChange", function() {
 				    	  console.log("checked item", tnode.item);
 				        var treeNode = dijit.getEnclosingWidget(this.domNode.parentNode);
@@ -1150,12 +1196,10 @@ define([
 						
 					}
 				}));*/
-			}
+			//}
 			
 			on(this.mspParamsArray[nr].titlePane, "hide", lang.hitch(this, function() {
-				if (nr < 5) {
-					this.hideAllFiltering(nr);
-				}
+				this.hideAllFiltering(nr);
 			}));
 			
 			/*var filterContainer = domConstruct.create("div", {"style": "margin-top: 10px"}, cpContent, "last");
@@ -1348,6 +1392,15 @@ define([
 				console.log(featuresUrl);
 			}
 			else {
+				featuresUrl = layerUrl + "/query?where=";
+				array.forEach(uses, lang.hitch(this, function(use) {
+					array.forEach(["priority", "reserved", "allowed", "restricted", "forbidden"], lang.hitch(this, function(type) {
+						//featuresUrl = featuresUrl + type + "+%3D+%27" + use + "%27+OR+" + type + "+LIKE+%27" + use + "%2C%25%27+OR+" + type + "+LIKE+%27%25%2C+" + use + "%2C%25%27+OR+" + type + "+LIKE+%27%25%2C+" + use + "%27+OR+";
+						featuresUrl = featuresUrl + type + "+%3D+%27" + use + "%27+OR+";
+					}));
+					
+				}));
+				featuresUrl = featuresUrl.slice(0, -4) + "&outFields=*&returnGeometry=true&f=pjson";
 				//featuresUrl = layerUrl + "/query?where=priority+%3D+%27" + use + "%27+OR+priority+LIKE+%27" + use + "%2C%25%27+OR+priority+LIKE+%27%25%2C+" + use + "%2C%25%27+OR+priority+LIKE+%27%25%2C+" + use + "%27+OR+reserved+%3D+%27" + use + "%27+OR+reserved+LIKE+%27" + use + "%2C%25%27+OR+reserved+LIKE+%27%25%2C+" + use + "%2C%25%27+OR+reserved+LIKE+%27%25%2C+" + use + "%27+OR+allowed+%3D+%27" + use + "%27+OR+allowed+LIKE+%27" + use + "%2C%25%27+OR+allowed+LIKE+%27%25%2C+" + use + "%2C%25%27+OR+allowed+LIKE+%27%25%2C+" + use + "%27++OR+restricted+%3D+%27" + use + "%27+OR+restricted+LIKE+%27" + use + "%2C%25%27+OR+restricted+LIKE+%27%25%2C+" + use + "%2C%25%27+OR+restricted+LIKE+%27%25%2C+" + use + "%27++OR+forbidden+%3D+%27" + use + "%27+OR+forbidden+LIKE+%27" + use + "%2C%25%27+OR+forbidden+LIKE+%27%25%2C+" + use + "%2C%25%27+OR+forbidden+LIKE+%27%25%2C+" + use + "%27&returnGeometry=true&f=pjson";
 			}
 			var servicedata = {
@@ -1368,7 +1421,7 @@ define([
 							
 							var gjson = ArcgisToGeojsonUtils.arcgisToGeoJSON(response.item);
 							//this.drawMspFeatures(gjson, useType, uses[0]);
-							this.drawMspFeatures(gjson, useType);
+							this.drawMspFeatures(nr, gjson, useType, uses);
 						}
 					}
 				}),
@@ -1380,7 +1433,11 @@ define([
 		},
 		
 		//drawMspFeatures: function(featureSet, useType, use) {
-		drawMspFeatures: function(featureSet, useType) {
+		drawMspFeatures: function(nr, featureSet, useType, uses) {
+			var tmp5uses = [];
+			array.forEach(uses, lang.hitch(this, function(use, i) {
+				tmp5uses.push(use.split("-")[0]);
+			}));
 			this.mspDisplayLayer.setSource(null);
 			
 			var styleFunction = lang.hitch(this, function(feature) {
@@ -1407,7 +1464,64 @@ define([
 				return style;
 			});
 			
-			this.mspDisplayLayer.setStyle(styleFunction);	
+			var styleFunction5 = lang.hitch(this, function(feature) {
+				var prUse = feature.get("priority_symbol");
+				var rsUse = feature.get("reserved_symbol");
+				var alUse = feature.get("allowed_symbol");
+				var rtUse = feature.get("restricted_symbol");
+				var fbUse = feature.get("forbidden_symbol");
+				
+				var fillSymbol = null;
+				var countourSymbol = null;
+				if ((prUse != null) && (tmp5uses.includes(prUse))) {
+					fillSymbol = prUse;
+					countourSymbol = "priority";
+				}
+				else if ((rsUse != null) && (tmp5uses.includes(rsUse))) {
+					fillSymbol = rsUse;
+					countourSymbol = "reserved";
+				}
+				else if ((alUse != null) && (tmp5uses.includes(alUse))) {
+					fillSymbol = alUse;
+					countourSymbol = "allowed";
+				}
+				else if ((rtUse != null) && (tmp5uses.includes(rtUse))) {
+					fillSymbol = rtUse;
+					countourSymbol = "restricted";
+				}
+				else if ((fbUse != null) && (tmp5uses.includes(fbUse))) {
+					fillSymbol = fbUse;
+					countourSymbol = "forbidden";
+				}
+				
+				//var fUseSymbol = fUse.split("-")[0];
+				var fillPattern = new ol.style.FillPattern({
+					pattern: this.mspFillStyles[fillSymbol].pattern,
+					ratio: 1,
+					color: this.mspFillStyles[fillSymbol].rgb,
+					offset: 0,
+					scale: 1,
+					size: this.mspFillStyles[fillSymbol].size,
+					spacing: this.mspFillStyles[fillSymbol].spacing,
+					angle: this.mspFillStyles[fillSymbol].angle
+				});
+				var style = new ol.style.Style({
+					stroke: new ol.style.Stroke({
+						color: this.mspCountourStyles[countourSymbol],
+						width: 1
+					}),
+					fill: fillPattern
+				});
+				return style;
+			});
+			
+			if (nr < 5) {
+				this.mspDisplayLayer.setStyle(styleFunction);
+			}
+			else {
+				this.mspDisplayLayer.setStyle(styleFunction5);
+			}
+				
 						
 			var gjson = new ol.format.GeoJSON( {
 				featureProjection: 'EPSG:3857'
@@ -1469,7 +1583,13 @@ define([
 					if (featureProperties.hasOwnProperty(property)) {
 						if (this.layerListMode == "OUTPUT_AREA") {
 							if (!(this.mspExcludeProperties.includes(property.toLowerCase()))) {
-								displayProperties[property] = featureProperties[property];
+								if ((featureProperties[property] == null) || (featureProperties[property] == "Null")) {
+									displayProperties[property] = "";
+								}
+								else {
+									displayProperties[property] = featureProperties[property];
+								}
+								//displayProperties[property] = featureProperties[property];
 							}
 						}
 						else if (this.layerListMode == "OUTPUT") {

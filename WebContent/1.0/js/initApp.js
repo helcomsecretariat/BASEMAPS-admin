@@ -12,12 +12,13 @@ define([
 	"basemaps/js/adminViewManager",
 	"basemaps/js/utils",
 	"widgets/loginWidget",
+	"widgets/splashWidget",
 	"widgets/aboutPanelWidget",
 	"dojo/text!../templates/header.html",
 	"dojo/domReady!"
 ], function(
 	declare, lang, request, on, dom, domConstruct, array, win, 
-	BorderContainer, mapManager, adminViewManager, utils, loginWidget, aboutPanelWidget, 
+	BorderContainer, mapManager, adminViewManager, utils, loginWidget, splashWidget, aboutPanelWidget, 
 	headerHTML
 ) {
 	return declare(null, {
@@ -38,6 +39,8 @@ define([
 			this.mM = new mapManager().placeAt(dom.byId("mainWindow"));
 			
 			this.utils = new utils();
+			
+			var splWindow = new splashWidget().placeAt(win.body());
 			
 			this.aboutPanel = new aboutPanelWidget();
 			
