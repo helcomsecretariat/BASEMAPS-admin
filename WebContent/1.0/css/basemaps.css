@@ -1409,7 +1409,7 @@ html, body {
 }
 
 .psuLegend {
-  background-image: url("//maps.helcom.fi/arcgis/services/PBS126/MSPoutput2_2019/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=PriorityUse");
+  background-image: url("//maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=PriorityUse");
   background-repeat: no-repeat;
   background-position: left;
   width: 378px;
