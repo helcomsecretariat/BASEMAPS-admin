@@ -127,7 +127,7 @@ define([
 					array.some(this.mspParamsArray, lang.hitch(this, function(mspParams) {
 						if ((mspParams.useType != null) && (mspParams.agsLayer != null)) {
 							if (mspParams.allWmsLayer.getVisible()) {
-								identifyUrl = "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput2_2019/MapServer/identify?f=pjson&geometryType=esriGeometryPoint&tolerance=3&imageDisplay=1920%2C+647%2C+96&returnGeometry=true&layers=all:";
+								identifyUrl = "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput/MapServer/identify?f=pjson&geometryType=esriGeometryPoint&tolerance=3&imageDisplay=1920%2C+647%2C+96&returnGeometry=true&layers=all:";
 								return false;
 							}
 						}	
@@ -188,7 +188,6 @@ define([
 					array.forEach(layers, lang.hitch(this, function(layer, i) {
 						if (("identify" in layer.getProperties()) && (layer.getVisible())) {
 							identifyUrl = layer.getProperties().identify;
-							console.log("identifyUrl", identifyUrl);
 						}
 					}));
 					if (identifyUrl != null) {
@@ -202,6 +201,7 @@ define([
 												
 							domStyle.set(dojo.byId("loadingCover"), {"display": "block"});
 							var url = "sc/tools/get-data";
+							console.log(identifyUrl);
 							var data = {
 								"url": identifyUrl,
 								"format": "json"
@@ -216,12 +216,14 @@ define([
 										if (response.item) {
 											this.mspIdentifyResults = [];
 											this.mspIdentifyNr = null;
+											console.log("response.item", response.item);
 											array.forEach(response.item.results, lang.hitch(this, function(arcgisResult) {
 												var gjson = ArcgisToGeojsonUtils.arcgisToGeoJSON(arcgisResult);
 												gjson.layerName = arcgisResult.layerName;
 												this.mspIdentifyResults.push(gjson);
 											}));
 											if (this.mspIdentifyResults.length > 0) {
+												console.log("this.mspIdentifyResults", this.mspIdentifyResults);
 												this.mspIdentifyNr = 0;
 												this.setMspPopupContent();
 											}
@@ -482,12 +484,12 @@ define([
 			this.mspParamsArray.push({
 				"useType": "priority",
 				"title": "Priority Sea Use",
-				"allUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput2_2019/MapServer/WMSServer",
+				"allUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WMSServer",
 				"allLayerName": "PriorityUse",
-				"allLegendUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput2_2019/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=PriorityUse",
+				"allLegendUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=PriorityUse",
 				"allWmsLayer": null,
 				"agsLayer": 0,
-				"filterUrl": "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput2_2019/MapServer/0",
+				"filterUrl": "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput/MapServer/0",
 				"distinctUses": [],
 				"distinctValues": [],
 				"filteringData": [],
@@ -497,12 +499,12 @@ define([
 			}, {
 				"useType": "reserved",
 				"title": "Reserved Sea Use",
-				"allUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput2_2019/MapServer/WMSServer",
+				"allUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WMSServer",
 				"allLayerName": "ReservedUse",
-				"allLegendUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput2_2019/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=ReservedUse",
+				"allLegendUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=ReservedUse",
 				"allWmsLayer": null,
 				"agsLayer": 1,
-				"filterUrl": "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput2_2019/MapServer/1",
+				"filterUrl": "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput/MapServer/1",
 				"distinctUses": [],
 				"distinctValues": [],
 				"filteringData": [],
@@ -512,12 +514,12 @@ define([
 			}, {
 				"useType": "allowed",
 				"title": "Allowed Sea Use",
-				"allUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput2_2019/MapServer/WMSServer",
+				"allUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WMSServer",
 				"allLayerName": "AllowedUse",
-				"allLegendUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput2_2019/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=AllowedUse",
+				"allLegendUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=AllowedUse",
 				"allWmsLayer": null,
 				"agsLayer": 2,
-				"filterUrl": "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput2_2019/MapServer/2",
+				"filterUrl": "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput/MapServer/2",
 				"distinctUses": [],
 				"distinctValues": [],
 				"filteringData": [],
@@ -527,12 +529,12 @@ define([
 			}, {
 				"useType": "restricted",
 				"title": "Restricted Sea Use",
-				"allUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput2_2019/MapServer/WMSServer",
+				"allUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WMSServer",
 				"allLayerName": "RestrictedUse",
-				"allLegendUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput2_2019/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=RestrictedUse",
+				"allLegendUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=RestrictedUse",
 				"allWmsLayer": null,
 				"agsLayer": 3,
-				"filterUrl": "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput2_2019/MapServer/3",
+				"filterUrl": "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput/MapServer/3",
 				"distinctUses": [],
 				"distinctValues": [],
 				"filteringData": [],
@@ -542,12 +544,12 @@ define([
 			}, {
 				"useType": "forbidden",
 				"title": "Forbidden Sea Use",
-				"allUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput2_2019/MapServer/WMSServer",
+				"allUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WMSServer",
 				"allLayerName": "ForbiddenUse",
-				"allLegendUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput2_2019/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=ForbiddenUse",
+				"allLegendUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=ForbiddenUse",
 				"allWmsLayer": null,
 				"agsLayer": 4,
-				"filterUrl": "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput2_2019/MapServer/4",
+				"filterUrl": "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput/MapServer/4",
 				"distinctUses": [],
 				"distinctValues": [],
 				"filteringData": [],
@@ -562,7 +564,7 @@ define([
 				"allLegendUrl": null,
 				"allWmsLayer": null,
 				"agsLayer": 5,
-				"filterUrl": "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput2_2019/MapServer/5",
+				"filterUrl": "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput/MapServer/5",
 				"distinctUses": [],
 				"distinctValues": [],
 				"filteringData": [],
@@ -577,7 +579,7 @@ define([
 			
 			var legendContainerDiv = domConstruct.create("div", { }, this.mspViewAccordionPanes.tp1.containerNode, "last");
 			var image = domConstruct.create('img', {
-				"src": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput2_2019/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=MaritimeSpatialPlanAreas"
+				"src": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=MaritimeSpatialPlanAreas"
 			}, legendContainerDiv);
 			
 			var areasLayer = null;
@@ -586,9 +588,9 @@ define([
 				if (areasLayer == null) {
 					areasLayer = new ol.layer.Tile({
 						type: "msp_output",
-						identify: "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput2_2019/MapServer/identify?f=pjson&geometryType=esriGeometryPoint&tolerance=3&imageDisplay=1920%2C+647%2C+96&returnGeometry=true&layers=all:6&geometry=",
+						identify: "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput/MapServer/identify?f=pjson&geometryType=esriGeometryPoint&tolerance=3&imageDisplay=1920%2C+647%2C+96&returnGeometry=true&layers=all:6&geometry=",
 						source: new ol.source.TileWMS({
-							url: "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput2_2019/MapServer/WmsServer",
+							url: "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WmsServer",
 							params: {
 								LAYERS: "MaritimeSpatialPlanAreas"
 							}
@@ -818,7 +820,7 @@ define([
 			this.mspParamsArray[nr].allWmsLayer = new ol.layer.Tile({
 				id: this.mspParamsArray[nr].title.replace(/\s+/g, ''),
 				type: "msp_output",
-				identify: "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput2_2019/MapServer/identify?f=pjson&geometryType=esriGeometryPoint&tolerance=3&imageDisplay=1920%2C+647%2C+96&returnGeometry=true&layers=all:",
+				identify: "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput/MapServer/identify?f=pjson&geometryType=esriGeometryPoint&tolerance=3&imageDisplay=1920%2C+647%2C+96&returnGeometry=true&layers=all:",
 				source: new ol.source.TileWMS({
 					url: this.mspParamsArray[nr].allUrl,
 					params: {
@@ -841,7 +843,7 @@ define([
 						this.mspParamsArray[nr].allWmsLayer = new ol.layer.Tile({
 							id: this.mspParamsArray[nr].title.replace(/\s+/g, ''),
 							type: "msp_output",
-							identify: "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput2_2019/MapServer/identify?f=pjson&geometryType=esriGeometryPoint&tolerance=3&imageDisplay=1920%2C+647%2C+96&returnGeometry=true&layers=all:",
+							identify: "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput/MapServer/identify?f=pjson&geometryType=esriGeometryPoint&tolerance=3&imageDisplay=1920%2C+647%2C+96&returnGeometry=true&layers=all:",
 							source: new ol.source.TileWMS({
 								url: this.mspParamsArray[nr].allUrl,
 								params: {
@@ -1576,6 +1578,7 @@ define([
 			
 			
 			var featureProperties = null;
+			console.log();
 			if (this.mspIdentifyResults[this.mspIdentifyNr].properties) {
 				featureProperties = this.mspIdentifyResults[this.mspIdentifyNr].properties;
 				var displayProperties = {};
