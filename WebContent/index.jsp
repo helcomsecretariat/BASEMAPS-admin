@@ -2,22 +2,18 @@
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
 
 <tiles:insertDefinition name="BasicTile">
-	<tiles:putAttribute name="title">BASEMAPS - Baltic LINes</tiles:putAttribute>
+	<tiles:putAttribute name="title">BASEMAPS</tiles:putAttribute>
 	<tiles:putAttribute name="links">
 		<link rel="shortcut icon" href="http://helcom.fi/Style%20Library/HelcomWeb/favicon.ico?rev=23" type="image/vnd.microsoft.icon" id="favicon" />
-		<!--<link rel="stylesheet" href="https://js.arcgis.com/3.20/esri/css/esri.css">-->
 		<link rel="stylesheet" href="1.0/css/ol.css" type="text/css">
 		<link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.10.4/dijit/themes/claro/claro.css">
 		<link rel="stylesheet" type="text/css" href="1.0/css/basemaps.css">
-		<!--<script src="https://unpkg.com/@esri/arcgis-to-geojson-utils"></script>
-		<link rel="stylesheet" type="text/css" href="widgets/css/widgets.css">-->
 	</tiles:putAttribute>
 	<tiles:putAttribute name="scripts">
-		<!-- <script src="1.0/js/proj4.js" type="text/javascript"></script>
-		<script src="1.0/js/proj3035.js" type="text/javascript"></script>-->
 		<script src="1.0/js/arcgis-to-geojson.js" type="text/javascript"></script>
 		<script src="1.0/js/ol.js" type="text/javascript"></script>
 		<script src="1.0/js/ol-ext.js" type="text/javascript"></script>
+		<script src="1.0/js/jszip.min.js" type="text/javascript"></script>
 		
 		<script>
 			var basemapsVersion = "1.0";

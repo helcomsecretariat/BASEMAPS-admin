@@ -1453,7 +1453,7 @@ define([
 				this.utils.show("categoryMetadataForm", "none");
 				this.utils.show("categoryWmsInfoForm", "none");
 				this.utils.show("categoryWfsInfoForm", "none");
-				this.utils.setTextValue("formInfoHeader", "Category information and it's content");
+				this.utils.setTextValue("formInfoHeader", "Category information and its content");
 				this.utils.setTextValue("deleteObject", "Delete this category with all content");
 				
 				if ((layer.metadata) && (layer.metadata.length > 0)) {

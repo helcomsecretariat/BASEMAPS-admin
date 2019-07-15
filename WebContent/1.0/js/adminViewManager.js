@@ -10,13 +10,14 @@ define([
 	"dojo/dom-construct",
 	"basemaps/js/adminLayerList2",
 	"basemaps/js/adminUsersList",
+	"basemaps/js/adminMspValidation",
 	"basemaps/js/adminForms2",
 	"dijit/_WidgetBase", 
 	"dijit/_TemplatedMixin",
 	"dojo/text!../templates/adminView.html",
 	"dojo/domReady!"
 ], function(
-	declare, parser, lang, on, dom, domStyle, request, array, domConstruct, adminLayerList, adminUsersList, adminForms,
+	declare, parser, lang, on, dom, domStyle, request, array, domConstruct, adminLayerList, adminUsersList, adminMspValidation, adminForms,
 	_WidgetBase, _TemplatedMixin, template
 ){
 	return declare([_WidgetBase, _TemplatedMixin], {
@@ -25,6 +26,7 @@ define([
 		adminForms: null,
 		adminLayerList: null,
 		adminUsersList: null,
+		adminMspValidation: null,
 		userRole: null,
 		userRights: null,
 		
@@ -44,6 +46,14 @@ define([
 				this.adminUsersList = new adminUsersList({forms: this.adminForms}).placeAt(this.adminUsersListSection);
 			}
 			this.showUsersList();
+		},
+		
+		mspOutputButtonClick: function() {
+			this.adminForms.cleanAdminForm();
+			if (this.adminMspValidation == null) {
+				this.adminMspValidation = new adminMspValidation({forms: this.adminForms}).placeAt(this.adminMspValidationSection);
+			}
+			this.showMspValidation();
 		},
 		
 		postCreate: function() {
@@ -66,6 +76,8 @@ define([
 		showLayerList: function() {
 			if (this.adminUsersList)
 				domStyle.set(this.adminUsersList.domNode, {"display": "none"});
+			if (this.adminMspValidation)
+				domStyle.set(this.adminMspValidation.domNode, {"display": "none"});
 			if (this.adminLayerList)
 				domStyle.set(this.adminLayerList.domNode, {"display": "block"});
 		},
@@ -73,8 +85,19 @@ define([
 		showUsersList: function() {
 			if (this.adminLayerList)
 				domStyle.set(this.adminLayerList.domNode, {"display": "none"});
+			if (this.adminMspValidation)
+				domStyle.set(this.adminMspValidation.domNode, {"display": "none"});
 			if (this.adminUsersList)
 				domStyle.set(this.adminUsersList.domNode, {"display": "block"});
-		}
+		}, 
+		
+		showMspValidation: function() {
+			if (this.adminLayerList)
+				domStyle.set(this.adminLayerList.domNode, {"display": "none"});
+			if (this.adminUsersList)
+				domStyle.set(this.adminUsersList.domNode, {"display": "none"});
+			if (this.adminMspValidation)
+				domStyle.set(this.adminMspValidation.domNode, {"display": "block"});
+		}, 
 	});
 });

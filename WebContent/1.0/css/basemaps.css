@@ -29,10 +29,10 @@ html, body {
 }
 
 #basemapslogocontainer {
-	background-image: url("../img/BASAMAPSLogo240x60_WhiteCharactersAndIcon.png");
+	background-image: url("../img/BASEMAPSLogo353x60_WithHELCOMLogo.png");
 	background-repeat: no-repeat;
 	background-position: center;
-	width: 240px;
+	width: 353px;
 	height: 60px;
 	float: left;
 	text-decoration: none;
@@ -51,10 +51,10 @@ html, body {
 	display: block;
 }
 #balticlineslogocontainer {
-	background-image: url("../img/IBSR_logo_EUflag_horizontalA_invert_2400px.png");
+	background-image: url("../img/BalticLINes_Interreg_Logos_324x60.png");
 	background-repeat: no-repeat;
 	background-position: center;
-	width: 221px;
+	width: 324px;
 	height: 60px;
 	margin-left: 20px;
 	float: right;
@@ -64,10 +64,10 @@ html, body {
 }
 
 #pbslogocontainer {
-	background-image: url("../img/Logo_PBS_white_H60px.png");
+	background-image: url("../img/Logo_PBS+EU_White@4x_227x60.png");
 	background-repeat: no-repeat;
 	background-position: center;
-	width: 119px;
+	width: 227px;
 	height: 60px;
 	margin-left: 20px;
 	float: right;
@@ -205,6 +205,9 @@ html, body {
 	float: right;
 }
 
+#mspOutputView {
+	float: right;
+}
 .adminViewButton:hover {
 	font-weight: bold;
 }
@@ -216,6 +219,13 @@ html, body {
 }
 
 #adminUsersListSection {
+	width: 100%;
+	margin-top: 30px;
+	overflow-y: auto;
+	max-height: 80%;
+}
+
+#adminMspValidationSection {
 	width: 100%;
 	margin-top: 30px;
 	overflow-y: auto;
@@ -816,8 +826,8 @@ html, body {
 	margin-left: -200px;
 	width: 600px;
 	height: 405px;
-	/*background-color: #B73C2B;*/
-	color: #800000;
+	background-color: rgba(255, 255, 255, 0.5);
+	/*color: #800000;*/
 	border: 3px solid #800000;
 	text-align: center;
 	font-family: "Istok Web", "Calibri", sans-serif;
@@ -828,7 +838,7 @@ html, body {
 	position: absolute;
 	top: 70px;
 	right: 7px;
-	width: 50%;
+	width: 30%;
 	max-height: 50%;
 	border: 1px solid #800000;
 	font-family: "Istok Web", "Calibri", sans-serif;
@@ -1409,7 +1419,7 @@ html, body {
 }
 
 .psuLegend {
-  background-image: url("//maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=PriorityUse");
+  background-image: url("//maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=Priority Use");
   background-repeat: no-repeat;
   background-position: left;
   width: 378px;

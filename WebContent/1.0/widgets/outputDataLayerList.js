@@ -485,8 +485,8 @@ define([
 				"useType": "priority",
 				"title": "Priority Sea Use",
 				"allUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WMSServer",
-				"allLayerName": "PriorityUse",
-				"allLegendUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=PriorityUse",
+				"allLayerName": "Priority Use",
+				"allLegendUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=Priority Use",
 				"allWmsLayer": null,
 				"agsLayer": 0,
 				"filterUrl": "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput/MapServer/0",
@@ -500,8 +500,8 @@ define([
 				"useType": "reserved",
 				"title": "Reserved Sea Use",
 				"allUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WMSServer",
-				"allLayerName": "ReservedUse",
-				"allLegendUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=ReservedUse",
+				"allLayerName": "Reserved Use",
+				"allLegendUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=Reserved Use",
 				"allWmsLayer": null,
 				"agsLayer": 1,
 				"filterUrl": "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput/MapServer/1",
@@ -515,8 +515,8 @@ define([
 				"useType": "allowed",
 				"title": "Allowed Sea Use",
 				"allUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WMSServer",
-				"allLayerName": "AllowedUse",
-				"allLegendUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=AllowedUse",
+				"allLayerName": "Allowed Use",
+				"allLegendUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=Allowed Use",
 				"allWmsLayer": null,
 				"agsLayer": 2,
 				"filterUrl": "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput/MapServer/2",
@@ -530,8 +530,8 @@ define([
 				"useType": "restricted",
 				"title": "Restricted Sea Use",
 				"allUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WMSServer",
-				"allLayerName": "RestrictedUse",
-				"allLegendUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=RestrictedUse",
+				"allLayerName": "Restricted Use",
+				"allLegendUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=Restricted Use",
 				"allWmsLayer": null,
 				"agsLayer": 3,
 				"filterUrl": "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput/MapServer/3",
@@ -545,8 +545,8 @@ define([
 				"useType": "forbidden",
 				"title": "Forbidden Sea Use",
 				"allUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WMSServer",
-				"allLayerName": "ForbiddenUse",
-				"allLegendUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=ForbiddenUse",
+				"allLayerName": "Forbidden Use",
+				"allLegendUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=Forbidden Use",
 				"allWmsLayer": null,
 				"agsLayer": 4,
 				"filterUrl": "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput/MapServer/4",
@@ -579,7 +579,7 @@ define([
 			
 			var legendContainerDiv = domConstruct.create("div", { }, this.mspViewAccordionPanes.tp1.containerNode, "last");
 			var image = domConstruct.create('img', {
-				"src": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=MaritimeSpatialPlanAreas"
+				"src": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=Maritime Spatial Plan Areas"
 			}, legendContainerDiv);
 			
 			var areasLayer = null;
@@ -592,7 +592,7 @@ define([
 						source: new ol.source.TileWMS({
 							url: "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WmsServer",
 							params: {
-								LAYERS: "MaritimeSpatialPlanAreas"
+								LAYERS: "Maritime Spatial Plan Areas"
 							}
 						})
 					});
