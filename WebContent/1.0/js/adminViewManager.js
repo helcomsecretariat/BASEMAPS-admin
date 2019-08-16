@@ -73,6 +73,10 @@ define([
 			domStyle.set(this.adminToolsViews, "display", open ? "block" : "none");
 		},
 		
+		showUsersButton: function(open) {
+			domStyle.set(this.usersView, "display", open ? "block" : "none");
+		},
+		
 		showLayerList: function() {
 			if (this.adminUsersList)
 				domStyle.set(this.adminUsersList.domNode, {"display": "none"});

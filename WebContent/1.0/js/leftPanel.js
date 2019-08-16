@@ -105,7 +105,7 @@ define([
 					duration: 500,
 					properties: {
 						width: {
-							end: 350
+							end: 450
 						}
 					},
 					onBegin: function(){
@@ -124,7 +124,7 @@ define([
 					duration: 500,
 					properties: {
 						left: {
-							end: 355
+							end: 455
 						}
 					}
 				});

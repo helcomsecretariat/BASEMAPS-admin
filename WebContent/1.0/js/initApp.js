@@ -162,10 +162,12 @@ define([
 				this.utils.show("servicePanel", "none");
 				
 				if (role === "ADMIN") {
-					this.adminViewManagerObj.showViewButtons(true);
+					//this.adminViewManagerObj.showViewButtons(true);
+					this.adminViewManagerObj.showUsersButton(true);
 				}
 				else if (role === "PROVIDER") {
-					this.adminViewManagerObj.showViewButtons(false);
+					this.adminViewManagerObj.showUsersButton(false);
+					//this.adminViewManagerObj.showViewButtons(false);
 				} 
 				this.adminView = true;
 			}

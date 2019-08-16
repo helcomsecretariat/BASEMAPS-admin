@@ -91,6 +91,7 @@ define([
 		
 		cleanAdminForm: function() {
 			
+			this.cleanValidationForm();
 			this.cleanAddUserForm();
 			this.cleanUpdateUserForm();
 			this.cleanChangeUserPasswordForm();
@@ -415,6 +416,21 @@ define([
 			}
 		},
 		/* --- MANAGE CATEGORY BUTTONS END --- */
+		
+		/* --- MANAGE VALIDATION CLEAN START--- */
+		cleanValidationForm: function() {
+			this.utils.show("checkZipGroup", "none");
+			this.utils.setTextValue("checkZipMessage", "");
+			this.utils.show("checkExtGroup", "none");
+			this.utils.setTextValue("checkExtMessage", "");
+			this.utils.show("uploadGroup", "none");
+			this.utils.setTextValue("shpUploadMessage", "");
+			this.utils.show("validationForm", "none");
+			this.utils.show("errorReportSection", "none");
+			domConstruct.empty(this.errorsSection);
+			this.utils.show("uploadValidDataButton", "none");
+		},
+		/* --- MANAGE VALIDATION CLEAN END--- */
 		
 		/* --- MANAGE USER CLEAN START--- */
 		cleanAddUserForm: function() {

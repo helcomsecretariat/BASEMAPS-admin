@@ -61,7 +61,6 @@ define([
 		identifyResults: [],
 		highlightLayer: null,
 		constructor: function(params) {
-			console.log("inputDataList constr");
 			this.map = params.map;
 			this.servicePanel = params.sp;
 			this.utils = new utils();

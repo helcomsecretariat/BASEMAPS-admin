@@ -373,6 +373,14 @@ html, body {
 }
 /* END admin user list section */
 
+/* START validate section */
+.validateButtonLink {
+	cursor: pointer;
+	color: #B73C2B;
+	font-size: 14px;
+}
+/* END validate section */
+
 /* START admin forms section */
 #adminFormsHeader {
 	padding-left: 100px;
@@ -444,6 +452,13 @@ html, body {
 	display: inline-block;
 }
 
+.textInputLabelCell {
+	font-size: 16px;
+	font-weight: bold;
+	width: 150px;
+	display: table-cell;
+}
+
 .inputDescriptionRequired {
 	font-size: 11px;
 	margin-top: 2px;
@@ -469,6 +484,11 @@ html, body {
 
 .textLabel {
 	font-size: 16px;
+}
+
+.textLabelCell {
+	font-size: 16px;
+	display: table-cell;
 }
 
 /*.wmsInfoElementContainer {
@@ -1014,7 +1034,7 @@ html, body {
 
 .ol-zoom {
     top: 3px;
-    left: 355px;
+    left: 455px;
 }
 
 /* Layer List widget */
@@ -1048,13 +1068,13 @@ html, body {
   overflow: hidden;
 }
 
-.dijitTitlePane {
+/*.dijitTitlePane {
 	border: 1px solid #B73C2B;
-}
+}*/
 
 .claro .dijitTitlePaneTitleOpen {
 	background-color: #EBEDEF;
-	border-bottom-color:#B73C2B;
+	/*border-bottom-color:#B73C2B;*/
 }
 
 .collapseExpandLeftPanel {

@@ -94,31 +94,8 @@ define([
 		},
 
 		postCreate: function() {
-			//this.getMspLayersData();
 			this.setMspMapLayers();
 			this.setupMspViewAccordion();
-			//this.setupMspParamsArray();
-			
-    	
-			// MSP view old version
-			/*on(this.oldVersionButton, "click", lang.hitch(this, function() {
-				this.utils.show("mspLayerListTreeID", "block");
-				this.utils.show("mspFilterContainerID", "none");
-				this.layerListMode = "OUTPUT";
-				this.hideAllLayers();
-				
-				//this.mspFeaturesUrl = "https://maps.helcom.fi/s.helcom.fi/arcgis/rest/services/PBS126/MspOutputData/MapServer/identify?f=pjson&geometryType=esriGeometryPoint&tolerance=3&imageDisplay=1920%2C+647%2C+96&returnGeometry=true&layers=all:";
-			}));*/
-			
-			// MSP view new version
-			/*on(this.newVersionButton, "click", lang.hitch(this, function() {
-				this.utils.show("mspFilterContainerID", "block");
-				this.utils.show("mspLayerListTreeID", "none");
-				//this.layerListMode = "OUTPUT_FILTER";
-				this.hideAllLayers();
-				//this.cleanMspHighlight();
-				//this.mspDisplayLayer.setSource(null);
-			}));*/
 			
 			this.map.on('singleclick', lang.hitch(this, function(evt) {
 				var layers = this.map.getLayers().getArray();
@@ -482,6 +459,20 @@ define([
 		
 		setupMspParams: function() {
 			this.mspParamsArray.push({
+				"useType": null,
+				"title": "All Sea Use Types",
+				"allUrl": null,
+				"allLayerName": null,
+				"allLegendUrl": null,
+				"allWmsLayer": null,
+				"agsLayer": 5,
+				"filterUrl": "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput/MapServer/5",
+				"distinctUses": [],
+				"distinctValues": [],
+				"filteringData": [],
+				"tree": null,
+				"titlePane": null
+			}, {
 				"useType": "priority",
 				"title": "Priority Sea Use",
 				"allUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WMSServer",
@@ -556,20 +547,6 @@ define([
 				"tree": null,
 				"titlePane": null,
 				"psuCheckbox": null
-			}, {
-				"useType": null,
-				"title": "All Sea Use Types",
-				"allUrl": null,
-				"allLayerName": null,
-				"allLegendUrl": null,
-				"allWmsLayer": null,
-				"agsLayer": 5,
-				"filterUrl": "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput/MapServer/5",
-				"distinctUses": [],
-				"distinctValues": [],
-				"filteringData": [],
-				"tree": null,
-				"titlePane": null
 			});
 		},
 		
@@ -621,25 +598,7 @@ define([
 			
 			this.mspFilteringAccordion = new TitleGroup({style:"width: 350px"}, this.mspViewAccordionPanes.tp3.containerNode);
 			this.mspFilteringAccordion.startup();
-						
-			/*this.mspStyles = {
-				"aquaculture": "rgba(94, 175, 147, 1)",
-				"coast": "rgba(177, 163, 125, 1)",
-				"extraction": "rgba(177, 129, 125, 1)",
-				"fishing": "rgba(94, 147, 175, 1)",
-				"general": "rgba(153, 153, 153, 1)",
-				"heritage": "rgba(221, 183, 110, 1)",
-				"installations": "rgba(174, 94, 94, 1)",
-				"line": "rgba(147, 94, 175, 1)",
-				"military": "rgba(114, 115, 115, 1)",
-				"nature": "rgba(139, 185, 115, 1)",
-				"other": "rgba(202, 203, 203, 1)",
-				"research": "rgba(147, 175, 94, 1)",
-				"tourism": "rgba(174, 175, 94, 1)",
-				"transport": "rgba(75, 112, 175, 1)",
-				"multiuse": "rgba(236, 89, 89, 1)"				
-			};*/
-			
+							
 			this.mspFillStyles = {
 				"aquaculture": {
 					"rgb": "rgba(190, 255, 232, 1)",
@@ -767,9 +726,7 @@ define([
 					this.getDistinctMspCodes(i);
 				}
 			}));
-			
-			//this.createFilteringTreeData(5);
-			
+						
 			on(this.mspViewAccordionPanes.tp3, "show", lang.hitch(this, function() {
 				this.layerListMode = "OUTPUT_FILTER";
 			}));
@@ -815,7 +772,7 @@ define([
 			
 		},
 		
-		setupWmsLayer: function(nr) {
+		/*setupWmsLayer: function(nr) {
 			console.log("setup", this.mspParamsArray[nr]);
 			this.mspParamsArray[nr].allWmsLayer = new ol.layer.Tile({
 				id: this.mspParamsArray[nr].title.replace(/\s+/g, ''),
@@ -829,7 +786,7 @@ define([
 				})
 			});
 			this.map.addLayer(this.mspParamsArray[nr].allWmsLayer);
-		},
+		},*/
 		
 		createPlannedSeaUseLayer: function(nr) {
 			var psuContainer = domConstruct.create("div", {}, this.mspViewAccordionPanes.tp2.containerNode, "first");
@@ -892,19 +849,19 @@ define([
 										this.mspParamsArray[nr].distinctUses.push(rec);
 									}
 									
-									if (!(this.mspParamsArray[5].distinctValues.includes(feature.attributes[this.mspParamsArray[nr].useType].trim()))) {
-										this.mspParamsArray[5].distinctValues.push(feature.attributes[this.mspParamsArray[nr].useType].trim());
-										var rec5 = {
+									if (!(this.mspParamsArray[0].distinctValues.includes(feature.attributes[this.mspParamsArray[nr].useType].trim()))) {
+										this.mspParamsArray[0].distinctValues.push(feature.attributes[this.mspParamsArray[nr].useType].trim());
+										var rec0 = {
 											"label": feature.attributes[this.mspParamsArray[nr].useType+"_info"],
 											"value": feature.attributes[this.mspParamsArray[nr].useType]
 										};
-										this.mspParamsArray[5].distinctUses.push(rec5);
+										this.mspParamsArray[0].distinctUses.push(rec0);
 									}
 								}
 							}));
 							this.createFilteringTreeData(nr);
 							if (this.mspDistinctCodesCount == 5) {
-								this.createFilteringTreeData(5);
+								this.createFilteringTreeData(0);
 							}
 						}
 					}
@@ -950,345 +907,154 @@ define([
 					};
 					this.mspParamsArray[nr].filteringData.push(rec);
 				}
-				
-				/*if ((idSec > 0) && (this.mspParamsArray[nr].filteringData[idSec-1]) && (this.mspParamsArray[nr].filteringData[idSec-1].id == use.value.split("-")[0] + "_parent")) {
-					var rec = {
-						label: use.label,
-						//id: idSec.toString(),
-						id: use.value,
-						level: 2
-					};
-					this.mspParamsArray[nr].filteringData[idSec-1].children.push(rec);
-				}
-				else {
-					var rec = {
-						label: use.value.split("-")[0],
-						id: use.value.split("-")[0] + "_parent",
-						level: 1,
-						children: [
-							{
-								label: use.label,
-								id: use.value,
-								level: 2
-							}
-						]
-					};
-					this.mspParamsArray[nr].filteringData[idSec] = rec;
-					idSec = idSec + 1;
-				}*/ 
 			}));
-			
-			
-			
 			this.setupMspFilteringCp(nr);
 		},
 		
 		createMspFilteringCp: function(nr) {
-			this.mspParamsArray[nr].titlePane = new TitlePane({ open: false, title: this.mspParamsArray[nr].title });
+			if (nr == 0) {
+				this.mspParamsArray[nr].titlePane = new TitlePane({ open: true, title: this.mspParamsArray[nr].title });
+			}
+			else {
+				this.mspParamsArray[nr].titlePane = new TitlePane({ open: false, title: this.mspParamsArray[nr].title });
+			}
+			
 			this.mspFilteringAccordion.addChild(this.mspParamsArray[nr].titlePane);
 		},
 		
 		setupMspFilteringCp: function(nr) {
 			var cpContent = domConstruct.create("div", {}, this.mspParamsArray[nr].titlePane.containerNode, "last");
-			//if (nr < 5) {
-				var hideAllButton = domConstruct.create("div", {"class": "toolLink", "style": "margin-top: 10px; display: inline-block;", "innerHTML": "Hide all"}, cpContent, "last");
-				var collapseAllButton = domConstruct.create("div", {"class": "toolLink", "style": "margin-top: 10px; margin-left: 20px; display: inline-block;", "innerHTML": "Collapse all"}, cpContent, "last");
-				var zoomAllButton = domConstruct.create("div", {"class": "toolLink", "style": "margin-top: 10px; margin-left: 20px; display: inline-block;", "innerHTML": "Zoom to"}, cpContent, "last");
-				
-				on(hideAllButton, "click", lang.hitch(this, function() {
-					this.hideAllFiltering(nr);
-				}));
-				
-				on(collapseAllButton, "click", lang.hitch(this, function() {
-					this.mspParamsArray[nr].tree.collapseAll();
-				}));
-				
-				on(zoomAllButton, "click", lang.hitch(this, function() {
-					var source = this.mspDisplayLayer.getSource();
-					if (source != null) {
-						var extent = source.getExtent();
-						this.map.getView().fit(extent, this.map.getSize());
-					}
-				}));
-				
-				if (nr == 5) {
-					domConstruct.create("div", {"class": "legendAllUsesQuery"}, cpContent, "last");
+			
+			var expandAllButton = domConstruct.create("div", {"class": "toolLink", "style": "margin-top: 10px; display: inline-block;", "innerHTML": "Expand all"}, cpContent, "last");
+			var collapseAllButton = domConstruct.create("div", {"class": "toolLink", "style": "margin-top: 10px; margin-left: 15px; display: inline-block;", "innerHTML": "Collapse all"}, cpContent, "last");	
+			var hideAllButton = domConstruct.create("div", {"class": "toolLink", "style": "margin-top: 10px; margin-left: 15px; display: inline-block;", "innerHTML": "Hide all"}, cpContent, "last");
+			var zoomAllButton = domConstruct.create("div", {"class": "toolLink", "style": "margin-top: 10px; margin-left: 15px; display: inline-block;", "innerHTML": "Zoom to"}, cpContent, "last");
+			
+			on(expandAllButton, "click", lang.hitch(this, function() {
+				this.mspParamsArray[nr].tree.expandAll();
+			}));
+			
+			on(collapseAllButton, "click", lang.hitch(this, function() {
+				this.mspParamsArray[nr].tree.collapseAll();
+			}));
+			
+			on(hideAllButton, "click", lang.hitch(this, function() {
+				this.hideAllFiltering(nr);
+			}));
+			
+			on(zoomAllButton, "click", lang.hitch(this, function() {
+				var source = this.mspDisplayLayer.getSource();
+				if (source != null) {
+					var extent = source.getExtent();
+					this.map.getView().fit(extent, this.map.getSize());
 				}
-				
-				var treeContainer = domConstruct.create("div", {}, cpContent, "last");
-								
-				var store = new ItemFileReadStore({
-					data: {
-						identifier: "id",
-						label: "label",
-						items: this.mspParamsArray[nr].filteringData
-					}
-				});
-				var that = this;
-				//var treeControl = new dijit.Tree({
-				this.mspParamsArray[nr].tree = new dijit.Tree({
-					store: store,
-				    showRoot: false,
-				    getNodeFromItem: function (id) {
-				    	return this._itemNodesMap[ id ][0];
-				    },
-				    _createTreeNode: function(args) {
-				    	var tnode = new dijit._TreeNode(args);
-				    	tnode.labelNode.innerHTML = args.label;
-
-				    	domStyle.set(tnode.labelNode, {"font-size": "12px"});
-				    	domConstruct.destroy(tnode.iconNode);
-				    	if (tnode.item.level == 1) {
-				    		domStyle.set(tnode.labelNode, {"font-weight": "bold"});
-				    		
-				    		var styleInfo = that.mspFillStyles[tnode.item.label];
-				    		/*var styleInfo2 = that.mspFillStyles[tnode.item.label[0]];
-				    		console.log("styleInfo", styleInfo);
-				    		console.log("styleInfo2", styleInfo2);*/
-				    		var fPat = new ol.style.FillPattern({
-								pattern: styleInfo.pattern,
-								ratio: 1,
-								color: styleInfo.rgb,
-								offset: 0,
-								scale: 1,
-								size: styleInfo.size,
-								spacing: styleInfo.spacing,
-								angle: styleInfo.angle
-							});
-							//console.log("pat", fPat.getImage().toDataURL());
+			}));
+			
+			if (nr == 0) {
+				domConstruct.create("div", {"class": "legendAllUsesQuery"}, cpContent, "last");
+			}
+			
+			var treeContainer = domConstruct.create("div", {}, cpContent, "last");
 							
-							//that.mspCountourStyles[that.mspParamsArray[nr].useType]
-							
-				    		if (nr < 5) {
-				    			var metadataButton = domConstruct.create("div", { "class": "legendIconQuery", "style": "background-image: url('" + fPat.getImage().toDataURL() +"'); border: 1px solid " + that.mspCountourStyles[that.mspParamsArray[nr].useType] }, tnode.contentNode, "last");
-				    		}
-				    		else {
-				    			var metadataButton = domConstruct.create("div", { "class": "legendIconQuery", "style": "background-image: url('" + fPat.getImage().toDataURL() +"')" }, tnode.contentNode, "last");
-				    		}
-				    		
-				    	}
-				    	if (tnode.item.level == 2) {
-				    		domConstruct.destroy(tnode.expandoNode);
-				    		domStyle.set(tnode.labelNode, {"padding-left": "20px"});
-				    	}
+			var store = new ItemFileReadStore({
+				data: {
+					identifier: "id",
+					label: "label",
+					items: this.mspParamsArray[nr].filteringData
+				}
+			});
+			var that = this;
+			//var treeControl = new dijit.Tree({
+			this.mspParamsArray[nr].tree = new dijit.Tree({
+				store: store,
+			    showRoot: false,
+			    getNodeFromItem: function (id) {
+			    	return this._itemNodesMap[ id ][0];
+			    },
+			    _createTreeNode: function(args) {
+			    	var tnode = new dijit._TreeNode(args);
+			    	tnode.labelNode.innerHTML = args.label;
 
-				    	var cb = new dijit.form.CheckBox();
-				    	cb.placeAt(tnode.labelNode, "first");
-				      
-				    	on(cb, "change", function(checked) {
-				    	  
-				    		var treeNode = dijit.getEnclosingWidget(cb.domNode.parentNode);
-				    		//treeNode.expand();
-				    		treeNode.tree._expandNode(treeNode);
-  
-				    		var parentcb = cb;
-				    		//console.log(parentcb.checked)
-				    		treeNode.getChildren().forEach(function(item) {
-				    			var checkbox =  dijit.getEnclosingWidget(item.labelNode.children[0]);
-				    			checkbox.set("checked", parentcb.checked)
-				    		});
-				    	  
-				    	  
-				    		if (checked) {
-				    			if (tnode.item.level == 2) {
-				    				that.mspFilteringHideAllAvailable = true;
-				    				that.mspFilteringUses.push(tnode.item.id[0]);
-				    				
-				    				//that.layerListMode = "OUTPUT_FILTER";
-							        that.mspDisplayLayer.setSource(null);
-							        that.cleanMspHighlight();
-									that.servicePanel.header = that.mspParamsArray[nr].title;
-									that.getMspFeatures(nr, that.mspParamsArray[nr].filterUrl, that.mspParamsArray[nr].useType, that.mspFilteringUses);
-				    			}
-				    		}
-				    		else {
-				    			if ((tnode.item.level == 2) && (that.mspFilteringHideAllAvailable)) {
-				    				var index = that.mspFilteringUses.indexOf(tnode.item.id[0]);
-				    				if (index > -1) {
-				    					that.mspFilteringUses.splice(index, 1);
-				    				}
-				    				
-				    				//that.layerListMode = "OUTPUT_FILTER";
-							        that.mspDisplayLayer.setSource(null);
-							        that.cleanMspHighlight();
-							        if (that.mspFilteringUses.length > 0) {
-							        	that.servicePanel.header = that.mspParamsArray[nr].title;
-										that.getMspFeatures(nr, that.mspParamsArray[nr].filterUrl, that.mspParamsArray[nr].useType, that.mspFilteringUses);
-							        }
-				    			}
-				    		}
-				    	  
-				    	});
-				    	
-				    	return tnode;
-				    }
-				}, treeContainer);
-				
-								      
-				      /*dojo.connect(cb, "onChange", function() {
-				    	  console.log("checked item", tnode.item);
-				        var treeNode = dijit.getEnclosingWidget(this.domNode.parentNode);
-				        //treeNode.expand();
-				        treeNode.tree._expandNode(treeNode);
-				        dojo.publish("/checkbox/clicked", [{
-				          "checkbox": this,
-				          "item": treeNode
-				        }]);
-				        
-				        var parentcb = this;
-				        console.log(parentcb.checked)
-				          treeNode.getChildren().forEach(function(item) {
-				          var checkbox =  dijit.getEnclosingWidget(item.labelNode.children[0]);
-				         checkbox.set('checked', parentcb.checked)
-				      });
-				      });
-				   
-				      return tnode;
-				    }
-				  }, allContainer);
-				dojo.subscribe("/checkbox/clicked", function(message) {
-					console.log("you clicked:", message);
-					console.log("you clicked:", store.getLabel(message.item.item));
-
-				  });*/
-				
-				
-				
-				/*var allContainer = domConstruct.create("div", {}, cpContent, "last");
-				var allLabelContainer = domConstruct.create("div", {}, allContainer, "last");
-				var allCheckbox = new dijit.form.CheckBox();
-				allCheckbox.placeAt(allLabelContainer, "first");
-				var allLabel = domConstruct.create("span", {"innerHTML": "Show all"}, allLabelContainer, "last");
-				var legendContainerDiv = domConstruct.create("div", { "class": "legendContainerDiv" }, allContainer, "last");
-				var image = domConstruct.create('img', {
-					"src": this.mspParamsArray[nr].allLegendUrl
-				}, legendContainerDiv);
-				
-				on(allCheckbox, "change", lang.hitch(this, function(checked) {
-					if (checked) {
-						this.layerListMode = "OUTPUT_FILTER_ALL";
-						filterCheckbox.set("checked", false);
-						if (this.mspParamsArray[nr].allWmsLayer == null) {
-							this.mspParamsArray[nr].allWmsLayer = new ol.layer.Tile({
-								id: this.mspParamsArray[nr].title.replace(/\s+/g, ''),
-								type: "msp_output",
-								//identify: this.mspParamsArray[nr].filterUrl + "/query?where=1%3D1&returnGeometry=true&f=pjson",
-								identify: "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput2_2019/MapServer/identify?f=pjson&geometryType=esriGeometryPoint&tolerance=3&imageDisplay=1920%2C+647%2C+96&returnGeometry=true&layers=all:",
-								source: new ol.source.TileWMS({
-									url: this.mspParamsArray[nr].allUrl,
-									params: {
-										LAYERS: this.mspParamsArray[nr].allLayerName
-									}
-								})
-							});
-							this.map.addLayer(this.mspParamsArray[nr].allWmsLayer);
-							this.mspParamsArray[nr].allWmsLayer.setVisible(true);
-						}
-						else {
-							this.mspParamsArray[nr].allWmsLayer.setVisible(true);
-						}
-						this.mspParamsArray[nr].allWmsLayer.set("identify", "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput2_2019/MapServer/identify?f=pjson&geometryType=esriGeometryPoint&tolerance=3&imageDisplay=1920%2C+647%2C+96&returnGeometry=true&layers=all:" + this.mspParamsArray[nr].agsLayer);
-						domStyle.set(legendContainerDiv, "display", "block");
-						this.servicePanel.header = this.mspParamsArray[nr].title;
-					}
-					else {
-						this.mspParamsArray[nr].allWmsLayer.setVisible(false);
-						domStyle.set(legendContainerDiv, "display", "none");
-						this.cleanMspHighlight();
+			    	domStyle.set(tnode.labelNode, {"font-size": "12px"});
+			    	domConstruct.destroy(tnode.iconNode);
+			    	if (tnode.item.level == 1) {
+			    		domStyle.set(tnode.labelNode, {"font-weight": "bold"});
+			    		
+			    		var styleInfo = that.mspFillStyles[tnode.item.label];
+			    		var fPat = new ol.style.FillPattern({
+							pattern: styleInfo.pattern,
+							ratio: 1,
+							color: styleInfo.rgb,
+							offset: 0,
+							scale: 1,
+							size: styleInfo.size,
+							spacing: styleInfo.spacing,
+							angle: styleInfo.angle
+						});
 						
-					}
-				}));*/
-			//}
+			    		if (nr > 0) {
+			    			var metadataButton = domConstruct.create("div", { "class": "legendIconQuery", "style": "background-image: url('" + fPat.getImage().toDataURL() +"'); border: 1px solid " + that.mspCountourStyles[that.mspParamsArray[nr].useType] }, tnode.contentNode, "last");
+			    		}
+			    		else {
+			    			var metadataButton = domConstruct.create("div", { "class": "legendIconQuery", "style": "background-image: url('" + fPat.getImage().toDataURL() +"')" }, tnode.contentNode, "last");
+			    		}
+			    		
+			    	}
+			    	if (tnode.item.level == 2) {
+			    		domConstruct.destroy(tnode.expandoNode);
+			    		domStyle.set(tnode.labelNode, {"padding-left": "20px"});
+			    	}
+
+			    	var cb = new dijit.form.CheckBox();
+			    	cb.placeAt(tnode.labelNode, "first");
+			      
+			    	on(cb, "change", function(checked) {
+			    	  
+			    		var treeNode = dijit.getEnclosingWidget(cb.domNode.parentNode);
+			    		treeNode.tree._expandNode(treeNode);
+  			    		var parentcb = cb;
+			    		treeNode.getChildren().forEach(function(item) {
+			    			var checkbox =  dijit.getEnclosingWidget(item.labelNode.children[0]);
+			    			checkbox.set("checked", parentcb.checked)
+			    		});
+			    	  
+			    		if (checked) {
+			    			if (tnode.item.level == 2) {
+			    				that.mspFilteringHideAllAvailable = true;
+			    				that.mspFilteringUses.push(tnode.item.id[0]);
+			    				
+						        that.mspDisplayLayer.setSource(null);
+						        that.cleanMspHighlight();
+								that.servicePanel.header = that.mspParamsArray[nr].title;
+								that.getMspFeatures(nr, that.mspParamsArray[nr].filterUrl, that.mspParamsArray[nr].useType, that.mspFilteringUses);
+			    			}
+			    		}
+			    		else {
+			    			if ((tnode.item.level == 2) && (that.mspFilteringHideAllAvailable)) {
+			    				var index = that.mspFilteringUses.indexOf(tnode.item.id[0]);
+			    				if (index > -1) {
+			    					that.mspFilteringUses.splice(index, 1);
+			    				}
+
+			    				that.mspDisplayLayer.setSource(null);
+						        that.cleanMspHighlight();
+						        if (that.mspFilteringUses.length > 0) {
+						        	that.servicePanel.header = that.mspParamsArray[nr].title;
+									that.getMspFeatures(nr, that.mspParamsArray[nr].filterUrl, that.mspParamsArray[nr].useType, that.mspFilteringUses);
+						        }
+			    			}
+			    		}
+			    	  
+			    	});
+			    	
+			    	return tnode;
+			    }
+			}, treeContainer);
+		
 			
 			on(this.mspParamsArray[nr].titlePane, "hide", lang.hitch(this, function() {
 				this.hideAllFiltering(nr);
 			}));
-			
-			/*var filterContainer = domConstruct.create("div", {"style": "margin-top: 10px"}, cpContent, "last");
-			var filterLabelContainer = domConstruct.create("div", {"style": "width: 100%;"}, filterContainer, "last");
-			
-			if (nr < 5) {
-				var filterCheckbox = new dijit.form.CheckBox();
-				filterCheckbox.placeAt(filterLabelContainer, "first");
-				var filterLabel = domConstruct.create("span", {"innerHTML": "Show only"}, filterLabelContainer, "last");
-				var filterOptionsContainer = domConstruct.create("div", {"style": "margin-left: 5px; display: none"}, filterContainer, "last");
-			}
-			else {
-				var filterLabel = domConstruct.create("span", {"innerHTML": "Show all sea uses types of"}, filterLabelContainer, "last");
-				var filterOptionsContainer = domConstruct.create("div", {"style": "margin-left: 5px"}, filterContainer, "last");
-			}
-			
-			
-			var filterSelectContainer = domConstruct.create("div", {"style": "margin-top: 10px"}, filterOptionsContainer, "last");
-			var sel = new Select({
-				options: this.mspParamsArray[nr].distinctUses
-			});
-			sel.placeAt(filterSelectContainer);
-			sel.startup();
-			
-			var filterLegend = domConstruct.create("div", {"style": "margin-top: 10px; display: none;"}, filterOptionsContainer, "last");
-			var surface = gfx.createSurface(filterLegend, 30, 20);
-			var legendRect = surface.createRect({ x: 2, y: 2, width: 26, height: 16 });
-			
-			//var filterShowButton = domConstruct.create("div", {"class": "toolLink", "style": "margin-top: 10px; display: inline-block;", "innerHTML": "Show"}, filterOptionsContainer, "last");
-			
-			if (nr < 5) {
-				on(filterCheckbox, "change", lang.hitch(this, function(checked) {
-					if (checked) {
-						allCheckbox.set("checked", false);
-						domStyle.set(filterOptionsContainer, {"display": "block"});
-					}
-					else {
-						domStyle.set(filterOptionsContainer, {"display": "none"});
-						this.mspDisplayLayer.setSource(null);
-						this.mspDisplayLayer.setVisible(false);
-						this.cleanMspHighlight();
-						domStyle.set(filterLegend, {"display": "none"});
-						//this.mspFeaturesUrl = null;
-						//console.log("OUTPUT_FILTER_FILTER_checkbox close");
-					}
-				}));
-			}*/
-					
-			/*sel.on("change", lang.hitch(this, function(evt) {
-		        this.layerListMode = "OUTPUT_FILTER";
-		        this.mspDisplayLayer.setSource(null);
-		        this.cleanMspHighlight();
-				this.servicePanel.header = this.mspParamsArray[nr].title + " - " + sel.attr('displayedValue');
-				this.getMspFeatures(nr, this.mspParamsArray[nr].filterUrl, this.mspParamsArray[nr].useType, sel.get("value"));
-				legendRect.setStroke({width: 3, color: this.mspStyles[sel.get("value").split("-")[0]]});
-				domStyle.set(filterLegend, {"display": "block"});
-		    }));*/
-			/*on(filterShowButton, "click", lang.hitch(this, function() {
-				this.layerListMode = "OUTPUT_FILTER";
-				this.mspDisplayLayer.setSource(null);
-				this.cleanMspHighlight();
-				this.servicePanel.header = this.mspParamsArray[nr].title + " - " + sel.attr('displayedValue');
-				this.getMspFeatures(nr, this.mspParamsArray[nr].filterUrl, this.mspParamsArray[nr].useType, sel.get("value"));
-				legendRect.setStroke({width: 3, color: this.mspStyles[sel.get("value").split("-")[0]]});
-				
-				domStyle.set(filterLegend, {"display": "block"});
-			}));*/
-			
-			/*on(this.mspParamsArray[nr].titlePane, "hide", lang.hitch(this, function() {
-				if (nr < 5) {
-					allCheckbox.set("checked", false);
-					filterCheckbox.set("checked", false);
-				}
-				else {
-					if (this.mspDisplayLayer != null) {
-						this.mspDisplayLayer.setSource(null);
-						this.mspDisplayLayer.setVisible(false);
-						this.cleanMspHighlight();
-						domStyle.set(filterLegend, {"display": "none"});
-					}
-				}
-			}));
-			on(this.mspParamsArray[nr].titlePane, "show", lang.hitch(this, function() {
-				if (nr < 5) {
-					allCheckbox.set("checked", true);
-				}
-			}));*/
 		},
 		
 		hideAllFiltering: function(nr) {
@@ -1330,13 +1096,7 @@ define([
 					fill: new ol.style.Fill({
 						color: "rgba(255, 255, 0, 0.2)"
 					})
-				})/*,
-				new ol.style.Style({
-					stroke: new ol.style.Stroke({
-						color: "rgba(255, 0, 0, 1)",
-						width: 2
-					})
-				})*/
+				})
 			];
 			
 			var highlightStyles = [
@@ -1383,7 +1143,7 @@ define([
 		getMspFeatures: function(nr, layerUrl, useType, uses) {
 			var serviceUrl = "sc/tools/get-data";
 			var featuresUrl = null;
-			if (nr < 5) {
+			if (nr > 0) {
 				//featuresUrl = layerUrl + "/query?where=" + useType + "+%3D+%27" + use + "%27+OR+" + useType + "+LIKE+%27" + use + "%2C%25%27+OR+" + useType + "+LIKE+%27%25%2C+" + use + "%2C%25%27+OR+" + useType + "+LIKE+%27%25%2C+" + use + "%27&returnGeometry=true&f=pjson";
 				featuresUrl = layerUrl + "/query?where=";
 				array.forEach(uses, lang.hitch(this, function(use) {
@@ -1422,7 +1182,6 @@ define([
 							this.mspDisplayLayer.setVisible(true);
 							
 							var gjson = ArcgisToGeojsonUtils.arcgisToGeoJSON(response.item);
-							//this.drawMspFeatures(gjson, useType, uses[0]);
 							this.drawMspFeatures(nr, gjson, useType, uses);
 						}
 					}
@@ -1434,7 +1193,6 @@ define([
 			);
 		},
 		
-		//drawMspFeatures: function(featureSet, useType, use) {
 		drawMspFeatures: function(nr, featureSet, useType, uses) {
 			var tmp5uses = [];
 			array.forEach(uses, lang.hitch(this, function(use, i) {
@@ -1496,7 +1254,6 @@ define([
 					countourSymbol = "forbidden";
 				}
 				
-				//var fUseSymbol = fUse.split("-")[0];
 				var fillPattern = new ol.style.FillPattern({
 					pattern: this.mspFillStyles[fillSymbol].pattern,
 					ratio: 1,
@@ -1517,7 +1274,7 @@ define([
 				return style;
 			});
 			
-			if (nr < 5) {
+			if (nr > 0) {
 				this.mspDisplayLayer.setStyle(styleFunction);
 			}
 			else {
@@ -1532,8 +1289,6 @@ define([
 				features: gjson.readFeatures(featureSet)
 			});
 			this.mspDisplayLayer.setSource(source);
-			//var extent = source.getExtent();
-			//this.map.getView().fit(extent, this.map.getSize());
 		},
 		
 		drawMspHighlightFeature: function() {
@@ -1578,7 +1333,6 @@ define([
 			
 			
 			var featureProperties = null;
-			console.log();
 			if (this.mspIdentifyResults[this.mspIdentifyNr].properties) {
 				featureProperties = this.mspIdentifyResults[this.mspIdentifyNr].properties;
 				var displayProperties = {};
@@ -1592,13 +1346,9 @@ define([
 								else {
 									displayProperties[property] = featureProperties[property];
 								}
-								//displayProperties[property] = featureProperties[property];
 							}
 						}
 						else if (this.layerListMode == "OUTPUT") {
-							/*if (!(this.mspExcludeProperties.includes(property.toLowerCase()))) {
-								displayProperties[property] = featureProperties[property];
-							}*/
 							if ((featureProperties[property] != "Null") && (this.mspPropertiesList.hasOwnProperty(property))) {
 								displayProperties[this.mspPropertiesList[property]] = featureProperties[property];
 							}

@@ -156,7 +156,7 @@ define([
 			request.post(url, this.utils.createPostRequestParams(user)).then(
 				lang.hitch(this, function(response) {
 					if (response.type == "error") {
-						this.showMessage("Failed to update user.");
+						this.formsObj.showMessage("Failed to update user.");
 					}
 					else if (response.type == "success") {
 						this.formsObj.cleanUpdateUserForm();
@@ -255,7 +255,7 @@ define([
 			}).then(
 				lang.hitch(this, function(response) {
 					if (response.type == "error") {
-						this.showMessage("Failed to delete user.");
+						this.formsObj.showMessage("Failed to delete user.");
 					}
 					else if (response.type == "success") {
 						this.cleanUsersList();
@@ -265,7 +265,7 @@ define([
 					}
 				}),
 				lang.hitch(this, function(error){
-					this.showMessage("Something went wrong (on users/delete/{id}). Please contact administrator.");
+					this.formsObj.showMessage("Something went wrong (on users/delete/{id}). Please contact administrator.");
 					console.log(error);
 				})
 			);
