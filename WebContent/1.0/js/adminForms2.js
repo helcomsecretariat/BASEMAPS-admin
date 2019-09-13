@@ -419,16 +419,23 @@ define([
 		
 		/* --- MANAGE VALIDATION CLEAN START--- */
 		cleanValidationForm: function() {
+			/*if (document.getElementById("mspFileInput")) {
+				document.getElementById("mspFileInput").value = "";
+			}*/
 			this.utils.show("checkZipGroup", "none");
 			this.utils.setTextValue("checkZipMessage", "");
 			this.utils.show("checkExtGroup", "none");
 			this.utils.setTextValue("checkExtMessage", "");
 			this.utils.show("uploadGroup", "none");
 			this.utils.setTextValue("shpUploadMessage", "");
+			this.utils.show("wfsUrlGroup", "none");
+			this.utils.setTextValue("wfsUrlMessage", ""); 
 			this.utils.show("validationForm", "none");
 			this.utils.show("errorReportSection", "none");
 			domConstruct.empty(this.errorsSection);
+			this.utils.show("uploadMessage", "none");
 			this.utils.show("uploadValidDataButton", "none");
+			this.utils.changeText("validationCloseButton", "Close");
 		},
 		/* --- MANAGE VALIDATION CLEAN END--- */
 		

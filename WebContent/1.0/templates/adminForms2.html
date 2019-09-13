@@ -446,13 +446,20 @@
 					<span class="textInputLabelCell">Processing:</span>
 					<span id="shpUploadMessage" class="textLabelCell"></span>
 				</div>
+				<div id="wfsUrlGroup" class="inputLabelGroup" style="display:none;">
+					<span class="textInputLabelCell">Wfs url:</span>
+					<span id="wfsUrlMessage" class="textLabelCell"></span>
+				</div>
 				<div id="errorReportSection" class="formSectionGroup" style="display:none;">
 					<div class="formSectionLabel">Validation report:</div>
 					<div id="errorsSection" data-dojo-attach-point="errorsSection"></div>
 				</div>
+				<div id="uploadMessage" style="margin-top: 10px; font-size: 16px; color: green; display: none;">
+					Your data is ready to upload to Basemaps database and after uploading will be available for public usage.
+				</div>
 				<div id="uploadValidDataButton" class="formButton" style="margin-top: 10px; display: none;" data-dojo-attach-point="uploadValidDataButton">Upload data</div>
 			</div>
-			<div id="validationCloseButton" class="formButton" style="margin-top: 10px;" data-dojo-attach-event="onclick:cleanAdminForm">Close</div>
+			<div id="validationCloseButton" class="formButtonFlexibleWidth" style="margin-top: 10px;" data-dojo-attach-point="validationCloseButton" data-dojo-attach-event="onclick:cleanAdminForm">Close</div>
 		</div>
 	</div>
 </div>

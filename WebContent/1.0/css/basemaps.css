@@ -229,7 +229,7 @@ html, body {
 	width: 100%;
 	margin-top: 30px;
 	overflow-y: auto;
-	max-height: 80%;
+	max-height: 70%;
 }
 
 #adminFormsSection {
@@ -570,7 +570,24 @@ html, body {
 	font-size: 14px;
 }
 
+.formButtonFlexibleWidth {
+	display: inline-block;
+	border: 1px solid #800000;
+	background-color: #B73C2B;
+	cursor: pointer;
+	height: 20px;
+	padding: 0px 10px;
+	line-height: 20px;
+	color: white;
+	text-align: center;
+	font-size: 14px;
+}
+
 .formButton:hover {
+	font-weight: bold;	
+}
+
+.formButtonFlexibleWidth:hover {
 	font-weight: bold;	
 }
 
