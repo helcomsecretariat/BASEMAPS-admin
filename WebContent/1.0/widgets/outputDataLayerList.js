@@ -71,7 +71,7 @@ define([
 		mspDistinctCodesCount: 0,
 		mspDisplayLayer: null,
 		mspHighlightLayer: null,
-		//mspFeaturesUrl: null,
+		mspFilteringLevel1Checked: false,
 		mspIdentifyResults: [],
 		mspIdentifyNr: null,
 		mspExcludeProperties: ["objectid", "objectid_1", "shape", "plan id", "symbol", "shape_length", "shape_area"],
@@ -385,69 +385,6 @@ define([
 			this.mspDisplayedWmsArray = [];
 		},
 		
-		getMspLayersData: function() {
-			var serviceUrl = "sc/tools/get-data";
-			var servicedata = {
-				"url": "https://maps.helcom.fi/arcgis/rest/services/PBS126/MspOutputData/MapServer?f=pjson",
-				"format": "json"
-			};
-			request.post(serviceUrl, this.utils.createPostRequestParams(servicedata)).then(
-				lang.hitch(this, function(response) {
-					this.layersCounter = this.layersCounter + 1;
-					if (response.type == "error") {
-						console.log("Reading MSP REST failed", response);
-						domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
-					}
-					else if (response.type == "success") {
-						if (response.item) {
-							this.mspArcgisRestFetched = true;
-							console.log("REST fetched");
-							if (this.mspGetCapabilitiesFetched) {
-								domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
-							}
-							this.mspArcgisLayers = response.item.layers;
-						}
-					}
-				}),
-				lang.hitch(this, function(error) {
-					console.log(error);
-					domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
-				})
-			);
-						
-			var mspGetCapabilitiesParser = new ol.format.WMSCapabilities();
-			var mspGetCapabilitiesUrl = this.mspWmsUrl + "?request=GetCapabilities&service=WMS";
-			
-			servicedata = {
-				"url": mspGetCapabilitiesUrl,
-				"format": "xml"
-			};
-			request.post(serviceUrl, this.utils.createPostRequestParams(servicedata)).then(
-				lang.hitch(this, function(response) {
-					this.layersCounter = this.layersCounter + 1;
-					if (response.type == "error") {
-						console.log("Reading WMS failed", response);
-						domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
-					}
-					else if (response.type == "success") {
-						if (response.item) {
-							this.mspGetCapabilitiesFetched = true;
-							console.log("WMS fetched");
-							if (this.mspArcgisRestFetched) {
-								domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
-							}
-							var result = mspGetCapabilitiesParser.read(response.item);
-							this.createMspTree(result.Capability.Layer);
-						}
-					}
-				}),
-				lang.hitch(this, function(error) {
-					console.log(error);
-					domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
-				})
-			);
-		},
-		
 		setupMspViewAccordion: function() {
 			this.mspViewAccordion = new TitleGroup({style:"width: 380px"}, this.mspFilterContainer);
 			this.mspViewAccordion.startup();
@@ -671,7 +608,7 @@ define([
 					"angle": 45
 				},
 				"other": {
-					"rgb": "rgba(178, 178, 178, 1)",
+					"rgb": "rgba(150, 150, 150, 1)",
 					"pattern": "cross",
 					"size": 1,
 					"spacing": 10,
@@ -699,7 +636,7 @@ define([
 					"angle": 45
 				},
 				"multiuse": {
-					"rgb": "rgba(230, 0, 0, 1)",
+					"rgb": "rgba(200, 200, 200, 1)",
 					"pattern": "hatch",
 					"size": 2,
 					"spacing": 8,
@@ -839,21 +776,44 @@ define([
 						if (response.item) {
 							this.mspDistinctCodesCount += 1;
 							array.forEach(response.item.features, lang.hitch(this, function(feature) {
-								if (feature.attributes[this.mspParamsArray[nr].useType+"_info"] != null) {
-									if (!(this.mspParamsArray[nr].distinctValues.includes(feature.attributes[this.mspParamsArray[nr].useType].trim()))) {
-										this.mspParamsArray[nr].distinctValues.push(feature.attributes[this.mspParamsArray[nr].useType].trim());
+								var ut = feature.attributes[this.mspParamsArray[nr].useType];
+								var uti = feature.attributes[this.mspParamsArray[nr].useType+"_info"];
+								var utArr = ut.split(", ");
+								if (utArr.length > 1) {
+									ut = "multiuse";
+									uti = "More than one Sea Use";
+								}
+								else {
+									if ((!ut.includes("-")) && (ut.endsWith("_g"))) {
+										ut = ut.slice(0, -2);
+									}
+								}
+								//console.log(feature.attributes[this.mspParamsArray[nr].useType]);
+								//console.log(feature.attributes[this.mspParamsArray[nr].useType+"_info"]);
+								if (uti != null) {
+								//if (feature.attributes[this.mspParamsArray[nr].useType+"_info"] != null) {
+									if (!(this.mspParamsArray[nr].distinctValues.includes(ut.trim()))) {
+									//if (!(this.mspParamsArray[nr].distinctValues.includes(feature.attributes[this.mspParamsArray[nr].useType].trim()))) {
+										this.mspParamsArray[nr].distinctValues.push(ut.trim());
+										//this.mspParamsArray[nr].distinctValues.push(feature.attributes[this.mspParamsArray[nr].useType].trim());
 										var rec = {
-											"label": feature.attributes[this.mspParamsArray[nr].useType+"_info"],
-											"value": feature.attributes[this.mspParamsArray[nr].useType]
+											"label": uti,
+											"value": ut
+											//"label": feature.attributes[this.mspParamsArray[nr].useType+"_info"],
+											//"value": feature.attributes[this.mspParamsArray[nr].useType]
 										};
 										this.mspParamsArray[nr].distinctUses.push(rec);
 									}
 									
-									if (!(this.mspParamsArray[0].distinctValues.includes(feature.attributes[this.mspParamsArray[nr].useType].trim()))) {
-										this.mspParamsArray[0].distinctValues.push(feature.attributes[this.mspParamsArray[nr].useType].trim());
+									if (!(this.mspParamsArray[0].distinctValues.includes(ut.trim()))) {
+									//if (!(this.mspParamsArray[0].distinctValues.includes(feature.attributes[this.mspParamsArray[nr].useType].trim()))) {
+										this.mspParamsArray[0].distinctValues.push(ut.trim());
+										//this.mspParamsArray[0].distinctValues.push(feature.attributes[this.mspParamsArray[nr].useType].trim());
 										var rec0 = {
-											"label": feature.attributes[this.mspParamsArray[nr].useType+"_info"],
-											"value": feature.attributes[this.mspParamsArray[nr].useType]
+											"label": uti,
+											"value": ut
+											//"label": feature.attributes[this.mspParamsArray[nr].useType+"_info"],
+											//"value": feature.attributes[this.mspParamsArray[nr].useType]
 										};
 										this.mspParamsArray[0].distinctUses.push(rec0);
 									}
@@ -973,13 +933,18 @@ define([
 			    },
 			    _createTreeNode: function(args) {
 			    	var tnode = new dijit._TreeNode(args);
-			    	tnode.labelNode.innerHTML = args.label;
-
+			    	if (args.label) {
+			    		if (args.label != "multiuse") {
+				    		tnode.labelNode.innerHTML = args.label.charAt(0).toUpperCase() + args.label.slice(1);
+				    	}
+				    	else {
+				    		tnode.labelNode.innerHTML = "More than one Sea Use";
+				    	}
+			    	}
 			    	domStyle.set(tnode.labelNode, {"font-size": "12px"});
 			    	domConstruct.destroy(tnode.iconNode);
 			    	if (tnode.item.level == 1) {
 			    		domStyle.set(tnode.labelNode, {"font-weight": "bold"});
-			    		
 			    		var styleInfo = that.mspFillStyles[tnode.item.label];
 			    		var fPat = new ol.style.FillPattern({
 							pattern: styleInfo.pattern,
@@ -1009,42 +974,64 @@ define([
 			    	cb.placeAt(tnode.labelNode, "first");
 			      
 			    	on(cb, "change", function(checked) {
-			    	  
 			    		var treeNode = dijit.getEnclosingWidget(cb.domNode.parentNode);
 			    		treeNode.tree._expandNode(treeNode);
   			    		var parentcb = cb;
-			    		treeNode.getChildren().forEach(function(item) {
-			    			var checkbox =  dijit.getEnclosingWidget(item.labelNode.children[0]);
-			    			checkbox.set("checked", parentcb.checked)
-			    		});
-			    	  
-			    		if (checked) {
-			    			if (tnode.item.level == 2) {
-			    				that.mspFilteringHideAllAvailable = true;
+  			    		if (checked) {
+  			    			that.mspFilteringHideAllAvailable = true;
+  			    		}
+  			    		that.servicePanel.header = that.mspParamsArray[nr].title;
+  			    		if (tnode.item.level == 1) {
+  			    			that.mspFilteringLevel1Checked = true;
+  			    			var childNr = 0;
+  			    			treeNode.getChildren().forEach(function(item) {
+  				    			var checkbox =  dijit.getEnclosingWidget(item.labelNode.children[0]);
+  				    			checkbox.set("checked", parentcb.checked);
+  				    			if (checked) {
+  				    				that.mspFilteringUses.push(item.item.id[0]);
+  				    			}
+  				    			else {
+  				    				if (that.mspFilteringHideAllAvailable) {
+	  				    				var index = that.mspFilteringUses.indexOf(item.item.id[0]);
+	  				    				if (index > -1) {
+	  				    					that.mspFilteringUses.splice(index, 1);
+	  				    				}
+  				    				}
+  				    			}
+  				    			childNr = childNr + 1;
+  				    		});
+  			    			if (childNr == treeNode.getChildren().length) {
+  			    				if (that.mspFilteringUses.length == 0) {
+  			    					that.mspDisplayLayer.setSource(null);
+  							        that.cleanMspHighlight();
+  							        that.mspFilteringLevel1Checked = false;
+  			    				}
+  			    				else {
+  			    					that.getMspFeatures(nr, that.mspParamsArray[nr].filterUrl, that.mspParamsArray[nr].useType, that.mspFilteringUses);
+  			    				}
+  			    			}
+  			    		}
+  			    		else if ((tnode.item.level == 2) && (!that.mspFilteringLevel1Checked)) {
+  			    			if (checked) {
 			    				that.mspFilteringUses.push(tnode.item.id[0]);
-			    				
-						        that.mspDisplayLayer.setSource(null);
+  				    		}
+  				    		else {
+  				    			if (that.mspFilteringHideAllAvailable) {
+  				    				var index = that.mspFilteringUses.indexOf(tnode.item.id[0]);
+  				    				if (index > -1) {
+  				    					that.mspFilteringUses.splice(index, 1);
+  				    				}
+  				    			}
+  				    		}
+  			    			if (that.mspFilteringUses.length == 0) {
+		    					that.mspDisplayLayer.setSource(null);
 						        that.cleanMspHighlight();
-								that.servicePanel.header = that.mspParamsArray[nr].title;
-								that.getMspFeatures(nr, that.mspParamsArray[nr].filterUrl, that.mspParamsArray[nr].useType, that.mspFilteringUses);
-			    			}
-			    		}
-			    		else {
-			    			if ((tnode.item.level == 2) && (that.mspFilteringHideAllAvailable)) {
-			    				var index = that.mspFilteringUses.indexOf(tnode.item.id[0]);
-			    				if (index > -1) {
-			    					that.mspFilteringUses.splice(index, 1);
-			    				}
-
-			    				that.mspDisplayLayer.setSource(null);
-						        that.cleanMspHighlight();
-						        if (that.mspFilteringUses.length > 0) {
-						        	that.servicePanel.header = that.mspParamsArray[nr].title;
-									that.getMspFeatures(nr, that.mspParamsArray[nr].filterUrl, that.mspParamsArray[nr].useType, that.mspFilteringUses);
-						        }
-			    			}
-			    		}
-			    	  
+						        that.mspFilteringLevel1Checked = false;
+		    				}
+		    				else {
+		    					that.getMspFeatures(nr, that.mspParamsArray[nr].filterUrl, that.mspParamsArray[nr].useType, that.mspFilteringUses);
+		    				}
+  			    		}
 			    	});
 			    	
 			    	return tnode;
@@ -1063,6 +1050,7 @@ define([
 			this.mspFilteringUses = [];
 			this.mspDisplayLayer.setSource(null);
 			this.cleanMspHighlight();
+			this.mspFilteringLevel1Checked = false;	
 			
 			var treeNodes = this.mspParamsArray[nr].tree.getChildren();
 			array.forEach(treeNodes[0].item.children, lang.hitch(this, function(parentItem) {
@@ -1141,56 +1129,75 @@ define([
 		},
 		
 		getMspFeatures: function(nr, layerUrl, useType, uses) {
-			var serviceUrl = "sc/tools/get-data";
-			var featuresUrl = null;
-			if (nr > 0) {
-				//featuresUrl = layerUrl + "/query?where=" + useType + "+%3D+%27" + use + "%27+OR+" + useType + "+LIKE+%27" + use + "%2C%25%27+OR+" + useType + "+LIKE+%27%25%2C+" + use + "%2C%25%27+OR+" + useType + "+LIKE+%27%25%2C+" + use + "%27&returnGeometry=true&f=pjson";
-				featuresUrl = layerUrl + "/query?where=";
-				array.forEach(uses, lang.hitch(this, function(use) {
-					featuresUrl = featuresUrl + useType + "+%3D+%27" + use + "%27+OR+" + useType + "+LIKE+%27" + use + "%2C%25%27+OR+" + useType + "+LIKE+%27%25%2C+" + use + "%2C%25%27+OR+" + useType + "+LIKE+%27%25%2C+" + use + "%27+OR+";
-				}));
-				featuresUrl = featuresUrl.slice(0, -4) + "&outFields=*&returnGeometry=true&f=pjson";
-				//featuresUrl = featuresUrl + "&returnGeometry=true&f=pjson";
-				console.log(featuresUrl);
-			}
-			else {
-				featuresUrl = layerUrl + "/query?where=";
-				array.forEach(uses, lang.hitch(this, function(use) {
-					array.forEach(["priority", "reserved", "allowed", "restricted", "forbidden"], lang.hitch(this, function(type) {
-						//featuresUrl = featuresUrl + type + "+%3D+%27" + use + "%27+OR+" + type + "+LIKE+%27" + use + "%2C%25%27+OR+" + type + "+LIKE+%27%25%2C+" + use + "%2C%25%27+OR+" + type + "+LIKE+%27%25%2C+" + use + "%27+OR+";
-						featuresUrl = featuresUrl + type + "+%3D+%27" + use + "%27+OR+";
-					}));
-					
-				}));
-				featuresUrl = featuresUrl.slice(0, -4) + "&outFields=*&returnGeometry=true&f=pjson";
-				//featuresUrl = layerUrl + "/query?where=priority+%3D+%27" + use + "%27+OR+priority+LIKE+%27" + use + "%2C%25%27+OR+priority+LIKE+%27%25%2C+" + use + "%2C%25%27+OR+priority+LIKE+%27%25%2C+" + use + "%27+OR+reserved+%3D+%27" + use + "%27+OR+reserved+LIKE+%27" + use + "%2C%25%27+OR+reserved+LIKE+%27%25%2C+" + use + "%2C%25%27+OR+reserved+LIKE+%27%25%2C+" + use + "%27+OR+allowed+%3D+%27" + use + "%27+OR+allowed+LIKE+%27" + use + "%2C%25%27+OR+allowed+LIKE+%27%25%2C+" + use + "%2C%25%27+OR+allowed+LIKE+%27%25%2C+" + use + "%27++OR+restricted+%3D+%27" + use + "%27+OR+restricted+LIKE+%27" + use + "%2C%25%27+OR+restricted+LIKE+%27%25%2C+" + use + "%2C%25%27+OR+restricted+LIKE+%27%25%2C+" + use + "%27++OR+forbidden+%3D+%27" + use + "%27+OR+forbidden+LIKE+%27" + use + "%2C%25%27+OR+forbidden+LIKE+%27%25%2C+" + use + "%2C%25%27+OR+forbidden+LIKE+%27%25%2C+" + use + "%27&returnGeometry=true&f=pjson";
-			}
-			var servicedata = {
-				"url": featuresUrl,
-				"format": "json"
-			};
-			domStyle.set(dojo.byId("loadingCover"), {"display": "block"});
-			request.post(serviceUrl, this.utils.createPostRequestParams(servicedata)).then(
-				lang.hitch(this, function(response) {
-					if (response.type == "error") {
-						domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
-					}
-					else if (response.type == "success") {
-						domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
-						if (response.item) {
-							this.mspDisplayLayer.set("identify", featuresUrl);
-							this.mspDisplayLayer.setVisible(true);
-							
-							var gjson = ArcgisToGeojsonUtils.arcgisToGeoJSON(response.item);
-							this.drawMspFeatures(nr, gjson, useType, uses);
+			this.mspDisplayLayer.setSource(null);
+	        this.cleanMspHighlight();
+	        if (uses.length > 0) {
+	        	var serviceUrl = "sc/tools/get-data";
+				var featuresUrl = null;
+				if (nr > 0) {
+					featuresUrl = layerUrl + "/query?where=";
+					array.forEach(uses, lang.hitch(this, function(use) {
+						if (use != "multiuse") {
+							if (!use.includes("-")) {
+								use = use + "_g";
+							}
+							featuresUrl = featuresUrl + useType + "+LIKE+%27%25" + use + "%25%27+OR+";
 						}
-					}
-				}),
-				lang.hitch(this, function(error) {
-					console.log(error);
-					domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
-				})
-			);
+						else {
+							featuresUrl = featuresUrl + useType + "_symbol%3D%27" + use + "%27+OR+";
+						}
+						
+					}));
+					featuresUrl = featuresUrl.slice(0, -4) + "&outFields=*&returnGeometry=true&f=pjson";
+				}
+				else {
+					featuresUrl = layerUrl + "/query?where=";
+					array.forEach(uses, lang.hitch(this, function(use) {
+						if (use != "multiuse") {
+							if (!use.includes("-")) {
+								use = use + "_g";
+							}
+						}
+						array.forEach(["priority", "reserved", "allowed", "restricted", "forbidden"], lang.hitch(this, function(type) {
+							if (use != "multiuse") {
+								featuresUrl = featuresUrl + type + "+LIKE+%27%25" + use + "%25%27+OR+";
+							}
+							else {
+								featuresUrl = featuresUrl + type + "_symbol%3D%27" + use + "%27+OR+";
+							}
+						}));
+					}));
+					featuresUrl = featuresUrl.slice(0, -4) + "&outFields=*&returnGeometry=true&f=pjson";
+				}
+				console.log(featuresUrl);
+				var servicedata = {
+					"url": featuresUrl,
+					"format": "json"
+				};
+				domStyle.set(dojo.byId("loadingCover"), {"display": "block"});
+				request.post(serviceUrl, this.utils.createPostRequestParams(servicedata)).then(
+					lang.hitch(this, function(response) {
+						if (response.type == "error") {
+							domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
+						}
+						else if (response.type == "success") {
+							domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
+							if (response.item) {
+								this.mspDisplayLayer.set("identify", featuresUrl);
+								this.mspDisplayLayer.setVisible(true);
+								var gjson = ArcgisToGeojsonUtils.arcgisToGeoJSON(response.item);
+								this.drawMspFeatures(nr, gjson, useType, uses);
+							}
+						}
+					}),
+					lang.hitch(this, function(error) {
+						console.log(error);
+						domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
+					})
+				);
+	        }
+	        var that = this;
+	        setTimeout(function(){ that.mspFilteringLevel1Checked = false; }, 1000);
 		},
 		
 		drawMspFeatures: function(nr, featureSet, useType, uses) {
@@ -1198,6 +1205,7 @@ define([
 			array.forEach(uses, lang.hitch(this, function(use, i) {
 				tmp5uses.push(use.split("-")[0]);
 			}));
+			tmp5uses.push("multiuse");
 			this.mspDisplayLayer.setSource(null);
 			
 			var styleFunction = lang.hitch(this, function(feature) {
@@ -1253,24 +1261,27 @@ define([
 					fillSymbol = fbUse;
 					countourSymbol = "forbidden";
 				}
+				var style = null;
+				if (fillSymbol != null) {
+					var fillPattern = new ol.style.FillPattern({
+						pattern: this.mspFillStyles[fillSymbol].pattern,
+						ratio: 1,
+						color: this.mspFillStyles[fillSymbol].rgb,
+						offset: 0,
+						scale: 1,
+						size: this.mspFillStyles[fillSymbol].size,
+						spacing: this.mspFillStyles[fillSymbol].spacing,
+						angle: this.mspFillStyles[fillSymbol].angle
+					});
+					style = new ol.style.Style({
+						stroke: new ol.style.Stroke({
+							color: this.mspCountourStyles[countourSymbol],
+							width: 1
+						}),
+						fill: fillPattern
+					});
+				}
 				
-				var fillPattern = new ol.style.FillPattern({
-					pattern: this.mspFillStyles[fillSymbol].pattern,
-					ratio: 1,
-					color: this.mspFillStyles[fillSymbol].rgb,
-					offset: 0,
-					scale: 1,
-					size: this.mspFillStyles[fillSymbol].size,
-					spacing: this.mspFillStyles[fillSymbol].spacing,
-					angle: this.mspFillStyles[fillSymbol].angle
-				});
-				var style = new ol.style.Style({
-					stroke: new ol.style.Stroke({
-						color: this.mspCountourStyles[countourSymbol],
-						width: 1
-					}),
-					fill: fillPattern
-				});
 				return style;
 			});
 			
@@ -1280,8 +1291,7 @@ define([
 			else {
 				this.mspDisplayLayer.setStyle(styleFunction5);
 			}
-				
-						
+
 			var gjson = new ol.format.GeoJSON( {
 				featureProjection: 'EPSG:3857'
 			});
@@ -1378,208 +1388,6 @@ define([
 			on(this.servicePanel.closeButton, "click", lang.hitch(this, function() {
 				this.mspHighlightLayer.setSource(null);
 			}));
-		},
-		
-		addLayerToMspDataArray: function(layer, parentLayerId) {
-			var lyr = {
-				id: layer.Title.replace(/\s+/g, ''),
-				parent: parentLayerId,
-				checked: false,
-				name: layer.Title,
-				wmsName: null,
-				legend: null
-			};
-    	
-			if (layer.Name) {
-				lyr.wmsName = layer.Name;
-				lyr.checked = true;
-			}
-			
-			if (layer.Style) {
-				lyr.legend = layer.Style[0].LegendURL[0].OnlineResource;
-			}
-			
-			
-			this.mspData.push(lyr);
-			
-			if (layer.Layer) {
-				array.forEach(layer.Layer, lang.hitch(this, function(l) {
-					this.addLayerToMspDataArray(l, lyr.id);
-				}));
-			}
-		},
-		
-		createMspDataArray: function(input) {
-			array.forEach(input.Layer, lang.hitch(this, function(layer) {
-				this.addLayerToMspDataArray(layer, this.rootMspLayerId);
-			}));
-		},
-		
-		mspParentChecked: function(item) {
-			var p = this.mspStore.query({id: item.parent});
-			if (p[0].checked) {
-				if (p[0].parent) {
-					this.mspParentChecked(p[0])
-				}
-				else {
-					this.mspAllParentsChecked = true;
-				}
-			}
-		},
-		
-		mspChildrenChecked: function(item) {
-			var c = this.mspStore.getChildren(item);
-			if (c.length > 0) {
-				array.forEach(c, lang.hitch(this, function(object) {
-					if (object.checked) {
-						if (object.wmsMapLayer) {
-							object.wmsMapLayer.setVisible(true);
-						}
-						this.mspChildrenChecked(object);
-					}
-				}));
-			}
-			
-		},
-		
-		mspChildrenUnchecked: function(item) {
-			var c = this.mspStore.getChildren(item);
-			if (c.length > 0) {
-				array.forEach(c, lang.hitch(this, function(object) {
-					if (object.checked) {
-						if (object.wmsMapLayer) {
-							object.wmsMapLayer.setVisible(false);
-						}
-						this.mspChildrenUnchecked(object);
-					}
-				}));
-			}
-			
-		},
-		
-		createMspTree: function(input) {
-			var mapa = this.map;
-			var that = this;
-			
-			this.createMspDataArray(input);
-			
-			var mspTreeStore = new Memory({
-				data: this.mspData,
-				getChildren: function(object){
-					return this.query({parent: object.id});
-				}
-			});
-			this.mspStore = mspTreeStore;
-
-			var mspTreeModel = new ObjectStoreModel({
-				store: mspTreeStore,
-				query: {id: 'msplayerlist'}
-			});
-
-			this.mspTree = new Tree({
-				model: mspTreeModel,
-				showRoot: false,
-				//autoExpand: true,
-				getIconClass:function(item, opened) {
-				
-				},
-				getNodeFromItem: function (id) {
-					return this._itemNodesMap[ id ][0];
-				},
-
-				_createTreeNode: function(args) {
-					var tnode = new dijit._TreeNode(args);
-					tnode.labelNode.innerHTML = args.label;
-					
-					domConstruct.destroy(tnode.expandoNode);
-										
-					var cb = new dijit.form.CheckBox();
-					cb.placeAt(tnode.contentNode, "first");
-					
-					// set sublayers label width depending on sublayer level in the tree
-					var rowNodePadding = domStyle.get(tnode.rowNode, "padding-left");
-					var labelNodeWidth = 225 - rowNodePadding;
-					domStyle.set(tnode.labelNode, {"width": labelNodeWidth+"px"});
-					
-					// create WMS legend node
-					if (tnode.item.legend) {
-						tnode.item.legendContainerDiv = domConstruct.create("div", { "class": "legendContainerDiv" }, tnode.rowNode, "last");
-						var image = domConstruct.create('img', {
-							"src": tnode.item.legend
-						}, tnode.item.legendContainerDiv);
-					}
-					
-					if (tnode.item.wmsName) {
-						domStyle.set(tnode.rowNode, {"padding-left": rowNodePadding+20+"px"});
-						
-						if (tnode.item.parent != "PlannedSeaUse") {
-							
-							// Check Sea Use By Sector layers on
-							cb.set("checked", true);
-						}
-						tnode.item.wmsMapLayer = new ol.layer.Tile({
-							id: tnode.item.id,
-							mspName: tnode.item.name,
-							identify: "https://maps.helcom.fi/arcgis/rest/services/PBS126/MspOutputData/MapServer/identify?f=pjson&geometryType=esriGeometryPoint&tolerance=3&imageDisplay=1920%2C+647%2C+96&returnGeometry=true&layers=all:",
-							source: new ol.source.TileWMS({
-								url: that.mspWmsUrl,
-								params: {
-									LAYERS: tnode.item.wmsName
-								}
-							})
-						});
-						
-						tnode.item.wmsMapLayer.setVisible(false);
-						mapa.addLayer(tnode.item.wmsMapLayer);
-					}
-					
-					if (tnode.item.parent == that.rootMspLayerId) {
-						cb.set("checked", true);
-					}
-											
-					// on sublayer check box click
-					on(cb, "change", function(checked) {
-						that.mspAllParentsChecked = false;
-						if (checked) {
-							tnode.item.checked = true;
-							that.mspParentChecked(tnode.item);
-							
-							if (tnode.item.wmsName) {
-								if (that.mspAllParentsChecked) {
-									tnode.item.wmsMapLayer.setVisible(true);
-									that.mspDisplayedWmsArray.push(tnode.item.wmsMapLayer);
-								}								
-								domStyle.set(tnode.item.legendContainerDiv, "display", "block");
-							}
-							else {
-								if (that.mspAllParentsChecked) {
-									that.mspChildrenChecked(tnode.item);
-								}
-								if(!tnode.isExpanded) {
-			                    	that.mspTree._expandNode(tnode);
-			                    }
-							}
-						}
-						else {
-							tnode.item.checked = false;
-							if (tnode.item.wmsName) {
-								tnode.item.wmsMapLayer.setVisible(false);
-								domStyle.set(tnode.item.legendContainerDiv, "display", "none");
-							}
-							else {
-								that.mspChildrenUnchecked(tnode.item);
-								if(tnode.isExpanded) {
-			                    	that.mspTree._collapseNode(tnode);
-			                    }
-							}
-						}
-					});
-					tnode.checkBox = cb;
-					return tnode;
-				}
-			});
-			this.mspTree.placeAt(this.mspLayerListTree);
-			this.mspTree.startup();
 		}
 	});
 });

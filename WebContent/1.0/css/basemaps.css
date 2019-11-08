@@ -29,10 +29,11 @@ html, body {
 }
 
 #basemapslogocontainer {
-	background-image: url("../img/BASEMAPSLogo353x60_WithHELCOMLogo.png");
+	background-image: url("../img/BASEMAPS_white_236x60.png");
 	background-repeat: no-repeat;
 	background-position: center;
-	width: 353px;
+	margin-left: 10px;
+	width: 236px;
 	height: 60px;
 	float: left;
 	text-decoration: none;
@@ -40,12 +41,12 @@ html, body {
 	display: block;
 }
 #helcomlogocontainer {
-	background-image: url("../img/HELCOM_logo_white_h40.png");
+	background-image: url("../img/HELCOM_white44x60.png");
 	background-repeat: no-repeat;
 	background-position: center;
-	width: 200px;
+	width: 44px;
 	height: 60px;
-	float: right;
+	float: left;
 	text-decoration: none;
 	cursor: pointer;
 	display: block;
