@@ -97,7 +97,7 @@ define([
 							this.utils.show("logoutLink", "block");
 							
 							var writeCategories = this.getUserWriteCategories(response.item.rights);
-							this.switchToAdminView(response.item.role, writeCategories);
+							this.switchToAdminView(response.item.role, writeCategories, response.item.country, response.item.name);
 						}
 					}
 				}),
@@ -146,11 +146,11 @@ define([
 			);
 		},
 		
-		switchToAdminView: function(role, rights) {
+		switchToAdminView: function(role, rights, country, name) {
 			if (!this.adminView) {
 				this.mM.show(false);
 				if (this.adminViewManagerObj == null) {
-					this.adminViewManagerObj = new adminViewManager({"role": role, "rights": rights}).placeAt(dom.byId("mainWindow"));
+					this.adminViewManagerObj = new adminViewManager({"role": role, "rights": rights, "country": country, "name": name}).placeAt(dom.byId("mainWindow"));
 				}
 				else {
 					this.adminViewManagerObj.show(true);

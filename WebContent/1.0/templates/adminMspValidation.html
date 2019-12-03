@@ -1,87 +1,232 @@
 <div>
-	<div class="formSectionLabel">Validate MSP output data (under construction)</div>
+	<div class="formSectionLabel">MSP output data validation and upload to Basemaps (under construction)</div>
 	<div style="font-size: 12px; margin: 5px 10px 0px 10px;">
-		Only valid MSP output data can be uploaded to Basemaps. Validator accepts MSP output data, which are stored as ZIP archived ESRI Shapefile(s) or published as OGC WFS (WFS validator is under developmentand not available yet). Multiple Shapefiles in ZIP archive or multiple Feature Types in WFS are allowed.
+		Tool validates and uploads to Basemaps <b>MSP output Sea Use</b> data and <b>MSP plan areas</b> data. Tool accepts data stored as ZIP archived ESRI Shapefile(s) or published as OGC WFS (WFS validator is under development and not available yet). Multiple Shapefiles in ZIP archive or multiple Feature Types in WFS are allowed.
 	</div>
-	<div style="color: red; font-size: 12px; margin: 5px 10px 0px 10px;">
-		Note. All Shapefiles within ZIP archive or all Feature Types within the WFS service must be valid in order to upload data to Basemaps.
+	<div style="font-size: 12px; margin: 5px 10px 0px 10px;">
+		<b>Note</b>
+		<ul style="margin: 0;">
+			<li><b>MSP output Sea Use</b> can be polygons, polylines or points. Polyline or point data will be transformed to polygons with 500 meters radius buffer for visualisation in Basemaps purpose.</li>
+			<li><b>MSP plan areas</b> should be polygon data.</li>
+			<li>Geometry of larger than 50 sq km polygons will be simplified for performance in Basemaps purpose.</li>
+			<li>Only valid data can be uploaded to Basemaps</li>
+			<li>Uploaded data to Basemaps will replace exisiting data for each unique "planId". If there are no data for that "planId" in Basemaps - uploaded data will be added. Replaced data will be removed from Basemaps and backed up in Helcom server.</li>  
+		</ul>
 	</div>
 	<div style="font-weight: bold; font-size: 12px; margin: 5px 10px 0px 10px;">
-		<input type="radio" id="radioShp" name="validationType" value="shp" data-dojo-attach-point="radioShp" />
-		<label for="radioShp">I will validate archive with Shapefile(s)</label><br />
-		<input type="radio" id="radioWfs" name="validationType" value="wfs" data-dojo-attach-point="radioWfs" />
-		<label for="radioShp">I will validate WFS service</label><br />
+		<input type="radio" id="radioShpArea" name="validationType" value="shpArea" data-dojo-attach-point="radioShpArea" />
+		<label for="radioShpArea">Validate MSP PLAN AREAS data Shapefile(s)</label><br />
+		<input type="radio" id="radioShpSeaUse" name="validationType" value="shpSeaUse" data-dojo-attach-point="radioShpSeaUse" />
+		<label for="radioShpSeaUse">Validate MSP SEA USE data Shapefile(s)</label><br />
+		<!--<input type="radio" id="radioWfsArea" name="validationType" value="wfsArea" data-dojo-attach-point="radioWfsArea" />
+		<label for="radioWfsArea">I will validate MSP plan areas WFS</label><br />
+		<input type="radio" id="radioWfsSeaUse" name="validationType" value="wfsSeaUse" data-dojo-attach-point="radioWfsSeaUse" />
+		<label for="radioWfsSeaUse">I will validate MSP output Sea Use WFS</label><br />-->
 	</div>
-	<div id="shpValidationRules" style="display: none">
-		<input id="mspFileInput" type="file" style="margin: 10px 10px 0px 20px;" data-dojo-attach-point="mspFileInput" /> 
+	<div id="shpAreaValidationRules" style="display: none">
+		<div id="shpAreaCountrySelectGroup" style="margin: 10px 10px 0px 20px; display: none">
+			<label for="shpAreaCountrySelect" style="font-size: 12px;">Select a country of MSP area</label><br/>
+			<select id="shpAreaCountrySelect" data-dojo-attach-point="shpAreaCountrySelect">
+				<option value="NONE"></option>
+	  			<option value="DE">DE</option>
+	  			<option value="DK">DK</option>
+	  			<option value="EE">EE</option>
+	  			<option value="FI">FI</option>
+	  			<option value="LT">LT</option>
+	  			<option value="LV">LV</option>
+	  			<option value="PL">PL</option>
+	  			<option value="RU">RU</option>
+	  			<option value="SE">SE</option>
+			</select>
+		</div>
+		<div style="margin: 0px 10px 0px 20px;">
+			<label for="mspAreaFileInput" style="font-size: 12px;">Select a ZIP archive with MSP area Shapefile(s)</label><br/>
+			<input id="mspAreaFileInput" type="file" data-dojo-attach-point="mspAreaFileInput" />
+		</div> 
 		<div style="font-weight: bold; font-size: 12px; margin: 5px 10px 0px 10px;">
-			MSP output data in Shapefiles are validated according to following rules:
+			MSP plan areas data in Shapefiles are validated according to following rules:
 		</div>
 		<div style="font-weight: bold; font-size: 12px; margin: 5px 10px 0px 10px;">
 			File validation
 		</div>
 		<div style="font-size: 12px; margin: 5px 10px 0px 10px;">
-			1 - Data should be in ZIP archive.<br/>
-			2 - ZIP archive should contain valid ESRI Shapefile(s). All files should be placed on one file hierarchy level (no folders allowed within ZIP archive). Required are files with extensions: "shp", "shx", "dbf". Allowed are files with extensions: "shp", "shx", "dbf", "sbn", "sbx", "fbn", "fbx", "ain", "aih", "atx", "ixs", "mxs", "prj", "xml", "cpg".
+			<ul style="margin: 0;">
+				<li>Data should be in ZIP archive.</li>
+				<li>ZIP archive should contain valid ESRI Shapefile(s). All files should be placed on one file hierarchy level (no folders allowed within ZIP archive). Required are files with extensions: "shp", "shx", "dbf". Allowed are files with extensions: "shp", "shx", "dbf", "sbn", "sbx", "fbn", "fbx", "ain", "aih", "atx", "ixs", "mxs", "prj", "xml", "cpg".</li>
+			</ul>
 		</div>
 		<div style="font-weight: bold; font-size: 12px; margin: 5px 10px 0px 10px;">
 			Dataset validation (checked if above rules are met)
 		</div>
 		<div style="font-size: 12px; margin: 5px 10px 0px 10px;">
-			3 - Spatial reference should be defined.<br/>
-			4 - Dataset should be with polygon geometry.<br/> 
-			5 - "priority", "reserved", "allowed", "restricted", "forbidden", "useDsc", "PlanID" fields should be present in the dataset.
+			<ul style="margin: 0;">
+				<li>Spatial reference should be defined.</li>
+				<li>Dataset should be with polygon geometry.</li>
+				<li>Dataset should be completely within Baltic Sea bounding box.</li>
+				<li>Required fields: "Country", "officialTitle", "englishTitle", "responsibleAuthority", "levelOfSpatialPlan", "processStep", "regulationNature", "validFrom", "planId" should be present in the dataset (field names can be 10 first characters, because of the Shapefile field name length limitation).</li>
+			</ul>	
 		</div>
 		<div style="font-weight: bold; font-size: 12px; margin: 5px 10px 0px 10px;">
 			Feature validation (checked if above rules are met)
 		</div>
 		<div style="font-size: 12px; margin: 5px 10px 0px 10px;">
-			6 - Empty geometries should not be included.<br/>
-			7 - At least 1 of 5 fields ("priority", "reserved", "allowed", "restricted", "forbidden") should have a value.<br/>
-			8 - "priority", "reserved", "allowed", "restricted", "forbidden" fields should have value(s) according SeaUse code list<b>*</b> (multiple comma separated values are allowed).<br/> 
-			9 - If "forbidden" field has a value, then "priority", "reserved", "allowed", "restricted" fields should not have that value.<br/>
-			10 - If "restricted" field has a value, then "priority", "reserved", "allowed", "forbidden" fields should not have that value.<br/>
-			11 - "PlanID" field should have a value.
+			<ul style="margin: 0;">
+				<li>Empty geometries should not be included.</li>
+				<li>Required fields can't have empty values.</li>
+				<li>"Country" field should have one of the following values: "DE", "DK", "EE", "FI", "LT", "LV", "PL", "RU", "SE".</li> 
+				<li>"levelOfSpatialPlan" field should have one of the following values: "national", "supraRegional", "regional", "infraRegional", "supraLocal", "local", "other".</li>
+				<li>"regulationNature" field should have one of the following values: "Binding for developers", "Binding for authorities", "Defined in regulation", "General binding", "Not binding".</li>
+				<li>"processStep" field should have one of the following values: "preparation" or "Preparation for elaboration", "elaboration" or "Elaboration phase", "adoption" or "Adoption phase", "legalForce" or "In force", "obsolete" or "Obsolete".</li>
+			</ul>
+		</div>
+	</div>
+	
+	<div id="shpSeaUseValidationRules" style="display: none">
+		<div id="shpSeaUseCountrySelectGroup" style="margin: 10px 10px 0px 20px; display: none">
+			<label for="shpSeaUseCountrySelect" style="font-size: 12px;">Select a country of sea use plans</label><br/>
+			<select id="shpSeaUseCountrySelect" data-dojo-attach-point="shpSeaUseCountrySelect">
+	  			<option value="NONE"></option>
+	  			<option value="DE">DE</option>
+	  			<option value="DK">DK</option>
+	  			<option value="EE">EE</option>
+	  			<option value="FI">FI</option>
+	  			<option value="LT">LT</option>
+	  			<option value="LV">LV</option>
+	  			<option value="PL">PL</option>
+	  			<option value="RU">RU</option>
+	  			<option value="SE">SE</option>
+			</select>
+		</div>
+		<div style="margin: 0px 10px 0px 20px;">
+			<label for="mspSeaUseFileInput" style="font-size: 12px;">Select a ZIP archive with sea use plan Shapefile(s)</label><br/>
+			<input id="mspSeaUseFileInput" type="file" data-dojo-attach-point="mspSeaUseFileInput" />
+		</div>
+		<div style="font-weight: bold; font-size: 12px; margin: 5px 10px 0px 10px;">
+			MSP output Sea Use data in Shapefiles are validated according to following rules:
+		</div>
+		<div style="font-weight: bold; font-size: 12px; margin: 5px 10px 0px 10px;">
+			File validation
+		</div>
+		<div style="font-size: 12px; margin: 5px 10px 0px 10px;">
+			<ul style="margin: 0;">
+				<li>Data should be in ZIP archive.</li>
+				<li>ZIP archive should contain valid ESRI Shapefile(s). All files should be placed on one file hierarchy level (no folders allowed within ZIP archive). Required are files with extensions: "shp", "shx", "dbf". Allowed are files with extensions: "shp", "shx", "dbf", "sbn", "sbx", "fbn", "fbx", "ain", "aih", "atx", "ixs", "mxs", "prj", "xml", "cpg".</li>
+			</ul>
+		</div>
+		<div style="font-weight: bold; font-size: 12px; margin: 5px 10px 0px 10px;">
+			Dataset validation (checked if above rules are met)
+		</div>
+		<div style="font-size: 12px; margin: 5px 10px 0px 10px;">
+			<ul style="margin: 0;">
+				<li>Spatial reference should be defined.</li>
+				<li>Dataset should be within bounding box of MSP ares of the country that dataset belongs to.</li> 
+				<li>Required fields: "priority", "reserved", "allowed", "restricted", "forbidden", "useDsc", "planId" fields should be present in the dataset.</li>
+			</ul>	
+		</div>
+		<div style="font-weight: bold; font-size: 12px; margin: 5px 10px 0px 10px;">
+			Feature validation (checked if above rules are met)
+		</div>
+		<div style="font-size: 12px; margin: 5px 10px 0px 10px;">
+			<ul style="margin: 0;">
+				<li>Empty geometries should not be included.</li>
+				<li>At least 1 of 5 fields ("priority", "reserved", "allowed", "restricted", "forbidden") should have a value.</li>
+				<li>"priority", "reserved", "allowed", "restricted", "forbidden" fields should have value(s) according SeaUse code list<b>*</b> (multiple comma separated values are allowed).</li> 
+				<li>If "forbidden" field has a value, then "priority", "reserved", "allowed", "restricted" fields should not have that value.</li>
+				<li>If "restricted" field has a value, then "priority", "reserved", "allowed", "forbidden" fields should not have that value.</li>
+				<li>"planId" field should have a value that is present in MSP areas dataset of the country.</li>
+			</ul>
 		</div>
 		<div style="font-size: 12px; margin: 5px 10px 0px 10px; font-style: italic; font-weight: bold;">
 			*Anex 2 of <a href="https://vasab.org/wp-content/uploads/2019/04/Guidelines-on-transboundary-MSP-output-data-structure-ADOPTEDbyVASAB__HELCOM.pdf" target="_blank">Guidelines on transboundary MSP output data structure in the Baltic Sea</a>
 		</div>
 	</div>
 	
-	<div id="wfsValidationRules" style="display: none">
+	<div id="wfsAreaValidationRules" style="display: none">
 		<div style="color: red; font-size: 12px; margin: 5px 10px 0px 20px;">
 			Beta version.
 		</div>
 		<textarea id="wfsInput" rows="3" cols="60" placeholder="Input valid WFS url (without parameters). Examples:&#10;http://www.myserver.com/arcgis/services/download/service&#10;https://www.myserver.com/service" style="margin: 10px 10px 0px 20px;" data-dojo-attach-point="wfsInput"></textarea>
 		<div id="validateWfsButton" class="formButtonFlexibleWidth" style="margin: 10px 10px 0px 20px;" data-dojo-attach-point="validateWfsButton">Validate WFS</div>
 		<div style="font-weight: bold; font-size: 12px; margin: 5px 10px 0px 10px;">
-			MSP output data in WFS are validated according to following rules:
+			MSP plan areas data in WFS are validated according to following rules:
 		</div>
 		<div style="font-weight: bold; font-size: 12px; margin: 5px 10px 0px 10px;">
 			Service validation
 		</div>
 		<div style="font-size: 12px; margin: 5px 10px 0px 10px;">
-			1 - Data should be in valid WFS.<br/>
-			2 - WFS feature types should be valid.
+			<ul style="margin: 0;">
+				<li>Data should be in valid WFS.</li>
+				<li>WFS feature types should be valid.</li>
+			</ul>
 		</div>
 		<div style="font-weight: bold; font-size: 12px; margin: 5px 10px 0px 10px;">
 			Dataset validation (checked if above rules are met)
 		</div>
 		<div style="font-size: 12px; margin: 5px 10px 0px 10px;">
-			3 - Spatial reference should be defined.<br/>
-			4 - Dataset should be with polygon geometry.<br/> 
-			5 - "priority", "reserved", "allowed", "restricted", "forbidden", "useDsc", "PlanID" fields should be present in the dataset.
+			<ul style="margin: 0;">
+				<li>Spatial reference should be defined.</li>
+				<li>Dataset should be with polygon geometry.</li> 
+				<li>"priority", "reserved", "allowed", "restricted", "forbidden", "useDsc", "PlanID" fields should be present in the dataset.</li>
+			</ul>	
 		</div>
 		<div style="font-weight: bold; font-size: 12px; margin: 5px 10px 0px 10px;">
 			Feature validation (checked if above rules are met)
 		</div>
 		<div style="font-size: 12px; margin: 5px 10px 0px 10px;">
-			6 - Empty geometries should not be included.<br/>
-			7 - At least 1 of 5 fields ("priority", "reserved", "allowed", "restricted", "forbidden") should have a value.<br/>
-			8 - "priority", "reserved", "allowed", "restricted", "forbidden" fields should have value(s) according SeaUse code list<b>*</b> (multiple comma separated values are allowed).<br/> 
-			9 - If "forbidden" field has a value, then "priority", "reserved", "allowed", "restricted" fields should not have that value.<br/>
-			10 - If "restricted" field has a value, then "priority", "reserved", "allowed", "forbidden" fields should not have that value.<br/>
-			11 - "PlanID" field should have a value.
+			<ul style="margin: 0;">
+				<li>Empty geometries should not be included.</li>
+				<li>At least 1 of 5 fields ("priority", "reserved", "allowed", "restricted", "forbidden") should have a value.</li>
+				<li>"priority", "reserved", "allowed", "restricted", "forbidden" fields should have value(s) according SeaUse code list<b>*</b> (multiple comma separated values are allowed).</li> 
+				<li>If "forbidden" field has a value, then "priority", "reserved", "allowed", "restricted" fields should not have that value.</li>
+				<li>If "restricted" field has a value, then "priority", "reserved", "allowed", "forbidden" fields should not have that value.</li>
+				<li>11 - "PlanID" field should have a value.</li>
+			</ul>
+		</div>
+		<div style="font-size: 12px; margin: 5px 10px 0px 10px; font-style: italic; font-weight: bold;">
+			*Anex 2 of <a href="https://vasab.org/wp-content/uploads/2019/04/Guidelines-on-transboundary-MSP-output-data-structure-ADOPTEDbyVASAB__HELCOM.pdf" target="_blank">Guidelines on transboundary MSP output data structure in the Baltic Sea</a>
+		</div>
+	</div>
+	
+	<div id="wfsSeaUseValidationRules" style="display: none">
+		<div style="color: red; font-size: 12px; margin: 5px 10px 0px 20px;">
+			Beta version.
+		</div>
+		<textarea id="wfsInput" rows="3" cols="60" placeholder="Input valid WFS url (without parameters). Examples:&#10;http://www.myserver.com/arcgis/services/download/service&#10;https://www.myserver.com/service" style="margin: 10px 10px 0px 20px;" data-dojo-attach-point="wfsInput"></textarea>
+		<div id="validateWfsButton" class="formButtonFlexibleWidth" style="margin: 10px 10px 0px 20px;" data-dojo-attach-point="validateWfsButton">Validate WFS</div>
+		<div style="font-weight: bold; font-size: 12px; margin: 5px 10px 0px 10px;">
+			MSP output Sea Use data in WFS are validated according to following rules:
+		</div>
+		<div style="font-weight: bold; font-size: 12px; margin: 5px 10px 0px 10px;">
+			Service validation
+		</div>
+		<div style="font-size: 12px; margin: 5px 10px 0px 10px;">
+			<ul style="margin: 0;">
+				<li>Data should be in valid WFS.</li>
+				<li>WFS feature types should be valid.</li>
+			</ul>
+		</div>
+		<div style="font-weight: bold; font-size: 12px; margin: 5px 10px 0px 10px;">
+			Dataset validation (checked if above rules are met)
+		</div>
+		<div style="font-size: 12px; margin: 5px 10px 0px 10px;">
+			<ul style="margin: 0;">
+				<li>Spatial reference should be defined.</li>
+				<li>Dataset should be with polygon geometry.</li> 
+				<li>"priority", "reserved", "allowed", "restricted", "forbidden", "useDsc", "PlanID" fields should be present in the dataset.</li>
+			</ul>	
+		</div>
+		<div style="font-weight: bold; font-size: 12px; margin: 5px 10px 0px 10px;">
+			Feature validation (checked if above rules are met)
+		</div>
+		<div style="font-size: 12px; margin: 5px 10px 0px 10px;">
+			<ul style="margin: 0;">
+				<li>Empty geometries should not be included.</li>
+				<li>At least 1 of 5 fields ("priority", "reserved", "allowed", "restricted", "forbidden") should have a value.</li>
+				<li>"priority", "reserved", "allowed", "restricted", "forbidden" fields should have value(s) according SeaUse code list<b>*</b> (multiple comma separated values are allowed).</li> 
+				<li>If "forbidden" field has a value, then "priority", "reserved", "allowed", "restricted" fields should not have that value.</li>
+				<li>If "restricted" field has a value, then "priority", "reserved", "allowed", "forbidden" fields should not have that value.</li>
+				<li>11 - "PlanID" field should have a value.</li>
+			</ul>
 		</div>
 		<div style="font-size: 12px; margin: 5px 10px 0px 10px; font-style: italic; font-weight: bold;">
 			*Anex 2 of <a href="https://vasab.org/wp-content/uploads/2019/04/Guidelines-on-transboundary-MSP-output-data-structure-ADOPTEDbyVASAB__HELCOM.pdf" target="_blank">Guidelines on transboundary MSP output data structure in the Baltic Sea</a>

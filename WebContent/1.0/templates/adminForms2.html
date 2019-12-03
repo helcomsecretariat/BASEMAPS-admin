@@ -361,6 +361,10 @@
 				<span class="textInputLabel">Position:</span>
 				<input id="addUserPositionInput" class="textInput" type="text" tabindex="2" maxlength="500">
 			</div>
+			<div class="inputLabelGroup">
+				<span class="textInputLabel">Country:</span>
+				<input id="addUserCountryInput" class="textInput" type="text" tabindex="2" maxlength="2">
+			</div>
 			<span id="saveUser" class="formLink" data-dojo-attach-point="saveUser">Save</span>
 			<span id="cancelUser" class="formLink" data-dojo-attach-event="onclick:cancelAddUserClick">Cancel</span>
 		</div>
@@ -387,6 +391,10 @@
 			<div class="inputLabelGroup">
 				<span class="textInputLabel">Position:</span>
 				<input id="updateUserPositionInput" class="textInput" type="text" tabindex="2" maxlength="500">
+			</div>
+			<div class="inputLabelGroup">
+				<span class="textInputLabel">Country:</span>
+				<input id="updateUserCountryInput" class="textInput" type="text" tabindex="2" maxlength="2">
 			</div>
 			<span id="updateUser" class="formLink" data-dojo-attach-point="updateUser">Save</span>
 			<span id="cancelUpdateUser" class="formLink" data-dojo-attach-event="onclick:cancelUpdateUserClick">Cancel</span>
@@ -430,36 +438,59 @@
 		</div>
 		
 		<!-- MSP validation section -->
-		<div id="validationForm" class="formContainer" style="display:none;">
-			<div class="scrollableContainer">			
-				<div class="formSectionLabel">Validation</div>
-				<div id="checkZipGroup" class="inputLabelGroup" style="display:none;">
-					<span class="textInputLabelCell">Selected file:</span>
-					<span id="checkZipMessage" class="textLabelCell"></span>
+		<div id="mspOutputForm" class="formContainer" style="display:none;">
+			<div class="scrollableContainer">
+				<div id="validationForm" style="display:none;">
+					<div class="formSectionLabel">Validation</div>
+					<div id="checkZipGroup" class="inputLabelGroup" style="display:none;">
+						<span class="textInputLabelCell">Selected file:</span>
+						<span id="checkZipMessage" class="textLabelCell"></span>
+					</div>
+					<div id="checkExtGroup" class="inputLabelGroup" style="display:none;">
+						<span class="textInputLabelCell">Selected file:</span>
+						<span id="checkExtMessage" class="textLabelCell"></span>
+					</div>
+					<div id="validateButton" class="formButton" style="margin-top: 10px; display: none;" data-dojo-attach-point="validateButton">Validate</div>
+					<div id="uploadGroup" class="inputLabelGroup" style="display:none;">
+						<span class="textInputLabelCell">Processing:</span>
+						<span id="shpUploadMessage" class="textLabelCell"></span>
+					</div>
+					<div id="wfsUrlGroup" class="inputLabelGroup" style="display:none;">
+						<span class="textInputLabelCell">Wfs url:</span>
+						<span id="wfsUrlMessage" class="textLabelCell"></span>
+					</div>
+					<div id="errorReportSection" class="formSectionGroup" style="display:none;">
+						<div class="formSectionLabel">Validation report:</div>
+						<div id="errorsSection" data-dojo-attach-point="errorsSection"></div>
+					</div>
+					<div id="uploadMessage" style="margin-top: 10px; font-size: 12px; display: none;">
+						<div> 
+							Valid data are ready to be transformed to Basemaps data model and uploaded (or replaced) in the database.
+						</div>
+						<div id="uploadNoteMessage" style="color: red;"></div>
+						<div>
+							Click Upload button to continue or New validation - start over new validation.
+						</div>
+					</div>
+					<div id="uploadValidDataButton" class="formButton" style="margin-top: 10px; display: none;" data-dojo-attach-point="uploadValidDataButton">Upload data</div>
 				</div>
-				<div id="checkExtGroup" class="inputLabelGroup" style="display:none;">
-					<span class="textInputLabelCell">Selected file:</span>
-					<span id="checkExtMessage" class="textLabelCell"></span>
+				<div id="uploadForm" style="display:none;">
+					<div class="formSectionLabel">Upload</div>
+					<div id="backupDataGroup" class="inputLabelGroup">
+						<span class="textInputLabelCell">Backup:</span>
+						<span id="backupDataMessage" class="textLabelCell"></span>
+					</div>
+					<div id="uploadDataGroup" class="inputLabelGroup" style="display:none;">
+						<span class="textInputLabelCell">Upload:</span>
+						<span id="uploadDataMessage" class="textLabelCell"></span>
+					</div>
+					<div id="uploadReportSection" data-dojo-attach-point="uploadReportSection" style="display:none;">
+						<div class="formSectionLabel">Upload report:</div>
+						<div id="uploadSection" data-dojo-attach-point="uploadSection"></div>	
+					</div>
 				</div>
-				<div id="validateButton" class="formButton" style="margin-top: 10px; display: none;" data-dojo-attach-point="validateButton">Validate</div>
-				<div id="uploadGroup" class="inputLabelGroup" style="display:none;">
-					<span class="textInputLabelCell">Processing:</span>
-					<span id="shpUploadMessage" class="textLabelCell"></span>
-				</div>
-				<div id="wfsUrlGroup" class="inputLabelGroup" style="display:none;">
-					<span class="textInputLabelCell">Wfs url:</span>
-					<span id="wfsUrlMessage" class="textLabelCell"></span>
-				</div>
-				<div id="errorReportSection" class="formSectionGroup" style="display:none;">
-					<div class="formSectionLabel">Validation report:</div>
-					<div id="errorsSection" data-dojo-attach-point="errorsSection"></div>
-				</div>
-				<div id="uploadMessage" style="margin-top: 10px; font-size: 16px; color: green; display: none;">
-					Your data is ready to upload to Basemaps database and after uploading will be available for public usage.
-				</div>
-				<div id="uploadValidDataButton" class="formButton" style="margin-top: 10px; display: none;" data-dojo-attach-point="uploadValidDataButton">Upload data</div>
+				<div id="validationCloseButton" class="formButtonFlexibleWidth" style="margin-top: 10px; margin-bottom: 10px;" data-dojo-attach-point="validationCloseButton" data-dojo-attach-event="onclick:cleanMspOutputForm">Close</div>
 			</div>
-			<div id="validationCloseButton" class="formButtonFlexibleWidth" style="margin-top: 10px;" data-dojo-attach-point="validationCloseButton" data-dojo-attach-event="onclick:cleanAdminForm">Close</div>
 		</div>
 	</div>
 </div>

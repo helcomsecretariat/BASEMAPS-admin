@@ -91,7 +91,6 @@ define([
 		
 		cleanAdminForm: function() {
 			
-			this.cleanValidationForm();
 			this.cleanAddUserForm();
 			this.cleanUpdateUserForm();
 			this.cleanChangeUserPasswordForm();
@@ -418,6 +417,13 @@ define([
 		/* --- MANAGE CATEGORY BUTTONS END --- */
 		
 		/* --- MANAGE VALIDATION CLEAN START--- */
+		cleanMspOutputForm: function() {
+			this.cleanValidationForm();
+			this.cleanUploadForm();
+			this.utils.show("mspOutputForm", "none");
+			this.utils.changeText("validationCloseButton", "Close");
+		},
+		
 		cleanValidationForm: function() {
 			/*if (document.getElementById("mspFileInput")) {
 				document.getElementById("mspFileInput").value = "";
@@ -435,12 +441,20 @@ define([
 			domConstruct.empty(this.errorsSection);
 			this.utils.show("uploadMessage", "none");
 			this.utils.show("uploadValidDataButton", "none");
-			this.utils.changeText("validationCloseButton", "Close");
+		},
+		cleanUploadForm: function() {
+			this.utils.setTextValue("backupDataMessage", "");
+			this.utils.show("uploadDataGroup", "none");
+			this.utils.setTextValue("uploadDataMessage", "");
+			this.utils.show("uploadForm", "none");
+			this.utils.show("uploadReportSection", "none");
+			domConstruct.empty(this.uploadSection);
 		},
 		/* --- MANAGE VALIDATION CLEAN END--- */
 		
 		/* --- MANAGE USER CLEAN START--- */
 		cleanAddUserForm: function() {
+			document.getElementById("updateUserCountryInput").disabled = false;
 			this.utils.clearInput("addUserNameInput");
 			this.utils.clearInput("addUserEmailInput");
 			this.utils.clearInput("addUserPasswordInput");
@@ -448,15 +462,18 @@ define([
 			this.utils.clearInput("addUserPhoneInput");
 			this.utils.clearInput("addUserOrganizationInput");
 			this.utils.clearInput("addUserPositionInput");
+			this.utils.clearInput("addUserCountryInput");
 			this.utils.show("addUserForm", "none");
 		},
 		
 		cleanUpdateUserForm: function() {
+			document.getElementById("updateUserCountryInput").disabled = false;
 			this.utils.clearInput("updateUserNameInput");
 			this.utils.clearInput("updateUserEmailInput");
 			this.utils.clearInput("updateUserPhoneInput");
 			this.utils.clearInput("updateUserOrganizationInput");
 			this.utils.clearInput("updateUserPositionInput");
+			this.utils.clearInput("updateUserCountryInput");
 			this.utils.show("updateUserForm", "none");
 		},
 		
@@ -1318,8 +1335,7 @@ define([
 									users.splice(i, 1);
 								}
 							}
-					    	this.updateUser(user, categoryId, users);
-							//this.updateUser(user);
+					    	this.updateUserFunction(user, categoryId, users);
 					    }
 					}));
 				}));
@@ -1330,8 +1346,7 @@ define([
 			
 		},
 		
-		updateUser: function(user, categoryId, users) {
-		//updateUser: function(user) {
+		updateUserFunction: function(user, categoryId, users) {
 			var url = "sc/users/update";
 			request.post(url, this.utils.createPostRequestParams(user)).then(
 				lang.hitch(this, function(response) {

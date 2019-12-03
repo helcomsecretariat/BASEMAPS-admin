@@ -37,6 +37,8 @@ public class UserUI extends EmailUI implements Named
 	
 	private String position;
 	
+	private String country;
+	
 	private List<UserRightUI> rights;
 	
 	
@@ -53,6 +55,7 @@ public class UserUI extends EmailUI implements Named
 		this.setOrganization(user.getOrganization());
 		this.setPhone(user.getPhone());
 		this.setPosition(user.getPosition());
+		this.setCountry(user.getCountry());
 		this.setRights(new ArrayList<>());
 		for (UserRight ur : user.getRights())
 		{
@@ -114,6 +117,14 @@ public class UserUI extends EmailUI implements Named
 
 	public void setPosition(String position) {
 		this.position = position;
+	}
+	
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
 	}
 
 	public List<UserRightUI> getRights() {

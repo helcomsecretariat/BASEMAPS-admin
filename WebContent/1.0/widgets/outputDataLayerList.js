@@ -134,7 +134,6 @@ define([
 						request.post(url, this.utils.createPostRequestParams(data)).then(
 							lang.hitch(this, function(response) {
 								if (response.type == "error") {
-									console.log("Identifying MSP REST failed", response);
 									domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
 								}
 								else if (response.type == "success") {
@@ -178,7 +177,6 @@ define([
 												
 							domStyle.set(dojo.byId("loadingCover"), {"display": "block"});
 							var url = "sc/tools/get-data";
-							console.log(identifyUrl);
 							var data = {
 								"url": identifyUrl,
 								"format": "json"
@@ -186,21 +184,18 @@ define([
 							request.post(url, this.utils.createPostRequestParams(data)).then(
 								lang.hitch(this, function(response) {
 									if (response.type == "error") {
-										console.log("Identifying MSP AREA failed", response);
 										domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
 									}
 									else if (response.type == "success") {
 										if (response.item) {
 											this.mspIdentifyResults = [];
 											this.mspIdentifyNr = null;
-											console.log("response.item", response.item);
 											array.forEach(response.item.results, lang.hitch(this, function(arcgisResult) {
 												var gjson = ArcgisToGeojsonUtils.arcgisToGeoJSON(arcgisResult);
 												gjson.layerName = arcgisResult.layerName;
 												this.mspIdentifyResults.push(gjson);
 											}));
 											if (this.mspIdentifyResults.length > 0) {
-												console.log("this.mspIdentifyResults", this.mspIdentifyResults);
 												this.mspIdentifyNr = 0;
 												this.setMspPopupContent();
 											}
@@ -230,7 +225,6 @@ define([
 							request.post(url, this.utils.createPostRequestParams(data)).then(
 								lang.hitch(this, function(response) {
 									if (response.type == "error") {
-										console.log("Identifying MSP REST failed", response);
 										domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
 									}
 									else if (response.type == "success") {
@@ -287,7 +281,6 @@ define([
 							request.post(url, this.utils.createPostRequestParams(data)).then(
 								lang.hitch(this, function(response) {
 									if (response.type == "error") {
-										console.log("Identifying MSP REST failed", response);
 										domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
 									}
 									else if (response.type == "success") {
@@ -333,7 +326,6 @@ define([
 								request.post(url, this.utils.createPostRequestParams(data)).then(
 									lang.hitch(this, function(response) {
 										if (response.type == "error") {
-											console.log("Identifying MSP Feature failed", response);
 											domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
 										}
 										else if (response.type == "success") {
@@ -788,8 +780,6 @@ define([
 										ut = ut.slice(0, -2);
 									}
 								}
-								//console.log(feature.attributes[this.mspParamsArray[nr].useType]);
-								//console.log(feature.attributes[this.mspParamsArray[nr].useType+"_info"]);
 								if (uti != null) {
 								//if (feature.attributes[this.mspParamsArray[nr].useType+"_info"] != null) {
 									if (!(this.mspParamsArray[nr].distinctValues.includes(ut.trim()))) {
@@ -1169,7 +1159,6 @@ define([
 					}));
 					featuresUrl = featuresUrl.slice(0, -4) + "&outFields=*&returnGeometry=true&f=pjson";
 				}
-				console.log(featuresUrl);
 				var servicedata = {
 					"url": featuresUrl,
 					"format": "json"

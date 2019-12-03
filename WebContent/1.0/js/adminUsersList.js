@@ -71,12 +71,14 @@ define([
 				var userEmail = this.utils.getInputValue("addUserEmailInput").trim();
 				var userPassword = this.utils.getInputValue("addUserPasswordInput").trim();
 				var userPasswordRepeat = this.utils.getInputValue("addUserPasswordRepeatInput").trim();
+				var userCountry = this.utils.getInputValue("addUserCountryInput").trim();
 				
 				var newUser = {
 					"role": "",
 					"name": "",
 					"password": "",
 					"email": "",
+					"country": "",
 					"phone": this.utils.getInputValue("addUserPhoneInput").trim(),
 					"organization": this.utils.getInputValue("addUserOrganizationInput").trim(),
 					"position": this.utils.getInputValue("addUserPositionInput").trim()
@@ -89,7 +91,19 @@ define([
 							newUser.role = this.newUserRole;
 							if ((validate.isText(userPassword)) && (userPassword === userPasswordRepeat)) {
 								newUser.password = userPassword;
-								this.saveUser(newUser);
+								if (newUser.role === "ADMIN") {
+									newUser.country = "ZZ";
+									this.saveUser(newUser);
+								}
+								else if (newUser.role === "PROVIDER") {
+									if (["DE", "DK", "EE", "FI", "LT", "LV", "PL", "RU", "SE"].includes(userCountry)) {
+										newUser.country = userCountry;
+										this.saveUser(newUser);
+									}
+									else {
+										this.formsObj.showMessage("User country not valid. Should be one of the values: DE, DK, EE, FI, LT, LV, PL, RU, SE.");
+									}
+								}
 							}
 							else {
 								this.formsObj.showMessage("Passwords are not matching or not valid.");
@@ -112,7 +126,11 @@ define([
 				var userName = this.utils.getInputValue("updateUserNameInput").trim();
 				var userEmail = this.utils.getInputValue("updateUserEmailInput").trim();
 				var userPhone = this.utils.getInputValue("updateUserPhoneInput").trim();
-				
+				var userCountry = null;
+				if (this.updateUser.role === "PROVIDER") {
+					userCountry = this.utils.getInputValue("updateUserCountryInput").trim();
+				}
+								
 				this.updateUser.organization = this.utils.getInputValue("updateUserOrganizationInput").trim();
 				this.updateUser.position = this.utils.getInputValue("updateUserPositionInput").trim();
 
@@ -122,7 +140,18 @@ define([
 						this.updateUser.email = userEmail
 						if (userPhone.length <= 15) {
 							this.updateUser.phone = userPhone;
-							this.updateUserInfo(this.updateUser);
+							if (this.updateUser.role === "PROVIDER") { 
+								if (["DE", "DK", "EE", "FI", "LT", "LV", "PL", "RU", "SE"].includes(userCountry)) {
+									this.updateUser.country = userCountry;
+									this.updateUserInfo(this.updateUser);
+								}
+								else{
+									this.formsObj.showMessage("Country is not valid. Should be one of the values: DE, DK, EE, FI, LT, LV, PL, RU, SE.");
+								}
+							}
+							else if (this.updateUser.role === "ADMIN") {
+								this.updateUserInfo(this.updateUser);
+							}
 						}
 						else {
 							this.formsObj.showMessage("Phone is not valid.");
@@ -228,6 +257,12 @@ define([
 					this.utils.setInputValue("updateUserPhoneInput", user.phone);
 					this.utils.setInputValue("updateUserOrganizationInput", user.organization);
 					this.utils.setInputValue("updateUserPositionInput", user.position);
+					if (user.role === "ADMIN") {
+						document.getElementById("updateUserCountryInput").disabled = true;
+					}
+					else if (user.role === "PROVIDER") {
+						this.utils.setInputValue("updateUserCountryInput", user.country);
+					} 
 					this.utils.show("updateUserForm", "block");
 				}));
 				
@@ -239,6 +274,9 @@ define([
 			}));
 			on(newUser, "click", lang.hitch(this, function() {
 				this.formsObj.cleanAdminForm();
+				if (role === "ADMIN") {
+					document.getElementById("addUserCountryInput").disabled = true;
+				}
 				this.utils.show("addUserForm", "block");
 				this.newUserRole = role;
 			}));

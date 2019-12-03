@@ -29,10 +29,14 @@ define([
 		adminMspValidation: null,
 		userRole: null,
 		userRights: null,
+		userCountry: null,
+		userName: null,
 		
 		constructor: function(params) {
 			this.userRole = params.role;
 			this.userRights = params.rights;
+			this.userCountry = params.country;
+			this.userName = params.name;
 		},
 		
 		layersButtonClick: function() {
@@ -51,7 +55,7 @@ define([
 		mspOutputButtonClick: function() {
 			this.adminForms.cleanAdminForm();
 			if (this.adminMspValidation == null) {
-				this.adminMspValidation = new adminMspValidation({forms: this.adminForms}).placeAt(this.adminMspValidationSection);
+				this.adminMspValidation = new adminMspValidation({forms: this.adminForms, role: this.userRole, country: this.userCountry, name: this.userName}).placeAt(this.adminMspValidationSection);
 			}
 			this.showMspValidation();
 		},

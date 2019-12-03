@@ -59,6 +59,8 @@ public class User extends EmailBean implements Named
 	
 	protected String position;
 	
+	protected String country;
+	
 	@OneToMany(targetEntity=UserRight.class, cascade={CascadeType.ALL}, fetch=FetchType.EAGER)
 	@JoinColumn(name = "user_id", nullable = false, updatable = false, insertable = true)
 	@OrderBy("category_id")
@@ -92,6 +94,7 @@ public class User extends EmailBean implements Named
 		this.setOrganization(ui.getOrganization());
 		this.setPhone(ui.getPhone());
 		this.setPosition(ui.getPosition());
+		this.setCountry(ui.getCountry());
 		this.setRights(new ArrayList<>());
 		if (!Util.isEmptyCollection(ui.getRights()))
 		{
@@ -169,9 +172,17 @@ public class User extends EmailBean implements Named
 	public String getPosition() {
 		return position;
 	}
-
+	
 	public void setPosition(String position) {
 		this.position = position;
+	}
+	
+	public String getCountry() {
+		return country;
+	}
+	
+	public void setCountry(String country) {
+		this.country = country;
 	}
 
 	public List<UserRight> getRights() {
