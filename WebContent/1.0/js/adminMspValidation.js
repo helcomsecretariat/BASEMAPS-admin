@@ -157,7 +157,9 @@ define([
 			
 			on(this.formsObj.validationCloseButton, "click", lang.hitch(this, function() {
 				this.validation = null;
-				this.userCountry = null;
+				if (this.userRole == "ADMIN") {
+					this.userCountry = null;
+				}
 				this.wfsInput.value = "";
 				this.mspAreaFileInput.value = "";
 				this.mspSeaUseFileInput.value = "";
