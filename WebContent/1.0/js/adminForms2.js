@@ -26,6 +26,7 @@ define([
 		formView: null,
 		action: null,
 		utils: null,
+		tree: null,
 		addingWmsWithCategory: false,
 		addingWfsWithCategory: false,
 		addingMetadataWithCategory: false,
@@ -47,6 +48,22 @@ define([
 		currentCategoryCategories: [],
 		editMode: false,
 		categoryUserSelector: null,
+		countryLabels: ["HELCOM data", "Denmark", "Estonia", "Finland", "Germany", "Latvia", "Lithuania", "Poland", "Russia", "Sweden"],
+		summaryLabel: null,
+		initLabel: null,
+		countryLabelFound: false,
+		wmsCount: 0,
+		wmsValidCount: 0,
+		wmsNotValidCount: 0,
+		wfsCount: 0,
+		wfsValidCount: 0,
+		wfsNotValidCount: 0,
+		agsCount: 0,
+		agsValidCount: 0,
+		agsNotValidCount: 0,
+		dnlCount: 0,
+		dnlValidCount: 0,
+		dnlNotValidCount: 0,
 		
 		constructor: function(params) {
 			this.utils = new utils();
@@ -512,13 +529,26 @@ define([
 		
 		// --- summary form
 		cleanSummaryForm: function() {
-			domConstruct.empty(this.summaryTable);
+			domConstruct.empty(this.summaryReport);
 			this.utils.show("summaryForm", "none");
 		},
 		
 		// --- validate services form
 		cleanValidateServicesForm: function() {
+			domConstruct.empty(this.validationReport);
 			this.utils.show("validateServicesForm", "none");
+			this.wmsCount = 0;
+			this.wmsValidCount = 0;
+			this.wmsNotValidCount = 0;
+			this.wfsCount = 0;
+			this.wfsValidCount = 0;
+			this.wfsNotValidCount = 0;
+			this.agsCount = 0;
+			this.agsValidCount = 0;
+			this.agsNotValidCount = 0;
+			this.dnlCount = 0;
+			this.dnlValidCount = 0;
+			this.dnlNotValidCount = 0;
 		},
 		
 		// --- category info		
@@ -2170,9 +2200,10 @@ define([
 						this.showMessage("Failed to get services summary.");
 					}
 					else if (response.type == "success") {
-						this.cleanSummaryForm();
-						console.log(response.item);
 						array.forEach(response.item, lang.hitch(this, function(item) {
+							this.initLabel = item.label;
+							this.summaryLabel = null;
+							this.countryLabelFound = false;
 							this.getSummaryRecord(item);
 						}));
 					}
@@ -2185,28 +2216,255 @@ define([
 		},
 		
 		getSummaryRecord: function(item) {
-			var info = {
-				label: item.label,
-				wmsCount: item.counts.wmses,
-				wfsCount: item.counts.wfses,
-				agsCount: item.counts.arcgises,
-				dnlCount: item.counts.downloadables
-			};
-			this.buildSummaryRecord(info);
-			if (item.children != null) {
-				array.forEach(item.children, lang.hitch(this, function(item) {
-					this.getSummaryRecord(item);
-				}));
+			if (!this.countryLabels.includes(item.label)) {
+				this.countryLabelFound = false;
+				if (this.summaryLabel == null) {
+					this.summaryLabel = this.initLabel;
+					if (item.label != this.initLabel) {
+						this.summaryLabel = this.summaryLabel + " -> " + item.label;
+					}
+				}
+				else {
+					this.summaryLabel = this.summaryLabel + " -> " + item.label;
+				}				
+				if (item.children != null) {
+					array.forEach(item.children, lang.hitch(this, function(item) {
+						this.getSummaryRecord(item);
+					}));
+				}
+			}
+			else  {
+				if (!this.countryLabelFound) {
+					this.countryLabelFound = true;
+					domConstruct.create("div", { "innerHTML": this.summaryLabel, "class": "formSectionLabel" }, this.summaryReport, "last");
+					this.summaryLabel = null;
+				}
+				var container = domConstruct.create("div", { "class": "inputLabelGroup"}, this.summaryReport, "last");
+				domConstruct.create("span", { "innerHTML": item.label, "class": "textInputLabel"}, container, "last");
+				domConstruct.create("span", { "innerHTML": "WMS: " + item.counts.wmses + ", WFS: " + item.counts.wfses + ", ARCGIS MAPSERVER: " + item.counts.arcgises + ", DOWNLOADABLE: " + item.counts.downloadables, "class": "textLabel"}, container, "last");
 			}
 		},
 		
-		buildSummaryRecord: function(info) {
-			var row = domConstruct.create("tr", this.summaryTable, "last");
-			domConstruct.create("td", { "innerHTML": info.label }, row, "last");
-			domConstruct.create("td", { "innerHTML": info.wmsCount }, row, "last");
-			domConstruct.create("td", { "innerHTML": info.wfsCount }, row, "last");
-			domConstruct.create("td", { "innerHTML": info.agsCount }, row, "last");
-			domConstruct.create("td", { "innerHTML": info.dnlCount }, row, "last");
+		downloadSummaryClick: function() {
+			console.log(window.location.pathname);
+			window.location.replace("sc/categories/summary-download");
+			/*var url = "sc/categories/summary-download";
+			request.get(url, {
+				handleAs: "json"
+			}).then(
+				lang.hitch(this, function(response) {
+					console.log(response);
+					if (response.type == "error") {
+						this.showMessage("Failed to get services summary for download.");
+					}
+					else if (response.type == "success") {
+						console.log(response.item);
+					}
+				}),
+				lang.hitch(this, function(error) {
+					alert("Something went wrong (on categories/summary-download). Please contact administrator.");
+					console.log(error);
+				})
+			);*/
+		},
+		
+		validateAllServices: function() {
+			console.log(this.tree);
+			array.forEach(this.tree, lang.hitch(this, function(item) {
+				this.validateRecord(item);
+			}));
+		},
+		
+		validateRecord: function(record) {
+			var validationMessageDiv = null;
+			if (record.type == "CATEGORY") {
+				//this.dataFiltering.push(lyr);
+				array.forEach(record.layers, lang.hitch(this, function(layer) {
+					this.validateRecord(layer);
+				}));
+			}
+			else if (record.type == "WMS") {
+				this.wmsCount += 1;
+				domConstruct.create("div", { "innerHTML": record.header, "style": "font-weight: bold; margin-bottom: 5px; margin-left: 20px;" }, this.validationReport, "last");
+				var container = domConstruct.create("div", { "class": "serviceInfoElementContainer"}, this.validationReport, "last");
+				domConstruct.create("div", { "innerHTML": "WMS", "class": "serviceInfoElementLabel"}, container, "last");
+				var info = domConstruct.create("div", { "class": "serviceInfoElementValue"}, container, "last");
+				domConstruct.create("div", { "innerHTML": "URL: " + record.wms.url}, info, "last");
+				domConstruct.create("div", { "innerHTML": "Layer: " + record.wms.name}, info, "last");
+				validationMessageDiv = domConstruct.create("div", { "innerHTML": "Validating...", "style": "color: blue;"}, info, "last");
+				this.validateWmsForReport(validationMessageDiv, record.wms.url, record.wms.name);
+			}
+			else if (record.type == "WFS") {
+				this.wfsCount += 1;
+				domConstruct.create("div", { "innerHTML": record.header, "style": "font-weight: bold; margin-bottom: 5px; margin-left: 20px;" }, this.validationReport, "last");
+				var container = domConstruct.create("div", { "class": "serviceInfoElementContainer"}, this.validationReport, "last");
+				domConstruct.create("div", { "innerHTML": "WFS", "class": "serviceInfoElementLabel"}, container, "last");
+				var info = domConstruct.create("div", { "class": "serviceInfoElementValue"}, container, "last");
+				domConstruct.create("div", { "innerHTML": "URL: " + record.wfs.url}, info, "last");
+				domConstruct.create("div", { "innerHTML": "Feature type: " + record.wfs.name}, info, "last");
+				validationMessageDiv = domConstruct.create("div", { "innerHTML": "Validating...", "style": "color: blue;"}, info, "last");
+				this.validateWfsForReport(validationMessageDiv, record.wfs.url, record.wfs.name);
+			}
+			else if (record.type == "ARCGIS") {
+				this.agsCount += 1;
+				domConstruct.create("div", { "innerHTML": record.header, "style": "font-weight: bold; margin-bottom: 5px; margin-left: 20px;" }, this.validationReport, "last");
+				var container = domConstruct.create("div", { "class": "serviceInfoElementContainer"}, this.validationReport, "last");
+				domConstruct.create("div", { "innerHTML": "ARCGIS MAPSERVER", "class": "serviceInfoElementLabel"}, container, "last");
+				var info = domConstruct.create("div", { "class": "serviceInfoElementValue"}, container, "last");
+				domConstruct.create("div", { "innerHTML": "URL: " + record.arcgis.url}, info, "last");
+				validationMessageDiv = domConstruct.create("div", { "innerHTML": "Validating...", "style": "color: blue;"}, info, "last");
+				this.validateAgsForReport(validationMessageDiv, record.arcgis.url);
+			}
+			else if (record.type == "DOWNLOAD") {
+				this.dnlCount += 1;
+				domConstruct.create("div", { "innerHTML": record.header, "style": "font-weight: bold; margin-bottom: 5px; margin-left: 20px;" }, this.validationReport, "last");
+				var container = domConstruct.create("div", { "class": "serviceInfoElementContainer"}, this.validationReport, "last");
+				domConstruct.create("div", { "innerHTML": "DOWNLOADABLE", "class": "serviceInfoElementLabel"}, container, "last");
+				var info = domConstruct.create("div", { "class": "serviceInfoElementValue"}, container, "last");
+				domConstruct.create("div", { "innerHTML": "URL: " + record.download.url}, info, "last");
+				validationMessageDiv = domConstruct.create("div", { "innerHTML": "Validating...", "style": "color: blue;"}, info, "last");
+				this.validateDnlForReport(validationMessageDiv, record.download.url);
+			}
+		},
+		
+		validateWmsForReport: function(div, wmsUrl, wmsLayer) {
+			var url = "sc/wms/verify";
+			var data = {
+				"url": wmsUrl
+			};
+			request.post(url, this.utils.createPostRequestParams(data)).then(
+				lang.hitch(this, function(response) {
+					if (response.type == "error") {
+						this.wmsNotValidCount += 1;
+						div.style.color = "red";
+						div.innerHTML = "WMS did not pass validation.";
+					}
+					else if (response.type == "success") {
+						if (response.item.names.includes(wmsLayer)) {
+							this.wmsValidCount += 1;
+							div.style.color = "green";
+							div.innerHTML = "WMS is valid.";							
+						}
+						else {
+							this.wmsNotValidCount += 1;
+							div.style.color = "red";
+							div.innerHTML = "WMS did not pass validation. " + wmsLayer + " is not available in the service." ;
+						}
+						
+					}
+					if (this.wmsCount == this.wmsValidCount + this.wmsNotValidCount) {
+						this.utils.setTextValue("wmsCountMessage", "Total WMS: " + this.wmsCount + " (valid: " + this.wmsValidCount + ", not valid: " + this.wmsNotValidCount + ").");
+					}
+					else {
+						this.utils.setTextValue("wmsCountMessage", "Total WMS: " + this.wmsCount + " (valid: " + this.wmsValidCount + ", not valid: " + this.wmsNotValidCount + "). Validating...");
+					}
+				}),
+				lang.hitch(this, function(error){
+					this.action = null;
+					this.showMessage("Something went wrong (on wms/verify). Please contact administrator.");
+				})
+			);
+		},
+		
+		validateWfsForReport: function(div, wfsUrl, wfsLayer) {
+			var url = "sc/wfs/verify";
+			var data = {
+				"url": wfsUrl
+			};
+			request.post(url, this.utils.createPostRequestParams(data)).then(
+				lang.hitch(this, function(response) {
+					if (response.type == "error") {
+						this.wfsNotValidCount += 1;
+						div.style.color = "red";
+						div.innerHTML = "WFS did not pass validation.";
+					}
+					else if (response.type == "success") {
+						if (response.item.names.includes(wfsLayer)) {
+							this.wfsValidCount += 1;
+							div.style.color = "green";
+							div.innerHTML = "WFS is valid.";							
+						}
+						else {
+							this.wmsNotValidCount += 1;
+							div.style.color = "red";
+							div.innerHTML = "WFS did not pass validation. " + wfsLayer + " is not available in the service." ;
+						}
+						
+					}
+					if (this.wfsCount == this.wfsValidCount + this.wfsNotValidCount) {
+						this.utils.setTextValue("wfsCountMessage", "Total WFS: " + this.wfsCount + " (valid: " + this.wfsValidCount + ", not valid: " + this.wfsNotValidCount + ").");
+					}
+					else {
+						this.utils.setTextValue("wfsCountMessage", "Total WFS: " + this.wfsCount + " (valid: " + this.wfsValidCount + ", not valid: " + this.wfsNotValidCount + "). Validating...");
+					}
+				}),
+				lang.hitch(this, function(error){
+					this.action = null;
+					this.showMessage("Something went wrong (on wfs/verify). Please contact administrator.");
+				})
+			);
+		},
+		
+		validateAgsForReport: function(div, agsUrl) {
+			var url = "sc/ags/verify";
+			var data = {
+				"url": agsUrl
+			};
+			request.post(url, this.utils.createPostRequestParams(data)).then(
+				lang.hitch(this, function(response){
+					if (response.type == "error") {
+						this.agsNotValidCount += 1;
+						div.style.color = "red";
+						div.innerHTML = "URL did not pass validation.";
+					}
+					else if (response.type == "success") {
+						this.agsValidCount += 1;
+						div.style.color = "green";
+						div.innerHTML = "URL is valid.";	
+					}
+					if (this.agsCount == this.agsValidCount + this.agsNotValidCount) {
+						this.utils.setTextValue("agsCountMessage", "Total ARCGIS MAPSERVICES: " + this.agsCount + " (valid: " + this.agsValidCount + ", not valid: " + this.agsNotValidCount + ").");
+					}
+					else {
+						this.utils.setTextValue("agsCountMessage", "Total ARCGIS MAPSERVICES: " + this.agsCount + " (valid: " + this.agsValidCount + ", not valid: " + this.agsNotValidCount + "). Validating...");
+					}
+				}),
+				lang.hitch(this, function(error){
+					this.action = null;
+					this.showMessage("Something went wrong (on ags/verify). Please contact administrator.");
+				})
+			);
+		},
+		
+		validateDnlForReport: function(div, downloadUrl) {
+			var url = "sc/dls/verify";
+			var data = {
+				"url": downloadUrl
+			};
+			request.post(url, this.utils.createPostRequestParams(data)).then(
+				lang.hitch(this, function(response){
+					if (response.type == "error") {
+						this.dnlNotValidCount += 1;
+						div.style.color = "red";
+						div.innerHTML = "URL did not pass validation.";
+					}
+					else if (response.type == "success") {
+						this.dnlValidCount += 1;
+						div.style.color = "green";
+						div.innerHTML = "URL is valid.";	
+					}
+					if (this.dnlCount == this.dnlValidCount + this.dnlNotValidCount) {
+						this.utils.setTextValue("dnlCountMessage", "Total DOWNLOADABLES: " + this.dnlCount + " (valid: " + this.dnlValidCount + ", not valid: " + this.dnlNotValidCount + ").");
+					}
+					else {
+						this.utils.setTextValue("dnlCountMessage", "Total DOWNLOADABLES: " + this.dnlCount + " (valid: " + this.dnlValidCount + ", not valid: " + this.dnlNotValidCount + "). . Validating...");
+					}
+				}),
+				lang.hitch(this, function(error){
+					this.action = null;
+					this.showMessage("Something went wrong (on dls/verify). Please contact administrator.");
+				})
+			);
 		}
 	});
 });

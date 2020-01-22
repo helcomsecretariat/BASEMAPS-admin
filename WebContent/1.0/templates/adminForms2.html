@@ -30,25 +30,25 @@
 		</div>
 		
 		<!-- Summary section -->
-		<div id="summaryForm" class="formSectionGroup" style="display: none;">
+		<div id="summaryForm" class="formSectionGroup" style="height: 100%; display: none;">
 			<div class="formSectionLabel">Services summary</div>
+			<div class="deleteObjectLink" data-dojo-attach-event="onclick:downloadSummaryClick">Download summary</div>
 			<div class="scrollableContainer">
-				<table id="summaryTable" data-dojo-attach-point="summaryTable">
-					<tr>
-						<th>Category label</th>
-						<th>Contains WMS layers</th>
-						<th>Contains WFS feature types</th>
-						<th>Contains ArcGIS layers</th>
-						<th>Contains downloabale resources</th>
-					</tr>
-				</table>
+				<div id="summaryReport" data-dojo-attach-point="summaryReport"></div>
 			</div>
 			<span id="closeSummaryForm" class="formLink" data-dojo-attach-event="onclick:closeSummaryFormClick">Close</span>
 		</div>
 		
 		<!-- Validate services section -->
-		<div id="validateServicesForm" class="formSectionGroup" style="display: none;">
+		<div id="validateServicesForm" class="formSectionGroup" style="height: 100%; display: none;">
 			<div class="formSectionLabel">Services validation</div>
+			<div id="wmsCountMessage"></div>
+			<div id="wfsCountMessage"></div>
+			<div id="agsCountMessage"></div>
+			<div id="dnlCountMessage"></div>
+			<div class="scrollableContainer">
+				<div id="validationReport" data-dojo-attach-point="validationReport"></div>
+			</div>
 			<span id="closeValidateServices" class="formLink" data-dojo-attach-event="onclick:closeValidateServicesFormClick">Close</span>
 		</div>
 		

@@ -92,13 +92,14 @@ define([
 			this.formsObj.currentObjId = null;
 			this.formsObj.cleanAdminForm();
 			this.utils.show("summaryForm", "block");
-			//this.formsObj.getSummary();
+			this.formsObj.getSummary();
 		},
 		
 		validateServicesButtonClick: function() {
 			this.formsObj.currentObjId = null;
 			this.formsObj.cleanAdminForm();
 			this.utils.show("validateServicesForm", "block");
+			this.formsObj.validateAllServices();
 		},
 		
 		refreshButtonClick: function() {
@@ -733,7 +734,7 @@ define([
 							this.utils.show("summaryButton", "none");
 							this.utils.show("validateServicesButton", "none");
 						}
-						
+						this.formsObj.tree = response.item;
 						this.createTree(response.item);
 						if (highlightId != null) {
 							this.getTreePath(highlightId)
