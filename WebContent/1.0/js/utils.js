@@ -49,6 +49,17 @@ define([
 					"Accept": "application/json"
 				}
 			}
+		},
+		createPostWithTimeoutRequestParams(data) {
+			return {
+				data: JSON.stringify(data),
+				handleAs: "json",
+				headers: {
+					"Content-Type": 'application/json; charset=utf-8',
+					"Accept": "application/json"
+				},
+				timeout: 120000
+			}
 		}
 	});
 });

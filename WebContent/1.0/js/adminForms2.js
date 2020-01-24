@@ -64,6 +64,13 @@ define([
 		dnlCount: 0,
 		dnlValidCount: 0,
 		dnlNotValidCount: 0,
+		totalServicesCount: 0,
+		totalValidatedServicesCount: 0,
+		servicesValidationDone: true,
+		validationPackageSize: 0,
+		validationPackage: [],
+		validationPackages: [],
+		currentValidatePackageNr: 0,
 		
 		constructor: function(params) {
 			this.utils = new utils();
@@ -535,20 +542,28 @@ define([
 		
 		// --- validate services form
 		cleanValidateServicesForm: function() {
-			domConstruct.empty(this.validationReport);
 			this.utils.show("validateServicesForm", "none");
-			this.wmsCount = 0;
-			this.wmsValidCount = 0;
-			this.wmsNotValidCount = 0;
-			this.wfsCount = 0;
-			this.wfsValidCount = 0;
-			this.wfsNotValidCount = 0;
-			this.agsCount = 0;
-			this.agsValidCount = 0;
-			this.agsNotValidCount = 0;
-			this.dnlCount = 0;
-			this.dnlValidCount = 0;
-			this.dnlNotValidCount = 0;
+			if (this.servicesValidationDone) {
+				domConstruct.empty(this.validationReport);				
+				this.wmsCount = 0;
+				this.wmsValidCount = 0;
+				this.wmsNotValidCount = 0;
+				this.wfsCount = 0;
+				this.wfsValidCount = 0;
+				this.wfsNotValidCount = 0;
+				this.agsCount = 0;
+				this.agsValidCount = 0;
+				this.agsNotValidCount = 0;
+				this.dnlCount = 0;
+				this.dnlValidCount = 0;
+				this.dnlNotValidCount = 0;
+				this.totalServicesCount = 0;
+				this.totalValidatedServicesCount = 0;
+				this.validationPackageSize = 0;
+				this.validationPackage = [];
+				this.validationPackages = [];
+				this.currentValidatePackageNr = 0;
+			}
 		},
 		
 		// --- category info		
@@ -2240,7 +2255,8 @@ define([
 					this.summaryLabel = null;
 				}
 				var container = domConstruct.create("div", { "class": "inputLabelGroup"}, this.summaryReport, "last");
-				domConstruct.create("span", { "innerHTML": item.label, "class": "textInputLabel"}, container, "last");
+				var sum = item.counts.wmses + item.counts.wfses + item.counts.arcgises + item.counts.downloadables;
+				domConstruct.create("span", { "innerHTML": item.label + " (" + sum + ")", "class": "textInputLabel"}, container, "last");
 				domConstruct.create("span", { "innerHTML": "WMS: " + item.counts.wmses + ", WFS: " + item.counts.wfses + ", ARCGIS MAPSERVER: " + item.counts.arcgises + ", DOWNLOADABLE: " + item.counts.downloadables, "class": "textLabel"}, container, "last");
 			}
 		},
@@ -2268,23 +2284,50 @@ define([
 			);*/
 		},
 		
-		validateAllServices: function() {
-			console.log(this.tree);
+		prepareServicesForValidation: function() {
+			this.servicesValidationDone = false;
 			array.forEach(this.tree, lang.hitch(this, function(item) {
-				this.validateRecord(item);
+				//this.validateRecord(item);
+				this.packRecord(item);
+			}));
+			this.validationPackages.push(this.validationPackage);
+			this.validateServices();
+		},
+		
+		packRecord: function(record) {
+			if (record.type == "CATEGORY") {
+				array.forEach(record.layers, lang.hitch(this, function(layer) {
+					this.packRecord(layer);
+				}));
+			}
+			else if ((record.type == "WMS") || (record.type == "WFS") || (record.type == "ARCGIS") || (record.type == "DOWNLOAD")) {
+				this.totalServicesCount += 1;
+				console.log("packing ", record, this.validationPackageSize, this.validationPackages);
+				if (this.validationPackageSize < 20) {
+					this.validationPackage.push(record);
+					this.validationPackageSize += 1;
+				}
+				else {
+					this.validationPackage.push(record);
+					this.validationPackages.push(this.validationPackage);
+					this.validationPackageSize = 0;
+					this.validationPackage = [];
+				}
+			}
+		},
+		
+		validateServices: function() {
+			console.log("ready to validate", this.currentValidatePackageNr);
+			array.forEach(this.validationPackages[this.currentValidatePackageNr], lang.hitch(this, function(layer) {
+				this.validateRecord(layer);
 			}));
 		},
 		
 		validateRecord: function(record) {
 			var validationMessageDiv = null;
-			if (record.type == "CATEGORY") {
-				//this.dataFiltering.push(lyr);
-				array.forEach(record.layers, lang.hitch(this, function(layer) {
-					this.validateRecord(layer);
-				}));
-			}
-			else if (record.type == "WMS") {
+			if (record.type == "WMS") {
 				this.wmsCount += 1;
+				//this.totalServicesCount += 1;
 				domConstruct.create("div", { "innerHTML": record.header, "style": "font-weight: bold; margin-bottom: 5px; margin-left: 20px;" }, this.validationReport, "last");
 				var container = domConstruct.create("div", { "class": "serviceInfoElementContainer"}, this.validationReport, "last");
 				domConstruct.create("div", { "innerHTML": "WMS", "class": "serviceInfoElementLabel"}, container, "last");
@@ -2296,6 +2339,7 @@ define([
 			}
 			else if (record.type == "WFS") {
 				this.wfsCount += 1;
+				//this.totalServicesCount += 1;
 				domConstruct.create("div", { "innerHTML": record.header, "style": "font-weight: bold; margin-bottom: 5px; margin-left: 20px;" }, this.validationReport, "last");
 				var container = domConstruct.create("div", { "class": "serviceInfoElementContainer"}, this.validationReport, "last");
 				domConstruct.create("div", { "innerHTML": "WFS", "class": "serviceInfoElementLabel"}, container, "last");
@@ -2307,6 +2351,7 @@ define([
 			}
 			else if (record.type == "ARCGIS") {
 				this.agsCount += 1;
+				//this.totalServicesCount += 1;
 				domConstruct.create("div", { "innerHTML": record.header, "style": "font-weight: bold; margin-bottom: 5px; margin-left: 20px;" }, this.validationReport, "last");
 				var container = domConstruct.create("div", { "class": "serviceInfoElementContainer"}, this.validationReport, "last");
 				domConstruct.create("div", { "innerHTML": "ARCGIS MAPSERVER", "class": "serviceInfoElementLabel"}, container, "last");
@@ -2317,6 +2362,7 @@ define([
 			}
 			else if (record.type == "DOWNLOAD") {
 				this.dnlCount += 1;
+				//this.totalServicesCount += 1;
 				domConstruct.create("div", { "innerHTML": record.header, "style": "font-weight: bold; margin-bottom: 5px; margin-left: 20px;" }, this.validationReport, "last");
 				var container = domConstruct.create("div", { "class": "serviceInfoElementContainer"}, this.validationReport, "last");
 				domConstruct.create("div", { "innerHTML": "DOWNLOADABLE", "class": "serviceInfoElementLabel"}, container, "last");
@@ -2332,7 +2378,7 @@ define([
 			var data = {
 				"url": wmsUrl
 			};
-			request.post(url, this.utils.createPostRequestParams(data)).then(
+			request.post(url, this.utils.createPostWithTimeoutRequestParams(data)).then(
 				lang.hitch(this, function(response) {
 					if (response.type == "error") {
 						this.wmsNotValidCount += 1;
@@ -2352,16 +2398,58 @@ define([
 						}
 						
 					}
+					this.totalValidatedServicesCount += 1;
+					if ((this.totalServicesCount > 0) && (this.totalValidatedServicesCount == this.totalServicesCount)) {
+						this.utils.setTextValue("servicesValidationMessage", "Services validation is finished. " + this.totalValidatedServicesCount + " out of " + this.totalServicesCount +" have been validated.");
+						this.servicesValidationDone = true;
+					}
+					else {
+						this.utils.setTextValue("servicesValidationMessage", "Services validation is in progress. " + this.totalValidatedServicesCount + " out of " + this.totalServicesCount +" have been validated.");
+					}
+					
 					if (this.wmsCount == this.wmsValidCount + this.wmsNotValidCount) {
 						this.utils.setTextValue("wmsCountMessage", "Total WMS: " + this.wmsCount + " (valid: " + this.wmsValidCount + ", not valid: " + this.wmsNotValidCount + ").");
 					}
 					else {
 						this.utils.setTextValue("wmsCountMessage", "Total WMS: " + this.wmsCount + " (valid: " + this.wmsValidCount + ", not valid: " + this.wmsNotValidCount + "). Validating...");
 					}
+					
+					if (this.totalValidatedServicesCount % 20 == 0) {
+						this.currentValidatePackageNr += 1;
+						this.validateServices();
+					}
 				}),
 				lang.hitch(this, function(error){
-					this.action = null;
-					this.showMessage("Something went wrong (on wms/verify). Please contact administrator.");
+					this.wmsNotValidCount += 1;
+					div.style.color = "red";
+					if (error.message == "Timeout exceeded") {
+						div.innerHTML = "WMS did not pass validation. Service didn't respond after 2 minutes.";
+					}
+					else {
+						div.innerHTML = "Validation did not work. Please contact administrator.";
+					}
+					//this.showMessage("Something went wrong (on wms/verify). Please contact administrator.");
+					
+					this.totalValidatedServicesCount += 1;
+					if ((this.totalServicesCount > 0) && (this.totalValidatedServicesCount == this.totalServicesCount)) {
+						this.utils.setTextValue("servicesValidationMessage", "Services validation is finished. " + this.totalValidatedServicesCount + " out of " + this.totalServicesCount +" have been validated.");
+						this.servicesValidationDone = true;
+					}
+					else {
+						this.utils.setTextValue("servicesValidationMessage", "Services validation is in progress. " + this.totalValidatedServicesCount + " out of " + this.totalServicesCount +" have been validated.");
+					}
+					
+					if (this.wmsCount == this.wmsValidCount + this.wmsNotValidCount) {
+						this.utils.setTextValue("wmsCountMessage", "Total WMS: " + this.wmsCount + " (valid: " + this.wmsValidCount + ", not valid: " + this.wmsNotValidCount + ").");
+					}
+					else {
+						this.utils.setTextValue("wmsCountMessage", "Total WMS: " + this.wmsCount + " (valid: " + this.wmsValidCount + ", not valid: " + this.wmsNotValidCount + "). Validating...");
+					}
+					
+					if (this.totalValidatedServicesCount % 20 == 0) {
+						this.currentValidatePackageNr += 1;
+						this.validateServices();
+					}
 				})
 			);
 		},
@@ -2371,7 +2459,7 @@ define([
 			var data = {
 				"url": wfsUrl
 			};
-			request.post(url, this.utils.createPostRequestParams(data)).then(
+			request.post(url, this.utils.createPostWithTimeoutRequestParams(data)).then(
 				lang.hitch(this, function(response) {
 					if (response.type == "error") {
 						this.wfsNotValidCount += 1;
@@ -2391,16 +2479,57 @@ define([
 						}
 						
 					}
+					this.totalValidatedServicesCount += 1;
+					if ((this.totalServicesCount > 0) && (this.totalValidatedServicesCount == this.totalServicesCount)) {
+						this.utils.setTextValue("servicesValidationMessage", "Services validation is finished. " + this.totalValidatedServicesCount + " out of " + this.totalServicesCount +" have been validated.");
+						this.servicesValidationDone = true;
+					}
+					else {
+						this.utils.setTextValue("servicesValidationMessage", "Services validation is in progress. " + this.totalValidatedServicesCount + " out of " + this.totalServicesCount +" have been validated.");
+					}
+					
 					if (this.wfsCount == this.wfsValidCount + this.wfsNotValidCount) {
 						this.utils.setTextValue("wfsCountMessage", "Total WFS: " + this.wfsCount + " (valid: " + this.wfsValidCount + ", not valid: " + this.wfsNotValidCount + ").");
 					}
 					else {
 						this.utils.setTextValue("wfsCountMessage", "Total WFS: " + this.wfsCount + " (valid: " + this.wfsValidCount + ", not valid: " + this.wfsNotValidCount + "). Validating...");
 					}
+					
+					if (this.totalValidatedServicesCount % 20 == 0) {
+						this.currentValidatePackageNr += 1;
+						this.validateServices();
+					}
 				}),
 				lang.hitch(this, function(error){
-					this.action = null;
-					this.showMessage("Something went wrong (on wfs/verify). Please contact administrator.");
+					this.wfsNotValidCount += 1;
+					div.style.color = "red";
+					if (error.message == "Timeout exceeded") {
+						div.innerHTML = "WFS did not pass validation. Service didn't respond after 2 minutes.";
+					}
+					else {
+						div.innerHTML = "Validation did not work. Please contact administrator.";
+					}
+					
+					this.totalValidatedServicesCount += 1;
+					if ((this.totalServicesCount > 0) && (this.totalValidatedServicesCount == this.totalServicesCount)) {
+						this.utils.setTextValue("servicesValidationMessage", "Services validation is finished. " + this.totalValidatedServicesCount + " out of " + this.totalServicesCount +" have been validated.");
+						this.servicesValidationDone = true;
+					}
+					else {
+						this.utils.setTextValue("servicesValidationMessage", "Services validation is in progress. " + this.totalValidatedServicesCount + " out of " + this.totalServicesCount +" have been validated.");
+					}
+					
+					if (this.wfsCount == this.wfsValidCount + this.wfsNotValidCount) {
+						this.utils.setTextValue("wfsCountMessage", "Total WFS: " + this.wfsCount + " (valid: " + this.wfsValidCount + ", not valid: " + this.wfsNotValidCount + ").");
+					}
+					else {
+						this.utils.setTextValue("wfsCountMessage", "Total WFS: " + this.wfsCount + " (valid: " + this.wfsValidCount + ", not valid: " + this.wfsNotValidCount + "). Validating...");
+					}
+					
+					if (this.totalValidatedServicesCount % 20 == 0) {
+						this.currentValidatePackageNr += 1;
+						this.validateServices();
+					}
 				})
 			);
 		},
@@ -2410,7 +2539,7 @@ define([
 			var data = {
 				"url": agsUrl
 			};
-			request.post(url, this.utils.createPostRequestParams(data)).then(
+			request.post(url, this.utils.createPostWithTimeoutRequestParams(data)).then(
 				lang.hitch(this, function(response){
 					if (response.type == "error") {
 						this.agsNotValidCount += 1;
@@ -2422,16 +2551,57 @@ define([
 						div.style.color = "green";
 						div.innerHTML = "URL is valid.";	
 					}
+					this.totalValidatedServicesCount += 1;
+					if ((this.totalServicesCount > 0) && (this.totalValidatedServicesCount == this.totalServicesCount)) {
+						this.utils.setTextValue("servicesValidationMessage", "Services validation is finished. " + this.totalValidatedServicesCount + " out of " + this.totalServicesCount +" have been validated.");
+						this.servicesValidationDone = true;
+					}
+					else {
+						this.utils.setTextValue("servicesValidationMessage", "Services validation is in progress. " + this.totalValidatedServicesCount + " out of " + this.totalServicesCount +" have been validated.");
+					}
+					
 					if (this.agsCount == this.agsValidCount + this.agsNotValidCount) {
 						this.utils.setTextValue("agsCountMessage", "Total ARCGIS MAPSERVICES: " + this.agsCount + " (valid: " + this.agsValidCount + ", not valid: " + this.agsNotValidCount + ").");
 					}
 					else {
 						this.utils.setTextValue("agsCountMessage", "Total ARCGIS MAPSERVICES: " + this.agsCount + " (valid: " + this.agsValidCount + ", not valid: " + this.agsNotValidCount + "). Validating...");
 					}
+					
+					if (this.totalValidatedServicesCount % 20 == 0) {
+						this.currentValidatePackageNr += 1;
+						this.validateServices();
+					}
 				}),
 				lang.hitch(this, function(error){
-					this.action = null;
-					this.showMessage("Something went wrong (on ags/verify). Please contact administrator.");
+					this.agsNotValidCount += 1;
+					div.style.color = "red";
+					if (error.message == "Timeout exceeded") {
+						div.innerHTML = "URL did not pass validation. Service didn't respond after 2 minutes.";
+					}
+					else {
+						div.innerHTML = "Validation did not work. Please contact administrator.";
+					}
+					
+					this.totalValidatedServicesCount += 1;
+					if ((this.totalServicesCount > 0) && (this.totalValidatedServicesCount == this.totalServicesCount)) {
+						this.utils.setTextValue("servicesValidationMessage", "Services validation is finished. " + this.totalValidatedServicesCount + " out of " + this.totalServicesCount +" have been validated.");
+						this.servicesValidationDone = true;
+					}
+					else {
+						this.utils.setTextValue("servicesValidationMessage", "Services validation is in progress. " + this.totalValidatedServicesCount + " out of " + this.totalServicesCount +" have been validated.");
+					}
+					
+					if (this.agsCount == this.agsValidCount + this.agsNotValidCount) {
+						this.utils.setTextValue("agsCountMessage", "Total ARCGIS MAPSERVICES: " + this.agsCount + " (valid: " + this.agsValidCount + ", not valid: " + this.agsNotValidCount + ").");
+					}
+					else {
+						this.utils.setTextValue("agsCountMessage", "Total ARCGIS MAPSERVICES: " + this.agsCount + " (valid: " + this.agsValidCount + ", not valid: " + this.agsNotValidCount + "). Validating...");
+					}
+					
+					if (this.totalValidatedServicesCount % 20 == 0) {
+						this.currentValidatePackageNr += 1;
+						this.validateServices();
+					}
 				})
 			);
 		},
@@ -2441,7 +2611,7 @@ define([
 			var data = {
 				"url": downloadUrl
 			};
-			request.post(url, this.utils.createPostRequestParams(data)).then(
+			request.post(url, this.utils.createPostWithTimeoutRequestParams(data)).then(
 				lang.hitch(this, function(response){
 					if (response.type == "error") {
 						this.dnlNotValidCount += 1;
@@ -2453,16 +2623,57 @@ define([
 						div.style.color = "green";
 						div.innerHTML = "URL is valid.";	
 					}
+					this.totalValidatedServicesCount += 1;
+					if ((this.totalServicesCount > 0) && (this.totalValidatedServicesCount == this.totalServicesCount)) {
+						this.utils.setTextValue("servicesValidationMessage", "Services validation is finished. " + this.totalValidatedServicesCount + " out of " + this.totalServicesCount +" have been validated.");
+						this.servicesValidationDone = true;
+					}
+					else {
+						this.utils.setTextValue("servicesValidationMessage", "Services validation is in progress. " + this.totalValidatedServicesCount + " out of " + this.totalServicesCount +" have been validated.");
+					}
+					
 					if (this.dnlCount == this.dnlValidCount + this.dnlNotValidCount) {
 						this.utils.setTextValue("dnlCountMessage", "Total DOWNLOADABLES: " + this.dnlCount + " (valid: " + this.dnlValidCount + ", not valid: " + this.dnlNotValidCount + ").");
 					}
 					else {
 						this.utils.setTextValue("dnlCountMessage", "Total DOWNLOADABLES: " + this.dnlCount + " (valid: " + this.dnlValidCount + ", not valid: " + this.dnlNotValidCount + "). . Validating...");
 					}
+					
+					if (this.totalValidatedServicesCount % 20 == 0) {
+						this.currentValidatePackageNr += 1;
+						this.validateServices();
+					}
 				}),
 				lang.hitch(this, function(error){
-					this.action = null;
-					this.showMessage("Something went wrong (on dls/verify). Please contact administrator.");
+					this.dnlNotValidCount += 1;
+					div.style.color = "red";
+					if (error.message == "Timeout exceeded") {
+						div.innerHTML = "URL did not pass validation. Service didn't respond after 2 minutes.";
+					}
+					else {
+						div.innerHTML = "Validation did not work. Please contact administrator.";
+					}
+					
+					this.totalValidatedServicesCount += 1;
+					if ((this.totalServicesCount > 0) && (this.totalValidatedServicesCount == this.totalServicesCount)) {
+						this.utils.setTextValue("servicesValidationMessage", "Services validation is finished. " + this.totalValidatedServicesCount + " out of " + this.totalServicesCount +" have been validated.");
+						this.servicesValidationDone = true;
+					}
+					else {
+						this.utils.setTextValue("servicesValidationMessage", "Services validation is in progress. " + this.totalValidatedServicesCount + " out of " + this.totalServicesCount +" have been validated.");
+					}
+					
+					if (this.dnlCount == this.dnlValidCount + this.dnlNotValidCount) {
+						this.utils.setTextValue("dnlCountMessage", "Total DOWNLOADABLES: " + this.dnlCount + " (valid: " + this.dnlValidCount + ", not valid: " + this.dnlNotValidCount + ").");
+					}
+					else {
+						this.utils.setTextValue("dnlCountMessage", "Total DOWNLOADABLES: " + this.dnlCount + " (valid: " + this.dnlValidCount + ", not valid: " + this.dnlNotValidCount + "). . Validating...");
+					}
+					
+					if (this.totalValidatedServicesCount % 20 == 0) {
+						this.currentValidatePackageNr += 1;
+						this.validateServices();
+					}
 				})
 			);
 		}

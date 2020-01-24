@@ -99,7 +99,9 @@ define([
 			this.formsObj.currentObjId = null;
 			this.formsObj.cleanAdminForm();
 			this.utils.show("validateServicesForm", "block");
-			this.formsObj.validateAllServices();
+			if (this.formsObj.servicesValidationDone) {
+				this.formsObj.prepareServicesForValidation();
+			}
 		},
 		
 		refreshButtonClick: function() {
