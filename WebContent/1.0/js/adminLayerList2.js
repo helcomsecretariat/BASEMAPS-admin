@@ -701,13 +701,13 @@ define([
 			this.userRights = rights;
 			if (role == "ADMIN") {
 				this.utils.show("topCategoryButton", "inline-block");
-				this.utils.show("summaryButton", "inline-block");
-				this.utils.show("validateServicesButton", "inline-block");
+				//this.utils.show("summaryButton", "inline-block");
+				//this.utils.show("validateServicesButton", "inline-block");
 			}
 			else {
 				this.utils.show("topCategoryButton", "none");
-				this.utils.show("summaryButton", "none");
-				this.utils.show("validateServicesButton", "none");
+				//this.utils.show("summaryButton", "none");
+				//this.utils.show("validateServicesButton", "none");
 			}
 		},
 		
@@ -728,13 +728,13 @@ define([
 					else if (response.type == "success") {
 						if (this.userRole == "ADMIN") {
 							this.utils.show("topCategoryButton", "inline-block");
-							this.utils.show("summaryButton", "inline-block");
-							this.utils.show("validateServicesButton", "inline-block");
+							//this.utils.show("summaryButton", "inline-block");
+							//this.utils.show("validateServicesButton", "inline-block");
 						}
 						else {
 							this.utils.show("topCategoryButton", "none");
-							this.utils.show("summaryButton", "none");
-							this.utils.show("validateServicesButton", "none");
+							//this.utils.show("summaryButton", "none");
+							//this.utils.show("validateServicesButton", "none");
 						}
 						this.formsObj.tree = response.item;
 						this.createTree(response.item);
