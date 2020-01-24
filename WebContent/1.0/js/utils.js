@@ -58,7 +58,7 @@ define([
 					"Content-Type": 'application/json; charset=utf-8',
 					"Accept": "application/json"
 				},
-				timeout: 120000
+				timeout: 60000
 			}
 		}
 	});
