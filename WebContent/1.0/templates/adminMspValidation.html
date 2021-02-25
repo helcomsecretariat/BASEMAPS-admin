@@ -63,7 +63,7 @@
 				<li>Spatial reference should be defined.</li>
 				<li>Dataset should be with polygon geometry.</li>
 				<li>Dataset should be completely within Baltic Sea bounding box.</li>
-				<li>Required fields: "Country", "officialTitle", "englishTitle", "responsibleAuthority", "levelOfSpatialPlan", "processStep", "regulationNature", "validFrom", "planId" should be present in the dataset (field names can be 10 first characters, because of the Shapefile field name length limitation).</li>
+				<li>Required fields: "Country", "officialTitle", "englishTitle", "responsibleAuthority", "levelOfSpatialPlan", "processStep", "regulationNature", "validFrom", "planId" should be present in the dataset (field names can be the first 10 characters, because of the Shapefile field name length limitation).</li>
 			</ul>	
 		</div>
 		<div style="font-weight: bold; font-size: 12px; margin: 5px 10px 0px 10px;">
@@ -119,7 +119,7 @@
 		<div style="font-size: 12px; margin: 5px 10px 0px 10px;">
 			<ul style="margin: 0;">
 				<li>Spatial reference should be defined.</li>
-				<li>Dataset should be within bounding box of MSP ares of the country that dataset belongs to.</li> 
+				<li>Dataset should be within bounding box of MSP areas of the country that dataset belongs to.</li> 
 				<li>Required fields: "priority", "reserved", "allowed", "restricted", "forbidden", "useDsc", "planId" fields should be present in the dataset.</li>
 			</ul>	
 		</div>
@@ -130,14 +130,14 @@
 			<ul style="margin: 0;">
 				<li>Empty geometries should not be included.</li>
 				<li>At least 1 of 5 fields ("priority", "reserved", "allowed", "restricted", "forbidden") should have a value.</li>
-				<li>"priority", "reserved", "allowed", "restricted", "forbidden" fields should have value(s) according SeaUse code list<b>*</b> (multiple comma separated values are allowed).</li> 
+				<li>"priority", "reserved", "allowed", "restricted", "forbidden" fields should have value(s) according to the SeaUse code list<b>*</b> (multiple comma separated values are allowed).</li> 
 				<li>If "forbidden" field has a value, then "priority", "reserved", "allowed", "restricted" fields should not have that value.</li>
 				<li>If "restricted" field has a value, then "priority", "reserved", "allowed", "forbidden" fields should not have that value.</li>
 				<li>"planId" field should have a value that is present in MSP areas dataset of the country.</li>
 			</ul>
 		</div>
 		<div style="font-size: 12px; margin: 5px 10px 0px 10px; font-style: italic; font-weight: bold;">
-			*Anex 2 of <a href="https://vasab.org/wp-content/uploads/2019/04/Guidelines-on-transboundary-MSP-output-data-structure-ADOPTEDbyVASAB__HELCOM.pdf" target="_blank">Guidelines on transboundary MSP output data structure in the Baltic Sea</a>
+			*Annex 2 of <a href="https://vasab.org/wp-content/uploads/2019/04/Guidelines-on-transboundary-MSP-output-data-structure-ADOPTEDbyVASAB__HELCOM.pdf" target="_blank">Guidelines on transboundary MSP output data structure in the Baltic Sea</a>
 		</div>
 	</div>
 	
