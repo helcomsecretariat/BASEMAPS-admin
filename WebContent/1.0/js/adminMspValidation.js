@@ -284,6 +284,8 @@ define([
 			.then(lang.hitch(this, function(text) {
 				var resp = JSON.parse(text);
 				if (resp.error) {
+					console.log(resp);
+					alert("Something went wrong when validating MSP Area data. " + resp.error.message + " Please report it to data@helcom.fi.");
 					domConstruct.create("div", {"style": "font-size: 14px; color: red; margin-left: 10px; margin-top: 5px;", "innerHTML": "Something went wrong when validating MSP Area data. " + resp.error.message + " Please report it to data@helcom.fi."}, this.backupUploadReportContainer, "last");
 					domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
 				}
@@ -326,6 +328,8 @@ define([
 			.then(lang.hitch(this, function(text) {
 				var resp = JSON.parse(text);
 				if (resp.error) {
+					console.log(resp);
+					alert("Something went wrong when validating Sea Use data. " + resp.error.message + " Please report it to data@helcom.fi.");
 					domConstruct.create("div", {"style": "font-size: 14px; color: red; margin-left: 10px; margin-top: 5px;", "innerHTML": "Something went wrong when validating Sea Use data. " + resp.error.message + " Please report it to data@helcom.fi."}, this.backupUploadReportContainer, "last");
 					domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
 				}
