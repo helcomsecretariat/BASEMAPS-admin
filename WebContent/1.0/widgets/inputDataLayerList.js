@@ -9,7 +9,7 @@ define([
 	"dojo/request",
 	"dojo/_base/array", "dojo/dom-construct",  "dojo/query!css3",
 	"dojox/validate/web",
-	"dojo/store/Memory","dijit/tree/ObjectStoreModel", "dijit/Tree", "dijit/form/FilteringSelect",
+	"dojo/store/Memory","dijit/tree/ObjectStoreModel", "dijit/Tree",
 	"dijit/form/CheckBox", "dijit/Tooltip",
 	"dojox/widget/TitleGroup", "dijit/TitlePane", 
 	"dijit/layout/AccordionContainer", "dijit/layout/ContentPane", "dijit/form/Select",
@@ -30,7 +30,7 @@ define([
 	request,
 	array, domConstruct, query,
 	validate,
-	Memory, ObjectStoreModel, Tree, FilteringSelect,
+	Memory, ObjectStoreModel, Tree,
 	checkBox, Tooltip,
 	TitleGroup, TitlePane,
 	AccordionContainer, ContentPane, Select,
@@ -387,30 +387,6 @@ define([
 				query: {id: 'layerlist'}
 			});
 
-			// data store for search (doesn't include layers, but just layer groups)
-			/*var storeFiltering = new Memory({
-				data: this.dataFiltering
-			});
-			var filteringSelect = new FilteringSelect({
-				id: "layerSearchInput",
-				name: "layerSearch",
-				class: "layerSearchInput",
-				queryExpr: "*${0}*",
-				autoComplete: false,
-				required: false,
-				forceWidth: true,
-				hasDownArrow: false,
-				placeHolder: "Search...",
-				store: storeFiltering,
-				searchAttr: "name",
-				onChange: lang.hitch(this, function(state){
-					var id = dijit.byId("layerSearchInput").get('value');
-					this.showLayer(id);
-					// clear search field
-					dijit.byId("layerSearchInput").set("value", "");
-				})
-			}, this.layerSearchInput).startup();*/
-
 			this.tree = new Tree({
 				model: treeModel,
 				showRoot: false,
@@ -577,6 +553,7 @@ define([
 									//console.log("checked", tnode.item);
 									if (!tnode.item.wmsMapLayer) {
 										if ((tnode.item.wms.url.length > 0) && (tnode.item.wms.name.length > 0)) {
+											console.log(tnode.item.wms);
 											tnode.item.wmsMapLayer = new ol.layer.Tile({
 												id: tnode.item.id,
 												wmsId: tnode.item.wms.id,
@@ -744,7 +721,7 @@ define([
 			this.tree.startup();
 		},
 
-		showLayer: function(id) {
+		/*showLayer: function(id) {
 			var layerId = null;
 			// if layer id passed as a paramether
 			if (this.store.get(id)) {
@@ -763,13 +740,13 @@ define([
 						this.tree._expandNode(this.tree.selectedNode);
 					}
 
-					/*if (this.tree.selectedNode.contentNode.children.length > 0) {
-						var widget = dijit.byNode(this.tree.selectedNode.contentNode.children[0]);
-						if ((widget) && (widget.type === "checkbox")) {
-							// check the checkbox to make sublayer visible
-							widget.set('checked', true);
-						}
-					}*/
+					//if (this.tree.selectedNode.contentNode.children.length > 0) {
+					//	var widget = dijit.byNode(this.tree.selectedNode.contentNode.children[0]);
+					//	if ((widget) && (widget.type === "checkbox")) {
+					//		// check the checkbox to make sublayer visible
+					//		widget.set('checked', true);
+					//	}
+					//}
 					var selectedTreeElement = document.getElementById(this.tree.selectedNode.id);
 					document.getElementById("layerListTreeID").scrollTop = selectedTreeElement.offsetTop;
 				}));
@@ -777,7 +754,7 @@ define([
 			else {
 				//alert("No layer with Id " + id);
 			}
-		},
+		},*/
 
 		getURLParameter: function(name) {
 			return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [null, ''])[1].replace(/\+/g, '%20')) || null;

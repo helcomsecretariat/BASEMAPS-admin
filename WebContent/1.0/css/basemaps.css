@@ -882,6 +882,8 @@ html, body {
 	font-family: "Istok Web", "Calibri", sans-serif;
 	z-index: 101;
 	display: none;
+	font-size: 12px;
+	overflow-y: auto;
 }
 
 
