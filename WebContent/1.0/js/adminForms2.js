@@ -10,6 +10,9 @@ define([
 	"dojox/validate/web",
 	"dojo/_base/array",
 	"dijit/form/Select",
+	"dojo/data/ItemFileReadStore",
+	"dijit/form/MultiSelect",
+	"dojo/_base/window",
 	"basemaps/js/utils",
 	"dijit/_WidgetBase", "dijit/_TemplatedMixin",
 	"dojo/text!../templates/adminForms2.html"
@@ -17,7 +20,7 @@ define([
 	declare,
 	lang, on, dom, domConstruct, query, domStyle,
 	request, validate, array, 
-	Select, utils,
+	Select, ItemFileReadStore, MultiSelect,win, utils,
 	_WidgetBase, _TemplatedMixin, template
 ){
 	return declare([_WidgetBase, _TemplatedMixin], {
@@ -48,7 +51,8 @@ define([
 		currentCategoryCategories: [],
 		editMode: false,
 		categoryUserSelector: null,
-		countryLabels: ["HELCOM data", "Denmark", "Estonia", "Finland", "Germany", "Latvia", "Lithuania", "Poland", "Russia", "Sweden"],
+		countryLabels: ["Helcom", "Denmark", "Estonia", "Finland", "Germany", "Latvia", "Lithuania", "Poland", "Russia", "Sweden"],
+		countryCodesLabels: {"DK": "Denmark", "EE": "Estonia", "FI": "Finland", "DE": "Germany", "LV": "Latvia", "LT": "Lithuania", "PL": "Poland", "RU": "Russia", "SE": "Sweden", "HE": "Helcom"},
 		summaryLabel: null,
 		initLabel: null,
 		countryLabelFound: false,
@@ -69,9 +73,12 @@ define([
 		servicesValidationDone: true,
 		validationPackage: [],
 		currentValidateServiceNr: 0,
+		seaUseCodes: [],
+		seaUseCodesMultiSelector: null,
 		
 		constructor: function(params) {
 			this.utils = new utils();
+			this.getSeaUseCodes();
 		},
 		postCreate: function() {
 			/*on(this.addDataCategoryButton, "click", lang.hitch(this, function(){
@@ -111,6 +118,43 @@ define([
 			
 		},
 		
+		getSeaUseCodes: function() {
+			var serviceUrl = "sc/tools/get-data";
+			var url = "https://maps.helcom.fi/arcgis/rest/services/Basemaps/MSPoutput/MapServer/7/query?where=1%3D1&outFields=Attribute_code_for_sea_use%2C+Basemaps&returnGeometry=false&f=json";
+			var servicedata = {
+				"url": url,
+				"format": "json"
+			};
+			request.post(serviceUrl, this.utils.createPostRequestParams(servicedata)).then(
+				lang.hitch(this, function(response) {
+					if (response.type == "error") {
+						console.log("Getting Sea Use Codes failed", response);
+					}
+					else if (response.type == "success") {
+						if (response.item) {
+							/*console.log(response.item.features);
+							var codes = {
+								identifier: "value",
+								label: "label",
+								items: []
+							};*/
+							array.forEach(response.item.features, lang.hitch(this, function(feature) {
+								this.seaUseCodes.push({value: feature.attributes.Attribute_code_for_sea_use, label: feature.attributes.Attribute_code_for_sea_use + " (" + feature.attributes.Basemaps + ")"});
+							}));
+							/*console.log(codes);
+							this.seaUseCodes = new ItemFileReadStore({
+								data: codes
+							});*/
+						}
+					}
+				}),
+				lang.hitch(this, function(error) {
+					console.log(error);
+					//domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
+				})
+			);
+		},
+		
 		cleanAdminForm: function() {
 			
 			this.cleanAddUserForm();
@@ -125,7 +169,9 @@ define([
 			this.cleanValidateServicesForm();
 			
 			this.cleanCategoryLabel();
-			this.cleanHelcomCatalogueId();
+			//this.cleanHelcomCatalogueId();
+			this.cleanDescription();
+			this.cleanTags();
 			this.cleanCategoryMetadataLink();
 			
 			this.cleanMetadataDisplayForm();
@@ -240,6 +286,7 @@ define([
 		/* --- MANAGE CATEGORY BUTTONS START --- */
 		
 		deleteObjectClick: function() {
+			console.log(this.currentCategory);
 			if (confirm("Please confirm removing: " + this.currentCategory.label + " with all content.") == true) {
 				this.deleteObject(this.currentObjId);
 		    }
@@ -275,7 +322,47 @@ define([
 			this.cleanCategoryLabel();
 		},
 		
-		editHelcomCatalogueIdClick: function() {
+		editDescriptionClick: function() {
+			if (this.utils.getTextValue("descriptionLabel") === "Not assigned") {
+				this.utils.setInputValue("descriptionArea", "");
+			}
+			else {
+				this.utils.setInputValue("descriptionArea", this.utils.getTextValue("descriptionLabel").trim());
+			}
+			
+			this.utils.show("descriptionLabel", "none");
+			this.utils.show("descriptionArea", "inline-block");
+			this.utils.show("descriptionDescription", "block");
+			this.utils.show("editDescription", "none");
+			this.utils.show("cancelDescription", "inline-block");
+			this.utils.show("saveDescription", "inline-block");
+		},
+		
+		cancelDescriptionClick: function() {
+			this.cleanDescription();
+		},
+		
+		editTagsClick: function() {
+			var message = "";
+			if (this.utils.getTextValue("tagsLabel") != "Not assigned") {
+				message = this.utils.getTextValue("tagsLabel").trim();
+			}
+			
+			this.utils.show("tagsLabel", "none");
+			this.utils.show("tagsSelect", "inline-block");
+			this.utils.show("tagsSelectMessage", "block");
+			this.utils.show("descriptionTags", "block");
+			this.utils.show("editTags", "none");
+			this.utils.show("cancelTags", "inline-block");
+			this.utils.show("saveTags", "inline-block");
+			this.setupSeaUseCodesMultiselect(this.tagsSelect, this.tagsSelectMessage, message);
+		},
+		
+		cancelTagsClick: function() {
+			this.cleanTags();
+		},
+		
+		/*editHelcomCatalogueIdClick: function() {
 			if (this.utils.getTextValue("helcomCatalogueId") === "Not assigned") {
 				this.utils.setInputValue("helcomCatalogueIdInput", "");
 			}
@@ -293,7 +380,7 @@ define([
 		
 		cancelHelcomCatalogueIdClick: function() {
 			this.cleanHelcomCatalogueId();
-		},
+		},*/
 		
 		editCategoryMetadataLinkClick: function() {
 			if (this.utils.getTextValue("categoryMetadataLink") === "Not assigned") {
@@ -341,6 +428,7 @@ define([
 		addWmsClick: function() {
 			this.utils.show("addWmsForm", "block");
 			this.utils.show("addWms", "none");
+			this.setupSeaUseCodesMultiselect(this.addWmsSeaUseCodesSelect, this.addWmsSeaUseCodesSelectedMessage, "");
 		},
 		
 		cancelWmsClick: function() {
@@ -362,6 +450,7 @@ define([
 		addWfsClick: function() {
 			this.utils.show("addWfsForm", "block");
 			this.utils.show("addWfs", "none");
+			this.setupSeaUseCodesMultiselect(this.addWfsSeaUseCodesSelect, this.addWfsSeaUseCodesSelectedMessage, "");
 		},
 		
 		cancelWfsClick: function() {
@@ -383,6 +472,7 @@ define([
 		addDownloadClick: function() {
 			this.utils.show("addDownloadForm", "block");
 			this.utils.show("addDownload", "none");
+			this.setupSeaUseCodesMultiselect(this.addDownloadSeaUseCodesSelect, this.addDownloadSeaUseCodesSelectedMessage, "");
 		},
 		
 		cancelDownloadClick: function() {
@@ -405,6 +495,7 @@ define([
 		addArcgisClick: function() {
 			this.utils.show("addArcgisForm", "block");
 			this.utils.show("addArcgis", "none");
+			this.setupSeaUseCodesMultiselect(this.addArcgisSeaUseCodesSelect, this.addArcgisSeaUseCodesSelectedMessage, "");
 		},
 		
 		cancelArcgisClick: function() {
@@ -441,6 +532,7 @@ define([
 		cleanMspOutputForm: function() {
 			this.cleanValidationForm();
 			this.cleanUploadForm();
+			this.cleanDeleteForm();
 			this.utils.show("mspOutputForm", "none");
 			this.utils.changeText("validationCloseButton", "Close");
 		},
@@ -470,6 +562,12 @@ define([
 			this.utils.show("uploadForm", "none");
 			this.utils.show("uploadReportSection", "none");
 			domConstruct.empty(this.uploadSection);
+		},
+		cleanDeleteForm: function() {
+			this.utils.setTextValue("deleteDataMessage", "");
+			this.utils.show("deleteDataForm", "none");
+			this.utils.show("deleteReportSection", "none");
+			domConstruct.empty(this.deleteSection);
 		},
 		/* --- MANAGE VALIDATION CLEAN END--- */
 		
@@ -526,7 +624,7 @@ define([
 		cleanRootCategoryAddForm: function() {
 			this.cleanMetadataFormatSelector();
 			this.utils.clearInput("addRootCategoryLabelInput");
-			this.utils.clearInput("addRootCategoryHelcomIdInput");
+			this.utils.clearInput("addRootCategoryDescriptionArea");
 			this.utils.clearInput("addRootCategoryMetadataUrlInput");
 			this.utils.show("addRootCategoryForm", "none");
 		},
@@ -571,14 +669,33 @@ define([
 			this.utils.show("saveCategoryLabel", "none");
 		},
 		
-		cleanHelcomCatalogueId: function() {
+		cleanDescription: function() {
+			this.utils.show("descriptionLabel", "inline-block");
+			this.utils.show("descriptionArea", "none");
+			this.utils.show("descriptionDescription", "none");
+			this.utils.show("editDescription", "inline-block");
+			this.utils.show("cancelDescription", "none");
+			this.utils.show("saveDescription", "none");
+		},
+		
+		cleanTags: function() {
+			this.utils.show("tagsLabel", "inline-block");
+			this.utils.show("tagsSelect", "none");
+			this.utils.show("tagsSelectMessage", "none");
+			this.utils.show("descriptionTags", "none");
+			this.utils.show("editTags", "inline-block");
+			this.utils.show("cancelTags", "none");
+			this.utils.show("saveTags", "none");
+		},
+		
+		/*cleanHelcomCatalogueId: function() {
 			this.utils.show("helcomCatalogueId", "inline-block");
 			this.utils.show("helcomCatalogueIdInput", "none");
 			this.utils.show("helcomCatalogueIdDescription", "none");
 			this.utils.show("editHelcomCatalogueId", "inline-block");
 			this.utils.show("cancelHelcomCatalogueId", "none");
 			this.utils.show("saveHelcomCatalogueId", "none");
-		},
+		},*/
 		
 		cleanCategoryMetadataLink: function() {
 			this.utils.show("categoryMetadataLink", "inline-block");
@@ -609,7 +726,7 @@ define([
 		cleanCategoryAddForm: function() {
 			this.cleanMetadataFormatSelector();
 			this.utils.clearInput("addCategoryLabelInput");
-			this.utils.clearInput("addCategoryHelcomIdInput");
+			this.utils.clearInput("addCategoryDescriptionArea");
 			this.utils.clearInput("addCategoryMetadataUrlInput");
 			this.utils.show("addCategoryForm", "none");
 			this.utils.show("addCategory", "inline-block");
@@ -754,6 +871,31 @@ define([
 			this.metadataFormatSelector.startup();
 		},
 		
+		setupSeaUseCodesMultiselect: function(selectNode, messageNode, message) {
+			if (this.seaUseCodesMultiSelector != null) {
+				this.seaUseCodesMultiSelector.destroy();
+				this.seaUseCodesMultiSelector = null;
+			}
+			messageNode.innerHTML = "Selected: " + message;
+			var sel = win.doc.createElement("select");
+			array.forEach(this.seaUseCodes, lang.hitch(this, function(code) {
+				var c = win.doc.createElement("option");
+				c.innerHTML = code.label;
+        		c.value = code.value;
+        		sel.appendChild(c);
+			}));
+    		this.seaUseCodesMultiSelector = new MultiSelect({
+				style: "height: 200px; border: 1px solid #800000; border-radius: 4px;",
+				onChange: lang.hitch(this, function() {
+					let vals = this.seaUseCodesMultiSelector.get("value").join("; ");
+					messageNode.innerHTML = "Selected: " + vals;
+					console.log();
+				})
+			}, sel);
+			this.seaUseCodesMultiSelector.placeAt(selectNode);
+			this.seaUseCodesMultiSelector.set("value", message.split("; "));    
+		},
+		
 		cleanMetadataFormatSelector: function() {
 			if (this.metadataFormatSelector != null) {
 				this.metadataFormatSelector.destroy();
@@ -774,9 +916,9 @@ define([
 					var labelLabel = domConstruct.create("span", { "class": "textInputLabel", "innerHTML": "Label: " }, label, "last");
 					var labelValue = domConstruct.create("span", { "class": "textLabel", "innerHTML": category.label }, label, "last");
 					
-					var helcomId = domConstruct.create("div", null, content, "last");
-					var helcomIdLabel = domConstruct.create("span", { "class": "textInputLabel", "innerHTML": "HELCOM id: " }, helcomId, "last");
-					var helcomIdValue = domConstruct.create("span", { "class": "textLabel", "innerHTML": category.helcomId }, helcomId, "last");
+					var description = domConstruct.create("div", null, content, "last");
+					var descriptionLabel = domConstruct.create("span", { "class": "textInputLabel", "innerHTML": "Description: " }, description, "last");
+					var descriptionValue = domConstruct.create("span", { "class": "textLabel", "innerHTML": category.description }, description, "last");
 					
 					if (this.editMode) {
 						var editButton = domConstruct.create("div", {"class": "formEditDeleteLink", "innerHTML": "Edit"}, buttonContainer, "last");
@@ -880,7 +1022,7 @@ define([
 			this.utils.clearInput("wmsNameInput");
 			this.utils.show("wmsLayerNameInputGroup", "none");
 			this.utils.clearInput("wmsLabelInput");
-			this.utils.clearInput("wmsHelcomIdInput");
+			this.utils.clearInput("wmsDescriptionArea");
 			this.wmsValidationPassed = false;
 		},
 				
@@ -905,7 +1047,13 @@ define([
 					var urlLabel = domConstruct.create("span", { "class": "textInputLabel", "innerHTML": "WMS URL: " }, url, "last");
 					var urlValue = domConstruct.create("a", { "class": "textLabel", "href": wms.wms.url, "target": "_blank", "innerHTML": wms.wms.url }, url, "last");
 					
+					var validationMessage = domConstruct.create("div", {"style": "text-align:right;"}, content, "last");
+									
 					if (this.editMode) {
+						var validateButton = domConstruct.create("div", {"class": "formEditDeleteLink", "innerHTML": "Validate"}, buttonContainer, "last");
+						on(validateButton, "click", lang.hitch(this, function() {
+							this.validateExistingWms(wms.wms, validationMessage);
+						}));
 						var editButton = domConstruct.create("div", {"class": "formEditDeleteLink", "innerHTML": "View or edit"}, buttonContainer, "last");
 						on(editButton, "click", lang.hitch(this, function() {
 							this.setupManageEditForm(wms);
@@ -948,6 +1096,42 @@ define([
 				lang.hitch(this, function(error){
 					this.showMessage("Something went wrong (on categories/delete/{id}). Please contact administrator.");
 					console.log(error);
+				})
+			);
+		},
+		
+		validateExistingWms: function(wms, div) {
+			var url = "sc/wms/verify";
+			var data = {
+				"url": wms.url
+			};
+			request.post(url, this.utils.createPostWithTimeoutRequestParams(data)).then(
+				lang.hitch(this, function(response) {
+					if (response.type == "error") {
+						div.style.color = "red";
+						div.innerHTML = "WMS did not pass validation. Possible reasons: URL is not valid or XML structure of the WMS is not valid.";
+					}
+					else if (response.type == "success") {
+						if (response.item.names.includes(wms.name)) {
+							div.style.color = "green";
+							div.innerHTML = "WMS is valid.";
+						}
+						else {
+							div.style.color = "red";
+							div.innerHTML = "WMS did not pass validation. " + wms.name + " is not available in the service.";
+						}
+						
+					}
+				}),
+				lang.hitch(this, function(error){
+					if (error.message == "Timeout exceeded") {
+						div.style.color = "red";
+						div.innerHTML = "WMS did not pass validation. Service didn't respond after 1 minute.";
+					}
+					else {
+						div.style.color = "red";
+						div.innerHTML = "Validation did not work. Please report to data@helcom.fi.";
+					}
 				})
 			);
 		},
@@ -1007,7 +1191,7 @@ define([
 			this.utils.clearInput("wfsNameInput");
 			this.utils.show("wfsLayerNameInputGroup", "none");
 			this.utils.clearInput("wfsLabelInput");
-			this.utils.clearInput("wfsHelcomIdInput");
+			this.utils.clearInput("wfsDescriptionArea");
 			this.wfsValidationPassed = false;
 		},
 				
@@ -1032,7 +1216,14 @@ define([
 					var urlLabel = domConstruct.create("span", { "class": "textInputLabel", "innerHTML": "WFS URL: " }, url, "last");
 					var urlValue = domConstruct.create("a", { "class": "textLabel", "href": wfs.wfs.url, "target": "_blank", "innerHTML": wfs.wfs.url }, url, "last");
 					
+					var validationMessage = domConstruct.create("div", {"style": "text-align:right;"}, content, "last");
+					
 					if (this.editMode) {
+						var validateButton = domConstruct.create("div", {"class": "formEditDeleteLink", "innerHTML": "Validate"}, buttonContainer, "last");
+						on(validateButton, "click", lang.hitch(this, function() {
+							this.validateExistingWfs(wfs.wfs, validationMessage);
+						}));
+						
 						var editButton = domConstruct.create("div", {"class": "formEditDeleteLink", "innerHTML": "View or edit"}, buttonContainer, "last");
 						on(editButton, "click", lang.hitch(this, function() {
 							this.setupManageEditForm(wfs);
@@ -1079,6 +1270,42 @@ define([
 			);
 		},
 		
+		validateExistingWfs: function(wfs, div) {
+			var url = "sc/wfs/verify";
+			var data = {
+				"url": wfs.url
+			};
+			request.post(url, this.utils.createPostWithTimeoutRequestParams(data)).then(
+				lang.hitch(this, function(response) {
+					if (response.type == "error") {
+						div.style.color = "red";
+						div.innerHTML = "WFS did not pass validation. Possible reasons: URL is not valid or XML structure of the WFS is not valid.";
+					}
+					else if (response.type == "success") {
+						if (response.item.names.includes(wfs.name)) {
+							div.style.color = "green";
+							div.innerHTML = "WFS is valid.";
+						}
+						else {
+							div.style.color = "red";
+							div.innerHTML = "WFS did not pass validation. " + wfs.name + " is not available in the service.";
+						}
+						
+					}
+				}),
+				lang.hitch(this, function(error){
+					if (error.message == "Timeout exceeded") {
+						div.style.color = "red";
+						div.innerHTML = "WFS did not pass validation. Service didn't respond after 1 minute.";
+					}
+					else {
+						div.style.color = "red";
+						div.innerHTML = "Validation did not work. Please report to data@helcom.fi.";
+					}
+				})
+			);
+		},
+		
 		// --- category download
 		validateDownload: function(downloadUrl) {
 			var url = "sc/dls/verify";
@@ -1106,7 +1333,7 @@ define([
 				
 		cleanDownloadNameAndLabelForms: function() {
 			this.utils.clearInput("downloadLabelInput");
-			this.utils.clearInput("downloadHelcomIdInput");
+			this.utils.clearInput("downloadDescriptionArea");
 			this.downloadValidationPassed = false;
 		},
 				
@@ -1127,7 +1354,14 @@ define([
 					var urlLabel = domConstruct.create("span", { "class": "textInputLabel", "innerHTML": "URL: " }, url, "last");
 					var urlValue = domConstruct.create("a", { "class": "textLabel", "href": download.download.url, "target": "_blank", "innerHTML": download.download.url }, url, "last");
 					
+					var validationMessage = domConstruct.create("div", {"style": "text-align:right;"}, content, "last");
+					
 					if (this.editMode) {
+						var validateButton = domConstruct.create("div", {"class": "formEditDeleteLink", "innerHTML": "Validate"}, buttonContainer, "last");
+						on(validateButton, "click", lang.hitch(this, function() {
+							this.validateExistingDownload(download.download, validationMessage);
+						}));
+						
 						var editButton = domConstruct.create("div", {"class": "formEditDeleteLink", "innerHTML": "View or Edit"}, buttonContainer, "last");
 						on(editButton, "click", lang.hitch(this, function() {
 							this.setupManageEditForm(download);
@@ -1174,6 +1408,35 @@ define([
 			);
 		},
 		
+		validateExistingDownload: function(download, div) {
+			var url = "sc/dls/verify";
+			var data = {
+				"url": download.url
+			};
+			request.post(url, this.utils.createPostWithTimeoutRequestParams(data)).then(
+				lang.hitch(this, function(response) {
+					if (response.type == "error") {
+						div.style.color = "red";
+						div.innerHTML = "Download resource did not pass validation. Possible reason: URL is not valid.";
+					}
+					else if (response.type == "success") {
+						div.style.color = "green";
+						div.innerHTML = "Download resource is valid.";
+					}
+				}),
+				lang.hitch(this, function(error){
+					if (error.message == "Timeout exceeded") {
+						div.style.color = "red";
+						div.innerHTML = "Download resource did not pass validation. Service didn't respond after 1 minute.";
+					}
+					else {
+						div.style.color = "red";
+						div.innerHTML = "Validation did not work. Please report to data@helcom.fi.";
+					}
+				})
+			);
+		},
+		
 		// --- category arcgis
 		validateArcgis: function(arcgisUrl) {
 			var url = "sc/ags/verify";
@@ -1201,7 +1464,7 @@ define([
 				
 		cleanArcgisNameAndLabelForms: function() {
 			this.utils.clearInput("arcgisLabelInput");
-			this.utils.clearInput("arcgisHelcomIdInput");
+			this.utils.clearInput("arcgisDescriptionArea");
 			this.arcgisValidationPassed = false;
 		},
 		
@@ -1222,7 +1485,13 @@ define([
 					var urlLabel = domConstruct.create("span", { "class": "textInputLabel", "innerHTML": "URL: " }, url, "last");
 					var urlValue = domConstruct.create("a", { "class": "textLabel", "href": arcgis.arcgis.url, "target": "_blank", "innerHTML": arcgis.arcgis.url }, url, "last");
 					
+					var validationMessage = domConstruct.create("div", {"style": "text-align:right;"}, content, "last");
+						
 					if (this.editMode) {
+						var validateButton = domConstruct.create("div", {"class": "formEditDeleteLink", "innerHTML": "Validate"}, buttonContainer, "last");
+						on(validateButton, "click", lang.hitch(this, function() {
+							this.validateExistingArcgis(arcgis.arcgis, validationMessage);
+						}));
 						var editButton = domConstruct.create("div", {"class": "formEditDeleteLink", "innerHTML": "View or Edit"}, buttonContainer, "last");
 						on(editButton, "click", lang.hitch(this, function() {
 							this.setupManageEditForm(arcgis);
@@ -1264,6 +1533,35 @@ define([
 				lang.hitch(this, function(error){
 					this.showMessage("Something went wrong (on categories/delete/{id}). Please contact administrator.");
 					console.log(error);
+				})
+			);
+		},
+		
+		validateExistingArcgis: function(arcgis, div) {
+			var url = "sc/ags/verify";
+			var data = {
+				"url": arcgis.url
+			};
+			request.post(url, this.utils.createPostWithTimeoutRequestParams(data)).then(
+				lang.hitch(this, function(response) {
+					if (response.type == "error") {
+						div.style.color = "red";
+						div.innerHTML = "ArcGIS resource did not pass validation. Possible reason: URL is not valid.";
+					}
+					else if (response.type == "success") {
+						div.style.color = "green";
+						div.innerHTML = "ArcGIS resource is valid.";
+					}
+				}),
+				lang.hitch(this, function(error){
+					if (error.message == "Timeout exceeded") {
+						div.style.color = "red";
+						div.innerHTML = "ArcGIS resource did not pass validation. Service didn't respond after 1 minute.";
+					}
+					else {
+						div.style.color = "red";
+						div.innerHTML = "Validation did not work. Please report to data@helcom.fi.";
+					}
 				})
 			);
 		},
@@ -1484,7 +1782,8 @@ define([
 			this.editMode = layer.editMode; 
 			if (this.editMode) {
 				this.utils.show("editCategoryLabel", "inline-block");
-				this.utils.show("editHelcomCatalogueId", "inline-block");
+				this.utils.show("editDescription", "inline-block");
+				//this.utils.show("editHelcomCatalogueId", "inline-block");
 				this.utils.show("editCategoryMetadataLink", "inline-block");
 				this.utils.show("addMetadata", "block");
 				this.utils.show("addCategory", "block");
@@ -1497,7 +1796,8 @@ define([
 			}
 			else {
 				this.utils.show("editCategoryLabel", "none");
-				this.utils.show("editHelcomCatalogueId", "none");
+				this.utils.show("editDescription", "none");
+				//this.utils.show("editHelcomCatalogueId", "none");
 				this.utils.show("editCategoryMetadataLink", "none");
 				this.utils.show("addMetadata", "none");
 				this.utils.show("addCategory", "none");
@@ -1513,15 +1813,31 @@ define([
 			
 			this.utils.setTextValue("categoryLabel", layer.name);
 			
-			if ((layer.helcomId) && (layer.helcomId.length > 0)) {
+			if ((layer.description) && (layer.description.length > 0)) {
+				this.utils.setTextValue("descriptionLabel", layer.description);
+			}
+			else {
+				this.utils.setTextValue("descriptionLabel", "Not assigned");
+			}
+			
+			if ((layer.tags) && (layer.tags.length > 0)) {
+				let t = layer.tags.replaceAll(";", "; ");
+				this.utils.setTextValue("tagsLabel", t);
+			}
+			else {
+				this.utils.setTextValue("tagsLabel", "Not assigned");
+			}
+			
+			/*if ((layer.helcomId) && (layer.helcomId.length > 0)) {
 				this.utils.setTextValue("helcomCatalogueId", layer.helcomId);
 			}
 			else {
 				this.utils.setTextValue("helcomCatalogueId", "Not assigned");
-			}
+			}*/
 			
 			if (layer.type == "CATEGORY") {
 				this.utils.show("categoryMetadataSection", "block");
+				this.utils.show("tagsSection", "none");
 				this.utils.show("categoryCategoriesForm", "block");
 				this.utils.show("categoryWmsForm", "block");
 				this.utils.show("categoryWfsForm", "block");
@@ -1550,6 +1866,7 @@ define([
 			}
 			else if (layer.type == "WMS") {
 				this.utils.show("categoryMetadataSection", "none");
+				this.utils.show("tagsSection", "block");
 				this.utils.show("downloadArcgisUrlSection", "none");
 				this.utils.show("categoryCategoriesForm", "none");
 				this.utils.show("categoryWmsForm", "none");
@@ -1573,6 +1890,7 @@ define([
 			}
 			else if (layer.type == "WFS") {
 				this.utils.show("categoryMetadataSection", "none");
+				this.utils.show("tagsSection", "block");
 				this.utils.show("downloadArcgisUrlSection", "none");
 				this.utils.show("categoryCategoriesForm", "none");
 				this.utils.show("categoryWmsForm", "none");
@@ -1597,6 +1915,7 @@ define([
 			}
 			else if (layer.type == "DOWNLOAD") {
 				this.utils.show("categoryMetadataSection", "none");
+				this.utils.show("tagsSection", "block");
 				this.utils.show("categoryCategoriesForm", "none");
 				this.utils.show("categoryWmsForm", "none");
 				this.utils.show("categoryWfsForm", "none");
@@ -1620,6 +1939,7 @@ define([
 			}
 			else if (layer.type == "ARCGIS") {
 				this.utils.show("categoryMetadataSection", "none");
+				this.utils.show("tagsSection", "block");
 				this.utils.show("categoryCategoriesForm", "none");
 				this.utils.show("categoryWmsForm", "none");
 				this.utils.show("categoryWfsForm", "none");
@@ -2260,19 +2580,30 @@ define([
 			window.location.replace("sc/categories/summary-download");
 		},
 		
-		prepareServicesForValidation: function() {
+		prepareServicesForValidation: function(country) {
+			let contriesNotToValidate = [];
+			if (country != null) {
+				for (const c in this.countryCodesLabels) {
+					if (c != country) {
+						contriesNotToValidate.push(this.countryCodesLabels[c]);	
+					}
+				}	
+			}
 			this.servicesValidationDone = false;
 			array.forEach(this.tree, lang.hitch(this, function(item) {
-				this.packRecord(item);
+				this.packRecord(item, contriesNotToValidate);
 			}));
+			console.log(this.validationPackage);
 			this.validateRecord(this.validationPackage[this.currentValidateServiceNr]);
 		},
 		
-		packRecord: function(record) {
+		packRecord: function(record, countriesNotToValidate) {
 			if (record.type == "CATEGORY") {
-				array.forEach(record.layers, lang.hitch(this, function(layer) {
-					this.packRecord(layer);
-				}));
+				if (!countriesNotToValidate.includes(record.label)) {
+					array.forEach(record.layers, lang.hitch(this, function(layer) {
+						this.packRecord(layer, countriesNotToValidate);
+					}));	
+				}
 			}
 			else if (record.type == "WMS") {
 				this.wmsCount += 1;
@@ -2379,8 +2710,9 @@ define([
 						this.utils.setTextValue("wmsCountMessage", "Total WMS: " + this.wmsCount + " (valid: " + this.wmsValidCount + ", not valid: " + this.wmsNotValidCount + "). <span style='color: blue;'> Validating...</span>");
 					}
 					
-					if (this.totalValidatedServicesCount <= this.totalServicesCount) {
+					if (this.totalValidatedServicesCount < this.totalServicesCount) {
 						this.currentValidateServiceNr += 1;
+						console.log(this.currentValidateServiceNr, this.validationPackage[this.currentValidateServiceNr]);
 						this.validateRecord(this.validationPackage[this.currentValidateServiceNr]);
 					}
 				}),
@@ -2410,7 +2742,7 @@ define([
 						this.utils.setTextValue("wmsCountMessage", "Total WMS: " + this.wmsCount + " (valid: " + this.wmsValidCount + ", not valid: " + this.wmsNotValidCount + "). <span style='color: blue;'> Validating...</span>");
 					}
 					
-					if (this.totalValidatedServicesCount <= this.totalServicesCount) {
+					if (this.totalValidatedServicesCount < this.totalServicesCount) {
 						this.currentValidateServiceNr += 1;
 						this.validateRecord(this.validationPackage[this.currentValidateServiceNr]);
 					}
@@ -2437,7 +2769,7 @@ define([
 							div.innerHTML = "WFS is valid.";							
 						}
 						else {
-							this.wmsNotValidCount += 1;
+							this.wfsNotValidCount += 1;
 							div.style.color = "red";
 							div.innerHTML = "WFS did not pass validation. " + wfsLayer + " is not available in the service." ;
 						}
@@ -2459,7 +2791,7 @@ define([
 						this.utils.setTextValue("wfsCountMessage", "Total WFS: " + this.wfsCount + " (valid: " + this.wfsValidCount + ", not valid: " + this.wfsNotValidCount + "). <span style='color: blue;'> Validating...</span>");
 					}
 					
-					if (this.totalValidatedServicesCount <= this.totalServicesCount) {
+					if (this.totalValidatedServicesCount < this.totalServicesCount) {
 						this.currentValidateServiceNr += 1;
 						this.validateRecord(this.validationPackage[this.currentValidateServiceNr]);
 					}
@@ -2490,7 +2822,7 @@ define([
 						this.utils.setTextValue("wfsCountMessage", "Total WFS: " + this.wfsCount + " (valid: " + this.wfsValidCount + ", not valid: " + this.wfsNotValidCount + "). <span style='color: blue;'> Validating...</span>");
 					}
 					
-					if (this.totalValidatedServicesCount <= this.totalServicesCount) {
+					if (this.totalValidatedServicesCount < this.totalServicesCount) {
 						this.currentValidateServiceNr += 1;
 						this.validateRecord(this.validationPackage[this.currentValidateServiceNr]);
 					}
@@ -2531,7 +2863,7 @@ define([
 						this.utils.setTextValue("agsCountMessage", "Total ARCGIS MAPSERVICES: " + this.agsCount + " (valid: " + this.agsValidCount + ", not valid: " + this.agsNotValidCount + "). <span style='color: blue;'> Validating...</span>");
 					}
 					
-					if (this.totalValidatedServicesCount <= this.totalServicesCount) {
+					if (this.totalValidatedServicesCount < this.totalServicesCount) {
 						this.currentValidateServiceNr += 1;
 						this.validateRecord(this.validationPackage[this.currentValidateServiceNr]);
 					}
@@ -2562,7 +2894,7 @@ define([
 						this.utils.setTextValue("agsCountMessage", "Total ARCGIS MAPSERVICES: " + this.agsCount + " (valid: " + this.agsValidCount + ", not valid: " + this.agsNotValidCount + "). <span style='color: blue;'> Validating...</span>");
 					}
 					
-					if (this.totalValidatedServicesCount <= this.totalServicesCount) {
+					if (this.totalValidatedServicesCount < this.totalServicesCount) {
 						this.currentValidateServiceNr += 1;
 						this.validateRecord(this.validationPackage[this.currentValidateServiceNr]);
 					}
@@ -2603,7 +2935,7 @@ define([
 						this.utils.setTextValue("dnlCountMessage", "Total DOWNLOADABLE RESOURCES: " + this.dnlCount + " (valid: " + this.dnlValidCount + ", not valid: " + this.dnlNotValidCount + "). <span style='color: blue;'> Validating...</span>");
 					}
 					
-					if (this.totalValidatedServicesCount <= this.totalServicesCount) {
+					if (this.totalValidatedServicesCount < this.totalServicesCount) {
 						this.currentValidateServiceNr += 1;
 						this.validateRecord(this.validationPackage[this.currentValidateServiceNr]);
 					}
@@ -2634,7 +2966,7 @@ define([
 						this.utils.setTextValue("dnlCountMessage", "Total DOWNLOADABLE RESOURCES: " + this.dnlCount + " (valid: " + this.dnlValidCount + ", not valid: " + this.dnlNotValidCount + "). <span style='color: blue;'> Validating...</span>");
 					}
 					
-					if (this.totalValidatedServicesCount <= this.totalServicesCount) {
+					if (this.totalValidatedServicesCount < this.totalServicesCount) {
 						this.currentValidateServiceNr += 1;
 						this.validateRecord(this.validationPackage[this.currentValidateServiceNr]);
 					}

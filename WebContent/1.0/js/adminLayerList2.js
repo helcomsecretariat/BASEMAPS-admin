@@ -63,6 +63,7 @@ define([
 		formsObj: null,
 		userRole: null,
 		userRights: null,
+		userCountry: null,
 		rootLayerId: "layerlist",
 		//currentObjId: null,
 		currentWms: null,
@@ -77,6 +78,7 @@ define([
 			this.formsObj = params.forms;
 			this.userRole = params.role;
 			this.userRights = params.rights;
+			this.userCountry = params.country;
 			this.utils = new utils();
 			this.data = [{ id: this.rootLayerId, leaf: false}];
 		},
@@ -100,7 +102,7 @@ define([
 			this.formsObj.cleanAdminForm();
 			this.utils.show("validateServicesForm", "block");
 			if (this.formsObj.servicesValidationDone) {
-				this.formsObj.prepareServicesForValidation();
+				this.formsObj.prepareServicesForValidation(this.userCountry);
 			}
 		},
 		
@@ -215,12 +217,12 @@ define([
 			// --- save root category
 			on(this.formsObj.saveRootCategory, "click", lang.hitch(this, function() {
 				var catLabel = this.utils.getInputValue("addRootCategoryLabelInput").trim();
-				var catHelcomId = this.utils.getInputValue("addRootCategoryHelcomIdInput").trim();
+				var catDescription = this.utils.getInputValue("addRootCategoryDescriptionArea").trim();
 				var catMetadataUrl = this.utils.getInputValue("addRootCategoryMetadataUrlInput").trim();
 				if (validate.isText(catLabel)) {
 					var newCategory = {
 						"label": catLabel,
-						"helcomMetadata": catHelcomId,
+						"description": catDescription,
 						"metaData": []
 					};
 					if (catMetadataUrl.length > 0 ) {
@@ -246,17 +248,32 @@ define([
 				this.formsObj.cleanCategoryLabel();
 			}));
 			
-			on(this.formsObj.saveHelcomCatalogueId, "click", lang.hitch(this, function() {
-				this.formsObj.currentCategory.helcomMetadata = this.utils.getInputValue("helcomCatalogueIdInput").trim();
+			on(this.formsObj.saveDescription, "click", lang.hitch(this, function() {
+				this.formsObj.currentCategory.description = this.utils.getInputValue("descriptionArea").trim();
 				this.updateCurrentCategory(null);
 				
-				if (this.utils.getInputValue("helcomCatalogueIdInput").trim().length === 0) {
-					this.utils.setTextValue("helcomCatalogueId", "Not assigned");
+				if (this.utils.getInputValue("descriptionArea").trim().length === 0) {
+					this.utils.setTextValue("descriptionLabel", "Not assigned");
 				}
 				else {
-					this.utils.setTextValue("helcomCatalogueId", this.utils.getInputValue("helcomCatalogueIdInput").trim());
+					this.utils.setTextValue("descriptionLabel", this.utils.getInputValue("descriptionArea").trim());
 				}
-				this.formsObj.cleanHelcomCatalogueId();
+				this.formsObj.cleanDescription();
+			}));
+			
+			on(this.formsObj.saveTags, "click", lang.hitch(this, function() {
+				var codes = this.formsObj.seaUseCodesMultiSelector.get("value");
+				console.log(codes);
+				this.formsObj.currentCategory.tags = codes.join(";");
+				this.updateCurrentCategory(null);
+				
+				/*if (this.utils.getInputValue("descriptionArea").trim().length === 0) {
+					this.utils.setTextValue("descriptionLabel", "Not assigned");
+				}
+				else {
+					this.utils.setTextValue("descriptionLabel", this.utils.getInputValue("descriptionArea").trim());
+				}*/
+				this.formsObj.cleanTags();
 			}));
 			
 			on(this.formsObj.saveCategoryMetadataLink, "click", lang.hitch(this, function() {
@@ -310,13 +327,13 @@ define([
 			// --- save category
 			on(this.formsObj.saveCategory, "click", lang.hitch(this, function() {
 				var catLabel = this.utils.getInputValue("addCategoryLabelInput").trim();
-				var catHelcomId = this.utils.getInputValue("addCategoryHelcomIdInput").trim();
+				var catDescription = this.utils.getInputValue("addCategoryDescriptionArea").trim();
 				var catMetadataUrl = this.utils.getInputValue("addCategoryMetadataUrlInput").trim();
 				if (validate.isText(catLabel)) {
 					var newCategory = {
 						"parent": this.formsObj.currentObjId,
 						"label": catLabel,
-						"helcomMetadata": catHelcomId,
+						"description": catDescription,
 						"metaData": []
 					};
 					if (catMetadataUrl.length > 0 ) {
@@ -344,12 +361,14 @@ define([
 					wmsName = this.utils.getInputValue("wmsNameInput").trim();
 				}
 				var wmsLabel = this.utils.getInputValue("wmsLabelInput").trim();
-				var wmsHemcomId = this.utils.getInputValue("wmsHelcomIdInput").trim();
+				var wmsDescription = this.utils.getInputValue("wmsDescriptionArea").trim();
+				var codes = this.formsObj.seaUseCodesMultiSelector.get("value");
 				if ((validate.isText(wmsName)) && (validate.isText(wmsLabel))) {
 					var newWms = {
 						"parent": this.formsObj.currentObjId,
 						"label": wmsLabel,
-						"helcomId": wmsHemcomId,
+						"description": wmsDescription,
+						"tags": codes.join(";"),
 						"wmsUrl": wmsUrl,
 						"wmsName": wmsName
 					};
@@ -371,12 +390,14 @@ define([
 					wfsName = this.utils.getInputValue("wfsNameInput").trim();
 				}
 				var wfsLabel = this.utils.getInputValue("wfsLabelInput").trim();
-				var wfsHemcomId = this.utils.getInputValue("wfsHelcomIdInput").trim();
+				var wfsDescription = this.utils.getInputValue("wfsDescriptionArea").trim();
+				var codes = this.formsObj.seaUseCodesMultiSelector.get("value");
 				if ((validate.isText(wfsName)) && (validate.isText(wfsLabel))) {
 					var newWfs = {
 						"parent": this.formsObj.currentObjId,
 						"label": wfsLabel,
-						"helcomId": wfsHemcomId,
+						"description": wfsDescription,
+						"tags": codes.join(";"),
 						"wfsUrl": wfsUrl,
 						"wfsName": wfsName
 					};
@@ -392,12 +413,14 @@ define([
 				if (this.formsObj.downloadValidationPassed) {
 					var downloadUrl = this.utils.getInputValue("downloadUrlInput").trim();
 					var downloadLabel = this.utils.getInputValue("downloadLabelInput").trim();
-					var downloadHemcomId = this.utils.getInputValue("downloadHelcomIdInput").trim();
+					var downloadDescription = this.utils.getInputValue("downloadDescriptionArea").trim();
+					var codes = this.formsObj.seaUseCodesMultiSelector.get("value");
 					if (validate.isText(downloadLabel)) {
 						var newDownload = {
 							"parent": this.formsObj.currentObjId,
 							"label": downloadLabel,
-							"helcomId": downloadHemcomId,
+							"description": downloadDescription,
+							"tags": codes.join(";"),
 							"downloadUrl": downloadUrl
 						};
 						this.saveCategoryForService(newDownload, "NEW_DOWNLOAD");
@@ -416,12 +439,14 @@ define([
 				if (this.formsObj.arcgisValidationPassed) {
 					var arcgisUrl = this.utils.getInputValue("arcgisUrlInput").trim();
 					var arcgisLabel = this.utils.getInputValue("arcgisLabelInput").trim();
-					var arcgisHemcomId = this.utils.getInputValue("arcgisHelcomIdInput").trim();
+					var arcgisDescription = this.utils.getInputValue("arcgisDescriptionArea").trim();
+					var codes = this.formsObj.seaUseCodesMultiSelector.get("value");
 					if (validate.isText(arcgisLabel)) {
 						var newArcgis = {
 							"parent": this.formsObj.currentObjId,
 							"label": arcgisLabel,
-							"helcomId": arcgisHemcomId,
+							"description": arcgisDescription,
+							"tags": codes.join(";"),
 							"arcgisUrl": arcgisUrl
 						};
 						this.saveCategoryForService(newArcgis, "NEW_ARCGIS");
@@ -517,11 +542,13 @@ define([
 		},
 		
 		saveCategoryForService: function(values, mode) {
+			console.log(values);
 			var url = "sc/categories/add";
 			var data = {
 				"parent": values.parent,
 				"label": values.label,
-				"helcomMetadata": values.helcomId
+				"description": values.description,
+				"tags": values.tags
 			};
 			
 			request.post(url, this.utils.createPostRequestParams(data)).then(
@@ -854,7 +881,7 @@ define([
 			layer.id = layer.id.toString();
 			layer.parent = parentLayerId;
 			layer.name = layer.label;
-			layer.helcomId = layer.helcomMetadata;
+			layer.description = layer.description;
 			layer.lastPos = last;
 			layer.type = null;
 			layer.editMode = editMode;
@@ -1179,7 +1206,7 @@ define([
 					var category = {
 						id: layer.id,
 						label: layer.label,
-						helcomId: layer.helcomMetadata
+						description: layer.description
 					};
 					this.formsObj.currentCategoryCategories.push(category);
 				}

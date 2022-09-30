@@ -23,6 +23,8 @@ public class CategoryUI extends CategoryBeanUI
 	protected List<MetaDataUI> metaData;
 
 	private String helcomMetadata;
+	private String description;
+	private String tags;
 	
 	
 	public CategoryUI()
@@ -38,6 +40,8 @@ public class CategoryUI extends CategoryBeanUI
 		this.setParent(bean.getParent() != null ? bean.getParent().getId() : null);
 		this.setMetaData(BeansUtils.getMetaDataUI(bean.getMetadata()));
 		this.setHelcomMetadata(bean.getHelcomMetadata());
+		this.setDescription(bean.getDescription());
+		this.setTags(bean.getTags());
 	}
 
 	public String getLabel() {
@@ -54,6 +58,22 @@ public class CategoryUI extends CategoryBeanUI
 
 	public void setDownloadUrl(String downloadUrl) {
 		this.downloadUrl = downloadUrl;
+	}
+	
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getTags() {
+		return tags;
+	}
+
+	public void setTags(String tags) {
+		this.tags = tags;
 	}
 
 	public List<MetaDataUI> getMetaData() {

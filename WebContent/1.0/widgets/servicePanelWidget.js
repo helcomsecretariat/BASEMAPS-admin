@@ -103,6 +103,14 @@ define([
 		constructWmsInfo: function(info) {
 			if (info.type == "WMS") {
 				this.buildInfoElement("Resource type", "WMS layer");
+				if (info.description)
+					this.buildInfoElement("Description", info.description);
+				else
+					this.buildInfoElement("Description", "No information");
+				if (info.tags)
+					this.buildInfoElement("Keywords", info.tags.join("<br/>"));
+				else
+					this.buildInfoElement("Keywords", "No information");
 				if (info.wms.info.organisation)
 					this.buildInfoElement("Host organization", info.wms.info.organisation);
 				else
@@ -181,6 +189,14 @@ define([
 				var url = info.wfs.url + "?service=wfs&version=" + info.wfs.info.version + "&request=GetFeature&typeNames=" + info.wfs.name;
 				domConstruct.create("a", { "class": "serviceWindowDownloadLink", "href": url, "target": "_blank", "innerHTML": "Get features of WFS feature type" }, this.infoContainer, "last");
 				this.buildInfoElement("Resource type", "WFS feature type");
+				if (info.description)
+					this.buildInfoElement("Description", info.description);
+				else
+					this.buildInfoElement("Description", "No information");
+				if (info.tags)
+					this.buildInfoElement("Keywords", info.tags.join("<br/>"));
+				else
+					this.buildInfoElement("Keywords", "No information");
 				if (info.wfs.info.organisation)
 					this.buildInfoElement("Host organization", info.wfs.info.organisation);
 				else
@@ -243,6 +259,14 @@ define([
 			if (info.type == "DOWNLOAD") {
 				domConstruct.create("a", { "class": "serviceWindowDownloadLink", "href": info.download.url, "target": "_blank", "innerHTML": "Download this resource" }, this.infoContainer, "last");
 				this.buildInfoElement("Resource type", "Downloadable resource");
+				if (info.description)
+					this.buildInfoElement("Description", info.description);
+				else
+					this.buildInfoElement("Description", "No information");
+				if (info.tags)
+					this.buildInfoElement("Keywords", info.tags.join("<br/>"));
+				else
+					this.buildInfoElement("Keywords", "No information");
 				if (info.download.url)
 					this.buildInfoElement("Downloadable resource url", info.download.url);
 				if ((info.metadata.length) && (info.metadata.length > 0))
@@ -254,6 +278,14 @@ define([
 		constructArcgisInfo: function(info) {
 			if (info.type == "ARCGIS") {
 				this.buildInfoElement("Resource type", "ArcGIS REST MapServer layer");
+				if (info.description)
+					this.buildInfoElement("Description", info.description);
+				else
+					this.buildInfoElement("Description", "No information");
+				if (info.tags)
+					this.buildInfoElement("Keywords", info.tags.join("<br/>"));
+				else
+					this.buildInfoElement("Keywords", "No information");
 				if (info.arcgis.url)
 					this.buildInfoElement("ArcGIS MapServer url", info.arcgis.url);
 				if ((info.metadata.length) && (info.metadata.length > 0))

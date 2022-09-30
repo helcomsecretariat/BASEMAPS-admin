@@ -18,6 +18,8 @@
 		<label for="radioShpArea">Validate MSP PLAN AREAS data Shapefile(s)</label><br />
 		<input type="radio" id="radioShpSeaUse" name="validationType" value="shpSeaUse" data-dojo-attach-point="radioShpSeaUse" />
 		<label for="radioShpSeaUse">Validate MSP SEA USE data Shapefile(s)</label><br />
+		<input type="radio" id="radioDeleteByPlanId" name="validationType" value="deleteByPlanId" data-dojo-attach-point="radioDeleteByPlanId" />
+		<label for="radioShpSeaUse">Delete MSP data by plan ID</label><br />
 		<!--<input type="radio" id="radioWfsArea" name="validationType" value="wfsArea" data-dojo-attach-point="radioWfsArea" />
 		<label for="radioWfsArea">I will validate MSP plan areas WFS</label><br />
 		<input type="radio" id="radioWfsSeaUse" name="validationType" value="wfsSeaUse" data-dojo-attach-point="radioWfsSeaUse" />
@@ -138,6 +140,32 @@
 		</div>
 		<div style="font-size: 12px; margin: 5px 10px 0px 10px; font-style: italic; font-weight: bold;">
 			*Annex 2 of <a href="https://vasab.org/wp-content/uploads/2019/04/Guidelines-on-transboundary-MSP-output-data-structure-ADOPTEDbyVASAB__HELCOM.pdf" target="_blank">Guidelines on transboundary MSP output data structure in the Baltic Sea</a>
+		</div>
+	</div>
+	
+	<div id="deleteByPlanIdValidationRules" style="display: none">
+		<div id="deleteByPlanIdCountrySelectGroup" style="margin: 10px 10px 0px 20px; display: none">
+			<label for="deleteByPlanIdCountrySelect" style="font-size: 12px;">Select a country to delete data</label><br/>
+			<select id="deleteByPlanIdCountrySelect" data-dojo-attach-point="deleteByPlanIdCountrySelect">
+	  			<option value="NONE"></option>
+	  			<option value="DE">DE</option>
+	  			<option value="DK">DK</option>
+	  			<option value="EE">EE</option>
+	  			<option value="FI">FI</option>
+	  			<option value="LT">LT</option>
+	  			<option value="LV">LV</option>
+	  			<option value="PL">PL</option>
+	  			<option value="RU">RU</option>
+	  			<option value="SE">SE</option>
+			</select>
+		</div>
+		<div id="deleteByPlanIdPlanSelectGroup" style="margin: 10px 10px 0px 20px; display: none">
+			<label for="deleteByPlanIdPlanSelect" style="font-size: 12px;">Select a plan ID to delete data</label><br/>
+			<select id="deleteByPlanIdPlanSelect" data-dojo-attach-point="deleteByPlanIdPlanSelect"></select>
+			<button id="deleteByPlanIdButton" data-dojo-attach-point="deleteByPlanIdButton" type="button">Delete data</button>
+		</div>
+		<div style="font-weight: bold; font-size: 12px; margin: 5px 10px 0px 10px;">
+			All data (MSP AREA and MSP SEA USE) will be deleted from Basemaps for the selected plan ID. Deleted data are backuped at Helcom server.
 		</div>
 	</div>
 	

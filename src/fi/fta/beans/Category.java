@@ -81,6 +81,9 @@ public class Category extends CategoryBean
 	@Column(name = "helcom_metadata")
 	protected String helcomMetadata;
 	
+	protected String description;
+	protected String tags;
+	
 	
 	public Category()
 	{}
@@ -102,6 +105,8 @@ public class Category extends CategoryBean
 			}
 		}
 		this.setHelcomMetadata(ui.getHelcomMetadata());
+		this.setDescription(ui.getDescription());
+		this.setTags(ui.getTags());
 	}
 
 	public String getLabel() {
@@ -118,6 +123,22 @@ public class Category extends CategoryBean
 
 	public void setDownloadUrl(String downloadUrl) {
 		this.downloadUrl = downloadUrl;
+	}
+	
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getTags() {
+		return tags;
+	}
+
+	public void setTags(String tags) {
+		this.tags = tags;
 	}
 
 	public Category getParent() {

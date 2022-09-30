@@ -483,6 +483,15 @@ html, body {
 	padding: 5px 10px;
 }
 
+.textArea {
+	width: 50%;
+	border: 1px solid #800000;
+	border-radius: 4px;
+	background-color: transparent;
+	font-size: 16px;
+	padding: 5px 10px;
+}
+
 .textLabel {
 	font-size: 16px;
 }
@@ -656,13 +665,6 @@ html, body {
 	height: 20px;
 	padding: 0;
 }
-
-.claro .dijitTooltipContainer {
-    /*background: #b8b5b5;*/
-    color: #B73C2B;
-    font-size: 11px;
-    padding: 5px;
- }
 
 .esriPopup.popupStyle .esriPopupWrapper {
   border: none;

@@ -83,8 +83,13 @@ define([
 			"restricted_info": "Restricted sea use",
 			"forbidden_info": "Forbidden sea use", 
 			"useDsc": "Use description",
-			"area": "Area (sq km)"
+			"area": "Area (sq km)",
+			"country": "Country",
+			"planId": "Plan ID"
 		},
+		nationalMspParamsArray: [],
+		nationalMspAccordion: null,
+		nationalMspLayersAccordion: null,
 		rootMspLayerId: "msplayerlist",
 		servicePanel: null,
 		constructor: function(params) {
@@ -380,11 +385,14 @@ define([
 		setupMspViewAccordion: function() {
 			this.mspViewAccordion = new TitleGroup({style:"width: 380px"}, this.mspFilterContainer);
 			this.mspViewAccordion.startup();
-			this.setupMspParams();		
+			this.setupMspParams();
 			this.setupPane1();
 			this.setupPane2();
 			this.setupPane3();
+			this.setupNationalMspParamsArray();
 		},
+		
+		
 		
 		setupMspParams: function() {
 			this.mspParamsArray.push({
@@ -477,6 +485,289 @@ define([
 				"titlePane": null,
 				"psuCheckbox": null
 			});
+		},
+		
+		setupNationalMspParamsArray: function() {
+			this.nationalMspParamsArray.push({
+				"title": "Denmark",
+				"wmsMapService": "https://kort.dma.dk/server/services/DanishMSP/MapServer/WMSServer",
+				"wmsLegendService": "https://kort.dma.dk/server/services/DanishMSP/MapServer/WMSServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=",
+				"layers": [
+					{
+						"layerTitle": "Specific transit pipelines (Er)",
+						"layerName": "4",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "Specific land reclamation projects (L)",
+						"layerName": "5",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "Specific infrastructure projects (Ib)",
+						"layerName": "8",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "Shipping corridors (S)",
+						"layerName": "2",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "Renewable energy and energy islands (Ei)",
+						"layerName": "12",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "Renewable energy (Ev)",
+						"layerName": "11",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "Protective meassures for aviation (Il)",
+						"layerName": "6",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "Oil and gas exploration and extraction (Eo)",
+						"layerName": "9",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "Nature and environmental protection areas (N)",
+						"layerName": "1",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "Natural resource extraction (R)",
+						"layerName": "10",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "Marine farming (Ah)",
+						"layerName": "15",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "General use zones (G)",
+						"layerName": "0",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "Farming of shellfish in the water column (Ao)",
+						"layerName": "14",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "Cultivation of shellfish on the seafloor (Ak)",
+						"layerName": "16",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "Compensation excavations (Ik)",
+						"layerName": "3",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "CO2 storage (Ec)",
+						"layerName": "13",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "Cable corridors for renewable energy (Ek)",
+						"layerName": "7",
+						"wmsLayer": null
+					}
+				]
+			}, {
+				"title": "Germany",
+				"wmsMapService": "https://www.geoseaportal.de/wss/service/Raumordnungsplan_AWZ/guest",
+				"wmsLegendService": "https://www.geoseaportal.de/geoserver/Raumordnungsplan_AWZ/ows?service=WMS&request=GetLegendGraphic&format=image%2Fpng&layer=",
+				"layers": [
+					{
+						"layerTitle": "Shipping",
+						"layerName": "Raumordnungsplan_AWZ:Maritime_Spatial_Plan_EEZ_2021_Shipping",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "Offshore Wind Energy",
+						"layerName": "Raumordnungsplan_AWZ:Maritime_Spatial_Plan_EEZ_2021_Offshore_wind_energy",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "Fishery",
+						"layerName": "Raumordnungsplan_AWZ:Maritime_Spatial_Plan_EEZ_2021_Fishery",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "Protecting and Enhancing the Marine Environment",
+						"layerName": "Raumordnungsplan_AWZ:Maritime_Spatial_Plan_EEZ_2021_Protecting_and_enhancing_the_marine_environment",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "Scientific Research",
+						"layerName": "Raumordnungsplan_AWZ:Maritime_Spatial_Plan_EEZ_2021_Scientific_research",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "Raw Material Extraction",
+						"layerName": "Raumordnungsplan_AWZ:Maritime_Spatial_Plan_EEZ_2021_Raw_material_extraction",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "Defence",
+						"layerName": "Raumordnungsplan_AWZ:Maritime_Spatial_Plan_EEZ_2021_Defence",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "Cables and Pipelines",
+						"layerName": "Raumordnungsplan_AWZ:Maritime_Spatial_Plan_EEZ_2021_Cables_and_pipelines",
+						"wmsLayer": null
+					}
+				]
+			}, {
+				"title": "Poland",
+				"wmsMapService": "https://mapy.umgdy.gov.pl/msp/services/POM/POM_RysunekPlanu/MapServer/WMSServer",
+				"wmsLegendService": "https://mapy.umgdy.gov.pl/msp/services/POM/POM_RysunekPlanu/MapServer/WMSServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=",
+				"layers": [
+					{
+						"layerTitle": "SeaBasins_v4",
+						"layerName": "6",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "technical infrastructure (I)",
+						"layerName": "17",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "technical infrastructure - variant (I)",
+						"layerName": "16",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "port or harbour operation (Ip)",
+						"layerName": "15",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "transport (T)",
+						"layerName": "18",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "exploration, prospection of mineral deposits and extraction of minerals from the deposits (K)",
+						"layerName": "14",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "coastal protection (C)",
+						"layerName": "13",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "fisheries (R)",
+						"layerName": "12",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "tourism, sport and recreation (S)",
+						"layerName": "11",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "cultural heritage (D)",
+						"layerName": "10",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "national defence and security (B)",
+						"layerName": "9",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "limit of a basin with a certain basic function",
+						"layerName": "8",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "limit of a sub-basin with a certain allowed function",
+						"layerName": "23",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "SeaBasinLabel",
+						"layerName": "22",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "SeaBasinAreaLabel",
+						"layerName": "20",
+						"wmsLayer": null
+					}
+				]
+			});
+			
+			this.setupNationalMspDataPane();
+		},
+		
+		setupNationalMspDataPane: function() {
+			this.nationalMspAccordion = new TitleGroup({style:"width: 380px"}, this.mspNationalDataContainer);
+			this.nationalMspAccordion.startup();
+			let pane = new TitlePane({ open: false, title: "National MSP plan WMS services", id: "nationaltp" });
+			this.nationalMspAccordion.addChild(pane);
+			
+			this.nationalMspLayersAccordion = new TitleGroup({style:"width: 350px", id: "nationaltg"}, pane);
+			this.nationalMspLayersAccordion.startup();
+			
+			
+			array.forEach(this.nationalMspParamsArray, lang.hitch(this, function(nationalMspParams) {
+				let coutryPane = new TitlePane({ open: false, title: nationalMspParams.title, id: "nationaltp"+nationalMspParams.title });
+				this.nationalMspLayersAccordion.addChild(coutryPane);
+				
+				array.forEach(nationalMspParams.layers, lang.hitch(this, function(layer) {
+					
+					let layerContainer = domConstruct.create("div", {}, coutryPane.containerNode, "first");
+					let layerCheckbox = new dijit.form.CheckBox();
+					layerCheckbox.placeAt(layerContainer, "first");
+					domConstruct.create("span", {"innerHTML": layer.layerTitle, "style": "margin-top: 5px;"}, layerContainer, "last");
+					let legendContainerDiv = domConstruct.create("div", {"style": "margin-left: 20px;"}, layerContainer, "last");
+					domConstruct.create('img', {"src": nationalMspParams.wmsLegendService + layer.layerName}, legendContainerDiv);
+					domStyle.set(legendContainerDiv, {"display": "none"});
+					
+					on(layerCheckbox, "change", lang.hitch(this, function(checked) {
+						if (checked) {
+							if (layer.wmsLayer == null) {
+								layer.wmsLayer = new ol.layer.Tile({
+									source: new ol.source.TileWMS({
+										url: nationalMspParams.wmsMapService,
+										params: {
+											LAYERS: layer.layerName
+										}
+									})
+								});
+								this.map.addLayer(layer.wmsLayer);
+								layer.wmsLayer.setVisible(true);
+								domStyle.set(legendContainerDiv, {"display": "block"});
+							}
+							else {
+								layer.wmsLayer.setVisible(true);
+								domStyle.set(legendContainerDiv, {"display": "block"});
+							}
+						}
+						else {
+							layer.wmsLayer.setVisible(false);
+							domStyle.set(legendContainerDiv, {"display": "none"});
+						}
+					}));
+					on(coutryPane, "show", lang.hitch(this, function() {
+						layerCheckbox.set("checked", true);
+					}));
+					on(coutryPane, "hide", lang.hitch(this, function() {
+						layerCheckbox.set("checked", false);
+					}));
+				}));
+			}));
 		},
 		
 		setupPane1: function() {

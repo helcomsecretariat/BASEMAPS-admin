@@ -60,6 +60,7 @@ define([
 		layersCounter: null,
 		identifyResults: [],
 		highlightLayer: null,
+		seaUseCodes: {},
 		constructor: function(params) {
 			this.map = params.map;
 			this.servicePanel = params.sp;
@@ -68,7 +69,7 @@ define([
 		},
 
 		postCreate: function() {
-			this.getLayersData();
+			this.getSeaUseCodes();
 			    	
 			// on collapse button click
 			on(this.collapseAllButton, "click", lang.hitch(this, function() {
@@ -267,6 +268,34 @@ define([
 			//popupCloser.blur();
 		},
 		
+		getSeaUseCodes: function() {
+			var serviceUrl = "sc/tools/get-data";
+			var url = "https://maps.helcom.fi/arcgis/rest/services/Basemaps/MSPoutput/MapServer/7/query?where=1%3D1&outFields=Attribute_code_for_sea_use%2C+Basemaps&returnGeometry=false&f=json";
+			var servicedata = {
+				"url": url,
+				"format": "json"
+			};
+			request.post(serviceUrl, this.utils.createPostRequestParams(servicedata)).then(
+				lang.hitch(this, function(response) {
+					if (response.type == "error") {
+						console.log("Getting Sea Use Codes failed", response);
+					}
+					else if (response.type == "success") {
+						if (response.item) {
+							array.forEach(response.item.features, lang.hitch(this, function(feature) {
+								this.seaUseCodes[feature.attributes.Attribute_code_for_sea_use] = feature.attributes.Basemaps;
+							}));
+						}
+					}
+					this.getLayersData();
+				}),
+				lang.hitch(this, function(error) {
+					alert("Something went wrong (on getSeuaUseCodes). Please contact administrator.");
+					console.log(error);
+				})
+			);
+		},
+		
 		getLayersData: function() {
 			var url = "sc/categories/tree";
 			request.get(url, {
@@ -277,6 +306,7 @@ define([
 						console.log(response);
 					}
 					else if (response.type == "success") {
+						console.log(response.item);
 						this.createTree(response.item);
 					}
 				}),
@@ -292,7 +322,9 @@ define([
 				id: layer.id.toString(),
 				parent: parentLayerId,
 				name: layer.label,
-				helcomId: layer.helcomMetadata,
+				//helcomId: layer.helcomMetadata,
+				description: layer.description,
+				tags: null,
 				type: null,
 				wms: null,
 				wfs: null,
@@ -301,6 +333,15 @@ define([
 				metadata: layer.metadata,
 				emptyCategory: false
 			};
+			
+			if ((layer.tags != null) && (layer.tags.length > 0)) {
+				let tmp = layer.tags.split(";");
+				let tags = [];
+				array.forEach(tmp, lang.hitch(this, function(tag) {
+					tags.push(this.seaUseCodes[tag]);
+				}));
+				lyr.tags = tags;
+			}
     	
 			if ((layer.wmses) && (layer.wmses[0])) {
 				lyr.wms = layer.wmses[0];
@@ -409,40 +450,36 @@ define([
 					var infoButton = null;
 					var infoLabel = null;
 					if ((tnode.item.type == "WMS") || (tnode.item.type == "WFS") || (tnode.item.type == "DOWNLOAD") || (tnode.item.type == "ARCGIS")) {
+						
+						let tTip = new Tooltip({
+							connectId: [tnode.contentNode],
+							showDelay: 10,
+							position: ["after"]
+						});
+						let tTipContent = domConstruct.create("div", {"style": "font-size: 13px;"}, tTip.domNode, "last");
 						if (tnode.item.type == "WMS") {
-							//domStyle.set(tnode.labelNode, {"color": "green"});
 							infoButton = domConstruct.create("div", { "class": "wmsGreenIcon" }, tnode.contentNode, "last");
-							infoLabel = "WMS layer";
+							domConstruct.create("div", {"innerHTML": "WMS layer", "style": "font-size: 13px; font-weight: bold;"}, tTipContent, "last");
 						}
 						else if (tnode.item.type == "WFS") {
-							//domStyle.set(tnode.labelNode, {"color": "blue"});
 							infoButton = domConstruct.create("div", { "class": "wfsBlueIcon" }, tnode.contentNode, "last");
-							infoLabel = "WFS feature type";
+							domConstruct.create("div", {"innerHTML": "WFS feature type", "style": "font-size: 13px; font-weight: bold;"}, tTipContent, "last");
 						}
 						else if (tnode.item.type == "DOWNLOAD") {
 							infoButton = domConstruct.create("div", { "class": "downloadOrangeIcon" }, tnode.contentNode, "last");
-							infoLabel = "Downloadable resource";
+							domConstruct.create("div", {"innerHTML": "Downloadable resource", "style": "font-size: 13px; font-weight: bold;"}, tTipContent, "last");
 						}
 						else if (tnode.item.type == "ARCGIS") {
 							infoButton = domConstruct.create("div", { "class": "arcgisPurpleIcon" }, tnode.contentNode, "last");
-							infoLabel = "ArcGIS REST MapServer layer";
+							domConstruct.create("div", {"innerHTML": "ArcGIS REST MapServer layer", "style": "font-size: 13px; font-weight: bold;"}, tTipContent, "last");
 						}
 						
-						if (infoButton != null) {
-							new Tooltip({
-								connectId: [infoButton],
-								showDelay: 10,
-								position: ["below"],
-								label: infoLabel
-							});
-						}
-						
-						/*on(infoButton, "click", function() {
-							console.log("infoButton", tnode.item);
-							that.servicePanel.header = tnode.item.name;
-							that.getLabelsFromRoot(tnode.item.parent);
-							that.servicePanel.setupAndShowServicePanel(tnode.item);
-						});*/
+						domConstruct.create("div", {"innerHTML": "Keywords:", "style": "font-size: 13px;"}, tTipContent, "last");
+						array.forEach(tnode.item.tags, lang.hitch(this, function(tag) {
+							domConstruct.create("div", {"innerHTML": tag, "style": "font-size: 13px; margin-left: 10px; color: #444; max-width: 300px;"}, tTipContent, "last");
+						}));
+						domConstruct.create("div", {"innerHTML": "Description:", "style": "font-size: 13px;"}, tTipContent, "last");
+						domConstruct.create("div", {"innerHTML": tnode.item.description, "style": "font-size: 13px; margin-left: 10px; color: #444; max-width: 300px;"}, tTipContent, "last");
 						
 						domConstruct.destroy(tnode.expandoNode);
 						var cb = new dijit.form.CheckBox();
@@ -549,11 +586,11 @@ define([
 						// on sublayer check box click
 						on(cb, "change", function(checked) {
 							if (checked) {
+								console.log(tnode.item);
 								if (tnode.item.type == "WMS") {
 									//console.log("checked", tnode.item);
 									if (!tnode.item.wmsMapLayer) {
 										if ((tnode.item.wms.url.length > 0) && (tnode.item.wms.name.length > 0)) {
-											console.log(tnode.item.wms);
 											tnode.item.wmsMapLayer = new ol.layer.Tile({
 												id: tnode.item.id,
 												wmsId: tnode.item.wms.id,

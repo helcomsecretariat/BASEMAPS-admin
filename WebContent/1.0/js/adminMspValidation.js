@@ -61,6 +61,7 @@ define([
 					this.utils.show("shpAreaCountrySelectGroup", "block");
 				}
 				this.utils.show("shpSeaUseValidationRules", "none");
+				this.utils.show("deleteByPlanIdValidationRules", "none");
 				/*this.utils.show("wfsAreaValidationRules", "none");
 				this.utils.show("wfsSeaUseValidationRules", "none");*/
 				this.utils.show("shpAreaValidationRules", "block");
@@ -72,9 +73,25 @@ define([
 					this.utils.show("shpSeaUseCountrySelectGroup", "block");
 				}
 				this.utils.show("shpAreaValidationRules", "none");
+				this.utils.show("deleteByPlanIdValidationRules", "none");
 				/*this.utils.show("wfsAreaValidationRules", "none");
 				this.utils.show("wfsSeaUseValidationRules", "none");*/
 				this.utils.show("shpSeaUseValidationRules", "block");
+			}));
+			
+			on(this.radioDeleteByPlanId, "click", lang.hitch(this, function() {
+				this.validation = "DELETE";
+				if (this.userRole == "ADMIN") {
+					this.utils.show("deleteByPlanIdCountrySelectGroup", "block");
+				}
+				else {
+					this.getPlanIds();
+				}
+				this.utils.show("shpAreaValidationRules", "none");
+				this.utils.show("shpSeaUseValidationRules", "none");
+				/*this.utils.show("wfsAreaValidationRules", "none");
+				this.utils.show("wfsSeaUseValidationRules", "none");*/
+				this.utils.show("deleteByPlanIdValidationRules", "block");
 			}));
 			
 			/*on(this.radioWfsArea, "click", lang.hitch(this, function() {
@@ -92,6 +109,28 @@ define([
 				this.utils.show("wfsAreaValidationRules", "none");
 				this.utils.show("wfsSeaUseValidationRules", "block");
 			}));*/
+			
+			on(this.deleteByPlanIdCountrySelect, "change", lang.hitch(this, function() {
+				this.userCountry = this.deleteByPlanIdCountrySelect.options[this.deleteByPlanIdCountrySelect.selectedIndex].value;
+				this.getPlanIds();
+			}));
+			
+			on(this.deleteByPlanIdButton, "click", lang.hitch(this, function() {
+				if (this.deleteByPlanIdPlanSelect.options.length > 0) {
+					this.planIds = this.deleteByPlanIdPlanSelect.options[this.deleteByPlanIdPlanSelect.selectedIndex].value;
+					if (confirm("Please confirm removing all MSP output data with plan ID '" + this.planIds + "' from Basemaps.") == true) {
+						this.formsObj.cleanDeleteForm();
+						this.utils.show("mspOutputForm", "block");
+						this.utils.show("deleteDataForm", "block");
+						this.utils.setTextValue("deleteDataMessage", "Removing MSP Plan Area and Sea use data with plan ID(s) " + this.planIds + ".");
+						domStyle.set(dojo.byId("loadingCover"), {"display": "block"});
+						this.deleteData();
+					}
+				}
+				else {
+					alert("Select a plan ID to delete.");
+				}
+			}));
 			
 			on(this.mspAreaFileInput, "change", lang.hitch(this, function() {
 				this.formsObj.cleanValidationForm();
@@ -168,15 +207,45 @@ define([
 				this.tmpDatasets = null;
 				this.utils.show("shpAreaValidationRules", "none");
 				this.utils.show("shpSeaUseValidationRules", "none");
+				this.utils.show("deleteByPlanIdValidationRules", "none");
 				/*this.utils.show("wfsAreaValidationRules", "none");
 				this.utils.show("wfsSeaUseValidationRules", "none");*/
 				this.utils.show("shpAreaCountrySelectGroup", "none");
 				this.utils.show("shpSeaUseCountrySelectGroup", "none");
+				this.utils.show("deleteByPlanIdCountrySelectGroup", "none");
 				this.radioShpArea.checked = false;
 				this.radioShpSeaUse.checked = false;
+				this.radioDeleteByPlanId.checked = false;
 				/*this.radioWfsArea.checked = false;
 				this.radioWfsSeaUse.checked = false;*/
 				this.backupUploadReportContainer = null;
+			}));
+		},
+		
+		getPlanIds: function() {
+			domStyle.set(dojo.byId("loadingCover"), {"display": "block"});
+			var url = "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput/MapServer/6/query?outFields=planId%2C+processStep%2C+Country&returnGeometry=false&orderByFields=planId&f=json&where=Country%3D%27" + this.userCountry + "%27";
+			fetch(url)
+			.then(lang.hitch(this, function(response) {
+				return response.text();
+			}))
+			.then(lang.hitch(this, function(text) {
+				var resp = JSON.parse(text);
+				if (resp.error) {
+					console.log(resp);
+					alert("Something went wrong when getting Plan Ids. " + resp.error.message + " Please report it to data@helcom.fi.");
+					domConstruct.create("div", {"style": "font-size: 14px; color: red; margin-left: 10px; margin-top: 5px;", "innerHTML": "Something went wrong when getting Plan Ids. " + resp.error.message + " Please report it to data@helcom.fi."}, this.backupUploadReportContainer, "last");
+					domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
+				}
+				else {
+					this.deleteByPlanIdPlanSelect.options.length = 0;
+					array.forEach(resp.features, lang.hitch(this, function(feature) {
+						this.deleteByPlanIdPlanSelect.options[this.deleteByPlanIdPlanSelect.options.length] = new Option(feature.attributes.planId + " (" + feature.attributes.processStep + ")", feature.attributes.planId);
+					}));
+					this.utils.show("deleteByPlanIdPlanSelectGroup", "block");
+					console.log(resp);
+					domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
+				}
 			}));
 		},
 		
@@ -245,7 +314,7 @@ define([
 				body: formData
 			};
 			
-			fetch("https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput_tools/GPServer/uploads/upload", options)
+			fetch("https://maps.helcom.fi/arcgis/rest/services/PBS126/tools/GPServer/uploads/upload", options)
 				.then(lang.hitch(this, function(response) {
 					return response.text();
 				}))
@@ -276,7 +345,7 @@ define([
 				this.userCountry = this.shpAreaCountrySelect.options[this.shpAreaCountrySelect.selectedIndex].value;
 			}
 			
-			var url = "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput_tools/GPServer/Validate%20Shapefile%20Area/execute?Country=" + this.userCountry + "&Name=" + this.userName + "&Shapefile_ZIP=%7B%22itemID%22%3A%22" + itemId + "%22%7D&f=pjson";
+			var url = "https://maps.helcom.fi/arcgis/rest/services/PBS126/tools/GPServer/validateArea/execute?Country=" + this.userCountry + "&Name=" + this.userName + "&Shapefile_ZIP=%7B%22itemID%22%3A%22" + itemId + "%22%7D&f=pjson";
 			fetch(url)
 			.then(lang.hitch(this, function(response) {
 				return response.text();
@@ -320,7 +389,7 @@ define([
 				this.userCountry = this.shpSeaUseCountrySelect.options[this.shpSeaUseCountrySelect.selectedIndex].value;
 			}
 			
-			var url = "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput_tools/GPServer/Validate%20Shapefile/execute?Country=" + this.userCountry + "&Name=" + this.userName + "&ShapefileZIP=%7B%22itemID%22%3A%22" + itemId + "%22%7D&f=pjson";
+			var url = "https://maps.helcom.fi/arcgis/rest/services/PBS126/tools/GPServer/validateSeaUse/execute?Country=" + this.userCountry + "&Name=" + this.userName + "&ShapefileZIP=%7B%22itemID%22%3A%22" + itemId + "%22%7D&f=pjson";
 			fetch(url)
 			.then(lang.hitch(this, function(response) {
 				return response.text();
@@ -338,7 +407,8 @@ define([
 						var datasetReport = null;
 						var generalReport = null;
 						if (resp.results[0].paramName == "DatasetReport") {
-							datasetReport = JSON.parse(resp.results[0].value[0]);
+							//datasetReport = JSON.parse(resp.results[0].value[0]);
+							datasetReport = resp.results[0].value;
 						}
 						if (resp.results[1].paramName == "GeneralReport") {
 							generalReport = resp.results[1].value;
@@ -435,6 +505,7 @@ define([
 					domConstruct.create("div", {"style": "font-size: 14px; color: green;", "innerHTML": infoMessage}, container, "last");
 				}));
 			}
+			console.log(datasetReport);
 			if (datasetReport.length > 0) {
 				array.forEach(datasetReport, lang.hitch(this, function(dataset) {
 					domConstruct.create("div", {"style": "font-size: 16px; font-weight: bold; margin-top: 10px;", "innerHTML": dataset.dataset}, container, "last");
@@ -472,7 +543,7 @@ define([
 		},
 		
 		backupFileArea: function() {
-			var url = "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput_tools/GPServer/Backup%20data%20Area/execute?Country=" + this.userCountry + "&Name=" + this.userName + "&PlanIds=" + this.planIds + "&f=pjson";
+			var url = "https://maps.helcom.fi/arcgis/rest/services/PBS126/tools/GPServer/backupArea/execute?Country=" + this.userCountry + "&Name=" + this.userName + "&PlanIds=" + this.planIds + "&f=pjson";
 			fetch(url)
 			.then(lang.hitch(this, function(response) {
 				return response.text();
@@ -514,7 +585,7 @@ define([
 		},
 		
 		backupFileSeaUse: function() {
-			var url = "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput_tools/GPServer/Backup%20data/execute?Country=" + this.userCountry + "&Name=" + this.userName + "&PlanIds=" + this.planIds + "&f=pjson";
+			var url = "https://maps.helcom.fi/arcgis/rest/services/PBS126/tools/GPServer/backupSeaUse/execute?Country=" + this.userCountry + "&Name=" + this.userName + "&PlanIds=" + this.planIds + "&f=pjson";
 			fetch(url)
 			.then(lang.hitch(this, function(response) {
 				return response.text();
@@ -574,7 +645,7 @@ define([
 		},
 		
 		uploadFileArea: function() {
-			var url = "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput_tools/GPServer/Upload%20Data%20Area/execute?Country=" + this.userCountry + "&Name=" + this.userName + "&Input_data=" + this.tmpDatasets + "&f=pjson";
+			var url = "https://maps.helcom.fi/arcgis/rest/services/PBS126/tools/GPServer/uploadArea/execute?Country=" + this.userCountry + "&Name=" + this.userName + "&Input_data=" + this.tmpDatasets + "&f=pjson";
 			fetch(url)
 			.then(lang.hitch(this, function(response) {
 				return response.text();
@@ -605,7 +676,7 @@ define([
 		},
 		
 		uploadFileSeaUse: function() {
-			var url = "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput_tools/GPServer/Upload%20Data/execute?Country=" + this.userCountry + "&Name=" + this.userName + "&Input_data=" + this.tmpDatasets + "&f=pjson";
+			var url = "https://maps.helcom.fi/arcgis/rest/services/PBS126/tools/GPServer/uploadSeaUse/execute?Country=" + this.userCountry + "&Name=" + this.userName + "&Input_data=" + this.tmpDatasets + "&f=pjson";
 			fetch(url)
 			.then(lang.hitch(this, function(response) {
 				return response.text();
@@ -650,6 +721,56 @@ define([
 					domConstruct.create("div", {"style": "font-size: 14px; color: green; margin-left: 10px;", "innerHTML": infoMessage}, this.backupUploadReportContainer, "last");
 				}));
 			}
-		}
+		},
+		
+		deleteData: function() {
+			let url = "https://maps.helcom.fi/arcgis/rest/services/PBS126/tools/GPServer/deleteData/execute?Country=" + this.userCountry + "&Name=" + this.userName + "&PlanIds=" + this.planIds + "&f=pjson";
+			fetch(url)
+			.then(lang.hitch(this, function(response) {
+				return response.text();
+			}))
+			.then(lang.hitch(this, function(text) {
+				let resp = JSON.parse(text);
+				if (resp.error) {
+					domConstruct.create("div", {"style": "font-size: 14px; color: red; margin-left: 10px; margin-top: 5px;", "innerHTML": "Something went wrong when deleting data. " + resp.error.message + " Please report it to data@helcom.fi."}, this.backupUploadReportContainer, "last");
+					domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
+				}
+				else {
+					if (resp.results) {
+						console.log(resp.results);
+						let generalReport = null;
+						if (resp.results[1].paramName == "GeneralReport") {
+							generalReport = resp.results[1].value;
+						}
+						if (generalReport != null) {
+							this.utils.show("deleteReportSection", "block");
+							this.displayDeleteReport(generalReport);
+						}
+						else {
+							domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
+						}
+					}
+					domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
+				}
+			}));
+		},
+		
+		displayDeleteReport: function(generalReport) {
+			this.backupUploadReportContainer = domConstruct.create("div", {}, this.formsObj.deleteSection, "last");
+			if (generalReport.error) {
+				domConstruct.create("div", {"style": "font-size: 14px; color: red; margin-left: 10px; margin-top: 5px;", "innerHTML": generalReport.errorMessage + "."}, this.backupUploadReportContainer, "last");
+				domConstruct.create("div", {"style": "font-size: 12px;  margin-left: 10px; margin-top: 0px;", "innerHTML": "Error occured, please report it to data@helcom.fi."}, this.backupUploadReportContainer, "last");
+			}
+			if (generalReport.warnings.length > 0) {
+				array.forEach(generalReport.warnings, lang.hitch(this, function(warning) {
+					domConstruct.create("div", {"style": "font-size: 14px; color: blue; margin-left: 10px;", "innerHTML": "Warning: " + warning}, this.backupUploadReportContainer, "last");
+				}));
+			}
+			if (generalReport.infoMessages.length > 0) {
+				array.forEach(generalReport.infoMessages, lang.hitch(this, function(infoMessage) {
+					domConstruct.create("div", {"style": "font-size: 14px; color: green; margin-left: 10px;", "innerHTML": infoMessage}, this.backupUploadReportContainer, "last");
+				}));
+			}
+		},
 	});
 });
