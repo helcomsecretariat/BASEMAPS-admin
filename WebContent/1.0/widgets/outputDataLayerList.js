@@ -580,6 +580,32 @@ define([
 					}
 				]
 			}, {
+				"title": "Finland",
+				"wmsMapService": "https://paikkatieto.kymenlaakso.fi/server/services/Merialuesuunnittelu/MSP_Suomi_2030/MapServer/WMSServer",
+				"wmsLegendService": "https://paikkatieto.kymenlaakso.fi/server/services/Merialuesuunnittelu/MSP_Suomi_2030/MapServer/WMSServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=",
+				"layers": [
+					{
+						"layerTitle": "msp_zone",
+						"layerName": "msp_vyohyke",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "msp_area",
+						"layerName": "msp_alue",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "msp_line",
+						"layerName": "msp_viiva",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "msp_border",
+						"layerName": "msp_raja",
+						"wmsLayer": null
+					}
+				]
+			}, {
 				"title": "Germany",
 				"wmsMapService": "https://www.geoseaportal.de/wss/service/Raumordnungsplan_AWZ/guest",
 				"wmsLegendService": "https://www.geoseaportal.de/geoserver/Raumordnungsplan_AWZ/ows?service=WMS&request=GetLegendGraphic&format=image%2Fpng&layer=",
