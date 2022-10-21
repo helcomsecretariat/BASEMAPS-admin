@@ -732,6 +732,77 @@ define([
 						"wmsLayer": null
 					}
 				]
+			}, {
+				"title": "Sweden",
+				"wmsMapService": "https://geodata.havochvatten.se/geoservices/havsplaner-2022/ows",
+				"wmsLegendService": "https://geodata.havochvatten.se/geoservices/havsplaner-2022/ows?service=WMS&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=",
+				"layers": [
+					{
+						"layerTitle": "Traffic flows outside MSP",
+						"layerName": "havsplaner-2022:bg-sjofartutanforhavsplan",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "Electricity transfer outside MSP",
+						"layerName": "havsplaner-2022:bg-eloverforingutanforhavsplan",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "Sea use Shipping and investigation area for shipping",
+						"layerName": "havsplaner-2022:anv-sjofart",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "Particular consideration to high cultural values",
+						"layerName": "havsplaner-2022:hansyn-kulturmiljo",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "Sea use Sand extraction and investigation area for sand extraction",
+						"layerName": "havsplaner-2022:anv-sandutvinning",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "Sea use Recreation",
+						"layerName": "havsplaner-2022:anv-rekreation",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "Sea use Commercial fishing",
+						"layerName": "havsplaner-2022:anv-yrkesfiske",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "Sea use Electricity transfer",
+						"layerName": "havsplaner-2022:anv-eloverforing",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "Areas with ID-labels, containing sea uses delimited by orange edges",
+						"layerName": "havsplaner-2022:omraden",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "small scale labels (sea use and ID)",
+						"layerName": "havsplaner-2022:etiketter-utzoomad",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "large scale labels (sea use and ID)",
+						"layerName": "havsplaner-2022:etiketter-inzoomad",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "Sea areas (MSP sub-regions)",
+						"layerName": "havsplaner-2022:havsomraden",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "MSP areas",
+						"layerName": "havsplaner-2022:havsplaneomraden",
+						"wmsLayer": null
+					}
+				]
 			});
 			
 			this.setupNationalMspDataPane();
