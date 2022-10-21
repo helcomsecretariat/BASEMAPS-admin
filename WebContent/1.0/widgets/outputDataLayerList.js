@@ -581,27 +581,27 @@ define([
 				]
 			}, {
 				"title": "Finland",
-				"wmsMapService": "https://paikkatieto.kymenlaakso.fi/server/services/Merialuesuunnittelu/MSP_Suomi_2030/MapServer/WMSServer",
-				"wmsLegendService": "https://paikkatieto.kymenlaakso.fi/server/services/Merialuesuunnittelu/MSP_Suomi_2030/MapServer/WMSServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=",
+				"wmsMapService": "https://paikkatieto.kymenlaakso.fi/server/services/Merialuesuunnittelu/MSP_for_Finland_2030/MapServer/WMSServer",
+				"wmsLegendService": "https://paikkatieto.kymenlaakso.fi/server/services/Merialuesuunnittelu/MSP_for_Finland_2030/MapServer/WMSServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=",
 				"layers": [
 					{
-						"layerTitle": "msp_zone",
-						"layerName": "msp_vyohyke",
+						"layerTitle": "Marine area zones",
+						"layerName": "0",
 						"wmsLayer": null
 					},
 					{
-						"layerTitle": "msp_area",
-						"layerName": "msp_alue",
+						"layerTitle": "Significant and potential areas",
+						"layerName": "1",
 						"wmsLayer": null
 					},
 					{
-						"layerTitle": "msp_line",
-						"layerName": "msp_viiva",
+						"layerTitle": "Connections and connection needs",
+						"layerName": "2",
 						"wmsLayer": null
 					},
 					{
-						"layerTitle": "msp_border",
-						"layerName": "msp_raja",
+						"layerTitle": "MSP borders",
+						"layerName": "3",
 						"wmsLayer": null
 					}
 				]
