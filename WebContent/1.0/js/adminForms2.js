@@ -77,6 +77,7 @@ define([
 		seaUseCodesMultiSelector: null,
 		
 		constructor: function(params) {
+			//comment
 			this.utils = new utils();
 			this.getSeaUseCodes();
 		},
@@ -889,7 +890,6 @@ define([
 				onChange: lang.hitch(this, function() {
 					let vals = this.seaUseCodesMultiSelector.get("value").join("; ");
 					messageNode.innerHTML = "Selected: " + vals;
-					console.log();
 				})
 			}, sel);
 			this.seaUseCodesMultiSelector.placeAt(selectNode);
@@ -974,7 +974,7 @@ define([
 				"url": wmsUrl
 			};
 			request.post(url, this.utils.createPostRequestParams(data)).then(
-				lang.hitch(this, function(response){
+				lang.hitch(this, function(response) {
 					this.utils.show("saveWms", "inline");
 					if (response.type == "error") {
 						this.wmsValidationPassed = false;
@@ -985,7 +985,7 @@ define([
 						this.wmsValidationPassed = true;
 						this.showMessage("WMS is valid.");
 						this.utils.show("wmsLayerNameSelectGroup", "block");
-						
+						console.log(response);
 						//this.utils.setInputValue("wmsLabelInput", response.item.organization);
 						
 						var layerNames = [];
@@ -998,7 +998,7 @@ define([
 					//this.utils.show("wmsLabelForm", "block");
 					//this.action = null;
 				}),
-				lang.hitch(this, function(error){
+				lang.hitch(this, function(error) {
 					this.action = null;
 					this.showMessage("Something went wrong (on wms/verify). Please contact administrator.");
 				})
