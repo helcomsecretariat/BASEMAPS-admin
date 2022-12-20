@@ -201,7 +201,7 @@ public class WMSManager extends ServiceManager<WMS, WMSDAO>
 			if (!cache.contains(url))
 			{
 				Map<String, WMSLayer> map = new HashMap<>();
-				WebMapServer ws = new WebMapServer(url);
+				WebMapServer ws = new WebMapServer(url, null);
 				if (ws.hasSpecification())
 				{
 					for (Layer l : ws.getNamedLayers())

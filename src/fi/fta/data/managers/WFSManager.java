@@ -184,7 +184,7 @@ public class WFSManager extends ServiceManager<WFS, WFSDAO>
 			if (!cache.contains(url))
 			{
 				Map<String, WFSFeatures> map = new HashMap<>();
-				WebFeatureServer ws = new WebFeatureServer(url);
+				WebFeatureServer ws = new WebFeatureServer(url, null);
 				if (ws.hasSpecification())
 				{
 					for (FeatureType ft : ws.getNamedFeatureTypes())
