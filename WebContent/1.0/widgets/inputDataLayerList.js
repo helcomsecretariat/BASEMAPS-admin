@@ -69,7 +69,8 @@ define([
 		},
 
 		postCreate: function() {
-			this.getSeaUseCodes();
+			//this.getSeaUseCodes();
+			this.getLayersData();
 			    	
 			// on collapse button click
 			on(this.collapseAllButton, "click", lang.hitch(this, function() {
@@ -269,13 +270,13 @@ define([
 		},
 		
 		getSeaUseCodes: function() {
-			console.log("get codes");
 			var serviceUrl = "sc/tools/get-data";
 			var url = "https://maps.helcom.fi/arcgis/rest/services/Basemaps/MSPoutput/MapServer/7/query?where=1%3D1&outFields=Attribute_code_for_sea_use%2C+Basemaps&returnGeometry=false&f=json";
 			var servicedata = {
 				"url": url,
 				"format": "json"
 			};
+			console.log(servicedata);
 			request.post(serviceUrl, this.utils.createPostRequestParams(servicedata)).then(
 				lang.hitch(this, function(response) {
 					if (response.type == "error") {
@@ -287,7 +288,6 @@ define([
 								this.seaUseCodes[feature.attributes.Attribute_code_for_sea_use] = feature.attributes.Basemaps;
 							}));
 						}
-						console.log("got codes success");
 					}
 					this.getLayersData();
 				}),
@@ -336,14 +336,14 @@ define([
 				emptyCategory: false
 			};
 			
-			if ((layer.tags != null) && (layer.tags.length > 0)) {
+			/*if ((layer.tags != null) && (layer.tags.length > 0)) {
 				let tmp = layer.tags.split(";");
 				let tags = [];
 				array.forEach(tmp, lang.hitch(this, function(tag) {
 					tags.push(this.seaUseCodes[tag]);
 				}));
 				lyr.tags = tags;
-			}
+			}*/
     	
 			if ((layer.wmses) && (layer.wmses[0])) {
 				lyr.wms = layer.wmses[0];
@@ -476,10 +476,10 @@ define([
 							domConstruct.create("div", {"innerHTML": "ArcGIS REST MapServer layer", "style": "font-size: 13px; font-weight: bold;"}, tTipContent, "last");
 						}
 						
-						domConstruct.create("div", {"innerHTML": "Keywords:", "style": "font-size: 13px;"}, tTipContent, "last");
+						/*domConstruct.create("div", {"innerHTML": "Keywords:", "style": "font-size: 13px;"}, tTipContent, "last");
 						array.forEach(tnode.item.tags, lang.hitch(this, function(tag) {
 							domConstruct.create("div", {"innerHTML": tag, "style": "font-size: 13px; margin-left: 10px; color: #444; max-width: 300px;"}, tTipContent, "last");
-						}));
+						}));*/
 						domConstruct.create("div", {"innerHTML": "Description:", "style": "font-size: 13px;"}, tTipContent, "last");
 						domConstruct.create("div", {"innerHTML": tnode.item.description, "style": "font-size: 13px; margin-left: 10px; color: #444; max-width: 300px;"}, tTipContent, "last");
 						
@@ -516,7 +516,6 @@ define([
 								"url": tnode.item.arcgis.url.substring(0, lastSlashIndex) + "/legend?f=pjson",
 								"format": "json"
 							};
-							console.log("get arcgis legend node", servicedata);
 							request.post(serviceUrl, that.utils.createPostRequestParams(servicedata)).then(
 								lang.hitch(that, function(response) {
 									if (response.type == "error") {
@@ -524,7 +523,6 @@ define([
 										domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
 									}
 									else if (response.type == "success") {
-										console.log("got arcgis legend node success");
 										if (response.item) {
 											var legendInfo = response.item.layers.find(layer => {
 												return layer.layerId == layerNr
