@@ -269,6 +269,7 @@ define([
 		},
 		
 		getSeaUseCodes: function() {
+			console.log("get codes");
 			var serviceUrl = "sc/tools/get-data";
 			var url = "https://maps.helcom.fi/arcgis/rest/services/Basemaps/MSPoutput/MapServer/7/query?where=1%3D1&outFields=Attribute_code_for_sea_use%2C+Basemaps&returnGeometry=false&f=json";
 			var servicedata = {
@@ -286,6 +287,7 @@ define([
 								this.seaUseCodes[feature.attributes.Attribute_code_for_sea_use] = feature.attributes.Basemaps;
 							}));
 						}
+						console.log("got codes success");
 					}
 					this.getLayersData();
 				}),
@@ -514,6 +516,7 @@ define([
 								"url": tnode.item.arcgis.url.substring(0, lastSlashIndex) + "/legend?f=pjson",
 								"format": "json"
 							};
+							console.log("get arcgis legend node", servicedata);
 							request.post(serviceUrl, that.utils.createPostRequestParams(servicedata)).then(
 								lang.hitch(that, function(response) {
 									if (response.type == "error") {
@@ -521,6 +524,7 @@ define([
 										domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
 									}
 									else if (response.type == "success") {
+										console.log("got arcgis legend node success");
 										if (response.item) {
 											var legendInfo = response.item.layers.find(layer => {
 												return layer.layerId == layerNr
