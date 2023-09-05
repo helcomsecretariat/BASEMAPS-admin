@@ -57,7 +57,7 @@ define([
 			});
 			
 			//var backgroundUrlJson = "https://maps.helcom.fi/arcgis/rest/services/MADS/Basemap_TOPO/MapServer?f=pjson";
-			var backgroundUrlJson = "//maps.helcom.fi/arcgis/rest/services/MADS/Basemap_TOPO/MapServer?f=pjson";
+			var backgroundUrlJson = "https://maps.helcom.fi/arcgis/rest/services/MADS/Basemap_TOPO/MapServer?f=pjson";
 			fetch(backgroundUrlJson)
 				.then(lang.hitch(this, function(response) {
 					return response.text();
@@ -77,7 +77,7 @@ define([
 							title: "Basemap TOPO",
 							source: new ol.source.TileArcGISRest({
 								//url: "https://maps.helcom.fi/arcgis/rest/services/MADS/Basemap_TOPO/MapServer"
-								url: "//maps.helcom.fi/arcgis/rest/services/MADS/Basemap_TOPO/MapServer"
+								url: "https://maps.helcom.fi/arcgis/rest/services/MADS/Basemap_TOPO/MapServer"
 							})
 						});
 						this.map.addLayer(bgrLayer);
