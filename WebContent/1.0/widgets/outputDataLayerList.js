@@ -1038,11 +1038,11 @@ define([
 				}
 			}));
 			
-			/*array.forEach(this.mspParamsArray, lang.hitch(this, function(mspParams, i) {
+			array.forEach(this.mspParamsArray, lang.hitch(this, function(mspParams, i) {
 				if ((mspParams.filterUrl != null) && (mspParams.useType != null)) {
 					this.getDistinctMspCodes(i);
 				}
-			}));*/
+			}));
 						
 			on(this.mspViewAccordionPanes.tp3, "show", lang.hitch(this, function() {
 				this.layerListMode = "OUTPUT_FILTER";

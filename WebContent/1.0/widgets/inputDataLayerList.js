@@ -69,9 +69,8 @@ define([
 		},
 
 		postCreate: function() {
-			//this.getSeaUseCodes();
-			this.getLayersData();
-			    	
+			this.getSeaUseCodes();
+						    	
 			// on collapse button click
 			on(this.collapseAllButton, "click", lang.hitch(this, function() {
 				this.tree.collapseAll();
@@ -336,14 +335,14 @@ define([
 				emptyCategory: false
 			};
 			
-			/*if ((layer.tags != null) && (layer.tags.length > 0)) {
+			if ((layer.tags != null) && (layer.tags.length > 0)) {
 				let tmp = layer.tags.split(";");
 				let tags = [];
 				array.forEach(tmp, lang.hitch(this, function(tag) {
 					tags.push(this.seaUseCodes[tag]);
 				}));
 				lyr.tags = tags;
-			}*/
+			}
     	
 			if ((layer.wmses) && (layer.wmses[0])) {
 				lyr.wms = layer.wmses[0];
@@ -476,10 +475,10 @@ define([
 							domConstruct.create("div", {"innerHTML": "ArcGIS REST MapServer layer", "style": "font-size: 13px; font-weight: bold;"}, tTipContent, "last");
 						}
 						
-						/*domConstruct.create("div", {"innerHTML": "Keywords:", "style": "font-size: 13px;"}, tTipContent, "last");
+						domConstruct.create("div", {"innerHTML": "Keywords:", "style": "font-size: 13px;"}, tTipContent, "last");
 						array.forEach(tnode.item.tags, lang.hitch(this, function(tag) {
 							domConstruct.create("div", {"innerHTML": tag, "style": "font-size: 13px; margin-left: 10px; color: #444; max-width: 300px;"}, tTipContent, "last");
-						}));*/
+						}));
 						domConstruct.create("div", {"innerHTML": "Description:", "style": "font-size: 13px;"}, tTipContent, "last");
 						domConstruct.create("div", {"innerHTML": tnode.item.description, "style": "font-size: 13px; margin-left: 10px; color: #444; max-width: 300px;"}, tTipContent, "last");
 						
