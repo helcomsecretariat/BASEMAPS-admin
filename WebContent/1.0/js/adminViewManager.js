@@ -61,7 +61,7 @@ define([
 		},
 		
 		postCreate: function() {
-			this.adminForms = new adminForms().placeAt(this.adminFormsSection);
+			this.adminForms = new adminForms({role: this.userRole, country: this.userCountry}).placeAt(this.adminFormsSection);
 			this.adminLayerList = new adminLayerList({forms: this.adminForms, role: this.userRole, rights: this.userRights, country: this.userCountry}).placeAt(this.adminLayerListSection);
 		},
     

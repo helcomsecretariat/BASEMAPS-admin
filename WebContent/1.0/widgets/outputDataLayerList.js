@@ -579,7 +579,7 @@ define([
 						"wmsLayer": null
 					}
 				]
-			}, {
+			}, /*{
 				"title": "Finland",
 				"wmsMapService": "https://paikkatieto.kymenlaakso.fi/server/services/Merialuesuunnittelu/MSP_for_Finland_2030/MapServer/WMSServer",
 				"wmsLegendService": "https://paikkatieto.kymenlaakso.fi/server/services/Merialuesuunnittelu/MSP_for_Finland_2030/MapServer/WMSServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=",
@@ -605,7 +605,33 @@ define([
 						"wmsLayer": null
 					}
 				]
-			}, {
+			},*/ {
+				"title": "Finland",
+				"wmsMapService": "https://kymenlaakso-geoserver.gispocoding.fi/geoserver/merialuesuunnitelma/ows",
+				"wmsLegendService": "https://kymenlaakso-geoserver.gispocoding.fi/geoserver/merialuesuunnitelma/ows?service=WMS&request=GetLegendGraphic&format=image%2Fpng&layer=",
+				"layers": [
+					{
+						"layerTitle": "Marine area zones",
+						"layerName": "msp_vyohyke_en",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "Significant and potential areas identified in the Maritime Spatial Planning Process",
+						"layerName": "msp_alue_en",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "Connections and connection needs identified in the Maritime Spatial Planning Process",
+						"layerName": "msp_viiva_en",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "Maritime spatial planning borders",
+						"layerName": "msp_raja_en",
+						"wmsLayer": null
+					}
+				]
+			},{
 				"title": "Germany",
 				"wmsMapService": "https://www.geoseaportal.de/wss/service/Raumordnungsplan_AWZ/guest",
 				"wmsLegendService": "https://www.geoseaportal.de/geoserver/Raumordnungsplan_AWZ/ows?service=WMS&request=GetLegendGraphic&format=image%2Fpng&layer=",
@@ -651,7 +677,7 @@ define([
 						"wmsLayer": null
 					}
 				]
-			}, {
+			}, /*{
 				"title": "Poland",
 				"wmsMapService": "https://mapy.umgdy.gov.pl/msp/services/POM/POM_RysunekPlanu/MapServer/WMSServer",
 				"wmsLegendService": "https://mapy.umgdy.gov.pl/msp/services/POM/POM_RysunekPlanu/MapServer/WMSServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=",
@@ -729,6 +755,28 @@ define([
 					{
 						"layerTitle": "SeaBasinAreaLabel",
 						"layerName": "20",
+						"wmsLayer": null
+					}
+				]
+			},*/ 
+			{
+				"title": "Poland",
+				"wmsMapService": "https://sipam.gov.pl/geoserver/SIPAM/wms",
+				"wmsLegendService": "https://sipam.gov.pl/geoserver/SIPAM/ows?service=WMS&request=GetLegendGraphic&format=image/png&layer=",
+				"layers": [
+					{
+						"layerTitle": "basins",
+						"layerName": "pom_akwen",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "sub-basins",
+						"layerName": "pom_obszarakwenu",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "sub-basins countours",
+						"layerName": "pom_podakweny granice",
 						"wmsLayer": null
 					}
 				]

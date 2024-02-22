@@ -275,7 +275,6 @@ define([
 				"url": url,
 				"format": "json"
 			};
-			console.log(servicedata);
 			request.post(serviceUrl, this.utils.createPostRequestParams(servicedata)).then(
 				lang.hitch(this, function(response) {
 					if (response.type == "error") {
@@ -307,7 +306,6 @@ define([
 						console.log(response);
 					}
 					else if (response.type == "success") {
-						console.log(response.item);
 						this.createTree(response.item);
 					}
 				}),

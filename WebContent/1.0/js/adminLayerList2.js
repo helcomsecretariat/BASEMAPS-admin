@@ -74,6 +74,18 @@ define([
 		uwfs: [],
 		fwms: [],
 		fwfs: [],
+		countries: {
+			"DK": "Denmark",
+			"EE": "Estonia",
+			"FI": "Finland",
+			"DE": "Germany",
+			"LV": "Latvia",
+			"LT": "Lithuania",
+			"PL": "Poland",
+			"RU": "Russia",
+			"SE": "Sweden"
+		},
+		countriesToInclude: [],
 		constructor: function(params) {
 			this.formsObj = params.forms;
 			this.userRole = params.role;
@@ -209,6 +221,10 @@ define([
 		},*/
 	
 		postCreate: function() {
+			
+			if (this.userRole == "PROVIDER") {
+				this.setUserCountries();	
+			}
 			
 			this.getLayersData();
 			
@@ -460,6 +476,14 @@ define([
 				}
 			}));
 			/* --- MANAGE CATEGORY SAVE BUTTONS END --- */
+		},
+		
+		setUserCountries: function() {
+			for (const key in this.countries) {
+  				if ((this.countries.hasOwnProperty(key)) && (key != this.userCountry)) {
+    				this.countriesToInclude.push(this.countries[key]);
+  				}
+			}
 		},
     
 		getTreePath: function(id) {
@@ -850,12 +874,24 @@ define([
 		},*/
 
 		createDataRecord: function(record) {
-			this.data.push(record);
-			if (record.type == "CATEGORY") {
-				//this.dataFiltering.push(lyr);
-				array.forEach(record.layers, lang.hitch(this, function(layer) {
-					this.createDataRecord(layer);
-				}));
+			if (this.userRole == "ADMIN") {
+				this.data.push(record);
+				if (record.type == "CATEGORY") {
+					array.forEach(record.layers, lang.hitch(this, function(layer) {
+						this.createDataRecord(layer);
+					}));
+				}
+			}
+			else if (this.userRole == "PROVIDER") {
+				if (!this.countriesToInclude.includes(record.name)) {
+					this.data.push(record);
+					if (record.type == "CATEGORY") {
+						array.forEach(record.layers, lang.hitch(this, function(layer) {
+							this.createDataRecord(layer);
+						}));
+					}
+				}
+				
 			}
 		},
 		
@@ -864,8 +900,9 @@ define([
 			if (this.userRole == "ADMIN") {
 				editMode = true;
 			}*/
-			
-			array.forEach(input, lang.hitch(this, function(record){
+			console.log(this.userRole);
+			console.log(this.userCountry);
+			array.forEach(input, lang.hitch(this, function(record) {
 				this.createDataRecord(record);
 				
 				/*if (record.position === input.length) {

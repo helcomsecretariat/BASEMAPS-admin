@@ -50,6 +50,8 @@ define([
 		currentCategoryArcgises: [],
 		currentCategoryCategories: [],
 		editMode: false,
+		userRole: null,
+		userCountry: null,
 		categoryUserSelector: null,
 		countryLabels: ["Helcom", "Denmark", "Estonia", "Finland", "Germany", "Latvia", "Lithuania", "Poland", "Russia", "Sweden"],
 		countryCodesLabels: {"DK": "Denmark", "EE": "Estonia", "FI": "Finland", "DE": "Germany", "LV": "Latvia", "LT": "Lithuania", "PL": "Poland", "RU": "Russia", "SE": "Sweden", "HE": "Helcom"},
@@ -77,7 +79,8 @@ define([
 		seaUseCodesMultiSelector: null,
 		
 		constructor: function(params) {
-			//comment
+			this.userRole = params.role;
+			this.userCountry = params.country;
 			this.utils = new utils();
 			this.getSeaUseCodes();
 		},
@@ -2569,10 +2572,13 @@ define([
 					domConstruct.create("div", { "innerHTML": this.summaryLabel, "class": "formSectionLabel" }, this.summaryReport, "last");
 					this.summaryLabel = null;
 				}
-				var container = domConstruct.create("div", { "class": "inputLabelGroup"}, this.summaryReport, "last");
-				var sum = item.counts.wmses + item.counts.wfses + item.counts.arcgises + item.counts.downloadables;
-				domConstruct.create("span", { "innerHTML": item.label + " (" + sum + ")", "class": "textInputLabel"}, container, "last");
-				domConstruct.create("span", { "innerHTML": "WMS: " + item.counts.wmses + ", WFS: " + item.counts.wfses + ", ARCGIS MAPSERVER: " + item.counts.arcgises + ", DOWNLOADABLE: " + item.counts.downloadables, "class": "textLabel"}, container, "last");
+				if ((this.userRole == "PROVIDER") && (this.countryCodesLabels[this.userCountry] == item.label) || (this.userRole == "ADMIN")) {
+					var container = domConstruct.create("div", { "class": "inputLabelGroup"}, this.summaryReport, "last");
+					var sum = item.counts.wmses + item.counts.wfses + item.counts.arcgises + item.counts.downloadables;
+					console.log(item.label, this.userCountry);
+					domConstruct.create("span", { "innerHTML": item.label + " (" + sum + ")", "class": "textInputLabel"}, container, "last");
+					domConstruct.create("span", { "innerHTML": "WMS: " + item.counts.wmses + ", WFS: " + item.counts.wfses + ", ARCGIS MAPSERVER: " + item.counts.arcgises + ", DOWNLOADABLE: " + item.counts.downloadables, "class": "textLabel"}, container, "last");
+				}
 			}
 		},
 		
