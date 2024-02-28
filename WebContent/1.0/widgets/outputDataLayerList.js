@@ -490,92 +490,112 @@ define([
 		setupNationalMspParamsArray: function() {
 			this.nationalMspParamsArray.push({
 				"title": "Denmark",
-				"wmsMapService": "https://kort.dma.dk/server/services/DanishMSP/MapServer/WMSServer",
-				"wmsLegendService": "https://kort.dma.dk/server/services/DanishMSP/MapServer/WMSServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=",
+				"wmsMapService": "https://kort.dma.dk/server/services/Havplanudkast_nov23/MapServer/WMSServer",
+				"wmsLegendService": "https://kort.dma.dk/server/services/Havplanudkast_nov23/MapServer/WMSServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=",
 				"layers": [
 					{
-						"layerTitle": "Specific transit pipelines (Er)",
-						"layerName": "4",
+						"layerTitle": "General use",
+						"layerName": "Generel_anvendelse64838",
 						"wmsLayer": null
 					},
 					{
-						"layerTitle": "Specific land reclamation projects (L)",
-						"layerName": "5",
+						"layerTitle": "Shipping corridors",
+						"layerName": "S_Sejladskorridorer",
 						"wmsLayer": null
 					},
 					{
-						"layerTitle": "Specific infrastructure projects (Ib)",
-						"layerName": "8",
+						"layerTitle": "Specific land reclamation projects",
+						"layerName": "L_Konkrete_landindvindingsprojekter10049",
 						"wmsLayer": null
 					},
 					{
-						"layerTitle": "Shipping corridors (S)",
-						"layerName": "2",
+						"layerTitle": "Compensation excavations",
+						"layerName": "Ik_Kompensationsafgravninger",
 						"wmsLayer": null
 					},
 					{
-						"layerTitle": "Renewable energy and energy islands (Ei)",
-						"layerName": "12",
+						"layerTitle": "Specific transit pipelines",
+						"layerName": "Er_Konkrete_transitroerledninger3243",
 						"wmsLayer": null
 					},
 					{
-						"layerTitle": "Renewable energy (Ev)",
-						"layerName": "11",
+						"layerTitle": "Approach plans for aviation",
+						"layerName": "Ii_Indflyvningsplaner_for_luftfart57292",
 						"wmsLayer": null
 					},
 					{
-						"layerTitle": "Protective meassures for aviation (Il)",
-						"layerName": "6",
+						"layerTitle": "Respect distances for aviation",
+						"layerName": "Ir_Respektafstande_for_luftfart5960",
 						"wmsLayer": null
 					},
 					{
-						"layerTitle": "Oil and gas exploration and extraction (Eo)",
-						"layerName": "9",
+						"layerTitle": "Marine archaeological cultural heritage",
+						"layerName": "Mk_Marinarkæologisk_kulturarvsdeponering5865",
 						"wmsLayer": null
 					},
 					{
-						"layerTitle": "Nature and environmental protection areas (N)",
-						"layerName": "1",
+						"layerTitle": "Cable corridors for renewable energy",
+						"layerName": "Ek_Kabelkorridorer_for_vedvarende_energi49655",
 						"wmsLayer": null
 					},
 					{
-						"layerTitle": "Natural resource extraction (R)",
-						"layerName": "10",
+						"layerTitle": "Nature and environmental protection areas",
+						"layerName": "Natur-_og_miljoebeskyttelsesomraader30501",
 						"wmsLayer": null
 					},
 					{
-						"layerTitle": "Marine farming (Ah)",
-						"layerName": "15",
+						"layerTitle": "Specific transport infrastructure projects",
+						"layerName": "Ib_Konkrete_infrastrukturprojekter51078",
 						"wmsLayer": null
 					},
 					{
-						"layerTitle": "General use zones (G)",
-						"layerName": "0",
+						"layerTitle": "Renewable energy",
+						"layerName": "Ev_Vedvarende_energi34763",
 						"wmsLayer": null
 					},
 					{
-						"layerTitle": "Farming of shellfish in the water column (Ao)",
-						"layerName": "14",
+						"layerTitle": "Oil and gas exploration and extraction",
+						"layerName": "Eo_Efterforskning_og_indvinding_af_olie_og_gas15430",
 						"wmsLayer": null
 					},
 					{
-						"layerTitle": "Cultivation of shellfish on the seafloor (Ak)",
-						"layerName": "16",
+						"layerTitle": "Natural resource extraction",
+						"layerName": "R_Raastofindvinding",
 						"wmsLayer": null
 					},
 					{
-						"layerTitle": "Compensation excavations (Ik)",
-						"layerName": "3",
+						"layerTitle": "Renewable energy and energy islands",
+						"layerName": "Ei_Vedvarende_energi_og_energioeer9747",
 						"wmsLayer": null
 					},
 					{
-						"layerTitle": "CO2 storage (Ec)",
-						"layerName": "13",
+						"layerTitle": "CO2 storage",
+						"layerName": "Ec_CO2-lagring",
 						"wmsLayer": null
 					},
 					{
-						"layerTitle": "Cable corridors for renewable energy (Ek)",
-						"layerName": "7",
+						"layerTitle": "Farming of shellfish in the water column",
+						"layerName": "Ao_Opdraet_af_skaldyr_i_vandsoejlen8312",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "Marine aquaculture",
+						"layerName": "Ah_Havbrug",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "Cultivation and transplantation banks for the production of shellfish",
+						"layerName": "Ak_Kultur-_og_omplantningsbanker_til_produktion_af_muslinger_og_oesters52825",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "Removed area",
+						"layerName": "Fjernet_areal_(I_hoering_27/11/23-05/02/24)_61458",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "Added area",
+						"layerName": "Tilfoejet_areal_(I_hoering_27/11/23-05/02/24)_59552",
 						"wmsLayer": null
 					}
 				]
