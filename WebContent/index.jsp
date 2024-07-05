@@ -5,6 +5,7 @@
 	<tiles:putAttribute name="title">BASEMAPS</tiles:putAttribute>
 	<tiles:putAttribute name="links">
 		<link rel="shortcut icon" href="https://metadata.helcom.fi/geonetwork/images/logos/favicon.png" type="image/vnd.microsoft.icon" id="favicon" />
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Share">
 		<link rel="stylesheet" href="1.0/css/ol.css" type="text/css">
 		<link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.10.4/dijit/themes/claro/claro.css">
 		<link rel="stylesheet" type="text/css" href="1.0/css/basemaps.css">

@@ -13,18 +13,18 @@ define([
 	"basemaps/js/utils",
 	"widgets/loginWidget",
 	"widgets/splashWidget",
-	"widgets/aboutPanelWidget",
+	"widgets/aboutWidget",
 	"dojo/text!../templates/header.html",
 	"dojo/domReady!"
 ], function(
 	declare, lang, request, on, dom, domConstruct, array, win, 
-	BorderContainer, mapManager, adminViewManager, utils, loginWidget, splashWidget, aboutPanelWidget, 
+	BorderContainer, mapManager, adminViewManager, utils, loginWidget, splashWidget, aboutWidget, 
 	headerHTML
 ) {
 	return declare(null, {
 		mM: null,
 		utils: null,
-		aboutPanel: null,
+		aboutWidget: null,
 		adminViewManagerObj: null,
 		adminView: false,
 		adminLayerList: null,
@@ -42,8 +42,8 @@ define([
 			
 			var splWindow = new splashWidget().placeAt(win.body());
 			
-			this.aboutPanel = new aboutPanelWidget();
-			
+			this.aboutWidget = new aboutWidget().placeAt(win.body());
+						
 			// on Admin link click get logged in user.
 			var adminButton = dom.byId("adminLink");
 			on(adminButton, "click", lang.hitch(this, function(evt) {
@@ -65,7 +65,8 @@ define([
 			// on About link click display help window.
 			var aboutButton = dom.byId("aboutLink");
 			on(aboutButton, "click", lang.hitch(this, function(evt) {
-				this.aboutPanel.setupAndShowAboutPanel();
+				//this.utils.show("screenCover", "block");
+				this.aboutWidget.domNode.style.display = "block";
 	        }));
 		},
 		
