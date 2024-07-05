@@ -2,7 +2,7 @@
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
 
 <tiles:insertDefinition name="BasicTile">
-	<tiles:putAttribute name="title">BASEMAPS</tiles:putAttribute>
+	<tiles:putAttribute name="title">Basemaps - HELCOM</tiles:putAttribute>
 	<tiles:putAttribute name="links">
 		<link rel="shortcut icon" href="https://metadata.helcom.fi/geonetwork/images/logos/favicon.png" type="image/vnd.microsoft.icon" id="favicon" />
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Share">
