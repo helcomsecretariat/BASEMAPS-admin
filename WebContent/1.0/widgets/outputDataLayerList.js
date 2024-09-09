@@ -51,7 +51,7 @@ define([
 		utils: null,
 		map: null,
 		layerListMode: null,
-		mspWmsUrl: "https://maps.helcom.fi/arcgis/services/PBS126/MspOutputData/MapServer/WMSServer",
+		//mspWmsUrl: "https://maps.helcom.fi/arcgis/services/PBS126/MspOutputData/MapServer/WMSServer",
 		mspTree: null,
 		mspStore: null,
 		mspData: [{id: 'msplayerlist', checked: true}],
@@ -173,7 +173,6 @@ define([
 					}));
 					if (identifyUrl != null) {
 						if (this.layerListMode == "OUTPUT_AREA") {
-							
 							var clickLonLat = ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326');
 							identifyUrl += clickLonLat + "&mapExtent=";
 							
@@ -397,7 +396,7 @@ define([
 		setupMspParams: function() {
 			this.mspParamsArray.push({
 				"useType": null,
-				"title": "All Sea Use Types",
+				"title": "All sea uses",
 				"allUrl": null,
 				"allLayerName": null,
 				"allLegendUrl": null,
@@ -411,7 +410,7 @@ define([
 				"titlePane": null
 			}, {
 				"useType": "priority",
-				"title": "Priority Sea Use",
+				"title": "Prioritized sea uses",
 				"allUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WMSServer",
 				"allLayerName": "Priority_Use",
 				"allLegendUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=Priority_Use",
@@ -426,7 +425,7 @@ define([
 				"psuCheckbox": null
 			}, {
 				"useType": "reserved",
-				"title": "Reserved Sea Use",
+				"title": "Reserved sea uses",
 				"allUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WMSServer",
 				"allLayerName": "Reserved_Use",
 				"allLegendUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=Reserved_Use",
@@ -441,7 +440,7 @@ define([
 				"psuCheckbox": null
 			}, {
 				"useType": "allowed",
-				"title": "Allowed Sea Use",
+				"title": "Allowed sea uses",
 				"allUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WMSServer",
 				"allLayerName": "Allowed_Use",
 				"allLegendUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=Allowed_Use",
@@ -456,7 +455,7 @@ define([
 				"psuCheckbox": null
 			}, {
 				"useType": "restricted",
-				"title": "Restricted Sea Use",
+				"title": "Restricted sea uses",
 				"allUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WMSServer",
 				"allLayerName": "Restricted_Use",
 				"allLegendUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=Restricted_Use",
@@ -471,7 +470,7 @@ define([
 				"psuCheckbox": null
 			}, {
 				"useType": "forbidden",
-				"title": "Forbidden Sea Use",
+				"title": "Forbidden sea uses",
 				"allUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WMSServer",
 				"allLayerName": "Forbidden_Use",
 				"allLegendUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=Forbidden_Use",
@@ -936,13 +935,19 @@ define([
 		},
 		
 		setupPane1: function() {
-			this.mspViewAccordionPanes.tp1 = new TitlePane({ open: false, title: "Plan Area", id: "tp1" });
+			this.mspViewAccordionPanes.tp1 = new TitlePane({ open: false, title: "MSP plan areas", id: "tp1" });
 			this.mspViewAccordion.addChild(this.mspViewAccordionPanes.tp1);
 			
+			domConstruct.create("div", {"style": "font-size: 12px; color: #444; margin-bottom: 10px;", "innerHTML": "This dataset contains Maritime Spatial Plan areas (MSP areas) as reported by national contact points of HELCOM-VASAB MSP Data group."}, this.mspViewAccordionPanes.tp1.containerNode, "last");
+						
 			var legendContainerDiv = domConstruct.create("div", { }, this.mspViewAccordionPanes.tp1.containerNode, "last");
 			var image = domConstruct.create('img', {
 				"src": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WmsServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=Maritime_Spatial_Plan_Areas"
+				//"src": "https://maps.helcom.fi/arcgis/services/MADS/Human_Activities/MapServer/WMSServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=Maritime_Spatial_Plan_Areas17466"
 			}, legendContainerDiv);
+			
+			// uncomment for new version
+			//domConstruct.create("a", {"href": "https://maps.helcom.fi/website/MADS/download/?id=human_activities154", "target": "_blank", "style": "font-size: 14px; margin-bottom: 10px;", "innerHTML": "Download dataset"}, this.mspViewAccordionPanes.tp1.containerNode, "last");
 			
 			var areasLayer = null;
 			
@@ -951,10 +956,13 @@ define([
 					areasLayer = new ol.layer.Tile({
 						type: "msp_output",
 						identify: "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput/MapServer/identify?f=pjson&geometryType=esriGeometryPoint&tolerance=3&imageDisplay=1920%2C+647%2C+96&returnGeometry=true&layers=all:6&geometry=",
+						//identify: "https://maps.helcom.fi/arcgis/rest/services/MADS/Human_Activities/MapServer/identify?f=pjson&geometryType=esriGeometryPoint&tolerance=3&imageDisplay=1920%2C+647%2C+96&returnGeometry=true&layers=all:154&geometry=",
 						source: new ol.source.TileWMS({
 							url: "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WmsServer",
+							//url: "https://maps.helcom.fi/arcgis/services/MADS/Human_Activities/MapServer/WMSServer",
 							params: {
 								LAYERS: "Maritime_Spatial_Plan_Areas"
+								//LAYERS: "Maritime_Spatial_Plan_Areas17466"
 							}
 						})
 					});
@@ -978,8 +986,12 @@ define([
 		},
 		
 		setupPane3: function() {
-			this.mspViewAccordionPanes.tp3 = new TitlePane({ open: false, title: "Query Planned Sea Uses", id: "tp3"  });
+			this.mspViewAccordionPanes.tp3 = new TitlePane({ open: false, title: "Query planned sea use data", id: "tp3"  });
 			this.mspViewAccordion.addChild(this.mspViewAccordionPanes.tp3);
+			
+			// uncomment for new version
+			//domConstruct.create("div", {"style": "font-size: 12px; color: #444; margin-bottom: 10px;", "innerHTML": "Sea use data in this section are organized in 5 layers per sea use and furthermore can be filtered by sea use type (activity)."}, this.mspViewAccordionPanes.tp3.containerNode, "last");
+			//domConstruct.create("div", {"style": "font-size: 12px; color: #444; margin-bottom: 10px;", "innerHTML": "Expand sections below to start filtering data. Filtered data are displayed on the map. Click specific area on the map to see detailed information about the area."}, this.mspViewAccordionPanes.tp3.containerNode, "last");
 			
 			this.mspFilteringAccordion = new TitleGroup({style:"width: 350px"}, this.mspViewAccordionPanes.tp3.containerNode);
 			this.mspFilteringAccordion.startup();
@@ -1126,18 +1138,30 @@ define([
 		},
 		
 		setupPane2: function() {
-			this.mspViewAccordionPanes.tp2 = new TitlePane({ open: false, title: "View Planned Sea Uses", id: "tp2" });
+			this.mspViewAccordionPanes.tp2 = new TitlePane({ open: false, title: "View planned sea use data", id: "tp2" });
 			this.mspViewAccordion.addChild(this.mspViewAccordionPanes.tp2);
-						
-			for (var i = this.mspParamsArray.length-1; i >= 0; i--) {
+			
+			// uncomment for new version
+			//domConstruct.create("div", {"style": "font-size: 12px; color: #444; margin-bottom: 10px;", "innerHTML": "Sea use data in this section are organized in 5 layers per sea use (priority, reserved, allowed, restricted and forbiden sea use)."}, this.mspViewAccordionPanes.tp2.containerNode, "last");
+			//domConstruct.create("div", {"style": "font-size: 12px; color: #444; margin-bottom: 10px;", "innerHTML": "Any specific area may have assigned more than one sea use (for example some activities may be prioritized and other allowed or forbidden in this area), then this area will be present in more than one layer. Click on the area on the map to sea detailed information about the specific area."}, this.mspViewAccordionPanes.tp2.containerNode, "last");
+			//domConstruct.create("div", {"style": "font-size: 12px; color: #444; margin-bottom: 10px;", "innerHTML": "Turn on layers below to view data on the map. Click specific area on the map to see detailed information about the area."}, this.mspViewAccordionPanes.tp2.containerNode, "last");
+			
+			// uncomment for new version
+			/*let allPsuContainer = domConstruct.create("div", {}, this.mspViewAccordionPanes.tp2.containerNode, "last");
+			let allPsuCheckbox = new dijit.form.CheckBox();
+			allPsuCheckbox.placeAt(allPsuContainer, "first");
+			domConstruct.create("span", {"innerHTML": "All sea uses", "style": "margin-top: 5px;"}, allPsuContainer, "last");*/
+
+			for (let i = 0; i < this.mspParamsArray.length; i++) {
 				if (this.mspParamsArray[i].useType != null) {
 					this.createPlannedSeaUseLayer(i);
 				}
 			}
 			
-			var legendContainerDiv = domConstruct.create("div", { "class": "psuLegend" }, this.mspViewAccordionPanes.tp2.containerNode, "last");
+			domConstruct.create("div", { "class": "psuLegend" }, this.mspViewAccordionPanes.tp2.containerNode, "last");
 						
 			on(this.mspViewAccordionPanes.tp2, "show", lang.hitch(this, function() {
+				// comment out for loop for new version
 				for (var i = this.mspParamsArray.length-1; i >= 0; i--) {
 					if ((this.mspParamsArray[i].useType != null) && (this.mspParamsArray[i].psuCheckbox != null)) {
 						this.mspParamsArray[i].psuCheckbox.set("checked", true);
@@ -1153,28 +1177,28 @@ define([
 						mspParams.psuCheckbox.set("checked", false);
 					}
 				}));
+				// uncomment for new version
+				//allPsuCheckbox.set("checked", false);
 			}));
 			
-		},
-		
-		/*setupWmsLayer: function(nr) {
-			console.log("setup", this.mspParamsArray[nr]);
-			this.mspParamsArray[nr].allWmsLayer = new ol.layer.Tile({
-				id: this.mspParamsArray[nr].title.replace(/\s+/g, ''),
-				type: "msp_output",
-				identify: "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput/MapServer/identify?f=pjson&geometryType=esriGeometryPoint&tolerance=3&imageDisplay=1920%2C+647%2C+96&returnGeometry=true&layers=all:",
-				source: new ol.source.TileWMS({
-					url: this.mspParamsArray[nr].allUrl,
-					params: {
-						LAYERS: this.mspParamsArray[nr].allLayerName
+			// uncomment for new version
+			/*on(allPsuCheckbox, "change", lang.hitch(this, function(checked) {
+				array.forEach(this.mspParamsArray, lang.hitch(this, function(mspParams, i) {
+					if ((mspParams.useType != null) && (mspParams.psuCheckbox != null)) {
+						if (checked) {
+							mspParams.psuCheckbox.set("checked", true);
+						}
+						else {
+							mspParams.psuCheckbox.set("checked", false);
+						}
 					}
-				})
-			});
-			this.map.addLayer(this.mspParamsArray[nr].allWmsLayer);
-		},*/
-		
+				}));
+			}));*/
+			
+		},
+				
 		createPlannedSeaUseLayer: function(nr) {
-			var psuContainer = domConstruct.create("div", {}, this.mspViewAccordionPanes.tp2.containerNode, "first");
+			var psuContainer = domConstruct.create("div", {"style": "margin-left: 18px; margin-top: 5px;"}, this.mspViewAccordionPanes.tp2.containerNode, "last");
 			this.mspParamsArray[nr].psuCheckbox = new dijit.form.CheckBox();
 			this.mspParamsArray[nr].psuCheckbox.placeAt(psuContainer, "first");
 			var psuLabel = domConstruct.create("span", {"innerHTML": this.mspParamsArray[nr].title, "style": "margin-top: 5px;"}, psuContainer, "last");
@@ -1319,7 +1343,7 @@ define([
 		
 		createMspFilteringCp: function(nr) {
 			if (nr == 0) {
-				this.mspParamsArray[nr].titlePane = new TitlePane({ open: true, title: this.mspParamsArray[nr].title });
+				this.mspParamsArray[nr].titlePane = new TitlePane({ open: false, title: this.mspParamsArray[nr].title });
 			}
 			else {
 				this.mspParamsArray[nr].titlePane = new TitlePane({ open: false, title: this.mspParamsArray[nr].title });

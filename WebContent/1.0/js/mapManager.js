@@ -47,7 +47,8 @@ define([
 				//overlays: [this.popupOverlay],
 				view: new ol.View({
 					projection: 'EPSG:3857',
-					center: [2290596.795329124, 8263216.845732588],
+					//center: [2290596.795329124, 8263216.845732588],
+					center: [1790596.795329124, 8263216.845732588],
 					zoom: 5,
 					minZoom: 4,
 					maxZoom: 15
@@ -72,12 +73,20 @@ define([
 						domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
 					}
 					else {
-						var bgrLayer = new ol.layer.Tile({
+						/*var bgrLayer = new ol.layer.Tile({
 							id: "basemap",
 							title: "Basemap TOPO",
 							source: new ol.source.TileArcGISRest({
 								//url: "https://maps.helcom.fi/arcgis/rest/services/MADS/Basemap_TOPO/MapServer"
 								url: "https://maps.helcom.fi/arcgis/rest/services/MADS/Basemap_TOPO/MapServer"
+							})
+						});*/
+						var bgrLayer = new ol.layer.Tile({
+							id: "basemap",
+							title: "Basemap TOPO",
+							source: new ol.source.StadiaMaps({
+								layer: 'stamen_toner_lite',
+        						retina: true
 							})
 						});
 						this.map.addLayer(bgrLayer);
