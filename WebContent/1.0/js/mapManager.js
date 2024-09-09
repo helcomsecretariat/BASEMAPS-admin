@@ -73,22 +73,22 @@ define([
 						domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
 					}
 					else {
-						/*var bgrLayer = new ol.layer.Tile({
+						var bgrLayer = new ol.layer.Tile({
 							id: "basemap",
 							title: "Basemap TOPO",
 							source: new ol.source.TileArcGISRest({
 								//url: "https://maps.helcom.fi/arcgis/rest/services/MADS/Basemap_TOPO/MapServer"
 								url: "https://maps.helcom.fi/arcgis/rest/services/MADS/Basemap_TOPO/MapServer"
 							})
-						});*/
-						var bgrLayer = new ol.layer.Tile({
+						});
+						/*var bgrLayer = new ol.layer.Tile({
 							id: "basemap",
 							title: "Basemap TOPO",
 							source: new ol.source.StadiaMaps({
 								layer: 'stamen_toner_lite',
         						retina: true
 							})
-						});
+						});*/
 						this.map.addLayer(bgrLayer);
 						domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
 					}
