@@ -270,7 +270,7 @@ define([
 		
 		getSeaUseCodes: function() {
 			var serviceUrl = "sc/tools/get-data";
-			var url = "https://maps.helcom.fi/arcgis/rest/services/Basemaps/MSPoutput/MapServer/7/query?where=1%3D1&outFields=Attribute_code_for_sea_use%2C+Basemaps&returnGeometry=false&f=json";
+			var url = "https://maps.helcom.fi/arcgis/rest/services/PBS126/MSPoutput/MapServer/7/query?where=1%3D1&outFields=Attribute_code_for_sea_use%2C+Basemaps&returnGeometry=false&f=json";
 			var servicedata = {
 				"url": url,
 				"format": "json"

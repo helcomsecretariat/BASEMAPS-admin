@@ -396,6 +396,7 @@ define([
 		setupMspParams: function() {
 			this.mspParamsArray.push({
 				"useType": null,
+				"useTypeGroup": null,
 				"title": "All sea uses",
 				"allUrl": null,
 				"allLayerName": null,
@@ -410,6 +411,7 @@ define([
 				"titlePane": null
 			}, {
 				"useType": "priority",
+				"useTypeGroup": "positive",
 				"title": "Prioritized sea uses",
 				"allUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WMSServer",
 				"allLayerName": "Priority_Use",
@@ -425,6 +427,7 @@ define([
 				"psuCheckbox": null
 			}, {
 				"useType": "reserved",
+				"useTypeGroup": "positive",
 				"title": "Reserved sea uses",
 				"allUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WMSServer",
 				"allLayerName": "Reserved_Use",
@@ -440,6 +443,7 @@ define([
 				"psuCheckbox": null
 			}, {
 				"useType": "allowed",
+				"useTypeGroup": "positive",
 				"title": "Allowed sea uses",
 				"allUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WMSServer",
 				"allLayerName": "Allowed_Use",
@@ -455,6 +459,7 @@ define([
 				"psuCheckbox": null
 			}, {
 				"useType": "restricted",
+				"useTypeGroup": "negative",
 				"title": "Restricted sea uses",
 				"allUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WMSServer",
 				"allLayerName": "Restricted_Use",
@@ -470,6 +475,7 @@ define([
 				"psuCheckbox": null
 			}, {
 				"useType": "forbidden",
+				"useTypeGroup": "negative",
 				"title": "Forbidden sea uses",
 				"allUrl": "https://maps.helcom.fi/arcgis/services/PBS126/MSPoutput/MapServer/WMSServer",
 				"allLayerName": "Forbidden_Use",
@@ -489,6 +495,7 @@ define([
 		setupNationalMspParamsArray: function() {
 			this.nationalMspParamsArray.push({
 				"title": "Denmark",
+				"pane": null,
 				"wmsMapService": "https://kort.dma.dk/server/services/Havplanudkast_nov23/MapServer/WMSServer",
 				"wmsLegendService": "https://kort.dma.dk/server/services/Havplanudkast_nov23/MapServer/WMSServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=",
 				"layers": [
@@ -600,6 +607,7 @@ define([
 				]
 			}, /*{
 				"title": "Finland",
+				"pane": null,
 				"wmsMapService": "https://paikkatieto.kymenlaakso.fi/server/services/Merialuesuunnittelu/MSP_for_Finland_2030/MapServer/WMSServer",
 				"wmsLegendService": "https://paikkatieto.kymenlaakso.fi/server/services/Merialuesuunnittelu/MSP_for_Finland_2030/MapServer/WMSServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=",
 				"layers": [
@@ -626,6 +634,7 @@ define([
 				]
 			},*/ {
 				"title": "Finland",
+				"pane": null,
 				"wmsMapService": "https://kymenlaakso-geoserver.gispocoding.fi/geoserver/merialuesuunnitelma/ows",
 				"wmsLegendService": "https://kymenlaakso-geoserver.gispocoding.fi/geoserver/merialuesuunnitelma/ows?service=WMS&request=GetLegendGraphic&format=image%2Fpng&layer=",
 				"layers": [
@@ -652,6 +661,7 @@ define([
 				]
 			},{
 				"title": "Germany",
+				"pane": null,
 				"wmsMapService": "https://www.geoseaportal.de/wss/service/Raumordnungsplan_AWZ/guest",
 				"wmsLegendService": "https://www.geoseaportal.de/geoserver/Raumordnungsplan_AWZ/ows?service=WMS&request=GetLegendGraphic&format=image%2Fpng&layer=",
 				"layers": [
@@ -698,6 +708,7 @@ define([
 				]
 			}, /*{
 				"title": "Poland",
+				"pane": null,
 				"wmsMapService": "https://mapy.umgdy.gov.pl/msp/services/POM/POM_RysunekPlanu/MapServer/WMSServer",
 				"wmsLegendService": "https://mapy.umgdy.gov.pl/msp/services/POM/POM_RysunekPlanu/MapServer/WMSServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=",
 				"layers": [
@@ -780,6 +791,7 @@ define([
 			},*/ 
 			{
 				"title": "Poland",
+				"pane": null,
 				"wmsMapService": "https://sipam.gov.pl/geoserver/SIPAM/wms",
 				"wmsLegendService": "https://sipam.gov.pl/geoserver/SIPAM/ows?service=WMS&request=GetLegendGraphic&format=image/png&layer=",
 				"layers": [
@@ -801,6 +813,7 @@ define([
 				]
 			}, {
 				"title": "Sweden",
+				"pane": null,
 				"wmsMapService": "https://geodata.havochvatten.se/geoservices/havsplaner-2022/ows",
 				"wmsLegendService": "https://geodata.havochvatten.se/geoservices/havsplaner-2022/ows?service=WMS&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=",
 				"layers": [
@@ -884,14 +897,19 @@ define([
 			this.nationalMspLayersAccordion = new TitleGroup({style:"width: 350px", id: "nationaltg"}, pane);
 			this.nationalMspLayersAccordion.startup();
 			
+			let showAllContainer = domConstruct.create("div", {"style": "margin-bottom: 10px;"}, pane.containerNode, "last");
+			let showAllCheckbox = new dijit.form.CheckBox();
+			showAllCheckbox.placeAt(showAllContainer, "first");
+			domConstruct.create("span", {"innerHTML": "Show all countries data", "style": "margin-top: 5px;"}, showAllContainer, "last");
 			
-			array.forEach(this.nationalMspParamsArray, lang.hitch(this, function(nationalMspParams) {
-				let coutryPane = new TitlePane({ open: false, title: nationalMspParams.title, id: "nationaltp"+nationalMspParams.title });
-				this.nationalMspLayersAccordion.addChild(coutryPane);
+			
+			array.forEach(this.nationalMspParamsArray, lang.hitch(this, function(nationalMspParams, i) {
+				this.nationalMspParamsArray[i].pane = new TitlePane({ open: false, title: nationalMspParams.title, id: "nationaltp"+nationalMspParams.title });
+				this.nationalMspLayersAccordion.addChild(this.nationalMspParamsArray[i].pane);
 				
 				array.forEach(nationalMspParams.layers, lang.hitch(this, function(layer) {
 					
-					let layerContainer = domConstruct.create("div", {}, coutryPane.containerNode, "first");
+					let layerContainer = domConstruct.create("div", {}, this.nationalMspParamsArray[i].pane.containerNode, "first");
 					let layerCheckbox = new dijit.form.CheckBox();
 					layerCheckbox.placeAt(layerContainer, "first");
 					domConstruct.create("span", {"innerHTML": layer.layerTitle, "style": "margin-top: 5px;"}, layerContainer, "last");
@@ -924,12 +942,31 @@ define([
 							domStyle.set(legendContainerDiv, {"display": "none"});
 						}
 					}));
-					on(coutryPane, "show", lang.hitch(this, function() {
+					on(this.nationalMspParamsArray[i].pane, "show", lang.hitch(this, function() {
 						layerCheckbox.set("checked", true);
 					}));
-					on(coutryPane, "hide", lang.hitch(this, function() {
+					on(this.nationalMspParamsArray[i].pane, "hide", lang.hitch(this, function() {
 						layerCheckbox.set("checked", false);
 					}));
+				}));	
+				domConstruct.create("div", {"innerHTML": "WMS URL: " + nationalMspParams.wmsMapService, "style": "margin-bottom: 10px;"}, this.nationalMspParamsArray[i].pane.containerNode, "first");		
+			}));
+			
+			/*on(pane, "show", lang.hitch(this, function() {
+				showAllCheckbox.set("checked", true);
+			}));
+			on(pane, "hide", lang.hitch(this, function() {
+				showAllCheckbox.set("checked", false);
+			}));*/
+			
+			on(showAllCheckbox, "change", lang.hitch(this, function(checked) {
+				array.forEach(this.nationalMspParamsArray, lang.hitch(this, function(nationalMspParams) {
+					if (checked) {
+						nationalMspParams.pane.set("open", true);
+					}
+					else {
+						nationalMspParams.pane.set("open", false);
+					}
 				}));
 			}));
 		},
@@ -938,7 +975,8 @@ define([
 			this.mspViewAccordionPanes.tp1 = new TitlePane({ open: false, title: "MSP plan areas", id: "tp1" });
 			this.mspViewAccordion.addChild(this.mspViewAccordionPanes.tp1);
 			
-			domConstruct.create("div", {"style": "font-size: 12px; color: #444; margin-bottom: 10px;", "innerHTML": "This dataset contains Maritime Spatial Plan areas (MSP areas) as reported by national contact points of HELCOM-VASAB MSP Data group."}, this.mspViewAccordionPanes.tp1.containerNode, "last");
+			// uncomment for new version
+			//domConstruct.create("div", {"style": "font-size: 12px; color: #444; margin-bottom: 10px;", "innerHTML": "This dataset contains Maritime Spatial Plan areas (MSP areas) as reported by national contact points of HELCOM-VASAB MSP Data group."}, this.mspViewAccordionPanes.tp1.containerNode, "last");
 						
 			var legendContainerDiv = domConstruct.create("div", { }, this.mspViewAccordionPanes.tp1.containerNode, "last");
 			var image = domConstruct.create('img', {
@@ -946,8 +984,8 @@ define([
 				//"src": "https://maps.helcom.fi/arcgis/services/MADS/Human_Activities/MapServer/WMSServer?request=GetLegendGraphic%26version=1.3.0%26format=image/png%26layer=Maritime_Spatial_Plan_Areas17466"
 			}, legendContainerDiv);
 			
-			// uncomment for new version
-			//domConstruct.create("a", {"href": "https://maps.helcom.fi/website/MADS/download/?id=human_activities154", "target": "_blank", "style": "font-size: 14px; margin-bottom: 10px;", "innerHTML": "Download dataset"}, this.mspViewAccordionPanes.tp1.containerNode, "last");
+			
+			domConstruct.create("a", {"href": "https://maps.helcom.fi/website/MADS/download/?id=human_activities154", "target": "_blank", "style": "font-size: 14px; margin-bottom: 10px;", "innerHTML": "Download dataset"}, this.mspViewAccordionPanes.tp1.containerNode, "last");
 			
 			var areasLayer = null;
 			
@@ -990,8 +1028,8 @@ define([
 			this.mspViewAccordion.addChild(this.mspViewAccordionPanes.tp3);
 			
 			// uncomment for new version
-			//domConstruct.create("div", {"style": "font-size: 12px; color: #444; margin-bottom: 10px;", "innerHTML": "Sea use data in this section are organized in 5 layers per sea use and furthermore can be filtered by sea use type (activity)."}, this.mspViewAccordionPanes.tp3.containerNode, "last");
-			//domConstruct.create("div", {"style": "font-size: 12px; color: #444; margin-bottom: 10px;", "innerHTML": "Expand sections below to start filtering data. Filtered data are displayed on the map. Click specific area on the map to see detailed information about the area."}, this.mspViewAccordionPanes.tp3.containerNode, "last");
+			domConstruct.create("div", {"style": "font-size: 12px; color: #444; margin-bottom: 10px;", "innerHTML": "This section presents the sea uses from the Maritime Spatial Plans grouped within each of the 5 sea use types classifications (priority, reserved, allowed, restricted and forbiden)."}, this.mspViewAccordionPanes.tp3.containerNode, "last");
+			domConstruct.create("div", {"style": "font-size: 12px; color: #444; margin-bottom: 10px;", "innerHTML": "Expand the sections below to filter the data. The filtered data are displayed on the map. Click on an area on the map to see more detailed information."}, this.mspViewAccordionPanes.tp3.containerNode, "last");
 			
 			this.mspFilteringAccordion = new TitleGroup({style:"width: 350px"}, this.mspViewAccordionPanes.tp3.containerNode);
 			this.mspFilteringAccordion.startup();
@@ -1141,20 +1179,36 @@ define([
 			this.mspViewAccordionPanes.tp2 = new TitlePane({ open: false, title: "View planned sea use data", id: "tp2" });
 			this.mspViewAccordion.addChild(this.mspViewAccordionPanes.tp2);
 			
-			// uncomment for new version
-			//domConstruct.create("div", {"style": "font-size: 12px; color: #444; margin-bottom: 10px;", "innerHTML": "Sea use data in this section are organized in 5 layers per sea use (priority, reserved, allowed, restricted and forbiden sea use)."}, this.mspViewAccordionPanes.tp2.containerNode, "last");
-			//domConstruct.create("div", {"style": "font-size: 12px; color: #444; margin-bottom: 10px;", "innerHTML": "Any specific area may have assigned more than one sea use (for example some activities may be prioritized and other allowed or forbidden in this area), then this area will be present in more than one layer. Click on the area on the map to sea detailed information about the specific area."}, this.mspViewAccordionPanes.tp2.containerNode, "last");
-			//domConstruct.create("div", {"style": "font-size: 12px; color: #444; margin-bottom: 10px;", "innerHTML": "Turn on layers below to view data on the map. Click specific area on the map to see detailed information about the area."}, this.mspViewAccordionPanes.tp2.containerNode, "last");
+			domConstruct.create("div", {"style": "font-size: 12px; color: #444; margin-bottom: 10px;", "innerHTML": "This section presents the Maritime Spatial Plans categorised into the 5 sea use types adopted for the Baltic Sea Region: priority, reserved, allowed, restricted and forbiden."}, this.mspViewAccordionPanes.tp2.containerNode, "last");
+			domConstruct.create("div", {"style": "font-size: 12px; color: #444; margin-bottom: 10px;", "innerHTML": "Turn on the layers below to display data on the map. Click on an area on the map to view detailed information."}, this.mspViewAccordionPanes.tp2.containerNode, "last");
+			domConstruct.create("div", {"style": "font-size: 12px; color: #444; margin-bottom: 10px;", "innerHTML": "Please, note that an area can have more than one sea use type for different sea uses (for example some activities might be prioritized and other allowed or forbidden in the same area). As a result, the same area may appear in multiple layers."}, this.mspViewAccordionPanes.tp2.containerNode, "last");
 			
 			// uncomment for new version
-			/*let allPsuContainer = domConstruct.create("div", {}, this.mspViewAccordionPanes.tp2.containerNode, "last");
+			let allPsuContainer = domConstruct.create("div", {}, this.mspViewAccordionPanes.tp2.containerNode, "last");
 			let allPsuCheckbox = new dijit.form.CheckBox();
 			allPsuCheckbox.placeAt(allPsuContainer, "first");
-			domConstruct.create("span", {"innerHTML": "All sea uses", "style": "margin-top: 5px;"}, allPsuContainer, "last");*/
+			domConstruct.create("span", {"innerHTML": "All sea uses", "style": "margin-top: 5px;"}, allPsuContainer, "last");
+
+			let positivePsuContainer = domConstruct.create("div", {"style": "margin-left: 18px; margin-top: 5px;"}, this.mspViewAccordionPanes.tp2.containerNode, "last");
+			let positivePsuCheckbox = new dijit.form.CheckBox();
+			positivePsuCheckbox.placeAt(positivePsuContainer, "first");
+			domConstruct.create("span", {"innerHTML": "Permitted and prioritised sea uses", "style": "margin-top: 5px;"}, positivePsuContainer, "last");
+			let positivePsuPlaceholder = domConstruct.create("div", {"style": "margin-left: 36px;"}, this.mspViewAccordionPanes.tp2.containerNode, "last");
+
+			let negativePsuContainer = domConstruct.create("div", {"style": "margin-left: 18px; margin-top: 5px;"}, this.mspViewAccordionPanes.tp2.containerNode, "last");
+			let negativePsuCheckbox = new dijit.form.CheckBox();
+			negativePsuCheckbox.placeAt(negativePsuContainer, "first");
+			domConstruct.create("span", {"innerHTML": "Restricted and forbidden sea uses", "style": "margin-top: 5px;"}, negativePsuContainer, "last");
+			let negativePsuPlaceholder = domConstruct.create("div", {"style": "margin-left: 36px;"}, this.mspViewAccordionPanes.tp2.containerNode, "last");
 
 			for (let i = 0; i < this.mspParamsArray.length; i++) {
-				if (this.mspParamsArray[i].useType != null) {
-					this.createPlannedSeaUseLayer(i);
+				if (this.mspParamsArray[i].useTypeGroup != null) {
+					if (this.mspParamsArray[i].useTypeGroup == "positive") {
+						this.createPlannedSeaUseLayer(i, positivePsuPlaceholder);
+					}
+					else if (this.mspParamsArray[i].useTypeGroup == "negative") {
+						this.createPlannedSeaUseLayer(i, negativePsuPlaceholder);
+					}
 				}
 			}
 			
@@ -1162,12 +1216,12 @@ define([
 						
 			on(this.mspViewAccordionPanes.tp2, "show", lang.hitch(this, function() {
 				// comment out for loop for new version
-				for (var i = this.mspParamsArray.length-1; i >= 0; i--) {
+				/*for (var i = this.mspParamsArray.length-1; i >= 0; i--) {
 					if ((this.mspParamsArray[i].useType != null) && (this.mspParamsArray[i].psuCheckbox != null)) {
 						this.mspParamsArray[i].psuCheckbox.set("checked", true);
 					}
-				}
-				
+				}*/
+				allPsuCheckbox.set("checked", true);
 				this.layerListMode = "OUTPUT_PSU"; 
 			}));
 			
@@ -1178,27 +1232,58 @@ define([
 					}
 				}));
 				// uncomment for new version
-				//allPsuCheckbox.set("checked", false);
+				allPsuCheckbox.set("checked", false);
 			}));
 			
 			// uncomment for new version
-			/*on(allPsuCheckbox, "change", lang.hitch(this, function(checked) {
-				array.forEach(this.mspParamsArray, lang.hitch(this, function(mspParams, i) {
-					if ((mspParams.useType != null) && (mspParams.psuCheckbox != null)) {
-						if (checked) {
+			on(allPsuCheckbox, "change", lang.hitch(this, function(checked) {
+				if (checked) {
+					positivePsuCheckbox.set("checked", true);
+					negativePsuCheckbox.set("checked", true);
+				}
+				else {
+					positivePsuCheckbox.set("checked", false);
+					negativePsuCheckbox.set("checked", false);
+				}
+			}));
+			
+			on(positivePsuCheckbox, "change", lang.hitch(this, function(checked) {
+				if (checked) {
+					array.forEach(this.mspParamsArray, lang.hitch(this, function(mspParams, i) {
+						if (mspParams.useTypeGroup == "positive") {
 							mspParams.psuCheckbox.set("checked", true);
 						}
-						else {
+					}));
+				}
+				else {
+					array.forEach(this.mspParamsArray, lang.hitch(this, function(mspParams, i) {
+						if (mspParams.useTypeGroup == "positive") {
 							mspParams.psuCheckbox.set("checked", false);
 						}
-					}
-				}));
-			}));*/
+					}));
+				}
+			}));
 			
+			on(negativePsuCheckbox, "change", lang.hitch(this, function(checked) {
+				if (checked) {
+					array.forEach(this.mspParamsArray, lang.hitch(this, function(mspParams, i) {
+						if (mspParams.useTypeGroup == "negative") {
+							mspParams.psuCheckbox.set("checked", true);
+						}
+					}));
+				}
+				else {
+					array.forEach(this.mspParamsArray, lang.hitch(this, function(mspParams, i) {
+						if (mspParams.useTypeGroup == "negative") {
+							mspParams.psuCheckbox.set("checked", false);
+						}
+					}));
+				}
+			}));
 		},
 				
-		createPlannedSeaUseLayer: function(nr) {
-			var psuContainer = domConstruct.create("div", {"style": "margin-left: 18px; margin-top: 5px;"}, this.mspViewAccordionPanes.tp2.containerNode, "last");
+		createPlannedSeaUseLayer: function(nr, placeholder) {
+			var psuContainer = domConstruct.create("div", {"style": "margin-top: 5px;"}, placeholder, "last");
 			this.mspParamsArray[nr].psuCheckbox = new dijit.form.CheckBox();
 			this.mspParamsArray[nr].psuCheckbox.placeAt(psuContainer, "first");
 			var psuLabel = domConstruct.create("span", {"innerHTML": this.mspParamsArray[nr].title, "style": "margin-top: 5px;"}, psuContainer, "last");
