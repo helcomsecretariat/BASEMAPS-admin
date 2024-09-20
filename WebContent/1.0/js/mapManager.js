@@ -57,9 +57,31 @@ define([
 				})
 			});
 			
-			//var backgroundUrlJson = "https://maps.helcom.fi/arcgis/rest/services/MADS/Basemap_TOPO/MapServer?f=pjson";
+			const accessToken = "AAPTxy8BH1VEsoebNVZXo8HurAZRW-5WHQwcmlZdnjgV2ewu9sxJJWrzci1pC6jrh3VQvB6srE2z1RJnWNe3cHnu-Um1cx8Z_c02NiGitPa8T25YiKQbiCWwUbSSYzxYF2sY8OLtv1gVYAabgg-Rjohn1CB9ciWxsf6staa6th83mwOWiP3FEtXjNioIg9H_pW5bcSxWL2-noLr2DhOQJiAVRA..AT1_Tn5UV0YI";
+			const basemapId = "arcgis/light-gray";
+			const basemapURL = `https://basemapstyles-api.arcgis.com/arcgis/rest/services/styles/v2/styles/${basemapId}?token=${accessToken}`;
+			
+			fetch(basemapURL)
+				.then(lang.hitch(this, function(response) {
+					return response.text();
+				}))
+				.then(lang.hitch(this, function(text) {
+					var resp = JSON.parse(text);
+					if (resp.error) {
+						var bgrLayer = new ol.layer.Tile({
+							source: new ol.source.OSM()
+						});
+						this.map.addLayer(bgrLayer);
+						domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
+					}
+					else {
+						olms.apply(this.map, basemapURL);
+						domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
+					}
+				}));
+			
 			var backgroundUrlJson = "https://maps.helcom.fi/arcgis/rest/services/MADS/Basemap_TOPO/MapServer?f=pjson";
-			fetch(backgroundUrlJson)
+			/*fetch(backgroundUrlJson)
 				.then(lang.hitch(this, function(response) {
 					return response.text();
 				}))
@@ -81,73 +103,19 @@ define([
 								url: "https://maps.helcom.fi/arcgis/rest/services/MADS/Basemap_TOPO/MapServer"
 							})
 						});
-						/*var bgrLayer = new ol.layer.Tile({
-							id: "basemap",
-							title: "Basemap TOPO",
-							source: new ol.source.StadiaMaps({
-								layer: 'stamen_toner_lite',
-        						retina: true
-							})
-						});*/
+						//var bgrLayer = new ol.layer.Tile({
+						//	id: "basemap",
+						//	title: "Basemap TOPO",
+						//	source: new ol.source.StadiaMaps({
+						//		layer: 'stamen_toner_lite',
+        				//		retina: true
+						//	})
+						//});
 						this.map.addLayer(bgrLayer);
 						domStyle.set(dojo.byId("loadingCover"), {"display": "none"});
 					}
-				}));
-		
-			/*var agsL = new ol.layer.Image({
-		          source: new ol.source.ImageArcGISRest({
-		            url: "https://maps.helcom.fi/arcgis/rest/services/MADS/Biodiversity/MapServer/300"
-		          })
-		        });
-			this.map.addLayer(agsL);*/
-			/*var arcgisLayer = new ol.layer.Image({
-		          source: new ol.source.ImageArcGISRest({
-		              url: "http://62.236.121.188/arcgis104/rest/services/PBS126/MspOutputData/MapServer"
-		            })
-		          });*/
-			/*var mspwms = new ol.layer.Tile({
-				source: new ol.source.TileWMS({
-					url: "http://62.236.121.188/arcgis104/services/PBS126/MspOutputData/MapServer/WMSServer",
-					params: {
-						LAYERS: "PositiveSeaUse",
-						CRS: "EPSG:3857"
-					}
-				})
-			});*/
-			
-						
-			/*this.map.on('singleclick', lang.hitch(this, function(evt) {
-				if (this.layerListObj.layerListMode == "INPUT") {
-					this.cleanHighlight();
-					var popupCoordinate = evt.coordinate;
-					var viewResolution = this.map.getView().getResolution();
-					var viewProjection = this.map.getView().getProjection();
-									
-					var layers = this.map.getLayers().getArray();
-					this.mapsLayersCount = 0;
-					for (var i = layers.length-1; i > 0; i--) {
-						//if ((layers[i].getProperties().id != "basemap") && (layers[i].getProperties().id != "highlight") && (!("mspName" in layers[i].getProperties())) && (layers[i].getVisible())) {
-						if (("wmsId" in layers[i].getProperties()) && (layers[i].getVisible())) {
-							this.mapsLayersCount = this.mapsLayersCount + 1;
-						}
-					}
-					
-					this.layersCounter = 0;
-					this.identifyResults = [];
-					for (var i = layers.length-1; i > 0; i--) {
-						//if ((layers[i].getProperties().id != "basemap") && (layers[i].getProperties().id != "highlight") && (!("mspName" in layers[i].getProperties()))&& (!("agsId" in layers[i].getProperties())) && (layers[i].getVisible())) {
-						if (("wmsId" in layers[i].getProperties()) && (layers[i].getVisible())) {
-							var infoFormat = "application/json";
-							var u = layers[i].getSource().getGetFeatureInfoUrl(popupCoordinate, viewResolution, viewProjection, {"buffer": 10, "INFO_FORMAT": ""});
-							this.getInfo(layers[i].getProperties().wmsId, u, popupCoordinate, layers[i].getProperties().name);
-						}
-					}
-					
-					query(".metadataBox").forEach(function(node){
-						domStyle.set(node, {"display": "none"});
-					});
-				}
-			}));*/
+				}));*/
+
 			
 			var mapNode = dom.byId("map");
 			domConstruct.place(mapNode, this.domNode, "first");
