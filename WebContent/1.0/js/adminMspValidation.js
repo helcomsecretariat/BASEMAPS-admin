@@ -275,6 +275,7 @@ define([
 							}
 							if (!extInExts) {
 								this.utils.setTextValue("checkExtMessage", "ZIP archive contains not valid Shapefile(s) or file(s) with not allowed extension, or files are placed in folder(s).");
+								console.log(ext);
 								break;
 							}
 							else {

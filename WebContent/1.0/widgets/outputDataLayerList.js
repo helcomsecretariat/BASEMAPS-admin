@@ -792,22 +792,27 @@ define([
 			{
 				"title": "Poland",
 				"pane": null,
-				"wmsMapService": "https://sipam.gov.pl/geoserver/SIPAM/wms",
-				"wmsLegendService": "https://sipam.gov.pl/geoserver/SIPAM/ows?service=WMS&request=GetLegendGraphic&format=image/png&layer=",
+				"wmsMapService": "https://ogc.sipam.gov.pl/geoserver/SIPAM/wms",
+				"wmsLegendService": "https://ogc.sipam.gov.pl/geoserver/SIPAM/wms?service=WMS&request=GetLegendGraphic&format=image/png&layer=",
 				"layers": [
 					{
-						"layerTitle": "basins",
-						"layerName": "pom_akwen",
+						"layerTitle": "Subbasin - variant B",
+						"layerName": "pom_subbasin_variant",
 						"wmsLayer": null
 					},
 					{
-						"layerTitle": "sub-basins",
-						"layerName": "pom_obszarakwenu",
+						"layerTitle": "Subbasin",
+						"layerName": "pom_subbasin",
 						"wmsLayer": null
 					},
 					{
-						"layerTitle": "sub-basins countours",
-						"layerName": "pom_podakweny granice",
+						"layerTitle": "Basin - variant B",
+						"layerName": "pom_basin_variant",
+						"wmsLayer": null
+					},
+					{
+						"layerTitle": "Basin",
+						"layerName": "pom_basin",
 						"wmsLayer": null
 					}
 				]
